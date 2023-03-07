@@ -29,10 +29,29 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 
+let format = {
+  branchWise_available_count: [],
+  branchWise_intransit_count: [],
+  intransit_stock: [],
+  available_stock: [],
+};
+
+const tableData = [
+  { title: ">90", value: "0" },
+  { title: ">60", value: "0" },
+  { title: ">30", value: "0" },
+  { title: ">15", value: "0" },
+  { title: "<15", value: "0" },
+];
+
 const OverviewDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [loading, setLoading] = useState(false);
+  const [available, setAvailable] = useState(true);
+  const [inventory, setInventory] = useState(format);
+  const [availableAgingData, setAvailableAgingData] = useState([]);
+  const [inTransitAgingData, setInTransitAgingData] = useState([]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -40,56 +59,125 @@ const OverviewDetailScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  const data = [
-    { title: "Gopanpally-S5237", value: "10" },
-    { title: "Gachhibowli-S5239", value: "5" },
-    { title: "Nampally-S5238", value: "10" },
-  ];
-  const tableData = [
-    { title: ">90", value: "5" },
-    { title: ">60", value: "5" },
-    { title: ">30", value: "5" },
-    { title: ">15", value: "5" },
-    { title: "<15", value: "5" },
-  ];
+  useEffect(() => {
+    if (route?.params?.headerTitle) {
+      getDetailInventory(route?.params?.headerTitle);
+    }
+    if (route?.params?.available) {
+      setAvailable(true);
+    } else {
+      setAvailable(false);
+    }
+  }, [route?.params]);
 
-  const total = [{ title: "Total", value: "35" }];
+  const getDetailInventory = async (location) => {
+    try {
+      setLoading(true);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(
+          URL.GET_INVENTORY_BY_LOCATION(jsonObj.orgId, location)
+        );
+        const json = await response.json();
+        if (json) {
+          setInventory(json);
+          if (json.available_stock) {
+            let path = json.available_stock;
+            setAvailableAgingData(FormatAging(path));
+          } else {
+            setAvailableAgingData(tableData);
+          }
+          if (json.intransit_stock) {
+            let path = json.intransit_stock;
+            setInTransitAgingData(FormatAging(path));
+          } else {
+            setAvailableAgingData(tableData);
+          }
+        } else {
+          setInventory({});
+          setAvailableAgingData(tableData);
+          setAvailableAgingData(tableData);
+        }
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      setInventory({});
+      setAvailableAgingData(tableData);
+      setAvailableAgingData(tableData);
+    }
+  };
+
+  function FormatAging(path) {
+    let latest = [
+      {
+        title: ">90",
+        value: path.filter((i) => Number(i.ageing) > 90).length || 0,
+      },
+      {
+        title: ">60",
+        value:
+          path.filter((i) => Number(i.ageing) > 60 && Number(i.ageing) <= 90)
+            .length || 0,
+      },
+      {
+        title: ">30",
+        value:
+          path.filter((i) => Number(i.ageing) > 30 && Number(i.ageing) <= 60)
+            .length || 0,
+      },
+      {
+        title: ">15",
+        value:
+          path.filter((i) => Number(i.ageing) > 15 && Number(i.ageing) <= 30)
+            .length || 0,
+      },
+      {
+        title: "<15",
+        value: path.filter((i) => Number(i.ageing) < 15).length || 0,
+      },
+    ];
+    return latest;
+  }
 
   const renderData = (item) => {
     return (
       <View style={styles.boxView}>
         <View>
-          <Text style={styles.locationTxt}>{item.title}</Text>
+          <Text style={styles.locationTxt}>{item.name}</Text>
         </View>
         <View style={styles.valueBox}>
-          <Text style={styles.valueTxt}>{item.value}</Text>
+          <Text style={styles.valueTxt}>{item.count}</Text>
         </View>
       </View>
     );
   };
 
-const renderTableData = (item, index) => {
-  return (
-    <View style={{ ...styles.tableTitleView, marginTop: 2.5 }}>
-      <View
-        style={{
-          ...styles.tableTitle,
-          backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
-        }}
-      >
-        <Text style={styles.tableTitleTxt}>{item.title}</Text>
+  const renderTableData = (item, index) => {
+    return (
+      <View style={{ ...styles.tableTitleView, marginTop: 2.5 }}>
+        <View
+          style={{
+            ...styles.tableTitle,
+            backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
+          }}
+        >
+          <Text style={styles.tableTitleTxt}>{item.title}</Text>
+        </View>
+        <View
+          style={{
+            ...styles.tableTitle,
+            backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
+          }}
+        >
+          <Text style={styles.tableTitleTxt}>{item.value}</Text>
+        </View>
       </View>
-      <View
-        style={{
-          ...styles.tableTitle,
-          backgroundColor: index % 2 !== 0 ? Colors.LIGHT_GRAY2 : Colors.GRAY,
-        }}
-      >
-        <Text style={styles.tableTitleTxt}>{item.value}</Text>
-      </View>
-    </View>
-  );
-};
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -100,9 +188,13 @@ const renderTableData = (item, index) => {
             <Text style={styles.titleText}>{"Stock Yard"}</Text>
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
-          {data.map((item) => {
-            return renderData(item);
-          })}
+          {available
+            ? inventory.branchWise_available_count.map((item) => {
+                return renderData(item);
+              })
+            : inventory.branchWise_intransit_count.map((item) => {
+                return renderData(item);
+              })}
         </View>
         <View style={styles.mainView}>
           <View style={styles.tableTitleView}>
@@ -113,9 +205,13 @@ const renderTableData = (item, index) => {
               <Text style={styles.tableTitleTxt}>{"Stock"}</Text>
             </View>
           </View>
-          {tableData.map((item, index) => {
-            return renderTableData(item, index);
-          })}
+          {available
+            ? availableAgingData.map((item, index) => {
+                return renderTableData(item, index);
+              })
+            : inTransitAgingData.map((item, index) => {
+                return renderTableData(item, index);
+              })}
         </View>
       </ScrollView>
     </SafeAreaView>

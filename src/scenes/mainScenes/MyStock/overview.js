@@ -23,6 +23,7 @@ import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockN
 import { updateCurrentScreen } from "../../../redux/myStockReducer";
 import { RadioTextItem1 } from "../../../pureComponents/radioTextItem";
 import { LoaderComponent } from "../../../components";
+import _ from "lodash";
 // import { RadioTextItem1 } from "../../../pureComponents";
 
 const dateFormat = "YYYY-MM-DD";
@@ -33,11 +34,27 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 
+let tableData = [
+  { title: ">90", value: 0 },
+  { title: ">60", value: 0 },
+  { title: ">30", value: 0 },
+  { title: ">15", value: 0 },
+  { title: "<15", value: 0 },
+];
+
 const OverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [available, setAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [inventory, setInventory] = useState({
+    locationWise_available_count: [],
+    intransit_stock: [],
+    locationWise_intrsnsit_count: [],
+    available_stock: [],
+  });
+  const [availableAgingData, setAvailableAgingData] = useState([]);
+  const [inTransitAgingData, setInTransitAgingData] = useState([]);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -45,35 +62,98 @@ const OverviewScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  const data = [
-    { title: "Hyderabad", value: "15" },
-    { title: "Pune", value: "20" },
-  ];
-  const tableData = [
-    { title: ">90", value: "5" },
-    { title: ">60", value: "15" },
-    { title: ">30", value: "25" },
-    { title: ">15", value: "35" },
-    { title: "<15", value: "55" },
-  ];
-  const total = [{ title: "Total", value: "35" }];
+  useEffect(() => {
+    getInventory();
+  }, []);
+
+  const getInventory = async () => {
+    try {
+      setLoading(true);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(URL.GET_INVENTORY(jsonObj.orgId));
+        const json = await response.json();
+        if (json) {
+          setInventory(json);
+          if (json.available_stock) {
+            let path = json.available_stock;
+            setAvailableAgingData(FormatAging(path));
+          } else {
+            setAvailableAgingData(tableData);
+          }
+          if (json.intransit_stock) {
+            let path = json.intransit_stock;
+            setInTransitAgingData(FormatAging(path));
+          } else {
+            setAvailableAgingData(tableData);
+          }
+        } else {
+          setInventory({});
+          setAvailableAgingData(tableData);
+          setAvailableAgingData(tableData);
+        }
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      setInventory({});
+      setAvailableAgingData(tableData);
+      setAvailableAgingData(tableData);
+    }
+  };
+
+  function FormatAging(path) {
+    let latest = [
+      {
+        title: ">90",
+        value: path.filter((i) => Number(i.ageing) > 90).length || 0,
+      },
+      {
+        title: ">60",
+        value:
+          path.filter((i) => Number(i.ageing) > 60 && Number(i.ageing) <= 90)
+            .length || 0,
+      },
+      {
+        title: ">30",
+        value:
+          path.filter((i) => Number(i.ageing) > 30 && Number(i.ageing) <= 60)
+            .length || 0,
+      },
+      {
+        title: ">15",
+        value:
+          path.filter((i) => Number(i.ageing) > 15 && Number(i.ageing) <= 30)
+            .length || 0,
+      },
+      {
+        title: "<15",
+        value: path.filter((i) => Number(i.ageing) < 15).length || 0,
+      },
+    ];
+    return latest;
+  }
 
   const renderData = (item) => {
     return (
       <View style={styles.boxView}>
         <View>
-          <Text style={styles.locationTxt}>{item.title}</Text>
+          <Text style={styles.locationTxt}>{item.name}</Text>
         </View>
         <View style={styles.valueBox}>
           <Text
             onPress={() => {
               navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
-                headerTitle: item.title,
+                headerTitle: item.name,
+                available: available,
               });
             }}
             style={styles.valueTxt}
           >
-            {item.value}
+            {item.count}
           </Text>
         </View>
       </View>
@@ -98,6 +178,20 @@ const OverviewScreen = ({ route, navigation }) => {
           }}
         >
           <Text style={styles.tableTitleTxt}>{item.value}</Text>
+        </View>
+      </View>
+    );
+  };
+
+  const renderTotalData = (item) => {
+    const result = _.sumBy(item, "count");
+    return (
+      <View style={styles.boxView}>
+        <View>
+          <Text style={styles.locationTxt}>{"Total"}</Text>
+        </View>
+        <View style={styles.valueBox}>
+          <Text style={styles.valueTxt}>{result || 0}</Text>
         </View>
       </View>
     );
@@ -133,10 +227,18 @@ const OverviewScreen = ({ route, navigation }) => {
             <Text style={styles.titleText}>{"Location"}</Text>
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
-          {data.map((item) => {
-            return renderData(item);
-          })}
-          <View style={{ marginTop: 10 }}>{renderData(total[0])}</View>
+          {available
+            ? inventory.locationWise_available_count.map((item) => {
+                return renderData(item);
+              })
+            : inventory.locationWise_intrsnsit_count.map((item) => {
+                return renderData(item);
+              })}
+          <View style={{ marginTop: 10 }}>
+            {available
+              ? renderTotalData(inventory.locationWise_available_count)
+              : renderTotalData(inventory.locationWise_intrsnsit_count)}
+          </View>
         </View>
         <View style={styles.mainView}>
           <View style={styles.tableTitleView}>
@@ -147,9 +249,13 @@ const OverviewScreen = ({ route, navigation }) => {
               <Text style={styles.tableTitleTxt}>{"Stock"}</Text>
             </View>
           </View>
-          {tableData.map((item, index) => {
-            return renderTableData(item, index);
-          })}
+          {available
+            ? availableAgingData.map((item, index) => {
+                return renderTableData(item, index);
+              })
+            : inTransitAgingData.map((item, index) => {
+                return renderTableData(item, index);
+              })}
         </View>
       </ScrollView>
     </SafeAreaView>

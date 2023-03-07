@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "https://stage-api.cyepro.com/";
+export const baseUrl = "http://qa-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -115,8 +115,6 @@ export const dashboard = baseUrl + "dfd/dashboard";
 export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
-
-
 
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
@@ -349,8 +347,10 @@ const URL = {
   },
   CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
 
-  GET_DET_FROM_PHONE: (phone, orgId) => sales_url + `/lead/phone/${phone}/${orgId}`,
-  GET_COMPLAIN_FACTOR_DATA: (orgId) => baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
+  GET_DET_FROM_PHONE: (phone, orgId) =>
+    sales_url + `/lead/phone/${phone}/${orgId}`,
+  GET_COMPLAIN_FACTOR_DATA: (orgId) =>
+    baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
 
   GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
   GET_EVENTS: () => {
@@ -495,7 +495,12 @@ const URL = {
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
-  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId,startDate,endDate) => {
+  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (
+    orgId,
+    employeeId,
+    startDate,
+    endDate
+  ) => {
     return (
       baseUrl +
       `dfd/oh/team-attendance/${orgId}/${employeeId}/${startDate}/${endDate}`
@@ -676,8 +681,8 @@ const URL = {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
 
-  GET_DASHBOARD_COUNT_COMPLAINT: ( empId) => {
-    return sales_url +`/complainttracker/getCounts/${empId}`;
+  GET_DASHBOARD_COUNT_COMPLAINT: (empId) => {
+    return sales_url + `/complainttracker/getCounts/${empId}`;
   },
   GEY_COMPLAINT_DET_FROMID: (complaintId) => {
     return sales_url + `/complainttracker/getCt/${complaintId}`;
@@ -834,6 +839,15 @@ const URL = {
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
+  },
+  GET_INVENTORY: (orgId) => {
+    return baseUrl + "dfdr/vehicle-inventory/getInventory/" + orgId;
+  },
+  GET_INVENTORY_BY_LOCATION: (orgId, location) => {
+    return (
+      baseUrl +
+      `dfdr/vehicle-inventory/get-locationBasedVehicles/${orgId}/${location}`
+    );
   },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
