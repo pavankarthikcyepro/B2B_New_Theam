@@ -91,18 +91,51 @@ const data = [
     ],
   },
 ];
-
+const sample = {
+  varientWise_intransit_stock: [],
+  varientWise_available_stock: [],
+  intransit_stock: [],
+  available_stock: [],
+};
 const VariantDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [newData, setNewData] = useState(data);
   const [loading, setLoading] = useState(false);
+  const [available, setAvailable] = useState(true);
+  const [models, setModels] = useState(sample);
 
   useEffect(() => {
     navigation.setOptions({
       title: route?.params?.headerTitle ? route?.params?.headerTitle : "Detail",
     });
   }, [navigation]);
+
+  useEffect(() => {
+    getVariant(route?.params);
+  }, [route?.params]);
+
+  const getVariant = async (item) => {
+    try {
+      setLoading(true);
+      const response = await client.get(
+        URL.GET_INVENTORY_BY_VEHICLE_MODEL(
+          item?.orgId,
+          item?.headerTitle,
+          item?.branchName
+        )
+      );
+      const json = await response.json();
+      setAvailable(item.available);
+      if (json) {
+        setModels(json);
+      }
+      setLoading(false);
+    } catch (error) {
+      setModels(sample);
+      setLoading(false);
+    }
+  };
 
   const showVariant = async (item, index, lastParameter) => {
     try {
@@ -133,24 +166,24 @@ const VariantDetailScreen = ({ route, navigation }) => {
               }}
               style={styles.locationTxt}
             >
-              {item.title}
+              {item?.varient}
             </Text>
           </View>
           <View style={styles.parameterTitleView}>
             <Text numberOfLines={1} style={styles.valueTxt}>
-              {item.value}
+              {item.petrolCount || 0}
             </Text>
             <Text numberOfLines={1} style={styles.valueTxt}>
-              {item.value}
+              {item.dieselCount || 0}
             </Text>
             <Text numberOfLines={1} style={styles.valueTxt}>
-              {item.value}
+              {item.electricCount || 0}
             </Text>
           </View>
         </View>
         <View style={{ marginBottom: item.innerVariant ? 15 : 0 }}>
-          {item.innerVariant &&
-            item.data.map((item1) => {
+          {item?.innerVariant &&
+            item?.data.map((item1) => {
               return renderChildData(item1);
             })}
         </View>
@@ -180,7 +213,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
       </View>
     );
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -196,9 +229,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
               <Text style={styles.titleText}>{"Electric"}</Text>
             </View>
           </View>
-          {newData.map((item, index) => {
-            return renderData(item, index);
-          })}
+          {available
+            ? models?.varientWise_available_stock.map((item, index) => {
+                return renderData(item, index);
+              })
+            : models?.varientWise_intransit_stock.map((item, index) => {
+                return renderData(item, index);
+              })}
         </View>
       </ScrollView>
     </SafeAreaView>

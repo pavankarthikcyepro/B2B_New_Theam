@@ -45,6 +45,9 @@ const AvailableScreen = ({ route, navigation }) => {
   const [available, setAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [inventory, setInventory] = useState(sample);
+  const [branchName, setBranchName] = useState("");
+  const [orgID, setOrgID] = useState(0);
+
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       dispatch(updateCurrentScreen("AVAILABLE"));
@@ -68,10 +71,16 @@ const AvailableScreen = ({ route, navigation }) => {
         )[0].branchName;
         const response = await client.get(
           URL.GET_INVENTORY_BY_VEHICLE(
-            jsonObj.orgId,
-            item.name ? item.name : branchName // "Gachibowli"
+            25,
+            // item.name ? item.name : branchName
+            "Gachibowli"
           )
         );
+        setBranchName(
+          // item.name ? item.name : branchName
+          "Gachibowli"
+        );
+        setOrgID(25);
         const json = await response.json();
         if (json) {
           setInventory(json);
@@ -94,6 +103,9 @@ const AvailableScreen = ({ route, navigation }) => {
             onPress={() => {
               navigation.navigate(MyStockTopTabNavigatorIdentifiers.variant, {
                 headerTitle: item.model,
+                branchName: branchName,
+                orgId:orgID,
+                available: available
               });
             }}
             style={styles.locationTxt}
@@ -119,7 +131,7 @@ const AvailableScreen = ({ route, navigation }) => {
       </>
     );
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -165,7 +177,9 @@ const AvailableScreen = ({ route, navigation }) => {
               })}
 
           {available && inventory?.modelWise_available_stock == 0 && <NoData />}
-          {!available && inventory?.modelWise_intransit_stock == 0 && <NoData />}
+          {!available && inventory?.modelWise_intransit_stock == 0 && (
+            <NoData />
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
