@@ -128,6 +128,9 @@ const RecepSourceModel = ({ route, navigation }) => {
     let newPayload = {
       orgId: orgId,
       loggedInEmpId: loggedInEmpId,
+      "startDate": selector.receptionistFilterIds.startDate,
+      "endDate": selector.receptionistFilterIds.endDate,
+      "dealerCodes": selector.receptionistFilterIds.dealerCodes
     };
     let payload = {
       orgId: orgId,

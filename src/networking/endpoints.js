@@ -480,6 +480,9 @@ const URL = {
   GET_LEAD_LIST_2: () => {
     return sales_url + "/lead/allByDateNew";
   },
+  GET_LEAD_LIST_RECEPTINOST: () => {
+    return sales_url + "/lead/receptionist/allByDateNew";
+  },
   GET_ALL_STATUS: () => {
     return sales_url + "/lead/alldatadropdown";
   },

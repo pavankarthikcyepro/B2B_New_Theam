@@ -35,6 +35,7 @@ import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { detectIsOrientationLock } from "../../../utils/helperFunctions";
+import { useIsFocused } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -61,7 +62,7 @@ const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'month
 const ReceptionistFilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-
+  const isFocused = useIsFocused();
   const [totalDataObj, setTotalDataObj] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -85,6 +86,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
   const [branches, setBranches] = useState([]);
   useEffect(async () => {
     getAsyncData();
@@ -153,10 +155,11 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
-    if (nameKeyList.length > 0 && selector.receptionistFilterIds?.levelSelected?.length >4) {
+    if (nameKeyList.length > 0 && isFocused && selector.receptionistFilterIds?.levelSelected?.length >4) {
+     
       dropDownItemClicked(4, true);
     }
-  }, [nameKeyList, userData, selector.receptionistFilterIds]);
+  }, [nameKeyList, userData,isFocused]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
@@ -253,7 +256,6 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
 
   const updateSelectedItems = (data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-
     if (index > 0) {
       let selectedParendIds = [];
       let unselectedParentIds = [];
@@ -264,7 +266,6 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
           unselectedParentIds.push(Number(item.parentId));
         }
       });
-
       let localIndex = index - 1;
 
       for (localIndex; localIndex >= 0; localIndex--) {
@@ -297,7 +298,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         unselectedParentIds = unselectedNewParentIds;
       }
     }
-
+   
     let localIndex2 = index + 1;
     for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
       let key = nameKeyList[localIndex2];
@@ -305,7 +306,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       if (dataArray.length > 0) {
         const newDataArry = dataArray.map((subItem, index) => {
           const obj = { ...subItem };
-          obj.selected = false;
+          obj.selected = true; // make it true for both ways auto fill top and bottom
           return obj;
         });
         const newOBJ = {
@@ -374,14 +375,16 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
     }
     if (selectedIds.length > 0) {
-      setIsLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "LEVEL", selectedDealerCodeName);
-    } else {
-      showToast("Please select any value");
-    }
+      // setIsLoading(true);
+      // setIsEmployeeLoading(true);
+      getDashboadTableDataFromServer(selectedIds, "LEVEL", selectedDealerCodeName,true);
+    } 
+    // else {
+    //   showToast("Please select any value");
+    // }
   };
 
-  const getDashboadTableDataFromServer = (selectedIds, from, selectedBranchName = "") => {
+  const getDashboadTableDataFromServer = (selectedIds, from, selectedBranchName = "" ,initialCall = true) => {
     const payload = {
       startDate: fromDate,
       endDate: toDate,
@@ -404,10 +407,11 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
+    
     // uncomment once api for emp for crm ready
-    if (userData.hrmsRole == "CRM"){
-      // Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-      //   .then(() => {
+    if (userData.hrmsRole == "CRM" && from !== "EMPLOYEE"){
+      Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+        .then(() => {
       
           //     Promise.all([
           //     //   dispatch(getLeadSourceTableList(payload)),
@@ -427,39 +431,65 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
           // .catch(() => {
           //   setIsLoading(false);
           // });
-        // })
-        // .catch(() => {
-        //   setIsLoading(false);
-        // });
+          setIsEmployeeLoading(false);
+        })
+        .catch(() => {
+          setIsEmployeeLoading(false);
+          setIsLoading(false);
+        });
     }
     if (from == "EMPLOYEE") {
-      if (true) {
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
-          params: { from: "Filter" },
-        });
-      } else {
-        navigation.goBack();
-      }
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
-    } else {
-      // if (!userData.hrmsRole == "CRM") {}
-      // dispatch(updateReceptionistFilterids(selectedBranchName[selectedBranchName.length - 1]))
-      let obj={
+      let obj = {
         startDate: fromDate,
         endDate: toDate,
         dealerCodes: selectedBranchName,
         levelSelected: selectedIds
       }
       dispatch(updateReceptionistFilterids(obj))
-      if(!userData.hrmsRole == "CRM"){
+      navigation.navigate("Home");
+   
+    } else {
+      // if (!userData.hrmsRole == "CRM") {}
+      // dispatch(updateReceptionistFilterids(selectedBranchName[selectedBranchName.length - 1]))
+      let obj = {
+        startDate: fromDate,
+        endDate: toDate,
+        dealerCodes: selectedBranchName,
+        levelSelected: selectedIds
+      }
+      dispatch(updateReceptionistFilterids(obj))
+      if(userData.hrmsRole == "CRM"){
 
         return ;
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
       }
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-      // navigation.navigate()
+     
       navigation.navigate("Home");
     }
+  };
+
+  const getDashboadTableDataFromServerForEmp = (selectedIds, from, selectedBranchName = "", initialCall = true) => {
+    const payload = {
+      startDate: fromDate,
+      endDate: toDate,
+      loggedInEmpId: userData.employeeId,
+    };
+    
+  
+    // if (from == "EMPLOYEE") {
+      // let obj = {
+      //   startDate: fromDate,
+      //   endDate: toDate,
+      //   dealerCodes: selectedBranchName,
+      //   levelSelected: selectedIds
+      // }
+      // dispatch(updateReceptionistFilterids(obj))
+      navigation.navigate("Home");
+
+    // } 
+    
+    
   };
 
   useEffect(() => {
@@ -530,10 +560,12 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       });
     }
     if (selectedIds.length > 0) {
-      getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-    } else {
-      showToast("Please select any value");
-    }
+      // getDashboadTableDataFromServer(selectedIds, "EMPLOYEE",false);
+      getDashboadTableDataFromServerForEmp(selectedIds, "EMPLOYEE", false)
+    } 
+    // else {
+    //   showToast("Please select any value");
+    // }
   };
 
   const updateSelectedDate = (date, key) => {
@@ -767,7 +799,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                           }}
                         />
                       </View>
-                      <View style={styles.submitBtnBckVw}>
+                      {!isEmployeeLoading ? (<View style={styles.submitBtnBckVw}>
                         <Button
                           labelStyle={{
                             color: Colors.RED,
@@ -791,7 +823,10 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                         >
                           Submit
                         </Button>
-                      </View>
+                      </View>) : (
+                        <AcitivityLoader />
+                      ) }
+                    
                     </View>
                   )}
                 </View>

@@ -88,6 +88,7 @@ const salesMenu = [
 ];
 const receptionTelCallerMenu = [
   ...commonMenu,
+  "Live Leads",
   "Digital Payment",
   "Geolocation",
 ];

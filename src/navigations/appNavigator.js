@@ -899,16 +899,22 @@ const TabNavigator = ({ navigation, route }) => {
         name={TabStackIdentifiers.ems}
         component={EmsStackNavigator}
         options={{ title: "EMS" }}
-        // listeners={{
-        //   tabPress: e => navigation.setParams(
-        //     {
-        //       screenName: "",
-        //       params:"" ,
-        //       moduleType: "",
-        //       employeeDetail: "",
-        //       selectedEmpId: ""
-        //   }),
-        // }} 
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            navigation.setParams(
+              {
+                screenName: "DEFAULT",
+                params: "",
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: "",
+                startDate: "",
+                endDate: "",
+                dealerCodes: "",
+                fromScreen: "DEFAULT"
+              })
+          },
+        })}
         // listeners={({ navigation, route }) => ({
         //     tabPress: e => {
         //         if (route.state && route.state.routeNames.length > 0) {

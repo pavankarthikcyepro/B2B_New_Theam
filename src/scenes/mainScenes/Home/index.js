@@ -1071,7 +1071,10 @@ const HomeScreen = ({ route, navigation }) => {
           params: params,
           moduleType: "",
           employeeDetail: "",
-          selectedEmpId: selectedEmpId
+          selectedEmpId: selectedEmpId,
+          startDate: selector.receptionistFilterIds.startDate,
+          endDate: selector.receptionistFilterIds.endDate,
+          dealerCodes: selector.receptionistFilterIds.dealerCodes
         });
       }, 1000);
     }

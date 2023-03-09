@@ -26,6 +26,7 @@ import { AppNavigator } from "../../../navigations";
 import * as AsyncStore from "../../../asyncStore";
 import {
   getEnquiryList,
+  getLeadsListReceptionist,
   getMoreEnquiryList,
 } from "../../../redux/enquiryReducer";
 import moment from "moment";
@@ -233,6 +234,7 @@ const LeadsScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
+   
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
@@ -266,8 +268,10 @@ const LeadsScreen = ({ route, navigation }) => {
         route.params.fromScreen === "bookingApproval")
     ) {
       setLoader(true);
+    
       onRefresh();
     } else if (isFocused) {
+   
       Promise.all([dispatch(getMenu()), dispatch(getStatus())])
         .then(async ([res, res2]) => {
           setLoader(true);
@@ -293,8 +297,14 @@ const LeadsScreen = ({ route, navigation }) => {
           const newArr = path.map((v) => ({ ...v, checked: false }));
           setTempStore(newArr);
           if (route.params) {
-            managerFilter(newArr);
+           
+            // managerFilter(newArr);
+            if (route?.params?.screenName === "DEFAULT") {
+              defualtCall(newArr, leadStage, leadStatus);
+            }
+            
           } else {
+            
             defualtCall(newArr, leadStage, leadStatus);
           }
         })
@@ -329,8 +339,15 @@ const LeadsScreen = ({ route, navigation }) => {
           const newArr = path.map((v) => ({ ...v, checked: false }));
           setTempStore(newArr);
           if (route.params) {
-            managerFilter(newArr);
+            
+            // managerFilter(newArr);
+            
+            if (route?.params?.screenName === "DEFAULT"){
+              setLeadsFilterData(newArr);
+              defualtCall(newArr, leadStage, leadStatus);
+            }
           } else {
+          
             setLeadsFilterData(newArr);
             defualtCall(newArr, leadStage, leadStatus);
           }
@@ -341,13 +358,40 @@ const LeadsScreen = ({ route, navigation }) => {
           setSubMenu([]);
         });
     }
-
-    // if(route?.params?.fromScreen ==="Home"){
-    //     //  todo call new api here 
-
-    // }
+    
+    if (route?.params?.screenName === "Home" || route?.params?.screenName === "TARGETSCREEN1"){
+        //  todo call new api here 
+      
+      // setSearchedData([])
+      let payloadReceptionist = {
+        "loginEmpId": userData.empId,
+        "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+        "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+        "orgId": userData.orgId,
+        "branchCodes": route.params.dealerCodes,
+        "stageName": route?.params?.params,
+        "selectedEmpId": route?.params?.selectedEmpId,
+        "limit": 1000,
+        "offset": 0
+      }
+      
+      dispatch(getLeadsListReceptionist(payloadReceptionist))
+     
+    }
+   
 
   }, [route.params]);
+
+  // useEffect(() => {
+  //   navigation.addListener("focus", () => {
+  //     if (route?.params?.screenName === "" || route?.params?.fromScreen === "") {
+  //       defualtCall(tempStore, defualtLeadStage, defualtLeadStatus);
+  //     }
+
+  //   });
+
+  // }, [navigation, defualtLeadStage]);
+  
 
   const defualtCall = async (tempStores, leadStage, leadStatus) => {
     setLeadsFilterData(newArr);

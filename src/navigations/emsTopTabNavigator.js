@@ -108,13 +108,33 @@ const EMSTopTabNavigatorTwo = () => {
             <Badge title={"LEADS"} focused={focused} countList={leadList_totoalElemntData} />
           ),
         }}
-        // initialParams={{
-        //   screenName : "",
-        //   moduleType: "",
-        //   employeeDetail: "",
-        //   selectedEmpId: "",
-        //   params:""
-        // }}
+        initialParams={{
+          screenName: "DEFAULT",
+          params: "",
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: "",
+          startDate: "",
+          endDate: "",
+          dealerCodes: "",
+          fromScreen:"DEFAULT"
+        }}
+        // listeners={({ navigation, route }) => ({
+        //     tabPress: e => {
+        //     navigation.setParams(
+        //       {
+        //         screenName: "DEFAULT",
+        //         params: "",
+        //         moduleType: "",
+        //         employeeDetail: "",
+        //         selectedEmpId: "",
+        //         startDate: "",
+        //         endDate: "",
+        //         dealerCodes: "",
+        //         fromScreen: "DEFAULT"
+        //       })
+        //     },
+        // })}
       />
       {/*<EMSTopTab.Screen*/}
       {/*  name={EmsTopTabNavigatorIdentifiers.enquiry}*/}

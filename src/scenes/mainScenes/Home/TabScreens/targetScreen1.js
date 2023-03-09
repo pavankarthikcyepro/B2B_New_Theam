@@ -885,13 +885,18 @@ const TargetScreen = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params) {
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
+        screenName: "TARGETSCREEN1",
+        params: params,
+        moduleType: "",
+        employeeDetail: "",
+        selectedEmpId: selectedEmpId,
+        startDate: selector.receptionistFilterIds.startDate,
+        endDate: selector.receptionistFilterIds.endDate,
+        dealerCodes: selector.receptionistFilterIds.dealerCodes
       });
     }, 1000);
   }
@@ -931,10 +936,10 @@ const TargetScreen = ({ route }) => {
           <TouchableOpacity onPress={() => {
             
             {
-              item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS() :
-                item.id === 1 ? navigateToDropLostCancel() :
-                  item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS() :
-                    item.id === 3 ? navigateToDropLostCancel() : null
+              item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId]) :
+                item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId]) :
+                  item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]) :
+                    item.id === 3 ? navigateToDropLostCancel([userData.empId]) : null
             }
           }}>
             {item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> : 
@@ -2903,7 +2908,7 @@ const TargetScreen = ({ route }) => {
                                             <Text
                                               onPress={() => {
                                                 item?.enquiryCount > 0 &&
-                                                  navigateToEMS();
+                                                  navigateToEMS("ENQUIRY", "", [item.emp_id]);
                                               }}
                                               style={{
                                                 padding: 2,
@@ -2930,7 +2935,7 @@ const TargetScreen = ({ route }) => {
                                             <Text
                                               onPress={() => {
                                                 item?.bookingCount > 0 &&
-                                                  navigateToEMS();
+                                                  navigateToEMS("BOOKING", "", [item.emp_id]);
                                               }}
                                               style={{
                                                 padding: 2,
@@ -2957,7 +2962,7 @@ const TargetScreen = ({ route }) => {
                                             <Text
                                               onPress={() => {
                                                 item?.retailCount > 0 &&
-                                                  navigateToEMS();
+                                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id]);
                                               }}
                                               style={{
                                                 padding: 2,
@@ -3024,8 +3029,16 @@ const TargetScreen = ({ route }) => {
                                     <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                          selector.receptionistData.enquirysCount >
-                                            0 && navigateToEMS();
+                                          if (selector.receptionistData.enquirysCount >0){
+                                            let empIdArry = [];
+                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                              empIdArry.push(item.emp_id);
+
+                                            })
+                                            navigateToEMS("ENQUIRY", "", empIdArry);
+                                          }
+                                            
+                                            
                                         }}
                                         style={{
                                           padding: 2,
@@ -3042,8 +3055,14 @@ const TargetScreen = ({ route }) => {
                                     <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                          navigateToEMS()
-                                          // navigateToDropLostCancel();
+                                          if (selector.receptionistData.bookingsCount > 0) {
+                                            let empIdArry = [];
+                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                              empIdArry.push(item.emp_id);
+
+                                            })
+                                            navigateToEMS("BOOKING", "", empIdArry);
+                                          }
                                         }}
                                         style={{
                                           padding: 2,
@@ -3060,8 +3079,14 @@ const TargetScreen = ({ route }) => {
                                     <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                          selector.receptionistData.RetailCount > 0 &&
-                                            navigateToEMS();
+                                          if (selector.receptionistData.RetailCount > 0) {
+                                            let empIdArry = [];
+                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                              empIdArry.push(item.emp_id);
+
+                                            })
+                                            navigateToEMS("INVOICECOMPLETED", "", empIdArry);
+                                          }
                                         }}
                                         style={{
                                           padding: 2,
@@ -3077,14 +3102,13 @@ const TargetScreen = ({ route }) => {
                                     <View style={styles.view20}>
                                       <Text
                                         onPress={() => {
-                                         
-                                          let empIdArry = [];
-                                        const temp =   selector.receptionistData.consultantList.map((item)=>{
-                                            empIdArry.push(item.emp_id);
-                                          
-                                        })
-                                         
-                                          navigateToDropLostCancel([...empIdArry]);
+                                          if (selector.receptionistData.totalLostCount > 0) {
+                                            let empIdArry = [];
+                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                              empIdArry.push(item.emp_id);
+                                            })
+                                            navigateToDropLostCancel([...empIdArry]);
+                                          }
                                         }}
                                         style={{
                                           padding: 2,

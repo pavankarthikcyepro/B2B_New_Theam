@@ -320,20 +320,22 @@ const LiveLeadsScreen = ({ route, navigation }) => {
           })
         ),
       ]).then(() => {});
-      if (
-        jsonObj?.hrmsRole === "Admin" ||
-        jsonObj?.hrmsRole === "Admin Prod" ||
-        jsonObj?.hrmsRole === "App Admin" ||
-        jsonObj?.hrmsRole === "Manager" ||
-        jsonObj?.hrmsRole === "TL" ||
-        jsonObj?.hrmsRole === "General Manager" ||
-        jsonObj?.hrmsRole === "branch manager" ||
-        jsonObj?.hrmsRole === "Testdrive_Manager" ||
-        jsonObj?.hrmsRole === "MD" ||
-        jsonObj?.hrmsRole === "Business Head" ||
-        jsonObj?.hrmsRole === "Sales Manager" ||
-        jsonObj?.hrmsRole === "Sales Head"
-      ) {
+      // if (
+      //   jsonObj?.hrmsRole === "Admin" ||
+      //   jsonObj?.hrmsRole === "Admin Prod" ||
+      //   jsonObj?.hrmsRole === "App Admin" ||
+      //   jsonObj?.hrmsRole === "Manager" ||
+      //   jsonObj?.hrmsRole === "TL" ||
+      //   jsonObj?.hrmsRole === "General Manager" ||
+      //   jsonObj?.hrmsRole === "branch manager" ||
+      //   jsonObj?.hrmsRole === "Testdrive_Manager" ||
+      //   jsonObj?.hrmsRole === "MD" ||
+      //   jsonObj?.hrmsRole === "Business Head" ||
+      //   jsonObj?.hrmsRole === "Sales Manager" ||
+      //   jsonObj?.hrmsRole === "Sales Head"
+      // )
+      if (jsonObj?.isTeam.toLowerCase().includes("y"))
+       {
         dispatch(updateIsTeamPresent(true));
         setIsTeamPresent(true);
         if (jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "App Admin") {

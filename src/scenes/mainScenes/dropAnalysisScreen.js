@@ -146,7 +146,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
         const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         let payload;
-        console.log("manthan--ff ",from);
+        
         if (from ==="targetScreen1"){
              payload = {
                 "loginEmpId": jsonObj.empId,
@@ -365,14 +365,14 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             //     setLeadsSubMenuFilterDropDownText("All");
             //     getDropAnalysisWithFilterFromServer()
             // }
-            // console.log("manthan--ff 11 ", route);
+          
             // if (route?.params?.fromScreen == "targetScreen1" || route?.params?.fromScreen !== "Home" && route?.params?.emp_id) {
-            //     console.log("manthan--ff 22 ", route?.params?.emp_id);
+          
             //     getDropAnalysisFromRedirections(route?.params?.emp_id)
             // }
 
             // if (route?.params?.fromScreen === "") {
-            //     console.log("manthan--ff 33 ", route.params);
+           
             //     getDropAnalysisWithFilterFromServer()
             //     setLeadsFilterDropDownText("All")
             //     setLeadsSubMenuFilterDropDownText("All");
