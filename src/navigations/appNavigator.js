@@ -1078,7 +1078,7 @@ const DropAnalysisStack = createStackNavigator();
 
 const DropAnalysisStackNavigator = ({ navigation }) => {
   return (
-    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle}>
+    <DropAnalysisStack.Navigator  screenOptions={screeOptionStyle}>
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
