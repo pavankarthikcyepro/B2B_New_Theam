@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AppNavigator } from "../../../../../navigations";
-import {IconButton, ProgressBar} from "react-native-paper";
-import {Colors} from "../../../../../styles";
+import { IconButton, ProgressBar } from "react-native-paper";
+import { Colors } from "../../../../../styles";
 import moment from "moment/moment";
 import TextTicker from "react-native-text-ticker";
 import { achievementPercentage } from "../../../../../utils/helperFunctions";
+import { useSelector } from "react-redux";
 
 export const RenderSelfInsights = (args) => {
+  const selector = useSelector((state) => state.homeReducer);
+
   const color = [
     "#9f31bf",
     "#00b1ff",
@@ -118,16 +121,20 @@ export const RenderSelfInsights = (args) => {
             {/* Progress bar Left */}
             <View
               style={{
-                flex: 1,
-                height: 20,
-                width: "20%",
+                position: "absolute",
+                top: 1,
+                left: 40,
                 marginTop: 10,
-                paddingLeft: 5,
-                position: "relative",
-                borderTopLeftRadius: 3,
-                justifyContent: "center",
-                borderBottomLeftRadius: 3,
-                backgroundColor: color[index % color.length],
+                zIndex: 1000,
+                // flex: 1,
+                // height: 20,
+                // width: "20%",
+                // paddingLeft: 5,
+                // position: "relative",
+                // borderTopLeftRadius: 3,
+                // justifyContent: "center",
+                // borderBottomLeftRadius: 3,
+                // backgroundColor: color[index % color.length],
               }}
             >
               <TextTicker
@@ -143,10 +150,23 @@ export const RenderSelfInsights = (args) => {
               >
                 <Text
                   style={{
-                    color: "#fff",
+                    // color: "#fff",
                     textDecorationLine: navigableParams.includes(item.paramName)
                       ? "underline"
                       : "none",
+                    color:
+                      item.paramName == "DROPPED"
+                        ? Colors.WHITE
+                        : selector.isDSE
+                        ? Colors.WHITE
+                        : parseInt(
+                            item.achivementPerc.substring(
+                              0,
+                              item.achivementPerc.indexOf("%")
+                            )
+                          ) >= 50
+                        ? Colors.WHITE
+                        : Colors.BLACK,
                   }}
                 >
                   {type === 0
@@ -166,37 +186,52 @@ export const RenderSelfInsights = (args) => {
             {/* Progress bar right */}
             <View
               style={{
-                width: "35%",
+                width: "80%",
                 marginTop: 10,
                 position: "relative",
               }}
             >
-              <ProgressBar
-                progress={
-                  item.achivementPerc.includes("%")
-                    ? parseInt(
-                        item.achivementPerc.substring(
-                          0,
-                          item.achivementPerc.indexOf("%")
-                        )
-                      ) === 0
-                      ? 0
-                      : parseInt(
+              {item.paramName == "DROPPED" ? (
+                <ProgressBar
+                  progress={1}
+                  color={color[index % color.length]}
+                  style={{
+                    height: 20,
+                    borderTopRightRadius: 3,
+                    borderBottomRightRadius: 3,
+                    backgroundColor: "#eeeeee",
+                  }}
+                />
+              ) : (
+                <ProgressBar
+                  progress={
+                    selector.isDSE
+                      ? 0.5
+                      : item.achivementPerc.includes("%")
+                      ? parseInt(
                           item.achivementPerc.substring(
                             0,
                             item.achivementPerc.indexOf("%")
                           )
-                        ) / 100
-                    : parseFloat(item.achivementPerc) / 100
-                }
-                color={color[index % color.length]}
-                style={{
-                  height: 20,
-                  borderTopRightRadius: 3,
-                  borderBottomRightRadius: 3,
-                  backgroundColor: "#eeeeee",
-                }}
-              />
+                        ) === 0
+                        ? 0
+                        : parseInt(
+                            item.achivementPerc.substring(
+                              0,
+                              item.achivementPerc.indexOf("%")
+                            )
+                          ) / 100
+                      : parseFloat(item.achivementPerc) / 100
+                  }
+                  color={color[index % color.length]}
+                  style={{
+                    height: 20,
+                    borderTopRightRadius: 3,
+                    borderBottomRightRadius: 3,
+                    backgroundColor: "#eeeeee",
+                  }}
+                />
+              )}
               {item.paramName !== "DROPPED" && (
                 <View style={{ position: "absolute", top: 1, right: 5 }}>
                   <TextTicker
