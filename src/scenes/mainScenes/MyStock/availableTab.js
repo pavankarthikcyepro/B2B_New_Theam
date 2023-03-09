@@ -110,6 +110,16 @@ const AvailableScreen = ({ route, navigation }) => {
     );
   };
 
+  const NoData = () => {
+    return (
+      <>
+        <View style={styles.noDataView}>
+          <Text style={styles.titleText}>{"No Data Found"}</Text>
+        </View>
+      </>
+    );
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -154,21 +164,8 @@ const AvailableScreen = ({ route, navigation }) => {
                 return renderData(item);
               })}
 
-          {inventory?.modelWise_available_stock == 0 &&
-            inventory?.modelWise_intransit_stock == 0 && (
-              <>
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flex: 1,
-                    marginTop: 150,
-                  }}
-                >
-                  <Text style={styles.titleText}>{"No Data Found"}</Text>
-                </View>
-              </>
-            )}
+          {available && inventory?.modelWise_available_stock == 0 && <NoData />}
+          {!available && inventory?.modelWise_intransit_stock == 0 && <NoData />}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -252,5 +249,11 @@ const styles = StyleSheet.create({
     width: "60%",
     flexDirection: "row",
     justifyContent: "space-around",
+  },
+  noDataView: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    marginTop: 150,
   },
 });
