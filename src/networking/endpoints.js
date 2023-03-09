@@ -770,9 +770,11 @@ const URL = {
       `/${empId}/${orgId}/${start}/${end}`
     );
   },
-  GET_HOLIDAYS: (orgId) => {
+  GET_HOLIDAYS: (orgId, start, end) => {
     return (
-      sales_url + "/employeeHolidayList/getAllHolidayDetails/" + `${orgId}`
+      sales_url +
+      "/employeeHolidayList/getAllHolidayDetails/" +
+      `${orgId}/${start}/${end}`
     );
   },
   NOTIFICATION_LIST: (empId) => {

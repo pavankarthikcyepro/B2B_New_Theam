@@ -107,6 +107,8 @@ const officeLocation = {
   longitude: -122.0312186,
 };
 const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().format(dateFormat);
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -216,6 +218,13 @@ const HomeScreen = ({ route, navigation }) => {
             )
           );
           const json = await response.json();
+          const response1 = await client.get(
+            URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
+          );
+          const json1 = await response1.json();
+          if (json1?.length>0) {
+            return
+          }
           if (json.length != 0) {
             let date = new Date(json[json.length - 1].createdtimestamp);
             // let dist = getDistanceBetweenTwoPoints(
@@ -969,7 +978,7 @@ const HomeScreen = ({ route, navigation }) => {
           }
         })
         .catch((e) => {
-          console.log("FFFf", e);
+          console.log("Error", e);
           setLoading(false);
         });
     }
