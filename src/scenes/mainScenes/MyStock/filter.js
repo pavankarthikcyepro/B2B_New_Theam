@@ -42,6 +42,7 @@ import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { updateSelectedDealerCode } from "../../../redux/myStockReducer";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -64,6 +65,7 @@ const AcitivityLoader = () => {
 
 const MyStockFilter = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
+  const stockSelector = useSelector((state) => state.myStockReducer);
   const dispatch = useDispatch();
 
   const [totalDataObj, setTotalDataObj] = useState([]);
@@ -131,6 +133,25 @@ const MyStockFilter = ({ route, navigation }) => {
     setFromDate(monthFirstDate);
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
+
+  useEffect(() => {
+    if (!_.isEmpty(totalDataObj) && nameKeyList.length > 0) {
+      // Added();
+      addTodo();
+    }
+  }, [nameKeyList]);
+
+  const addTodo = useCallback(() => {
+    Added();
+  }, [nameKeyList]);
+
+  function Added() {
+    if (!_.isEmpty(totalDataObj) && nameKeyList) {
+      if (!_.isEmpty(stockSelector.dealerCode)) {
+        updateSelectedItems(stockSelector.dealerCode, 4);
+      }
+    }
+  }
 
   //   useEffect(() => {
   //     if (nameKeyList.length > 0) {
@@ -350,6 +371,7 @@ const MyStockFilter = ({ route, navigation }) => {
       }
     }
     setTotalDataObj({ ...totalDataObjLocal });
+    dispatch(updateSelectedDealerCode({}));
   };
 
   const submitBtnClicked = (initialData) => {

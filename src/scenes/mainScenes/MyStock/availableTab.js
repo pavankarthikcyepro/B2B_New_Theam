@@ -69,7 +69,7 @@ const AvailableScreen = ({ route, navigation }) => {
         const response = await client.get(
           URL.GET_INVENTORY_BY_VEHICLE(
             jsonObj.orgId,
-            item.name ? item.name : "Gachibowli"
+            item.name ? item.name : branchName // "Gachibowli"
           )
         );
         const json = await response.json();
@@ -93,7 +93,7 @@ const AvailableScreen = ({ route, navigation }) => {
           <Text
             onPress={() => {
               navigation.navigate(MyStockTopTabNavigatorIdentifiers.variant, {
-                headerTitle: item.title,
+                headerTitle: item.model,
               });
             }}
             style={styles.locationTxt}
@@ -153,6 +153,22 @@ const AvailableScreen = ({ route, navigation }) => {
             : inventory?.modelWise_intransit_stock.map((item) => {
                 return renderData(item);
               })}
+
+          {inventory?.modelWise_available_stock == 0 &&
+            inventory?.modelWise_intransit_stock == 0 && (
+              <>
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flex: 1,
+                    marginTop: 150,
+                  }}
+                >
+                  <Text style={styles.titleText}>{"No Data Found"}</Text>
+                </View>
+              </>
+            )}
         </View>
       </ScrollView>
     </SafeAreaView>
