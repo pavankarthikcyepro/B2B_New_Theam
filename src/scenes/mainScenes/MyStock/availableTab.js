@@ -32,26 +32,59 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
   .format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 
+const sample = {
+  available_stock: [],
+  intransit_stock: [],
+  modelWise_available_stock: [],
+  modelWise_intransit_stock: [],
+};
+
 const AvailableScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.homeReducer);
+  const selector = useSelector((state) => state.myStockReducer);
   const [available, setAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const [inventory, setInventory] = useState(sample);
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       dispatch(updateCurrentScreen("AVAILABLE"));
     });
   }, [navigation]);
 
-  const data = [
-    { title: "Creta", value: "15" },
-    { title: "Venue", value: "20" },
-    { title: "Aura", value: "15" },
-    { title: "i20", value: "20" },
-    { title: "Grand i10 Nios", value: "15" },
-    { title: "Kona", value: "20" },
-  ];
+  useEffect(() => {
+    getInventory(selector.dealerCode);
+  }, [selector.dealerCode]);
+
+  const getInventory = async (item) => {
+    try {
+      setLoading(true);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let branchName = jsonObj.branchs.filter(
+          (i) => i.branchId === jsonObj.branchId
+        )[0].branchName;
+        const response = await client.get(
+          URL.GET_INVENTORY_BY_VEHICLE(
+            jsonObj.orgId,
+            item.name ? item.name : "Gachibowli"
+          )
+        );
+        const json = await response.json();
+        if (json) {
+          setInventory(json);
+        } else {
+          setInventory(sample);
+        }
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      setInventory(sample);
+    }
+  };
 
   const renderData = (item) => {
     return (
@@ -65,13 +98,13 @@ const AvailableScreen = ({ route, navigation }) => {
             }}
             style={styles.locationTxt}
           >
-            {item.title}
+            {item?.model}
           </Text>
         </View>
         <View style={styles.parameterTitleView}>
-          <Text style={styles.valueTxt}>{item.value}</Text>
-          <Text style={styles.valueTxt}>{item.value}</Text>
-          <Text style={styles.valueTxt}>{item.value}</Text>
+          <Text style={styles.valueTxt}>{item.petrolCount || 0}</Text>
+          <Text style={styles.valueTxt}>{item.dieselCount || 0}</Text>
+          <Text style={styles.valueTxt}>{item.electricCount || 0}</Text>
         </View>
       </View>
     );
@@ -113,9 +146,13 @@ const AvailableScreen = ({ route, navigation }) => {
               <Text style={styles.titleText}>{"Electric"}</Text>
             </View>
           </View>
-          {data.map((item) => {
-            return renderData(item);
-          })}
+          {available
+            ? inventory?.modelWise_available_stock.map((item) => {
+                return renderData(item);
+              })
+            : inventory?.modelWise_intransit_stock.map((item) => {
+                return renderData(item);
+              })}
         </View>
       </ScrollView>
     </SafeAreaView>

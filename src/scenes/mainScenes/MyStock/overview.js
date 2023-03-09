@@ -41,18 +41,19 @@ let tableData = [
   { title: ">15", value: 0 },
   { title: "<15", value: 0 },
 ];
+let sample = {
+  locationWise_available_count: [],
+  intransit_stock: [],
+  locationWise_intrsnsit_count: [],
+  available_stock: [],
+};
 
 const OverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
   const [available, setAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [inventory, setInventory] = useState({
-    locationWise_available_count: [],
-    intransit_stock: [],
-    locationWise_intrsnsit_count: [],
-    available_stock: [],
-  });
+  const [inventory, setInventory] = useState(sample);
   const [availableAgingData, setAvailableAgingData] = useState([]);
   const [inTransitAgingData, setInTransitAgingData] = useState([]);
 
@@ -88,20 +89,20 @@ const OverviewScreen = ({ route, navigation }) => {
             let path = json.intransit_stock;
             setInTransitAgingData(FormatAging(path));
           } else {
-            setAvailableAgingData(tableData);
+            setInTransitAgingData(tableData);
           }
         } else {
           setInventory({});
           setAvailableAgingData(tableData);
-          setAvailableAgingData(tableData);
+          setInTransitAgingData(tableData);
         }
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-      setInventory({});
+      setInventory(sample);
       setAvailableAgingData(tableData);
-      setAvailableAgingData(tableData);
+      setInTransitAgingData(tableData);
     }
   };
 
@@ -228,16 +229,16 @@ const OverviewScreen = ({ route, navigation }) => {
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
           {available
-            ? inventory.locationWise_available_count.map((item) => {
+            ? inventory?.locationWise_available_count?.map((item) => {
                 return renderData(item);
               })
-            : inventory.locationWise_intrsnsit_count.map((item) => {
+            : inventory?.locationWise_intrsnsit_count?.map((item) => {
                 return renderData(item);
               })}
           <View style={{ marginTop: 10 }}>
             {available
-              ? renderTotalData(inventory.locationWise_available_count)
-              : renderTotalData(inventory.locationWise_intrsnsit_count)}
+              ? renderTotalData(inventory?.locationWise_available_count)
+              : renderTotalData(inventory?.locationWise_intrsnsit_count)}
           </View>
         </View>
         <View style={styles.mainView}>

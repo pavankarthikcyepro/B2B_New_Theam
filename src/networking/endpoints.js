@@ -849,6 +849,12 @@ const URL = {
       `dfdr/vehicle-inventory/get-locationBasedVehicles/${orgId}/${location}`
     );
   },
+  GET_INVENTORY_BY_VEHICLE: (orgId, branchId) => {
+    return (
+      baseUrl +
+      `dfdr/vehicle-inventory/get-branchBasedVehicles/${orgId}/${branchId}`
+    );
+  },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
   },

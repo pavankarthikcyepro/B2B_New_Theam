@@ -40,6 +40,8 @@ import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
+import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
+import { updateSelectedDealerCode } from "../../../redux/myStockReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -366,17 +368,17 @@ const MyStockFilter = ({ route, navigation }) => {
         });
       }
     }
+    let selectedDealerCode = totalDataObj["Dealer Code"].sublevels.filter(
+      (i) => i.selected == true
+    )[0];
+    if (!selectedDealerCode) {
+      showToast("Please select any Dealer Code");
+      return;
+    }
     if (selectedIds.length > 0) {
       setIsLoading(true);
-      dispatch(updateTheTeamAttendanceFilter(selectedIds));
-      dispatch(
-        updateTheTeamAttendanceFilterDate({
-          startDate: fromDate,
-          endDate: toDate,
-        })
-      );
-
-      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
+      dispatch(updateSelectedDealerCode(selectedDealerCode));
+      navigation.navigate(MyStockTopTabNavigatorIdentifiers.available);
       //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");
