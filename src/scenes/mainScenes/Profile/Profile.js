@@ -5,6 +5,7 @@ import { Button, ToggleButton } from "react-native-paper";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { RadioTextItem, RadioTextItemFromLeft } from "../../../pureComponents";
 import { Colors } from "../../../styles";
+import ProfileInfo from "./Components/ProfileInfo";
 
 const ProfileScreen = () => {
   const [value, setValue] = React.useState("left");
@@ -89,42 +90,7 @@ const ProfileScreen = () => {
           }}
         />
       </View>
-      <View style={styles.ProfileContainer}>
-        <View style={{ flexDirection: "column" }}>
-          {profileInfo.map((i, index) => (
-            <View style={{ marginVertical: 10 }}>
-              <Text
-                numberOfLines={2}
-                style={{ ...styles.labelTxt, fontSize: index === 0 ? 20 : 15 }}
-              >
-                {i.label}
-              </Text>
-              <Text
-                numberOfLines={2}
-                style={{ ...styles.valueTxt, fontSize: index === 0 ? 22 : 17 }}
-              >
-                {i.value}
-              </Text>
-            </View>
-          ))}
-        </View>
-        <View style={styles.ProfileColumn}>
-          <Image
-            source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-            }}
-            style={styles.ProfileImage}
-            resizeMode={"contain"}
-          />
-        </View>
-      </View>
-      <Button
-        mode="contained"
-        style={{ width: "85%", alignSelf: "center", marginTop: 15 }}
-        color={Colors.RED}
-      >
-        {"Edit Profile"}
-      </Button>
+      <ProfileInfo profileInfo={profileInfo} />
     </ScrollView>
   );
 };

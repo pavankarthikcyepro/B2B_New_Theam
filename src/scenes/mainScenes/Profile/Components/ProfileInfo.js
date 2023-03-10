@@ -2,21 +2,9 @@ import React from "react";
 import { Image, ScrollView, StyleSheet } from "react-native";
 import { Text, View } from "react-native";
 import { Button, ToggleButton } from "react-native-paper";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { RadioTextItem, RadioTextItemFromLeft } from "../../../pureComponents";
-import { Colors } from "../../../styles";
+import { Colors } from "../../../../styles";
 
-const ProfileInfo = () => {
-  const profileInfo = [
-    { label: "Name", value: "Navee Reddy" },
-    { label: "Mobile Number", value: "+91 9865674354" },
-    { label: "Alternate Mobile Number", value: "N/A" },
-    { label: "Email", value: "N/A" },
-    { label: "Age", value: "32" },
-    { label: "DOB", value: "18-Nov-1989" },
-    { label: "Anniversary Date", value: "N/A" },
-  ];
-
+const ProfileInfo = ({ profileInfo }) => {
   return (
     <>
       <View style={styles.ProfileContainer}>
@@ -59,7 +47,7 @@ const ProfileInfo = () => {
   );
 };
 
-export default ProfileScreen;
+export default ProfileInfo;
 
 const styles = StyleSheet.create({
   ToggleButton: {
