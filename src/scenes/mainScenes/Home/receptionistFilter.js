@@ -36,11 +36,61 @@ import { AppNavigator } from "../../../navigations";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { detectIsOrientationLock } from "../../../utils/helperFunctions";
 import { useIsFocused } from "@react-navigation/native";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
+let data = {
+  "SELECT DESIGNATION": [
+    {
+      "code": "942",
+      "name": "CRE",
+      "parentId": "1",
+      "order": 1,
+      "designation": "CRE"
+    },
+    {
+      "code": "942",
+      "name": "Receptionist",
+      "parentId": "2",
+      "order": 1,
+      "designation": "Receptionist"
+    },
+    {
+      "code": "942",
+      "name": "Tele caller",
+      "parentId": "3",
+      "order": 1,
+      "designation": "Tele caller"
+    }
+  ],
+  "SELECT EMPLOYEEE": [
+    {
+      "code": "945",
+      "name": "Akash Gupta B S",
+      "parentId": "1",
+      "order": 2,
+      "designation": "CRE"
+    },
+    {
+      "code": "946",
+      "name": "Gladstone Gideon",
+      "parentId": "2",
+      "order": 2,
+      "designation": "Receptionist"
+    },
+    {
+      "code": "947",
+      "name": "Siddharth Shetty",
+      "parentId": "3",
+      "order": 2,
+      "designation": "Tele caller"
+    }
+  ],
+
+}
 
 
 const AcitivityLoader = () => {
