@@ -30,7 +30,11 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
 const screenWidth = Dimensions.get("window").width;
 
 let format = {
-  branchWise_available_count: [],
+  branchWise_available_count: [
+    { name: "Hydrabad", price: 15000, count: 15 },
+    { name: "Hydrabad", price: 15000, count: 15 },
+    { name: "Hydrabad", price: 15000, count: 15 },
+  ],
   branchWise_intransit_count: [],
   intransit_stock: [],
   available_stock: [],
@@ -61,7 +65,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (route?.params?.headerTitle) {
-      getDetailInventory(route?.params?.headerTitle);
+      // getDetailInventory(route?.params?.headerTitle);
     }
     if (route?.params?.available) {
       setAvailable(true);
@@ -149,6 +153,9 @@ const OverviewDetailScreen = ({ route, navigation }) => {
         <View>
           <Text style={styles.locationTxt}>{item.name}</Text>
         </View>
+        <View>
+          <Text style={styles.valueTxt}>{item.price}</Text>
+        </View>
         <View style={styles.valueBox}>
           <Text style={styles.valueTxt}>{item.count}</Text>
         </View>
@@ -186,6 +193,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
         <View style={styles.mainView}>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{"Stock Yard"}</Text>
+            <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
           {available
@@ -196,7 +204,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
                 return renderData(item);
               })}
         </View>
-        <View style={styles.mainView}>
+        {/* <View style={styles.mainView}>
           <View style={styles.tableTitleView}>
             <View style={styles.tableTitle}>
               <Text style={styles.tableTitleTxt}>{"Aging"}</Text>
@@ -204,15 +212,15 @@ const OverviewDetailScreen = ({ route, navigation }) => {
             <View style={styles.tableTitle}>
               <Text style={styles.tableTitleTxt}>{"Stock"}</Text>
             </View>
-          </View>
-          {available
+          </View> */}
+        {/* {available
             ? availableAgingData.map((item, index) => {
                 return renderTableData(item, index);
               })
             : inTransitAgingData.map((item, index) => {
                 return renderTableData(item, index);
-              })}
-        </View>
+              })} */}
+        {/* </View> */}
       </ScrollView>
     </SafeAreaView>
   );

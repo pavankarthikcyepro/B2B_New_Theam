@@ -38,6 +38,20 @@ const sample = {
   modelWise_available_stock: [],
   modelWise_intransit_stock: [],
 };
+ const Total = [
+   {
+     model: "Total",
+     modelId: 0,
+     varient: null,
+     varientId: 0,
+     orgId: 25,
+     branchId: 0,
+     branchName: "Gachibowli",
+     petrolCount: 1,
+     dieselCount: 0,
+     electricCount: 0,
+   },
+ ];
 
 const AvailableScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -54,6 +68,7 @@ const AvailableScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
+ 
   useEffect(() => {
     getInventory(selector.dealerCode);
   }, [selector.dealerCode]);
@@ -95,27 +110,35 @@ const AvailableScreen = ({ route, navigation }) => {
     }
   };
 
-  const renderData = (item) => {
+  const renderData = (item, noBorder = false) => {
     return (
-      <View style={styles.boxView}>
-        <View style={{ width: "40%" }}>
+      <View style={{ ...styles.boxView, borderWidth: noBorder ? 0 : 1 }}>
+        <View style={{ width: "20%" }}>
           <Text
             onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.variant, {
-                headerTitle: item.model,
-                branchName: branchName,
-                orgId:orgID,
-                available: available
-              });
+              !noBorder && navigation.navigate(
+                MyStockTopTabNavigatorIdentifiers.variant,
+                {
+                  headerTitle: item.model,
+                  branchName: branchName,
+                  orgId: orgID,
+                  available: available,
+                }
+              );
             }}
-            style={styles.locationTxt}
+            style={{
+              ...styles.locationTxt,
+              textDecorationLine: noBorder ? "none" : "underline",
+            }}
           >
             {item?.model}
           </Text>
         </View>
         <View style={styles.parameterTitleView}>
+          <Text style={styles.valueTxt}>{150000}</Text>
           <Text style={styles.valueTxt}>{item.petrolCount || 0}</Text>
           <Text style={styles.valueTxt}>{item.dieselCount || 0}</Text>
+          <Text style={styles.valueTxt}>{item.electricCount || 0}</Text>
           <Text style={styles.valueTxt}>{item.electricCount || 0}</Text>
         </View>
       </View>
@@ -159,13 +182,17 @@ const AvailableScreen = ({ route, navigation }) => {
             />
           </View>
           <View style={styles.titleView}>
-            <View style={{ width: "40%" }}>
-              <Text style={styles.titleText}>{"Model"}</Text>
+            <View style={{ width: "20%" }}>
+              <Text style={{ ...styles.titleText, width: "100%" }}>
+                {"Model"}
+              </Text>
             </View>
             <View style={styles.parameterTitleView}>
+              <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
               <Text style={styles.titleText}>{"Petrol"}</Text>
               <Text style={styles.titleText}>{"Diesel"}</Text>
               <Text style={styles.titleText}>{"Electric"}</Text>
+              <Text style={styles.titleText}>{"Total"}</Text>
             </View>
           </View>
           {available
@@ -175,7 +202,10 @@ const AvailableScreen = ({ route, navigation }) => {
             : inventory?.modelWise_intransit_stock.map((item) => {
                 return renderData(item);
               })}
-
+          <View style={{ marginTop: 15 }} />
+          {Total.map((item) => {
+            return renderData(item, true);
+          })}
           {available && inventory?.modelWise_available_stock == 0 && <NoData />}
           {!available && inventory?.modelWise_intransit_stock == 0 && (
             <NoData />
@@ -206,14 +236,18 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   titleText: {
-    fontSize: 20,
+    fontSize: 14,
     color: Colors.RED,
     fontWeight: "600",
+    width: "20%",
+    textAlign: "center",
   },
   valueTxt: {
-    fontSize: 17,
+    fontSize: 13,
     color: Colors.BLACK,
     fontWeight: "600",
+    textAlign: "center",
+    width: "20%",
     // textDecorationLine: "underline",
   },
   valueBox: {
@@ -225,26 +259,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   locationTxt: {
-    fontSize: 17,
+    fontSize: 14,
     color: Colors.BLACK,
     fontWeight: "600",
     textDecorationLine: "underline",
+    width: "100%",
   },
   boxView: {
     borderWidth: 1,
     borderRadius: 10,
     paddingVertical: 15,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 5,
   },
   titleView: {
-    flex: 1,
+    // flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 10,
+    // justifyContent: "space-between",
+    // marginVertical: 10,
+    // marginHorizontal: 10,
   },
   tableTitle: {
     width: "49.5%",
@@ -260,7 +296,7 @@ const styles = StyleSheet.create({
   },
   tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
   parameterTitleView: {
-    width: "60%",
+    width: "80%",
     flexDirection: "row",
     justifyContent: "space-around",
   },

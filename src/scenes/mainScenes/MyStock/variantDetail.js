@@ -97,6 +97,21 @@ const sample = {
   intransit_stock: [],
   available_stock: [],
 };
+const Total = [
+  {
+    model: "Total",
+    modelId: 0,
+    varient: "Total",
+    varientId: 0,
+    orgId: 25,
+    branchId: 0,
+    branchName: "Gachibowli",
+    petrolCount: 1,
+    dieselCount: 0,
+    electricCount: 0,
+  },
+];
+
 const VariantDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
@@ -153,28 +168,37 @@ const VariantDetailScreen = ({ route, navigation }) => {
     }
   };
 
-  const renderData = (item, index) => {
+  const renderData = (item, index, noBorder = false) => {
     return (
       <>
-        <View style={styles.boxView}>
-          <View style={{ width: "40%" }}>
+        <View style={{ ...styles.boxView, borderWidth: noBorder ? 0 : 1 }}>
+          <View style={{ width: "20%" }}>
             <Text
               numberOfLines={1}
               onPress={() => {
                 let lastParameter = [...newData];
-                showVariant(item, index, lastParameter);
+                !noBorder && showVariant(item, index, lastParameter);
               }}
-              style={styles.locationTxt}
+              style={{
+                ...styles.locationTxt,
+                textDecorationLine: noBorder ? "none" : "underline",
+              }}
             >
               {item?.varient}
             </Text>
           </View>
           <View style={styles.parameterTitleView}>
             <Text numberOfLines={1} style={styles.valueTxt}>
+              {150000}
+            </Text>
+            <Text numberOfLines={1} style={styles.valueTxt}>
               {item.petrolCount || 0}
             </Text>
             <Text numberOfLines={1} style={styles.valueTxt}>
               {item.dieselCount || 0}
+            </Text>
+            <Text numberOfLines={1} style={styles.valueTxt}>
+              {item.electricCount || 0}
             </Text>
             <Text numberOfLines={1} style={styles.valueTxt}>
               {item.electricCount || 0}
@@ -220,13 +244,17 @@ const VariantDetailScreen = ({ route, navigation }) => {
         <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
-            <View style={{ width: "40%" }}>
-              <Text style={styles.titleText}>{"Variant"}</Text>
+            <View style={{ width: "20%" }}>
+              <Text style={{ ...styles.titleText, width: "100%" }}>
+                {"Variant"}
+              </Text>
             </View>
             <View style={styles.parameterTitleView}>
+              <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
               <Text style={styles.titleText}>{"Petrol"}</Text>
               <Text style={styles.titleText}>{"Diesel"}</Text>
               <Text style={styles.titleText}>{"Electric"}</Text>
+              <Text style={styles.titleText}>{"Total"}</Text>
             </View>
           </View>
           {available
@@ -236,6 +264,10 @@ const VariantDetailScreen = ({ route, navigation }) => {
             : models?.varientWise_intransit_stock.map((item, index) => {
                 return renderData(item, index);
               })}
+          <View style={{ marginTop: 15 }} />
+          {Total.map((item, index) => {
+            return renderData(item, index, true);
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -250,6 +282,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: Colors.LIGHT_GRAY,
   },
+  radioView: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignSelf: "flex-start",
+  },
   mainView: {
     flex: 1,
     width: "95%",
@@ -257,14 +294,18 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   titleText: {
-    fontSize: 20,
+    fontSize: 14,
     color: Colors.RED,
     fontWeight: "600",
+    width: "20%",
+    textAlign: "center",
   },
   valueTxt: {
-    fontSize: 17,
+    fontSize: 13,
     color: Colors.BLACK,
     fontWeight: "600",
+    textAlign: "center",
+    width: "20%",
     // textDecorationLine: "underline",
   },
   valueBox: {
@@ -276,40 +317,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   locationTxt: {
-    fontSize: 17,
+    fontSize: 14,
     color: Colors.BLACK,
     fontWeight: "600",
     textDecorationLine: "underline",
-  },
-  locationTxt1: {
-    fontSize: 17,
-    color: Colors.BLACK,
-    fontWeight: "600",
+    width: "100%",
   },
   boxView: {
-    // borderWidth: 1,
+    borderWidth: 1,
     borderRadius: 10,
     paddingVertical: 15,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 5,
   },
-  boxView1: {
-    // borderWidth: 1,
-    // borderRadius: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
   titleView: {
-    flex: 1,
+    // flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 10,
+    // justifyContent: "space-between",
+    // marginVertical: 10,
+    // marginHorizontal: 10,
   },
   tableTitle: {
     width: "49.5%",
@@ -325,7 +354,7 @@ const styles = StyleSheet.create({
   },
   tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
   parameterTitleView: {
-    width: "60%",
+    width: "80%",
     flexDirection: "row",
     justifyContent: "space-around",
   },

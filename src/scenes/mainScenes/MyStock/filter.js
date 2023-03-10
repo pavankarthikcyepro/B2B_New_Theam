@@ -626,7 +626,41 @@ const MyStockFilter = ({ route, navigation }) => {
           data={employeeTitleNameList.length > 0 ? [1, 2] : [1, 2]}
           keyExtractor={(item, index) => "MAIN" + index.toString()}
           renderItem={({ item, index }) => {
-            if (index === 1) {
+            if (index === 0) {
+              return (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    paddingBottom: 5,
+                    borderColor: Colors.BORDER_COLOR,
+                    borderWidth: 1,
+                  }}
+                >
+                  <View style={{ width: "48%" }}>
+                    <DateSelectItem
+                      label={"Aging From"}
+                      value={fromDate}
+                      onPress={() => {
+                        setIsFilter(true);
+                        showDatePickerMethod("FROM_DATE");
+                      }}
+                    />
+                  </View>
+
+                  <View style={{ width: "48%" }}>
+                    <DateSelectItem
+                      label={"Aging To"}
+                      value={toDate}
+                      onPress={() => {
+                        setIsFilter(true);
+                        showDatePickerMethod("TO_DATE");
+                      }}
+                    />
+                  </View>
+                </View>
+              );
+            } else if (index === 1) {
               return (
                 <View>
                   <View

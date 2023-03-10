@@ -42,7 +42,11 @@ let tableData = [
   { title: "<15", value: 0 },
 ];
 let sample = {
-  locationWise_available_count: [],
+  locationWise_available_count: [
+    { name: "Hydrabad", price: 15000, count: 15 },
+    { name: "Hydrabad", price: 15000, count: 15 },
+    { name: "Hydrabad", price: 15000, count: 15 },
+  ],
   intransit_stock: [],
   locationWise_intrsnsit_count: [],
   available_stock: [],
@@ -77,26 +81,27 @@ const OverviewScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         const response = await client.get(URL.GET_INVENTORY(jsonObj.orgId));
         const json = await response.json();
-        if (json) {
-          setInventory(json);
-          if (json.available_stock) {
-            let path = json.available_stock;
-            setAvailableAgingData(FormatAging(path));
-          } else {
-            setAvailableAgingData(tableData);
-          }
-          if (json.intransit_stock) {
-            let path = json.intransit_stock;
-            setInTransitAgingData(FormatAging(path));
-          } else {
-            setInTransitAgingData(tableData);
-          }
-        } else {
-          setInventory({});
-          setAvailableAgingData(tableData);
-          setInTransitAgingData(tableData);
-        }
+        // if (json) {
+        //   setInventory(json);
+        //   if (json.available_stock) {
+        //     let path = json.available_stock;
+        //     setAvailableAgingData(FormatAging(path));
+        //   } else {
+        //     setAvailableAgingData(tableData);
+        //   }
+        //   if (json.intransit_stock) {
+        //     let path = json.intransit_stock;
+        //     setInTransitAgingData(FormatAging(path));
+        //   } else {
+        //     setInTransitAgingData(tableData);
+        //   }
+        // } else {
+        //   setInventory({});
+        //   setAvailableAgingData(tableData);
+        //   setInTransitAgingData(tableData);
+        // }
         setLoading(false);
+        setInventory(sample);
       }
     } catch (error) {
       setLoading(false);
@@ -141,8 +146,21 @@ const OverviewScreen = ({ route, navigation }) => {
   const renderData = (item) => {
     return (
       <View style={styles.boxView}>
-        <View>
+        <View style={{ width: "40%" }}>
           <Text style={styles.locationTxt}>{item.name}</Text>
+        </View>
+        <View style={{ width: "30%" }}>
+          <Text
+            onPress={() => {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
+                headerTitle: item.name,
+                available: available,
+              });
+            }}
+            style={{ ...styles.valueTxt, textDecorationLine: "none" }}
+          >
+            {item.price}
+          </Text>
         </View>
         <View style={styles.valueBox}>
           <Text
@@ -186,10 +204,17 @@ const OverviewScreen = ({ route, navigation }) => {
 
   const renderTotalData = (item) => {
     const result = _.sumBy(item, "count");
+    const Total = _.sumBy(item, "price");
+
     return (
       <View style={styles.boxView}>
-        <View>
+        <View style={{ width: "40%" }}>
           <Text style={styles.locationTxt}>{"Total"}</Text>
+        </View>
+        <View style={{ width: "30%" }}>
+          <Text style={{ ...styles.valueTxt, textDecorationLine: "none" }}>
+            {Total || 0}
+          </Text>
         </View>
         <View style={styles.valueBox}>
           <Text style={styles.valueTxt}>{result || 0}</Text>
@@ -226,6 +251,7 @@ const OverviewScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{"Location"}</Text>
+            <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
           {available
@@ -242,21 +268,21 @@ const OverviewScreen = ({ route, navigation }) => {
           </View>
         </View>
         <View style={styles.mainView}>
-          <View style={styles.tableTitleView}>
+          {/* <View style={styles.tableTitleView}>
             <View style={styles.tableTitle}>
               <Text style={styles.tableTitleTxt}>{"Aging"}</Text>
             </View>
             <View style={styles.tableTitle}>
               <Text style={styles.tableTitleTxt}>{"Stock"}</Text>
             </View>
-          </View>
-          {available
+          </View> */}
+          {/* {available
             ? availableAgingData.map((item, index) => {
                 return renderTableData(item, index);
               })
             : inTransitAgingData.map((item, index) => {
                 return renderTableData(item, index);
-              })}
+              })} */}
         </View>
       </ScrollView>
     </SafeAreaView>
