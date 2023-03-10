@@ -106,7 +106,8 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const receptionistRole = ["Reception", "Tele Caller"];
+const creCrmRole = ["CRE", "CRM"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
@@ -1248,6 +1249,20 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
           )}
+          {creCrmRole.includes(userData.hrmsRole) ? (
+            <TouchableOpacity
+              style={styles.creSearchContainer}
+              onPress={() => navigation.navigate("SEARCH_CUSTOMER")}
+            >
+              <IconButton
+                icon={"magnify"}
+                size={30}
+                color={Colors.GRAY}
+                style={{ margin: 0, padding: 0 }}
+              />
+            </TouchableOpacity>
+          ) : null}
+
           {!receptionistRole.includes(userData.hrmsRole) ? (
             selector.isRankHide ? (
               <View style={styles.hideRankRow}>
@@ -1966,4 +1981,8 @@ const styles = StyleSheet.create({
     color: Colors.WHITE,
     fontWeight: "600",
   },
+
+  creSearchContainer: {
+    alignSelf: "flex-end"
+  }
 });
