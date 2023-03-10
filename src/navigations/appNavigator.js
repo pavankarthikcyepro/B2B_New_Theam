@@ -123,6 +123,7 @@ import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
+import { MyProfileTopTabNavigatorOne } from "./profileNavigator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -1384,7 +1385,6 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.dropAnalysis}
         component={DropAnalysisStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.upcomingDeliveries}
         component={UpcomingDeliveriestStackNavigator}
@@ -1397,12 +1397,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.taskManagement}
         component={TaskManagementStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.evtbrlReport}
         component={TabNavigator}
@@ -1423,6 +1421,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={"Target Settings"}
         component={TargetSettingsScreen}
+      />
+      <MainDrawerNavigator.Screen
+        name={"Profile"}
+        component={MyProfileTopTabNavigatorOne}
       />
     </MainDrawerNavigator.Navigator>
   );
