@@ -49,12 +49,7 @@ const SearchCustomer = ({ navigation, route }) => {
           <Text style={GlobalStyle.underline} />
           <TextinputComp style={styles.textInputComp} label={"Vin Number"} />
           <Text style={GlobalStyle.underline} />
-          <DropDownSelectionItem
-            label={"Customer Name"}
-            onPress={() =>
-              showDropDownModelMethod("CUSTOMER_NAME", "Select Customer Name")
-            }
-          />
+          <TextinputComp style={styles.textInputComp} label={"Customer Name"} />
           <Text style={GlobalStyle.underline} />
           <DropDownSelectionItem
             label={"Service Type"}
@@ -62,20 +57,9 @@ const SearchCustomer = ({ navigation, route }) => {
               showDropDownModelMethod("SERVICE_TYPE", "Select Service Type")
             }
           />
+          <TextinputComp style={styles.textInputComp} label={"Engine Number"} />
           <Text style={GlobalStyle.underline} />
-          <DropDownSelectionItem
-            label={"Engine Number"}
-            onPress={() =>
-              showDropDownModelMethod("ENGINE_NO", "Select Engine Number")
-            }
-          />
-          <Text style={GlobalStyle.underline} />
-          <DropDownSelectionItem
-            label={"Policy Number"}
-            onPress={() =>
-              showDropDownModelMethod("POLICY_NO", "Select Policy Number")
-            }
-          />
+          <TextinputComp style={styles.textInputComp} label={"Policy Number"} />
           <Text style={GlobalStyle.underline} />
         </View>
 
