@@ -56,7 +56,7 @@ const DashboardTopTabNavigatorNew = () => {
       <View>
       {receptionistRole.includes(userData.hrmsRole) ? 
 
-          <TargetScreenCRM />
+        <TargetScreen />
          : 
           <TargetScreen />}
         

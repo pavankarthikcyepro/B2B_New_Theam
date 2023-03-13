@@ -265,7 +265,6 @@ const HomeScreen = ({ route, navigation }) => {
       userData.hrmsRole === "Reception" ||
       userData.hrmsRole === "Tele Caller"
     ) {
-      console.log("manthan00ddd selector.receptionistFilterIds ", selector.receptionistFilterIds);
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,

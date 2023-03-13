@@ -61,6 +61,7 @@ import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
 import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
+import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData } from "../../redux/liveLeadsReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -354,7 +355,12 @@ const SideMenuScreen = ({ navigation }) => {
         
         break;
       case 114:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads);
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads,{
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        });
         break;
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
@@ -413,6 +419,9 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(clearLeadDropState());
     dispatch(saveFilterPayload({}));
     dispatch(updateFilterSelectedData({}));
+    dispatch(updateFilterSelectedDataV2({}));
+    dispatch(updateFilterLevelSelectedData({}));
+    dispatch(updateLiveLeadObjectData({}));
     dispatch(updateDealerFilterData({}));
     signOut();
   };

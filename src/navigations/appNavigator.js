@@ -123,6 +123,7 @@ import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
+import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -1130,6 +1131,20 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
         options={{
           title: "Live Leads",
           headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+        initialParams={{
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        }}
+      />
+      <LiveLeadsStack.Screen
+        name={"LIVE_LEADS_FILTERS"}
+        component={LiveLeadsfilterScreen}
+        options={{
+          title: "Live Leads Filters",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
     </LiveLeadsStack.Navigator>

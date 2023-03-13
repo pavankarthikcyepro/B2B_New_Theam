@@ -151,6 +151,7 @@ export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetPar
     if (payload.isTeamPresent) {
         delete payload.isTeamPresent;
     }
+    console.log("manthan APicall 11", );
     // const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload)
     const json = await response.json()
@@ -187,6 +188,7 @@ export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNew
 
 // grand total for teams
 export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
+    console.log("manthan APicall 22",);
     const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json()
 
@@ -208,6 +210,7 @@ export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserW
 })
 
 export const getTargetParametersEmpDataInsights = createAsyncThunk("LIVE_LEADS/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
+    console.log("manthan APicall 33",);
     const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -407,6 +410,12 @@ export const getSourceModelDataForSelf = createAsyncThunk("LIVE_LEADS/getSourceM
     return json;
 })
 
+export const saveFilterPayload = createAsyncThunk(
+    "LIVE_LEADS/saveFilterPayload",
+    async (payload: any) => {
+        return payload;
+    }
+);
 
 const AVAILABLE_SCREENS = [
     {
@@ -464,7 +473,12 @@ export const liveLeadsSlice = createSlice({
         branchrank_list: [],
         designationList: [],
         deptList: [],
-        sourceModelData: []
+        sourceModelData: [],
+        dealerFilter: {},
+        filterPayload: {},
+        filterSelectedData: {},
+        levelSelected:[],
+        saveLiveleadObject:{}
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -491,6 +505,18 @@ export const liveLeadsSlice = createSlice({
             } else {
                 state.insights_target_parameters_data = action.payload.empData;
             }
+        },
+        updateDealerFilterData: (state, action) => {
+            state.dealerFilter = action.payload;
+        },
+        updateFilterSelectedData: (state, action) => {
+            state.filterSelectedData = action.payload;
+        },
+        updateFilterLevelSelectedData: (state, action) => {
+            state.levelSelected = action.payload;
+        },
+        updateLiveLeadObjectData: (state, action) => {
+            state.saveLiveleadObject = action.payload;
         },
         clearState: (state, action) => {
             state.serchtext = ""
@@ -532,6 +558,9 @@ export const liveLeadsSlice = createSlice({
             state.branchrank_list = []
             state.self_target_parameters_data =empData
             state.insights_target_parameters_data =empData
+            // state.dealerFilter= { }
+            // state.filterPayload= { }
+            // state.filterSelectedData ={ }
         },
     },
     extraReducers: (builder) => {
@@ -828,6 +857,8 @@ export const liveLeadsSlice = createSlice({
                         const {data, ...rest} = x;
                         x = rest;
                     })
+                    console.log("manthan ---- please check ", JSON.stringify(payloadData));
+                    
                     state.insights_target_parameters_data = payloadData;
                     AsyncStore.storeData(
                       "TARGET_EMP_LIVE_LEADS",
@@ -999,6 +1030,7 @@ export const liveLeadsSlice = createSlice({
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = liveLeadsSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData
+    , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData  } = liveLeadsSlice.actions;
 export default liveLeadsSlice.reducer;
 

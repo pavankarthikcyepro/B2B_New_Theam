@@ -1051,8 +1051,7 @@ const TargetScreenCRM = ({ route }) => {
      
       <>
         <ScrollView key={index + 1}>
-          {/* {console.log("manthan---fff index ", index)}
-          {console.log("manthan---fff empname ", item.empName)} */}
+         
           <View
             style={{
               paddingHorizontal: 8,
@@ -1102,9 +1101,7 @@ const TargetScreenCRM = ({ route }) => {
                   receptionManager={true}
                   navigation={navigation}
                   titleClick={async () => {
-                    console.log("manthan---ff 11 ", JSON.stringify(item.children));
-                    console.log("manthan---ff 33 ", JSON.stringify(index));
-                    console.log("manthan---ff 22 ", JSON.stringify(item.isOpen));
+                   
                     if(item.isOpen){
                       setisParentClicked(true);
                     }else{
