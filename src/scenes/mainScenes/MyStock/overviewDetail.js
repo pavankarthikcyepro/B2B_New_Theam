@@ -65,7 +65,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (route?.params?.headerTitle) {
-      // getDetailInventory(route?.params?.headerTitle);
+      getDetailInventory(route?.params?.headerTitle);
     }
     if (route?.params?.available) {
       setAvailable(true);
@@ -154,10 +154,12 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           <Text style={styles.locationTxt}>{item.name}</Text>
         </View>
         <View>
-          <Text style={styles.valueTxt}>{item.price}</Text>
+          <Text style={{ ...styles.valueTxt, textDecorationLine: "none" }}>
+            {item.stockValue || "0.0"}
+          </Text>
         </View>
         <View style={styles.valueBox}>
-          <Text style={styles.valueTxt}>{item.count}</Text>
+          <Text style={styles.valueTxt}>{item.count || 0}</Text>
         </View>
       </View>
     );

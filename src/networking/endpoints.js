@@ -863,6 +863,12 @@ const URL = {
       `dfdr/vehicle-inventory/get-modelBasedVehicles/${orgId}/${model}/${branchId}`
     );
   },
+  GET_INVENTORY_BY_VEHICLE_COLOR: (orgId, branchId, varientName, Variant) => {
+    return (
+      baseUrl +
+      `dfdr/vehicle-inventory/get-varientBasedVehicles/${orgId}/${branchId}/${varientName}/${Variant}`
+    );
+  },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
   },

@@ -38,20 +38,21 @@ const sample = {
   modelWise_available_stock: [],
   modelWise_intransit_stock: [],
 };
- const Total = [
-   {
-     model: "Total",
-     modelId: 0,
-     varient: null,
-     varientId: 0,
-     orgId: 25,
-     branchId: 0,
-     branchName: "Gachibowli",
-     petrolCount: 1,
-     dieselCount: 0,
-     electricCount: 0,
-   },
- ];
+
+const Total = [
+  {
+    model: "Total",
+    modelId: 0,
+    varient: null,
+    varientId: 0,
+    orgId: 25,
+    branchId: 0,
+    branchName: "Gachibowli",
+    petrolCount: 0,
+    dieselCount: 0,
+    electricCount: 0,
+  },
+];
 
 const AvailableScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -61,6 +62,8 @@ const AvailableScreen = ({ route, navigation }) => {
   const [inventory, setInventory] = useState(sample);
   const [branchName, setBranchName] = useState("");
   const [orgID, setOrgID] = useState(0);
+  const [totalAvailableData, setTotalAvailableData] = useState(Total);
+  const [totalInTransitData, setTotalInTransitData] = useState(Total);
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -68,14 +71,13 @@ const AvailableScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
- 
   useEffect(() => {
     getInventory(selector.dealerCode);
   }, [selector.dealerCode]);
 
   const getInventory = async (item) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -86,19 +88,42 @@ const AvailableScreen = ({ route, navigation }) => {
         )[0].branchName;
         const response = await client.get(
           URL.GET_INVENTORY_BY_VEHICLE(
-            25,
-            // item.name ? item.name : branchName
-            "Gachibowli"
+            jsonObj.orgId,
+            // 25,
+            item.name ? item.name : branchName
+            // "Gachibowli"
           )
         );
         setBranchName(
-          // item.name ? item.name : branchName
-          "Gachibowli"
+          item.name ? item.name : branchName
+          // "Gachibowli"
         );
-        setOrgID(25);
+        setOrgID(jsonObj.orgId);
         const json = await response.json();
         if (json) {
           setInventory(json);
+          if (json.modelWise_available_stock) {
+            const arr = json.modelWise_available_stock;
+            let total = {
+              model: "Total",
+              petrolCount: SumUpTheIndividual("petrolCount", arr),
+              dieselCount: SumUpTheIndividual("dieselCount", arr),
+              electricCount: SumUpTheIndividual("electricCount", arr),
+              stockValue: SumUpTheIndividual("stockValue", arr),
+            };
+            setTotalAvailableData([total]);
+          }
+          if (json.modelWise_intransit_stock) {
+            const arr = json.modelWise_intransit_stock;
+            let total = {
+              model: "Total",
+              petrolCount: SumUpTheIndividual("petrolCount", arr),
+              dieselCount: SumUpTheIndividual("dieselCount", arr),
+              electricCount: SumUpTheIndividual("electricCount", arr),
+              stockValue: SumUpTheIndividual("stockValue", arr),
+            };
+            setTotalInTransitData([total]);
+          }
         } else {
           setInventory(sample);
         }
@@ -110,21 +135,35 @@ const AvailableScreen = ({ route, navigation }) => {
     }
   };
 
+  function SumUpTheIndividual(key, arr) {
+    let total = 0;
+    if (arr) {
+      for (let i = 0; i < arr.length; i++) {
+        const element = arr[i];
+        if (element[key]) {
+          total += parseFloat(element[key]);
+        }
+      }
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
   const renderData = (item, noBorder = false) => {
+    let Total = item.petrolCount + item.dieselCount + item.electricCount;
     return (
       <View style={{ ...styles.boxView, borderWidth: noBorder ? 0 : 1 }}>
         <View style={{ width: "20%" }}>
           <Text
             onPress={() => {
-              !noBorder && navigation.navigate(
-                MyStockTopTabNavigatorIdentifiers.variant,
-                {
+              !noBorder &&
+                navigation.navigate(MyStockTopTabNavigatorIdentifiers.variant, {
                   headerTitle: item.model,
                   branchName: branchName,
                   orgId: orgID,
                   available: available,
-                }
-              );
+                });
             }}
             style={{
               ...styles.locationTxt,
@@ -135,11 +174,11 @@ const AvailableScreen = ({ route, navigation }) => {
           </Text>
         </View>
         <View style={styles.parameterTitleView}>
-          <Text style={styles.valueTxt}>{150000}</Text>
+          <Text style={styles.valueTxt}>{item.stockValue || "0.0"}</Text>
           <Text style={styles.valueTxt}>{item.petrolCount || 0}</Text>
           <Text style={styles.valueTxt}>{item.dieselCount || 0}</Text>
           <Text style={styles.valueTxt}>{item.electricCount || 0}</Text>
-          <Text style={styles.valueTxt}>{item.electricCount || 0}</Text>
+          <Text style={styles.valueTxt}>{Total || 0}</Text>
         </View>
       </View>
     );
@@ -196,16 +235,24 @@ const AvailableScreen = ({ route, navigation }) => {
             </View>
           </View>
           {available
-            ? inventory?.modelWise_available_stock.map((item) => {
+            ? inventory?.modelWise_available_stock?.length > 0 &&
+              inventory?.modelWise_available_stock.map((item) => {
                 return renderData(item);
               })
-            : inventory?.modelWise_intransit_stock.map((item) => {
+            : inventory?.modelWise_intransit_stock?.length > 0 &&
+              inventory?.modelWise_intransit_stock.map((item) => {
                 return renderData(item);
               })}
           <View style={{ marginTop: 15 }} />
-          {Total.map((item) => {
-            return renderData(item, true);
-          })}
+          {available
+            ? inventory?.modelWise_available_stock?.length > 0 &&
+              totalAvailableData.map((item) => {
+                return renderData(item, true);
+              })
+            : inventory?.modelWise_intransit_stock?.length > 0 &&
+              totalInTransitData.map((item) => {
+                return renderData(item, true);
+              })}
           {available && inventory?.modelWise_available_stock == 0 && <NoData />}
           {!available && inventory?.modelWise_intransit_stock == 0 && (
             <NoData />

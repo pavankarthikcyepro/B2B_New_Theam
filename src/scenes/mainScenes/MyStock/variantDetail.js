@@ -21,6 +21,7 @@ import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { LoaderComponent } from "../../../components";
+import _ from "lodash";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -91,12 +92,14 @@ const data = [
     ],
   },
 ];
+
 const sample = {
   varientWise_intransit_stock: [],
   varientWise_available_stock: [],
   intransit_stock: [],
   available_stock: [],
 };
+
 const Total = [
   {
     model: "Total",
@@ -106,11 +109,48 @@ const Total = [
     orgId: 25,
     branchId: 0,
     branchName: "Gachibowli",
-    petrolCount: 1,
+    petrolCount: 0,
     dieselCount: 0,
     electricCount: 0,
   },
 ];
+
+const sampleChild = {
+  colourWise_available_stock: [
+    {
+      model: "Kinetic",
+      modelId: 0,
+      varient: "HSX",
+      varientId: 0,
+      colourName: "red",
+      colourId: 0,
+      orgId: 25,
+      branchId: 0,
+      branchName: "Gachibowli",
+      petrolCount: 1,
+      dieselCount: 0,
+      electricCount: 0,
+      stockValue: "100.0",
+    },
+  ],
+  colourWise_intransit_stock: [
+    {
+      model: "Kinetic",
+      modelId: 0,
+      varient: "HSX",
+      varientId: 0,
+      colourName: "red",
+      colourId: 0,
+      orgId: 25,
+      branchId: 0,
+      branchName: "Gachibowli",
+      petrolCount: 0,
+      dieselCount: 0,
+      electricCount: 0,
+      stockValue: null,
+    },
+  ],
+};
 
 const VariantDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -119,6 +159,8 @@ const VariantDetailScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState(true);
   const [models, setModels] = useState(sample);
+  const [totalAvailableData, setTotalAvailableData] = useState(Total);
+  const [totalInTransitData, setTotalInTransitData] = useState(Total);
 
   useEffect(() => {
     navigation.setOptions({
@@ -143,7 +185,30 @@ const VariantDetailScreen = ({ route, navigation }) => {
       const json = await response.json();
       setAvailable(item.available);
       if (json) {
+        let newArr = json;
         setModels(json);
+        if (json.varientWise_available_stock) {
+          const arr = json.varientWise_available_stock;
+          let total = {
+            varient: "Total",
+            petrolCount: SumUpTheIndividual("petrolCount", arr),
+            dieselCount: SumUpTheIndividual("dieselCount", arr),
+            electricCount: SumUpTheIndividual("electricCount", arr),
+            stockValue: SumUpTheIndividual("stockValue", arr),
+          };
+          setTotalAvailableData([total]);
+        }
+        if (json.varientWise_intransit_stock) {
+          const arr = json.varientWise_intransit_stock;
+          let total = {
+            varient: "Total",
+            petrolCount: SumUpTheIndividual("petrolCount", arr),
+            dieselCount: SumUpTheIndividual("dieselCount", arr),
+            electricCount: SumUpTheIndividual("electricCount", arr),
+            stockValue: SumUpTheIndividual("stockValue", arr),
+          };
+          setTotalInTransitData([total]);
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -152,31 +217,67 @@ const VariantDetailScreen = ({ route, navigation }) => {
     }
   };
 
-  const showVariant = async (item, index, lastParameter) => {
-    try {
-      let localData = [...newData];
-      let current = localData[index].innerVariant;
-      for (let i = 0; i < localData.length; i++) {
-        localData[i].innerVariant = false;
-        if (i === localData.length - 1) {
-          localData[index].innerVariant = !current;
+  function SumUpTheIndividual(key, arr) {
+    let total = 0;
+    if (arr) {
+      for (let i = 0; i < arr.length; i++) {
+        const element = arr[i];
+        if (element[key]) {
+          total += parseFloat(element[key]);
         }
       }
-      setNewData(...[localData]);
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
+  const showVariant = async (item, index, lastParameter) => {
+    try {
+      const response = await client.get(
+        URL.GET_INVENTORY_BY_VEHICLE_COLOR(
+          item?.orgId,
+          item?.branchName,
+          route.params?.headerTitle,
+          item?.varient
+        )
+      );
+      const json = await response.json();
+      if (json.status == "200") {
+        let localData0 = { ...models };
+        let localData =
+          localData0[
+            available
+              ? "varientWise_available_stock"
+              : "varientWise_intransit_stock"
+          ];
+
+        let current = localData[index]?.innerVariant || false;
+        for (let i = 0; i < localData.length; i++) {
+          localData[i].innerVariant = false;
+          if (i === localData.length - 1) {
+            localData[index].innerVariant = !current;
+            localData[index].data = json;
+          }
+        }
+        setModels(localData0);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
   const renderData = (item, index, noBorder = false) => {
+    let Total = item.petrolCount + item.dieselCount + item.electricCount;
+
     return (
       <>
-        <View style={{ ...styles.boxView, borderWidth: noBorder ? 0 : 1 }}>
+        <View style={{ ...styles.boxView }}>
           <View style={{ width: "20%" }}>
             <Text
               numberOfLines={1}
               onPress={() => {
-                let lastParameter = [...newData];
+                let lastParameter = { ...models };
                 !noBorder && showVariant(item, index, lastParameter);
               }}
               style={{
@@ -189,7 +290,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.parameterTitleView}>
             <Text numberOfLines={1} style={styles.valueTxt}>
-              {150000}
+              {item.stockValue || "0.0"}
             </Text>
             <Text numberOfLines={1} style={styles.valueTxt}>
               {item.petrolCount || 0}
@@ -201,13 +302,23 @@ const VariantDetailScreen = ({ route, navigation }) => {
               {item.electricCount || 0}
             </Text>
             <Text numberOfLines={1} style={styles.valueTxt}>
-              {item.electricCount || 0}
+              {Total || 0}
             </Text>
           </View>
         </View>
         <View style={{ marginBottom: item.innerVariant ? 15 : 0 }}>
           {item?.innerVariant &&
-            item?.data.map((item1) => {
+            !_.isEmpty(item?.data) &&
+            item?.data[
+              available
+                ? "colourWise_available_stock"
+                : "colourWise_intransit_stock"
+            ]?.length > 0 &&
+            item?.data[
+              available
+                ? "colourWise_available_stock"
+                : "colourWise_intransit_stock"
+            ].map((item1) => {
               return renderChildData(item1);
             })}
         </View>
@@ -216,22 +327,30 @@ const VariantDetailScreen = ({ route, navigation }) => {
   };
 
   const renderChildData = (item1) => {
+    let Total = item1.petrolCount + item1.dieselCount + item1.electricCount;
+
     return (
-      <View style={styles.boxView1}>
-        <View style={{ width: "40%" }}>
+      <View style={styles.boxView}>
+        <View style={{ width: "20%" }}>
           <Text numberOfLines={1} style={styles.locationTxt1}>
-            {item1.title}
+            {item1.colourName}
           </Text>
         </View>
         <View style={styles.parameterTitleView}>
           <Text numberOfLines={1} style={styles.valueTxt}>
-            {item1.value}
+            {item1.stockValue || "0.0"}
           </Text>
           <Text numberOfLines={1} style={styles.valueTxt}>
-            {item1.value}
+            {item1.petrolCount || 0}
           </Text>
           <Text numberOfLines={1} style={styles.valueTxt}>
-            {item1.value}
+            {item1.dieselCount || 0}
+          </Text>
+          <Text numberOfLines={1} style={styles.valueTxt}>
+            {item1.electricCount || 0}
+          </Text>
+          <Text numberOfLines={1} style={styles.valueTxt}>
+            {Total || 0}
           </Text>
         </View>
       </View>
@@ -258,16 +377,24 @@ const VariantDetailScreen = ({ route, navigation }) => {
             </View>
           </View>
           {available
-            ? models?.varientWise_available_stock.map((item, index) => {
+            ? models?.varientWise_available_stock?.length > 0 &&
+              models?.varientWise_available_stock.map((item, index) => {
                 return renderData(item, index);
               })
-            : models?.varientWise_intransit_stock.map((item, index) => {
+            : models?.varientWise_intransit_stock.length > 0 &&
+              models?.varientWise_intransit_stock.map((item, index) => {
                 return renderData(item, index);
               })}
           <View style={{ marginTop: 15 }} />
-          {Total.map((item, index) => {
-            return renderData(item, index, true);
-          })}
+          {available
+            ? models?.varientWise_available_stock?.length > 0 &&
+              totalAvailableData.map((item, index) => {
+                return renderData(item, index, true);
+              })
+            : models?.varientWise_intransit_stock?.length > 0 &&
+              totalInTransitData.map((item, index) => {
+                return renderData(item, index, true);
+              })}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -323,8 +450,13 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     width: "100%",
   },
+  locationTxt1: {
+    fontSize: 14,
+    color: Colors.BLACK,
+    fontWeight: "600",
+    width: "100%",
+  },
   boxView: {
-    borderWidth: 1,
     borderRadius: 10,
     paddingVertical: 15,
     paddingHorizontal: 5,

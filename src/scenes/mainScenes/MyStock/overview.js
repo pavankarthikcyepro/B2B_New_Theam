@@ -41,11 +41,12 @@ let tableData = [
   { title: ">15", value: 0 },
   { title: "<15", value: 0 },
 ];
+
 let sample = {
   locationWise_available_count: [
-    { name: "Hydrabad", price: 15000, count: 15 },
-    { name: "Hydrabad", price: 15000, count: 15 },
-    { name: "Hydrabad", price: 15000, count: 15 },
+    // { name: "Hydrabad", price: 15000, count: 15 },
+    // { name: "Hydrabad", price: 15000, count: 15 },
+    // { name: "Hydrabad", price: 15000, count: 15 },
   ],
   intransit_stock: [],
   locationWise_intrsnsit_count: [],
@@ -81,27 +82,26 @@ const OverviewScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         const response = await client.get(URL.GET_INVENTORY(jsonObj.orgId));
         const json = await response.json();
-        // if (json) {
-        //   setInventory(json);
-        //   if (json.available_stock) {
-        //     let path = json.available_stock;
-        //     setAvailableAgingData(FormatAging(path));
-        //   } else {
-        //     setAvailableAgingData(tableData);
-        //   }
-        //   if (json.intransit_stock) {
-        //     let path = json.intransit_stock;
-        //     setInTransitAgingData(FormatAging(path));
-        //   } else {
-        //     setInTransitAgingData(tableData);
-        //   }
-        // } else {
-        //   setInventory({});
-        //   setAvailableAgingData(tableData);
-        //   setInTransitAgingData(tableData);
-        // }
+        if (json) {
+          setInventory(json);
+          if (json.available_stock) {
+            let path = json.available_stock;
+            setAvailableAgingData(FormatAging(path));
+          } else {
+            setAvailableAgingData(tableData);
+          }
+          if (json.intransit_stock) {
+            let path = json.intransit_stock;
+            setInTransitAgingData(FormatAging(path));
+          } else {
+            setInTransitAgingData(tableData);
+          }
+        } else {
+          setInventory({});
+          setAvailableAgingData(tableData);
+          setInTransitAgingData(tableData);
+        }
         setLoading(false);
-        setInventory(sample);
       }
     } catch (error) {
       setLoading(false);
@@ -159,7 +159,7 @@ const OverviewScreen = ({ route, navigation }) => {
             }}
             style={{ ...styles.valueTxt, textDecorationLine: "none" }}
           >
-            {item.price}
+            {item.stockValue || "0.0"}
           </Text>
         </View>
         <View style={styles.valueBox}>
@@ -204,7 +204,17 @@ const OverviewScreen = ({ route, navigation }) => {
 
   const renderTotalData = (item) => {
     const result = _.sumBy(item, "count");
-    const Total = _.sumBy(item, "price");
+    let sum = 0;
+    if (item?.length > 0) {
+      for (let i = 0; i < item.length; i++) {
+        const element = item[i];
+        if (element.stockValue) {
+          sum += parseFloat(element.stockValue);
+        } else {
+          sum += 0;
+        }
+      }
+    }
 
     return (
       <View style={styles.boxView}>
@@ -213,7 +223,7 @@ const OverviewScreen = ({ route, navigation }) => {
         </View>
         <View style={{ width: "30%" }}>
           <Text style={{ ...styles.valueTxt, textDecorationLine: "none" }}>
-            {Total || 0}
+            {sum || 0.0}
           </Text>
         </View>
         <View style={styles.valueBox}>
