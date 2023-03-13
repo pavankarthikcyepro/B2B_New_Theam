@@ -37,6 +37,7 @@ const Options = [
   "Services",
   "Vehicle Info",
 ];
+
 const ProfileScreen = () => {
   const [value, setValue] = React.useState("Profile");
   const [info, setInfo] = React.useState(true);
@@ -103,50 +104,68 @@ const ProfileScreen = () => {
       )}
       {value === "Profile" &&
         (info ? <ProfileInfo profileInfo={profileInfo} /> : <ProfileAddress />)}
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
+      {value !== "Profile" && (
         <View
           style={{
-            flexDirection: "column",
-            width: "10%",
-            // height: 700,
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <View
             style={{
               flexDirection: "column",
-              justifyContent: "flex-start",
-              backgroundColor: "pink",
-              flex: 1,
-              //   alignItems: "flex-start",
+              width: "10%",
+              // height: 700,
             }}
           >
-            {Options.map((i) => {
-              return (
-                <View style={{ height: 150, flexDirection: "row" }}>
+            <View
+              style={{
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                flex: 1,
+                //   alignItems: "flex-start",
+                marginBottom: 50,
+              }}
+            >
+              {Options.map((i) => {
+                return (
                   <View
                     style={{
-                      flex: 1,
-                      alignItems: "center",
-                      justifyContent: "center",
+                      height: 120,
+                      flexDirection: "row",
+                      transform: [{ rotate: "270deg" }],
                     }}
                   >
-                    <Text style={{ transform: [{ rotate: "-90deg" }] }}>
-                      {i}
-                    </Text>
+                    <View
+                      style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          width: 120,
+                          // transform: [{ rotate: "270deg" }],
+                          fontSize: 18,
+                          color: Colors.GRAY,
+                          fontWeight: "500",
+                        }}
+                      >
+                        {i}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
           </View>
+          <View
+            style={{ flexDirection: "column", flex: 1, width: "80%" }}
+          ></View>
         </View>
-        <View style={{ flexDirection: "column", flex: 1, width: "80%" }}></View>
-      </View>
+      )}
     </ScrollView>
   );
 };
