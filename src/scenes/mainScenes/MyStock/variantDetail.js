@@ -132,6 +132,21 @@ const sampleChild = {
       electricCount: 0,
       stockValue: "100.0",
     },
+    {
+      model: "Kinetic",
+      modelId: 0,
+      varient: "HSX",
+      varientId: 0,
+      colourName: "red",
+      colourId: 0,
+      orgId: 25,
+      branchId: 0,
+      branchName: "Gachibowli",
+      petrolCount: 1,
+      dieselCount: 0,
+      electricCount: 0,
+      stockValue: "100.0",
+    },
   ],
   colourWise_intransit_stock: [
     {
@@ -243,13 +258,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
         )
       );
       const json = await response.json();
-      if (json.status == "200") {
+      if (response.status == "200") {
         let localData0 = { ...models };
         let localData =
           localData0[
-            available
-              ? "varientWise_available_stock"
-              : "varientWise_intransit_stock"
+          available
+            ? "varientWise_available_stock"
+            : "varientWise_intransit_stock"
           ];
 
         let current = localData[index]?.innerVariant || false;
@@ -330,7 +345,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
     let Total = item1.petrolCount + item1.dieselCount + item1.electricCount;
 
     return (
-      <View style={styles.boxView}>
+      <View style={styles.boxView1}>
         <View style={{ width: "20%" }}>
           <Text numberOfLines={1} style={styles.locationTxt1}>
             {item1.colourName}
@@ -360,7 +375,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <LoaderComponent visible={loading} onRequestClose={() => {}} />
+        <LoaderComponent visible={loading} onRequestClose={() => { }} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
             <View style={{ width: "20%" }}>
@@ -378,23 +393,23 @@ const VariantDetailScreen = ({ route, navigation }) => {
           </View>
           {available
             ? models?.varientWise_available_stock?.length > 0 &&
-              models?.varientWise_available_stock.map((item, index) => {
-                return renderData(item, index);
-              })
+            models?.varientWise_available_stock.map((item, index) => {
+              return renderData(item, index);
+            })
             : models?.varientWise_intransit_stock.length > 0 &&
-              models?.varientWise_intransit_stock.map((item, index) => {
-                return renderData(item, index);
-              })}
+            models?.varientWise_intransit_stock.map((item, index) => {
+              return renderData(item, index);
+            })}
           <View style={{ marginTop: 15 }} />
           {available
             ? models?.varientWise_available_stock?.length > 0 &&
-              totalAvailableData.map((item, index) => {
-                return renderData(item, index, true);
-              })
+            totalAvailableData.map((item, index) => {
+              return renderData(item, index, true);
+            })
             : models?.varientWise_intransit_stock?.length > 0 &&
-              totalInTransitData.map((item, index) => {
-                return renderData(item, index, true);
-              })}
+            totalInTransitData.map((item, index) => {
+              return renderData(item, index, true);
+            })}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -464,6 +479,15 @@ const styles = StyleSheet.create({
     // justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 5,
+  },
+  boxView1: {
+    borderRadius: 10,
+    // paddingVertical: 15,
+    paddingHorizontal: 5,
+    flexDirection: "row",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    // marginVertical: 5,
   },
   titleView: {
     // flex: 1,

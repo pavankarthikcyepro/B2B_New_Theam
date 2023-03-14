@@ -72,9 +72,17 @@ const AvailableScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    getInventory(selector.dealerCode);
-  }, [selector.dealerCode]);
+    if (selector.dealerCode) {
+      getInventory(selector.dealerCode);
+    }
+  }, [selector.dealerCode,]);
 
+  useEffect(() => {
+    console.log(route.params);
+    if (route.params) {
+      getInventory();
+    }
+  }, [route.params]);
   const getInventory = async (item) => {
     try {
       // setLoading(true);
@@ -83,9 +91,7 @@ const AvailableScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        let branchName = jsonObj.branchs.filter(
-          (i) => i.branchId === jsonObj.branchId
-        )[0].branchName;
+        let branchName = route?.params?.headerTitle;
         const response = await client.get(
           URL.GET_INVENTORY_BY_VEHICLE(
             jsonObj.orgId,

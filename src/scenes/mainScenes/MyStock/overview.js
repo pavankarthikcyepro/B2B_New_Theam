@@ -152,7 +152,7 @@ const OverviewScreen = ({ route, navigation }) => {
         <View style={{ width: "30%" }}>
           <Text
             onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
                 headerTitle: item.name,
                 available: available,
               });
@@ -165,7 +165,7 @@ const OverviewScreen = ({ route, navigation }) => {
         <View style={styles.valueBox}>
           <Text
             onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
                 headerTitle: item.name,
                 available: available,
               });

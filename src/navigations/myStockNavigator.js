@@ -4,17 +4,9 @@ import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 import { StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
-import AttendanceScreen from "../scenes/mainScenes/Attendance";
-import AttendanceTopTabScreen from "../scenes/mainScenes/Attendance/AttendanceTop";
 import { createStackNavigator } from "@react-navigation/stack";
 import { MenuIcon } from "./appNavigator";
-import TeamAttendanceScreen from "../scenes/mainScenes/Attendance/TeamAttendance";
-import AttendanceTeamMemberScreen from "../scenes/mainScenes/Attendance/teamIndex";
 import { IconButton } from "react-native-paper";
-import { AppNavigator } from ".";
-import AttendanceFilter from "../scenes/mainScenes/Attendance/AttendanceFilter";
-import AttendanceDashboard from "../scenes/mainScenes/Attendance/Dashboard";
-import FilterAttendanceDashBoardScreen from "../scenes/mainScenes/Attendance/DashboardFilter";
 
 import OverviewScreen from "../scenes/mainScenes/MyStock/overview";
 import OverviewDetailScreen from "../scenes/mainScenes/MyStock/overviewDetail";
@@ -72,7 +64,21 @@ const MyStockMainTopTabNavigator = ({ navigation }) => {
     >
       <MyStockMainTopTab.Screen
         name={MyStockTopTabNavigatorIdentifiers.myStock}
-        component={MyStockTopTabNavigator}
+        component={OverviewScreen}
+        options={{
+          title: "My Stock",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerRight: () => <MyTaskFilter navigation={navigation} />,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <MyStockMainTopTab.Screen
+        name={MyStockTopTabNavigatorIdentifiers.available}
+        component={AvailableScreen}
         options={{
           title: "My Stock",
           headerShown: true,
@@ -177,7 +183,7 @@ const MyStockTopTabNavigator = () => {
     >
       <MyStockTopTab.Screen
         name={MyStockTopTabNavigatorIdentifiers.overview}
-        component={OverviewTopTabNavigatorTeamsNav}
+        component={OverviewScreen}
         options={{
           title: ({ focused }) => (
             <Badge1 title={"Overview"} focused={focused} />
