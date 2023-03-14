@@ -234,7 +234,6 @@ const LeadsScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-   
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
@@ -300,12 +299,12 @@ const LeadsScreen = ({ route, navigation }) => {
            
             // managerFilter(newArr);
             if (route?.params?.screenName === "DEFAULT") {
-              defualtCall(newArr, leadStage, leadStatus);
+              defualtCall(newArr, leadStage, leadStatus,false);
             }
             
           } else {
             
-            defualtCall(newArr, leadStage, leadStatus);
+            defualtCall(newArr, leadStage, leadStatus,false);
           }
         })
         .catch((err) => {
@@ -344,12 +343,12 @@ const LeadsScreen = ({ route, navigation }) => {
             
             if (route?.params?.screenName === "DEFAULT"){
               setLeadsFilterData(newArr);
-              defualtCall(newArr, leadStage, leadStatus);
+              defualtCall(newArr, leadStage, leadStatus,false);
             }
           } else {
           
             setLeadsFilterData(newArr);
-            defualtCall(newArr, leadStage, leadStatus);
+            defualtCall(newArr, leadStage, leadStatus,false);
           }
         })
         .catch((err) => {
@@ -393,7 +392,7 @@ const LeadsScreen = ({ route, navigation }) => {
   // }, [navigation, defualtLeadStage]);
   
 
-  const defualtCall = async (tempStores, leadStage, leadStatus) => {
+  const defualtCall = async (tempStores, leadStage, leadStatus,fromRefrsh = false) => {
     setLeadsFilterData(newArr);
     setSubMenu([]);
     setLeadsFilterDropDownText("All");
@@ -407,18 +406,34 @@ const LeadsScreen = ({ route, navigation }) => {
     });
     setTempLeadStage(leadStage);
     setTempLeadStatus([]);
-    onTempFliter(
-      newArr,
-      null,
-      [],
-      [],
-      [],
-      lastMonthFirstDate,
-      currentDate,
-      leadStage,
-      [],
-      true
-    );
+    if (fromRefrsh){
+      onTempFliterRefresh(
+        newArr,
+        null,
+        [],
+        [],
+        [],
+        lastMonthFirstDate,
+        currentDate,
+        leadStage,
+        [],
+        true
+      );
+    }else{
+      onTempFliter(
+        newArr,
+        null,
+        [],
+        [],
+        [],
+        lastMonthFirstDate,
+        currentDate,
+        leadStage,
+        [],
+        true
+      );
+    }
+   
     // return
     // await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
   };
@@ -856,12 +871,11 @@ const LeadsScreen = ({ route, navigation }) => {
           model.push(x);
         }
       }
-      const leadStages = defLeadStage
+      let leadStages = defLeadStage
         ? defLeadStage
         : leadStage.length === 0
         ? defualtLeadStage
         : leadStage;
-
       if (
         leadStages &&
         leadStages.length > 0 &&
@@ -879,14 +893,220 @@ const LeadsScreen = ({ route, navigation }) => {
             leadStages.splice(invoiceIndex, 1);
           }
         }
-
-
       }
-
+      if (
+        leadStages &&
+        leadStages.length > 0 &&
+        route?.params?.param === "Enquiry"
+        //  &&
+        // !isRefresh
+      ) { 
+          leadStages = []
+        let tempEnquriyArr = ["ENQUIRY", "PREBOOKING"]
+        leadStages.push(...tempEnquriyArr)
+        }
+      if (
+        leadStages &&
+        leadStages.length > 0 &&
+        route?.params?.param === "Booking"
+        //  &&
+        // !isRefresh
+      ) {
+        leadStages = []
+        let tempEnquriyArr = ["BOOKING"]
+        leadStages.push(...tempEnquriyArr)
+      }
+     
       let isLive = false;
       if (
         route?.params?.param &&
-        route?.params?.moduleType == "live-leads" &&
+        route?.params?.moduleType === "live-leads" 
+        // &&
+        // !isRefresh
+      ) {
+        isLive = true;
+        from = "2021-01-01";
+      } else if (route?.params?.param && route?.params?.moduleType == "home") {
+        // todo
+        if (filterIds?.startDate && filterIds.endDate) {
+          setFromDateState(filterIds.startDate);
+          setToDateState(filterIds.endDate);
+          from = (await filterIds.startDate)
+            ? filterIds.startDate
+            : lastMonthFirstDate;
+          to = (await filterIds.endDate)
+            ? filterIds.endDate
+            : lastMonthLastDate;
+        } else {
+          setFromDateState(lastMonthFirstDate);
+          setToDateState(lastMonthLastDate);
+        }
+      } else {
+      }
+      if (from) {
+        setSelectedFromDate(from);
+        setSelectedToDate(to);
+      } else {
+        setSelectedFromDate(selectedFromDate);
+        setSelectedToDate(selectedToDate);
+      }
+
+      //todo
+      let newPayload = {
+        startdate: from ? from : selectedFromDate,
+        enddate: to ? to : selectedToDate,
+        model: modelData ? model : [],
+        categoryType: categoryFilters ? categoryType : [],
+        sourceOfEnquiry: sourceData ? sourceOfEnquiry : [],
+        empId: route?.params?.employeeDetail?.empId
+          ? route?.params?.employeeDetail?.empId
+          : jsonObj.empId,
+        status: "",
+        offset: 0,
+        limit: 50,
+        leadStage: leadStages,
+        leadStatus: defLeadStatus
+          ? defLeadStatus
+          : leadStatus.length === 0
+          ? defualtLeadStatus
+          : leadStatus,
+      };
+      let data = {
+        newPayload,
+        isLive,
+      };
+      Promise.all([dispatch(getLeadsList(data))])
+        .then((response) => {
+          setLoader(false);
+          // let newData = response[0].payload?.dmsEntity?.leadDtoPage?.content;
+          // setSearchedData(newData);
+          // setLeadsList(newData);
+        })
+        .catch((error) => {
+          setLoader(false);
+        });
+    }
+  };
+
+  const onTempFliterRefresh = async (
+    item,
+    employeeDetail = {},
+    modelData,
+    categoryFilters,
+    sourceData,
+    from,
+    to,
+    defLeadStage,
+    defLeadStatus,
+    isRefresh = false
+  ) => {
+    setSearchedData([]);
+    setLeadsList([]);
+    // setSelectedToDate(moment().add(0, "day").endOf("month").format(dateFormat));
+    setLoader(true);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      let newArray = item.filter((i) => i.checked === true);
+      const jsonObj = JSON.parse(employeeData);
+      let leadStage = [];
+      let leadStatus = [];
+      let categoryType = [];
+      let sourceOfEnquiry = [];
+      let model = [];
+
+      for (let i = 0; i < newArray.length; i++) {
+        if (newArray[i].leadStage) {
+          for (let j = 0; j < newArray[i].leadStage.length; j++) {
+            leadStage.push(newArray[i].leadStage[j]);
+          }
+        }
+        if (newArray[i].leadStatus) {
+          for (let j = 0; j < newArray[i].leadStatus.length; j++) {
+            leadStatus.push(newArray[i].leadStatus[j]);
+          }
+        }
+      }
+      defLeadStage ? null : setTempLeadStage(leadStage);
+      defLeadStatus ? null : setTempLeadStatus(leadStatus);
+      if (modelData || categoryFilters || sourceData) {
+        for (let i = 0; i < sourceData.length; i++) {
+          let x = {
+            id: sourceData[i].id,
+            name: sourceData[i].name,
+            orgId: jsonObj.orgId,
+          };
+          sourceOfEnquiry.push(x);
+        }
+        for (let i = 0; i < categoryFilters.length; i++) {
+          let x = {
+            id: categoryFilters[i].id,
+            name: categoryFilters[i].name,
+          };
+          categoryType.push(x);
+        }
+        for (let i = 0; i < modelData.length; i++) {
+          let x = {
+            id: modelData[i].id,
+            name: modelData[i].name ? modelData[i].name : modelData[i].key,
+          };
+          model.push(x);
+        }
+      } else {
+        for (let i = 0; i < sourceList.length; i++) {
+          let x = {
+            id: sourceList[i].id,
+            name: sourceList[i].name,
+            orgId: jsonObj.orgId,
+          };
+          sourceOfEnquiry.push(x);
+        }
+        for (let i = 0; i < categoryList.length; i++) {
+          let x = {
+            id: categoryList[i].id,
+            name: categoryList[i].name,
+          };
+          categoryType.push(x);
+        }
+        for (let i = 0; i < vehicleModelList.length; i++) {
+          let x = {
+            id: vehicleModelList[i].id,
+            name: vehicleModelList[i].key,
+          };
+          model.push(x);
+        }
+      }
+      let leadStages = defLeadStage
+        ? defLeadStage
+        : leadStage.length === 0
+          ? defualtLeadStage
+          : leadStage;
+      if (
+        leadStages &&
+        leadStages.length > 0 &&
+        route?.params?.param !== "Retail"
+      ) {
+        if (leadStages[0] === "INVOICECOMPLETED") {
+          leadStages[0] = "INVOICE"
+          return
+        } else {
+          const invoiceIndex = leadStages.findIndex(
+            (x) => x === "INVOICECOMPLETED"
+          );
+
+          if (invoiceIndex !== -1) {
+            leadStages.splice(invoiceIndex, 1);
+          }
+       
+        }
+      }
+     
+      let isLive = false;
+      if (
+        route?.params?.param &&
+        route?.params?.moduleType === "live-leads"
+        &&
         !isRefresh
       ) {
         isLive = true;
@@ -940,7 +1160,6 @@ const LeadsScreen = ({ route, navigation }) => {
         newPayload,
         isLive,
       };
-
       Promise.all([dispatch(getLeadsList(data))])
         .then((response) => {
           setLoader(false);
@@ -953,6 +1172,7 @@ const LeadsScreen = ({ route, navigation }) => {
         });
     }
   };
+
   useEffect(() => {
     if (selector.leadList_status === "success") {
       let newData = selector.leadList;
@@ -1023,7 +1243,7 @@ const LeadsScreen = ({ route, navigation }) => {
         const newArr = path.map((v) => ({ ...v, checked: false }));
         setTempStore(newArr);
         setLeadsFilterData(newArr);
-        defualtCall(newArr, leadStage, leadStatus);
+        defualtCall(newArr, leadStage, leadStatus, true);
         setTempEmployee({});
       })
       .catch((err) => {

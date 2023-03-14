@@ -136,6 +136,17 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         // }
         if (isFocused){
           getDashboadTableDataFromServer(jsonObj.empId);
+          // getLoginEmployeeDetailsFromAsyn();
+          const dateFormat = "YYYY-MM-DD";
+          const currentDate = moment().format(dateFormat);
+          const payload = {
+            endDate: currentDate,
+            loggedInEmpId: jsonObj.empId,
+            startDate: "2021-01-01",
+            levelSelected: null,
+            empId: jsonObj.empId,
+          };
+          getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
         }
         
       }
@@ -428,9 +439,10 @@ const LiveLeadsScreen = ({ route, navigation }) => {
           levelSelected: null,
           empId: jsonObj.empId,
         };
-        getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) => {})
-          .catch((y) => {});
+        // commented manthan
+        // getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+        //   .then((x) => {})
+        //   .catch((y) => {});
       }
       if (jsonObj?.hrmsRole.toLowerCase().includes("manager")) {
         dispatch(updateIsManager(true));
@@ -535,7 +547,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       "empId": empId,
       "pageNo": 0,
       "size": 5,
-      "empSelected": selector.saveLiveleadObject?.selectedempId ? [selector.saveLiveleadObject?.selectedempId] : null // selected employes id active-dropdowns APi
+      "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null // selected employes id active-dropdowns APi
     }
     
     Promise.all([
@@ -660,7 +672,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       if (allRoles.includes(jsonObj?.hrmsRole)) {
         isTeamPresentLocal = true;
       }
-    }
+    
 
     const payload1 = {
       ...payload,
@@ -679,14 +691,38 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       pageNo: 0,
       size: 5000,
     };
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment().format(dateFormat);
+      const monthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      const monthLastDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .endOf("month")
+        .format(dateFormat);
+    const payload4 = {
+      orgId: orgId,
+      "endDate": selector.saveLiveleadObject.endDate ? selector.saveLiveleadObject.endDate : monthLastDate,
+      "loggedInEmpId": jsonObj.empId,
+      "startDate": selector.saveLiveleadObject.startDate ? selector.saveLiveleadObject.startDate : monthFirstDate,
+      "levelSelected": selector.saveLiveleadObject.levelSelected ? selector.saveLiveleadObject.levelSelected : null , // countey , zone etc ids active-levels API
+      "empId": jsonObj.empId,
+      "pageNo": 0,
+      "size": 5000,
+      "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null, // selected employes id active-dropdowns APi
+      "selectedEmpId": jsonObj.empId
+    }
+    //todo 
     Promise.allSettled([
       //dispatch(getTargetParametersAllData(payload1)),
-      dispatch(getTotalTargetParametersData(payload2)), // grand total
-      dispatch(getNewTargetParametersAllData(payload2)), // TEAM
+      dispatch(getTotalTargetParametersData(payload4)), // grand total
+      dispatch(getNewTargetParametersAllData(payload4)), // TEAM
       // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
     ])
       .then(() => {})
       .catch((y) => {});
+  }
   };
 
   useEffect(() => {

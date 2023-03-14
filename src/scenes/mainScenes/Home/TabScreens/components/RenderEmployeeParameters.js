@@ -51,21 +51,28 @@ export const RenderEmployeeParameters = (parameter) => {
       orgId: item.orgId,
       branchId: item.branchId,
     };
-
     if (isLead) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
       setTimeout(() => {
         navigation.navigate("LEADS", {
           param: param === "INVOICE" ? "Retail" : param,
           employeeDetail: employeeDetail,
-          moduleType,
+          moduleType: "live-leads",
         });
       }, 1000);
     } else if (isContact) {
-      navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-        moduleType: "live-leads",
-        employeeDetail: employeeDetail,
-      });
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+      setTimeout(() => {
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+          // param: param === "INVOICE" ? "Retail" : param,
+          employeeDetail: employeeDetail,
+          moduleType: "live-leads",
+        });
+      }, 1000);
+      // navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+      //   moduleType: "live-leads",
+      //   employeeDetail: employeeDetail,
+      // });
     } else if (isDropped) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",

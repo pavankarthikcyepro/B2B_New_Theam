@@ -598,12 +598,15 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
           }
         );
       });
-      // console.log("manthan---ff ", JSON.stringify(temp[0].id)); 
+      let tempArr = [];
+      const selected_ids = temp.map(item => {
+          tempArr.push(parseInt(item.id))
+      })
       let tempPayload ={
         startDate: fromDate,
         endDate: toDate,
         levelSelected: levelSelected,
-        selectedempId: parseInt(temp[0].id)
+        selectedempId: [tempArr[tempArr.length -1]]
       }
       dispatch(updateLiveLeadObjectData(tempPayload))
       dispatch(updateFilterSelectedData(employeeDropDownDataLocal));

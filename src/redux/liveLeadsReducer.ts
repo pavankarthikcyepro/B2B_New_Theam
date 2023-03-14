@@ -151,7 +151,6 @@ export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetPar
     if (payload.isTeamPresent) {
         delete payload.isTeamPresent;
     }
-    console.log("manthan APicall 11", );
     // const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload)
     const json = await response.json()
@@ -165,7 +164,6 @@ export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetPar
 
 // TEAM
 export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
 
@@ -176,7 +174,6 @@ export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTarget
 })
 
 export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
 
@@ -188,7 +185,6 @@ export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNew
 
 // grand total for teams
 export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
-    console.log("manthan APicall 22",);
     const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json()
 
@@ -199,7 +195,6 @@ export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTota
 })
 
 export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload);
     const json = await response.json()
 
@@ -210,7 +205,6 @@ export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserW
 })
 
 export const getTargetParametersEmpDataInsights = createAsyncThunk("LIVE_LEADS/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
-    console.log("manthan APicall 33",);
     const response = await client.post(URL.GET_LIVE_LEADS_INSIGHTS(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -857,7 +851,7 @@ export const liveLeadsSlice = createSlice({
                         const {data, ...rest} = x;
                         x = rest;
                     })
-                    console.log("manthan ---- please check ", JSON.stringify(payloadData));
+                   
                     
                     state.insights_target_parameters_data = payloadData;
                     AsyncStore.storeData(
