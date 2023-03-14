@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, SafeAreaView } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+} from "react-native";
 import { ButtonComp, DropDownComponant, TextinputComp } from '../../../components';
 import { DropDownSelectionItem } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -37,38 +44,52 @@ const SearchCustomer = ({ navigation, route }) => {
 
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
-        keyboardVerticalOffset={100}
       >
-        <View style={styles.boxContainer}>
-          <TextinputComp
-            style={styles.textInputComp}
-            label={"Vehicle Reg.No"}
-          />
-          <Text style={GlobalStyle.underline} />
-          <TextinputComp style={styles.textInputComp} label={"Contact No"} />
-          <Text style={GlobalStyle.underline} />
-          <TextinputComp style={styles.textInputComp} label={"Vin Number"} />
-          <Text style={GlobalStyle.underline} />
-          <TextinputComp style={styles.textInputComp} label={"Customer Name"} />
-          <Text style={GlobalStyle.underline} />
-          <DropDownSelectionItem
-            label={"Service Type"}
-            onPress={() =>
-              showDropDownModelMethod("SERVICE_TYPE", "Select Service Type")
-            }
-          />
-          <TextinputComp style={styles.textInputComp} label={"Engine Number"} />
-          <Text style={GlobalStyle.underline} />
-          <TextinputComp style={styles.textInputComp} label={"Policy Number"} />
-          <Text style={GlobalStyle.underline} />
-        </View>
+        <ScrollView
+          automaticallyAdjustContentInsets={true}
+          bounces={true}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.boxContainer}>
+            <TextinputComp
+              style={styles.textInputComp}
+              label={"Vehicle Reg.No"}
+            />
+            <Text style={GlobalStyle.underline} />
+            <TextinputComp style={styles.textInputComp} label={"Contact No"} />
+            <Text style={GlobalStyle.underline} />
+            <TextinputComp style={styles.textInputComp} label={"Vin Number"} />
+            <Text style={GlobalStyle.underline} />
+            <TextinputComp
+              style={styles.textInputComp}
+              label={"Customer Name"}
+            />
+            <Text style={GlobalStyle.underline} />
+            <DropDownSelectionItem
+              label={"Service Type"}
+              onPress={() =>
+                showDropDownModelMethod("SERVICE_TYPE", "Select Service Type")
+              }
+            />
+            <TextinputComp
+              style={styles.textInputComp}
+              label={"Engine Number"}
+            />
+            <Text style={GlobalStyle.underline} />
+            <TextinputComp
+              style={styles.textInputComp}
+              label={"Policy Number"}
+            />
+            <Text style={GlobalStyle.underline} />
+          </View>
 
-        <View style={{ marginTop: 15 }}>
-          <ButtonComp
-            title={"Search"}
-            onPress={() => navigation.navigate("SEARCH_CUSTOMER_RESULT")}
-          />
-        </View>
+          <View style={{ marginTop: 15 }}>
+            <ButtonComp
+              title={"Search"}
+              onPress={() => navigation.navigate("SEARCH_CUSTOMER_RESULT")}
+            />
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     color: Colors.GRAY,
   },
   view3: {
-    // flex: 1,
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
