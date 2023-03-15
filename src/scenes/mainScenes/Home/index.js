@@ -107,7 +107,7 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller","CRE"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
@@ -272,7 +272,7 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(async () => {
     if (
       userData.hrmsRole === "Reception" ||
-      userData.hrmsRole === "Tele Caller"
+      userData.hrmsRole === "Tele Caller" || userData.hrmsRole === "CRE"
     ) {
       let payload = {
         orgId: userData.orgId,

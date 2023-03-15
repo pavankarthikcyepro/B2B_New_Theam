@@ -31,7 +31,7 @@ const tabBarOptions = {
     innerWidth: '90%'
   }
 }
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const DashboardTopTabNavigatorNew = () => {
   const [userData, setUserData] = useState({
     empId: 0,

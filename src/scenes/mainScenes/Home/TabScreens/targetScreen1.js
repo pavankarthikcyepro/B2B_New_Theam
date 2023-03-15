@@ -73,7 +73,7 @@ const data = [
   
   
 ]
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const CRMRole = ["CRM"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();

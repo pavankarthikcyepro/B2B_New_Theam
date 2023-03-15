@@ -60,7 +60,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
 import _ from "lodash";
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 
 const LiveLeadsScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.liveLeadsReducer);
