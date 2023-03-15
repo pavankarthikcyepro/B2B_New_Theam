@@ -20,6 +20,7 @@ import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
 import { LoaderComponent } from "../../../components";
+import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -31,9 +32,9 @@ const screenWidth = Dimensions.get("window").width;
 
 let format = {
   branchWise_available_count: [
-    { name: "Hydrabad", price: 15000, count: 15 },
-    { name: "Hydrabad", price: 15000, count: 15 },
-    { name: "Hydrabad", price: 15000, count: 15 },
+    // { name: "Hydrabad", price: 15000, count: 15 },
+    // { name: "Hydrabad", price: 15000, count: 15 },
+    // { name: "Hydrabad", price: 15000, count: 15 },
   ],
   branchWise_intransit_count: [],
   intransit_stock: [],
@@ -82,8 +83,13 @@ const OverviewDetailScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        const response = await client.get(
-          URL.GET_INVENTORY_BY_LOCATION(jsonObj.orgId, location)
+        let payload = {
+          orgId: jsonObj.orgId.toString(),
+          locationName: location,
+        };
+        const response = await client.post(
+          URL.GET_INVENTORY_BY_LOCATION(),
+          payload
         );
         const json = await response.json();
         if (json) {
@@ -159,7 +165,17 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           </Text>
         </View>
         <View style={styles.valueBox}>
-          <Text style={styles.valueTxt}>{item.count || 0}</Text>
+          <Text
+            onPress={() => {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
+                headerTitle: item.name,
+                available: available,
+              });
+            }}
+            style={styles.valueTxt}
+          >
+            {item.count || 0}
+          </Text>
         </View>
       </View>
     );

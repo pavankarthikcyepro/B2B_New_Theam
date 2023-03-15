@@ -842,32 +842,20 @@ const URL = {
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
   },
-  GET_INVENTORY: (orgId) => {
-    return baseUrl + "dfdr/vehicle-inventory/getInventory/" + orgId;
+  GET_INVENTORY: () => {
+    return baseUrl + "dfdr/vehicle-inventory/getInventory";
   },
-  GET_INVENTORY_BY_LOCATION: (orgId, location) => {
-    return (
-      baseUrl +
-      `dfdr/vehicle-inventory/get-locationBasedVehicles/${orgId}/${location}`
-    );
+  GET_INVENTORY_BY_LOCATION: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-locationBasedVehicles`;
   },
-  GET_INVENTORY_BY_VEHICLE: (orgId, branchId) => {
-    return (
-      baseUrl +
-      `dfdr/vehicle-inventory/get-branchBasedVehicles/${orgId}/${branchId}`
-    );
+  GET_INVENTORY_BY_VEHICLE: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-branchBasedVehicles`;
   },
-  GET_INVENTORY_BY_VEHICLE_MODEL: (orgId, model, branchId) => {
-    return (
-      baseUrl +
-      `dfdr/vehicle-inventory/get-modelBasedVehicles/${orgId}/${model}/${branchId}`
-    );
+  GET_INVENTORY_BY_VEHICLE_MODEL: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-modelBasedVehicles`;
   },
-  GET_INVENTORY_BY_VEHICLE_COLOR: (orgId, branchId, varientName, Variant) => {
-    return (
-      baseUrl +
-      `dfdr/vehicle-inventory/get-varientBasedVehicles/${orgId}/${branchId}/${varientName}/${Variant}`
-    );
+  GET_INVENTORY_BY_VEHICLE_COLOR: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-varientBasedVehicles`;
   },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;

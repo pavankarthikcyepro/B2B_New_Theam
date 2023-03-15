@@ -72,38 +72,41 @@ const AvailableScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    if (selector.dealerCode) {
-      getInventory(selector.dealerCode);
-    }
-  }, [selector.dealerCode,]);
+    navigation.setOptions({
+      title: route?.params?.headerTitle ? route?.params?.headerTitle : "Detail",
+    });
+  }, [navigation]);
+
+  // useEffect(() => {
+  //   if (selector.dealerCode) {
+  //     getInventory(selector.dealerCode);
+  //   }
+  // }, [selector.dealerCode]);
 
   useEffect(() => {
-    console.log(route.params);
     if (route.params) {
       getInventory();
     }
   }, [route.params]);
+
   const getInventory = async (item) => {
     try {
-      // setLoading(true);
+      setLoading(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let branchName = route?.params?.headerTitle;
-        const response = await client.get(
-          URL.GET_INVENTORY_BY_VEHICLE(
-            jsonObj.orgId,
-            // 25,
-            item.name ? item.name : branchName
-            // "Gachibowli"
-          )
+        let payload = {
+          orgId: jsonObj.orgId.toString(),
+          branchName: branchName,
+        };
+        const response = await client.post(
+          URL.GET_INVENTORY_BY_VEHICLE(),
+          payload
         );
-        setBranchName(
-          item.name ? item.name : branchName
-          // "Gachibowli"
-        );
+        setBranchName(item.name ? item.name : branchName);
         setOrgID(jsonObj.orgId);
         const json = await response.json();
         if (json) {

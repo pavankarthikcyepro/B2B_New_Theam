@@ -2,7 +2,7 @@
 import { RadioTextItem } from "./radioTextItem";
 import { CustomerAccordianHeaderItem } from "./customerAccordianHeaderItem";
 import { ImageSelectItem } from "./imageSelectItem";
-import { DateSelectItem } from "./dateSelectItem";
+import { DateSelectItem, NumberInput } from "./dateSelectItem";
 import { DateSelectItemForTargetSettings } from "./dateSelectItemTarget";
 import { EmptyListView } from "./emptyListView";
 import { PreEnquiryItem } from "./preEnquiryItem";
@@ -16,19 +16,20 @@ import { DropDownSelectionItemV2 } from "./dropDownSelectionItemV2";
 import { DropDownSelectionItemV3 } from "./dropDownSelectionItemv3";
 
 export {
-    RadioTextItem,
-    CustomerAccordianHeaderItem,
-    ImageSelectItem,
-    DateSelectItem,
-    EmptyListView,
-    PreEnquiryItem,
-    PageControlItem,
-    DropDownSelectionItem,
-    ComplaintsItem,
-    EventManagementItem,
-    ChartNameList,
-    TargetDropdown,
-    DateSelectItemForTargetSettings,
-    DropDownSelectionItemV2,
-    DropDownSelectionItemV3
+  RadioTextItem,
+  CustomerAccordianHeaderItem,
+  ImageSelectItem,
+  DateSelectItem,
+  EmptyListView,
+  PreEnquiryItem,
+  PageControlItem,
+  DropDownSelectionItem,
+  ComplaintsItem,
+  EventManagementItem,
+  ChartNameList,
+  TargetDropdown,
+  DateSelectItemForTargetSettings,
+  DropDownSelectionItemV2,
+  DropDownSelectionItemV3,
+  NumberInput,
 };

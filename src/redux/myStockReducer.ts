@@ -42,6 +42,8 @@ export const myStockSlice = createSlice({
     u_isLoadingExtraData: false,
     currentScreen: "OVERVIEW",
     dealerCode: {},
+    agingFrom: null,
+    agingTo: null,
   },
   reducers: {
     updateCurrentScreen: (state, action) => {
@@ -49,6 +51,12 @@ export const myStockSlice = createSlice({
     },
     updateSelectedDealerCode: (state, action) => {
       state.dealerCode = action.payload;
+    },
+    updateAgingFrom: (state, action) => {
+      state.agingFrom = action.payload;
+    },
+    updateAgingTo: (state, action) => {
+      state.agingTo = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -74,5 +82,10 @@ export const myStockSlice = createSlice({
   },
 });
 
-export const { updateCurrentScreen, updateSelectedDealerCode } = myStockSlice.actions;
+export const {
+  updateCurrentScreen,
+  updateSelectedDealerCode,
+  updateAgingFrom,
+  updateAgingTo,
+} = myStockSlice.actions;
 export default myStockSlice.reducer;

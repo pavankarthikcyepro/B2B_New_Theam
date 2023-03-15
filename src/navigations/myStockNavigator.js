@@ -82,8 +82,8 @@ const MyStockMainTopTabNavigator = ({ navigation }) => {
         options={{
           title: "My Stock",
           headerShown: true,
-          headerLeft: () => <MenuIcon navigation={navigation} />,
-          headerRight: () => <MyTaskFilter navigation={navigation} />,
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+          // headerRight: () => <MyTaskFilter navigation={navigation} />,
           headerStyle: screeOptionStyle.headerStyle,
           headerTitleStyle: screeOptionStyle.headerTitleStyle,
           headerTintColor: screeOptionStyle.headerTintColor,
@@ -242,7 +242,7 @@ const OverviewTopTabNavigatorTeamsNav = () => {
 };
 const MyTaskFilter = ({ navigation }) => {
   const screen = useSelector((state) => state.myStockReducer.currentScreen);
-  if (screen === "OVERVIEW") return <React.Fragment></React.Fragment>;
+  // if (screen === "OVERVIEW") return <React.Fragment></React.Fragment>;
   return (
     <IconButton
       icon="filter-outline"

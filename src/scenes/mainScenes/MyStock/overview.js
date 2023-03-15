@@ -55,7 +55,7 @@ let sample = {
 
 const OverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.homeReducer);
+  const selector = useSelector((state) => state.myStockReducer);
   const [available, setAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [inventory, setInventory] = useState(sample);
@@ -69,8 +69,17 @@ const OverviewScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    getInventory();
-  }, []);
+    console.log(selector.dealerCode);
+    if (selector.dealerCode) {
+      getInventory(selector.dealerCode);
+    } else {
+      getInventory();
+    }
+  }, [selector.dealerCode]);
+
+  // useEffect(() => {
+  //   getInventory();
+  // }, []);
 
   const getInventory = async () => {
     try {
@@ -80,7 +89,18 @@ const OverviewScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        const response = await client.get(URL.GET_INVENTORY(jsonObj.orgId));
+        let payload = {
+          orgId: jsonObj.orgId.toString(),
+        };
+        if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+          let data = {
+            maxAge: selector.agingTo,
+            minAge: selector.agingFrom,
+            branchName: selector.dealerCode.name,
+          };
+          payload = { ...payload, ...data };
+        }
+        const response = await client.post(URL.GET_INVENTORY(), payload);
         const json = await response.json();
         if (json) {
           setInventory(json);
@@ -152,7 +172,7 @@ const OverviewScreen = ({ route, navigation }) => {
         <View style={{ width: "30%" }}>
           <Text
             onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
                 headerTitle: item.name,
                 available: available,
               });
@@ -165,7 +185,7 @@ const OverviewScreen = ({ route, navigation }) => {
         <View style={styles.valueBox}>
           <Text
             onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
+              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
                 headerTitle: item.name,
                 available: available,
               });
@@ -265,16 +285,20 @@ const OverviewScreen = ({ route, navigation }) => {
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>
           {available
-            ? inventory?.locationWise_available_count?.map((item) => {
+            ? inventory?.locationWise_available_count?.length > 0 &&
+              inventory?.locationWise_available_count?.map((item) => {
                 return renderData(item);
               })
-            : inventory?.locationWise_intrsnsit_count?.map((item) => {
+            : inventory?.locationWise_intrsnsit_count?.length > 0 &&
+              inventory?.locationWise_intrsnsit_count?.map((item) => {
                 return renderData(item);
               })}
           <View style={{ marginTop: 10 }}>
             {available
-              ? renderTotalData(inventory?.locationWise_available_count)
-              : renderTotalData(inventory?.locationWise_intrsnsit_count)}
+              ? inventory?.locationWise_available_count?.length > 0 &&
+                renderTotalData(inventory?.locationWise_available_count)
+              : inventory?.locationWise_intrsnsit_count?.length > 0 &&
+                renderTotalData(inventory?.locationWise_intrsnsit_count)}
           </View>
         </View>
         <View style={styles.mainView}>

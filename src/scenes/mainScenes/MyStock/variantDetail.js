@@ -115,58 +115,6 @@ const Total = [
   },
 ];
 
-const sampleChild = {
-  colourWise_available_stock: [
-    {
-      model: "Kinetic",
-      modelId: 0,
-      varient: "HSX",
-      varientId: 0,
-      colourName: "red",
-      colourId: 0,
-      orgId: 25,
-      branchId: 0,
-      branchName: "Gachibowli",
-      petrolCount: 1,
-      dieselCount: 0,
-      electricCount: 0,
-      stockValue: "100.0",
-    },
-    {
-      model: "Kinetic",
-      modelId: 0,
-      varient: "HSX",
-      varientId: 0,
-      colourName: "red",
-      colourId: 0,
-      orgId: 25,
-      branchId: 0,
-      branchName: "Gachibowli",
-      petrolCount: 1,
-      dieselCount: 0,
-      electricCount: 0,
-      stockValue: "100.0",
-    },
-  ],
-  colourWise_intransit_stock: [
-    {
-      model: "Kinetic",
-      modelId: 0,
-      varient: "HSX",
-      varientId: 0,
-      colourName: "red",
-      colourId: 0,
-      orgId: 25,
-      branchId: 0,
-      branchName: "Gachibowli",
-      petrolCount: 0,
-      dieselCount: 0,
-      electricCount: 0,
-      stockValue: null,
-    },
-  ],
-};
-
 const VariantDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
@@ -190,12 +138,14 @@ const VariantDetailScreen = ({ route, navigation }) => {
   const getVariant = async (item) => {
     try {
       setLoading(true);
-      const response = await client.get(
-        URL.GET_INVENTORY_BY_VEHICLE_MODEL(
-          item?.orgId,
-          item?.headerTitle,
-          item?.branchName
-        )
+      let payload = {
+        orgId: item?.orgId.toString(),
+        model: item?.headerTitle,
+        branchName: item?.branchName,
+      };
+      const response = await client.post(
+        URL.GET_INVENTORY_BY_VEHICLE_MODEL(),
+        payload
       );
       const json = await response.json();
       setAvailable(item.available);
@@ -249,22 +199,24 @@ const VariantDetailScreen = ({ route, navigation }) => {
 
   const showVariant = async (item, index, lastParameter) => {
     try {
-      const response = await client.get(
-        URL.GET_INVENTORY_BY_VEHICLE_COLOR(
-          item?.orgId,
-          item?.branchName,
-          route.params?.headerTitle,
-          item?.varient
-        )
+      let payload = {
+        orgId: item?.orgId.toString(),
+        branchName: item?.branchName,
+        model: route.params?.headerTitle,
+        varient: item?.varient,
+      };
+      const response = await client.post(
+        URL.GET_INVENTORY_BY_VEHICLE_COLOR(),
+        payload
       );
       const json = await response.json();
       if (response.status == "200") {
         let localData0 = { ...models };
         let localData =
           localData0[
-          available
-            ? "varientWise_available_stock"
-            : "varientWise_intransit_stock"
+            available
+              ? "varientWise_available_stock"
+              : "varientWise_intransit_stock"
           ];
 
         let current = localData[index]?.innerVariant || false;
@@ -375,7 +327,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <LoaderComponent visible={loading} onRequestClose={() => { }} />
+        <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
             <View style={{ width: "20%" }}>
@@ -393,23 +345,23 @@ const VariantDetailScreen = ({ route, navigation }) => {
           </View>
           {available
             ? models?.varientWise_available_stock?.length > 0 &&
-            models?.varientWise_available_stock.map((item, index) => {
-              return renderData(item, index);
-            })
+              models?.varientWise_available_stock.map((item, index) => {
+                return renderData(item, index);
+              })
             : models?.varientWise_intransit_stock.length > 0 &&
-            models?.varientWise_intransit_stock.map((item, index) => {
-              return renderData(item, index);
-            })}
+              models?.varientWise_intransit_stock.map((item, index) => {
+                return renderData(item, index);
+              })}
           <View style={{ marginTop: 15 }} />
           {available
             ? models?.varientWise_available_stock?.length > 0 &&
-            totalAvailableData.map((item, index) => {
-              return renderData(item, index, true);
-            })
+              totalAvailableData.map((item, index) => {
+                return renderData(item, index, true);
+              })
             : models?.varientWise_intransit_stock?.length > 0 &&
-            totalInTransitData.map((item, index) => {
-              return renderData(item, index, true);
-            })}
+              totalInTransitData.map((item, index) => {
+                return renderData(item, index, true);
+              })}
         </View>
       </ScrollView>
     </SafeAreaView>

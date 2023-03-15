@@ -21,7 +21,11 @@ import {
 } from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
-import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
+import {
+  DateSelectItem,
+  DropDownSelectionItem,
+  NumberInput,
+} from "../../../pureComponents";
 import moment from "moment";
 import { Button } from "react-native-paper";
 import {
@@ -41,7 +45,11 @@ import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 import { AttendanceTopTabNavigatorIdentifiers } from "../../../navigations/attendanceTopTabNavigator";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
-import { updateSelectedDealerCode } from "../../../redux/myStockReducer";
+import {
+  updateAgingFrom,
+  updateAgingTo,
+  updateSelectedDealerCode,
+} from "../../../redux/myStockReducer";
 import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
@@ -130,8 +138,8 @@ const MyStockFilter = ({ route, navigation }) => {
       .subtract(0, "months")
       .endOf("month")
       .format(dateFormat);
-    setFromDate(monthFirstDate);
-    setToDate(monthLastDate);
+    setFromDate("0");
+    setToDate("0");
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
@@ -371,7 +379,11 @@ const MyStockFilter = ({ route, navigation }) => {
       }
     }
     setTotalDataObj({ ...totalDataObjLocal });
+    setFromDate("0");
+    setToDate("0");
     dispatch(updateSelectedDealerCode({}));
+    dispatch(updateAgingFrom(null));
+    dispatch(updateAgingTo(null));
   };
 
   const submitBtnClicked = (initialData) => {
@@ -400,7 +412,9 @@ const MyStockFilter = ({ route, navigation }) => {
     if (selectedIds.length > 0) {
       setIsLoading(true);
       dispatch(updateSelectedDealerCode(selectedDealerCode));
-      navigation.navigate(MyStockTopTabNavigatorIdentifiers.available);
+      dispatch(updateAgingFrom(fromDate));
+      dispatch(updateAgingTo(toDate));
+      navigation.goBack()
       //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");
@@ -638,23 +652,27 @@ const MyStockFilter = ({ route, navigation }) => {
                   }}
                 >
                   <View style={{ width: "48%" }}>
-                    <DateSelectItem
+                    <NumberInput
                       label={"Aging From"}
                       value={fromDate}
                       onPress={() => {
-                        setIsFilter(true);
                         showDatePickerMethod("FROM_DATE");
+                      }}
+                      onChange={(x) => {
+                        setFromDate(x);
                       }}
                     />
                   </View>
 
                   <View style={{ width: "48%" }}>
-                    <DateSelectItem
+                    <NumberInput
                       label={"Aging To"}
                       value={toDate}
                       onPress={() => {
-                        setIsFilter(true);
                         showDatePickerMethod("TO_DATE");
+                      }}
+                      onChange={(x) => {
+                        setToDate(x);
                       }}
                     />
                   </View>
