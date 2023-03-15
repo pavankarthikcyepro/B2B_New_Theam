@@ -928,7 +928,8 @@ const TargetScreen = ({ route }) => {
         <View style={styles.scondView}>
           <Text style={{
             fontSize: 16,
-            color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+            // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+            color: Colors.BLACK,
             fontWeight: "700",
             paddingVertical: 10
           }}>{item.name}</Text>
@@ -2889,7 +2890,7 @@ const TargetScreen = ({ route }) => {
                                     return (
                                       <View style={styles.view16}>
                                         <View style={styles.view17}>
-                                          <Text numberOfLines={1}>
+                                          <Text  numberOfLines={1}>
                                             {item?.emp_name}
                                           </Text>
                                         </View>
@@ -2898,7 +2899,7 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.RED,
+                                              borderColor: Colors.GRAY,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
@@ -2916,6 +2917,7 @@ const TargetScreen = ({ route }) => {
                                                   item?.enquiryCount > 0
                                                     ? "underline"
                                                     : "none",
+                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.enquiryCount}
@@ -2925,11 +2927,12 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.RED,
+                                              borderColor: Colors.GRAY,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
                                               alignItems: "center",
+                                              
                                             }}
                                           >
                                             <Text
@@ -2943,6 +2946,7 @@ const TargetScreen = ({ route }) => {
                                                   item?.bookingCount > 0
                                                     ? "underline"
                                                     : "none",
+                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.bookingCount}
@@ -2952,7 +2956,7 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.RED,
+                                              borderColor: Colors.GRAY,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
@@ -2970,6 +2974,7 @@ const TargetScreen = ({ route }) => {
                                                   item?.retailCount > 0
                                                     ? "underline"
                                                     : "none",
+                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.retailCount}
@@ -2979,7 +2984,7 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.RED,
+                                              borderColor: Colors.GRAY,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
@@ -2997,6 +3002,7 @@ const TargetScreen = ({ route }) => {
                                                   item?.droppedCount > 0
                                                     ? "underline"
                                                     : "none",
+                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.droppedCount}
@@ -3047,6 +3053,7 @@ const TargetScreen = ({ route }) => {
                                               0
                                               ? "underline"
                                               : "none",
+                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.enquirysCount}
@@ -3071,6 +3078,7 @@ const TargetScreen = ({ route }) => {
                                               0
                                               ? "underline"
                                               : "none",
+                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.bookingsCount}
@@ -3094,6 +3102,7 @@ const TargetScreen = ({ route }) => {
                                             selector.receptionistData.RetailCount > 0
                                               ? "underline"
                                               : "none",
+                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.RetailCount}
@@ -3117,6 +3126,7 @@ const TargetScreen = ({ route }) => {
                                               0
                                               ? "underline"
                                               : "none",
+                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.totalLostCount}
