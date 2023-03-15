@@ -33,10 +33,8 @@ const lastMonthFirstDate = moment(currentDate, dateFormat)
 const screenWidth = Dimensions.get("window").width;
 
 const sample = {
-  available_stock: [],
-  intransit_stock: [],
-  modelWise_available_stock: [],
   modelWise_intransit_stock: [],
+  modelWise_available_stock: [],
 };
 
 const Total = [
@@ -59,7 +57,7 @@ const AvailableScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.myStockReducer);
   const [available, setAvailable] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [inventory, setInventory] = useState(sample);
+  const [inventory, setInventory] = useState(null);
   const [branchName, setBranchName] = useState("");
   const [orgID, setOrgID] = useState(0);
   const [totalAvailableData, setTotalAvailableData] = useState(Total);
@@ -102,12 +100,18 @@ const AvailableScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId.toString(),
           branchName: branchName,
         };
+        if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+          let data = {
+            maxAge: selector.agingTo,
+            minAge: selector.agingFrom,
+            branchName: selector.dealerCode.name,
+          };
+          payload = { ...payload, ...data };
+        }
         const response = await client.post(
           URL.GET_INVENTORY_BY_VEHICLE(),
           payload
         );
-        setBranchName(item.name ? item.name : branchName);
-        setOrgID(jsonObj.orgId);
         const json = await response.json();
         if (json) {
           setInventory(json);
@@ -134,13 +138,15 @@ const AvailableScreen = ({ route, navigation }) => {
             setTotalInTransitData([total]);
           }
         } else {
-          setInventory(sample);
+          // setInventory(sample);
         }
+        setBranchName(item.name ? item.name : branchName);
+        setOrgID(jsonObj.orgId);
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-      setInventory(sample);
+      // setInventory(sample);
     }
   };
 

@@ -157,6 +157,8 @@ const MyStockFilter = ({ route, navigation }) => {
     if (!_.isEmpty(totalDataObj) && nameKeyList) {
       if (!_.isEmpty(stockSelector.dealerCode)) {
         updateSelectedItems(stockSelector.dealerCode, 4);
+        setFromDate(stockSelector.agingFrom);
+        setToDate(stockSelector.agingTo);
       }
     }
   }

@@ -143,6 +143,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
         model: item?.headerTitle,
         branchName: item?.branchName,
       };
+      if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+        let data = {
+          maxAge: selector.agingTo,
+          minAge: selector.agingFrom,
+        };
+        payload = { ...payload, ...data };
+      }
       const response = await client.post(
         URL.GET_INVENTORY_BY_VEHICLE_MODEL(),
         payload

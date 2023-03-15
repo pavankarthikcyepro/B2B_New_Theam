@@ -51,7 +51,7 @@ const tableData = [
 
 const OverviewDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.homeReducer);
+  const selector = useSelector((state) => state.myStockReducer);
   const [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState(true);
   const [inventory, setInventory] = useState(format);
@@ -87,6 +87,14 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId.toString(),
           locationName: location,
         };
+        if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+          let data = {
+            maxAge: selector.agingTo,
+            minAge: selector.agingFrom,
+            branchName: selector.dealerCode.name,
+          };
+          payload = { ...payload, ...data };
+        }
         const response = await client.post(
           URL.GET_INVENTORY_BY_LOCATION(),
           payload
