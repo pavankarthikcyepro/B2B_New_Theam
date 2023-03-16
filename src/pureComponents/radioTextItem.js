@@ -34,7 +34,7 @@ const RadioTextItem = ({
   );
 };
 
-const RadioTextItem1 = ({
+const RadioTextItem2 = ({
   label,
   value,
   status = false,
@@ -79,7 +79,7 @@ const RadioTextItem1 = ({
   );
 };
 
-export { RadioTextItem, RadioTextItem1 };
+export { RadioTextItem, RadioTextItem2 };
 
 const styles = StyleSheet.create({
   view: {

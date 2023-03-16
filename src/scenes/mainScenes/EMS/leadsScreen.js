@@ -14,8 +14,7 @@ import {
 import { Button, IconButton, Searchbar } from "react-native-paper";
 import {
   EmptyListView,
-  RadioTextItem,
-  RadioTextItem1,
+  RadioTextItem2,
 } from "../../../pureComponents";
 import {
   DatePickerComponent,
@@ -1314,7 +1313,7 @@ const LeadsScreen = ({ route, navigation }) => {
       </View>
       <View style={styles.AssignView}>
         <View style={styles.AssignView1}>
-          <RadioTextItem1
+          <RadioTextItem2
             label={"Assigned by Me"}
             value={"Assigned by Me"}
             disabled={false}
@@ -1329,7 +1328,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 : 0
             }
           />
-          <RadioTextItem1
+          <RadioTextItem2
             label={"Assigned to Me"}
             value={"Assigned to Me"}
             disabled={false}
