@@ -101,12 +101,13 @@ import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
 import Orientation from "react-native-orientation-locker";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
+import { isReceptionist } from "../../../utils/helperFunctions";
 
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller","CRE"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
@@ -271,11 +272,14 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(async () => {
     if (
       userData.hrmsRole === "Reception" ||
-      userData.hrmsRole === "Tele Caller"
+      userData.hrmsRole === "Tele Caller" || userData.hrmsRole === "CRE"
     ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
+        "startDate": selector.receptionistFilterIds.startDate,
+        "endDate": selector.receptionistFilterIds.endDate,
+        "dealerCodes": selector.receptionistFilterIds.dealerCodes
       };
       dispatch(getReceptionistData(payload));
     } else if (userData.hrmsRole === "CRM") {
@@ -285,7 +289,7 @@ const HomeScreen = ({ route, navigation }) => {
       };
       dispatch(getReceptionistManagerData(payload));
     }
-  }, [userData]);
+  }, [userData, selector.receptionistFilterIds]);
 
   const setTargetData = async () => {
     let obj = {
@@ -400,7 +404,9 @@ const HomeScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
+
+    // if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
+    if (isReceptionist(userData.hrmsRole)) {
       navigation.navigate(
         AppNavigator.HomeStackIdentifiers.receptionistFilter,
         {
@@ -456,7 +462,7 @@ const HomeScreen = ({ route, navigation }) => {
       });
       const payload = {
         orgId: jsonObj.orgId,
-        branchId: jsonObj.branchId,
+        empId: jsonObj.empId,
       };
       setHeaderText(jsonObj.empName);
       const dateFormat = "YYYY-MM-DD";
@@ -1062,16 +1068,21 @@ const HomeScreen = ({ route, navigation }) => {
     }
   };
 
-  function navigateToEMS(params = {}, screenName = "") {
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
     navigation.navigate(
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
     if (!screenName) {
       setTimeout(() => {
         navigation.navigate("LEADS", {
-          // param: param === "INVOICE" ? "Retail" : param,
-          // moduleType: "home",
-          // employeeDetail: "",
+          screenName: "Home" ,
+          params: params,
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: selectedEmpId,
+          startDate: selector.receptionistFilterIds.startDate,
+          endDate: selector.receptionistFilterIds.endDate,
+          dealerCodes: selector.receptionistFilterIds.dealerCodes
         });
       }, 1000);
     }
@@ -1187,7 +1198,11 @@ const HomeScreen = ({ route, navigation }) => {
     );
   };
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+    
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+      params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes },
+    });
   }
 
   return (
@@ -1435,10 +1450,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.totalDroppedCount > 0 &&
-                    navigateToEMS(
-                      {},
-                      AppNavigator.DrawerStackIdentifiers.dropAnalysis
-                    );
+                   navigateToDropLostCancel()
                 }}
                 style={styles.view8}
               >
@@ -1466,7 +1478,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.enquirysCount > 0 &&
-                    navigateToEMS();
+                    navigateToEMS("ENQUIRY", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1491,7 +1503,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.bookingsCount > 0 &&
-                    navigateToEMS();
+                    navigateToEMS("BOOKING","",[userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1513,7 +1525,7 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.RetailCount > 0 && navigateToEMS();
+                  selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >

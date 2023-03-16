@@ -58,7 +58,7 @@ export const getMenuList = createAsyncThunk("LIVE_LEADS/getMenuList", async (nam
 
 export const getOrganaizationHirarchyList = createAsyncThunk("LIVE_LEADS/getOrganaizationHirarchyList", async (payload: any, { rejectWithValue }) => {
 
-    const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
+    const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.empId))
     const json = await response.json()
 
     if (!response.ok) {
@@ -164,7 +164,6 @@ export const getTargetParametersData = createAsyncThunk("LIVE_LEADS/getTargetPar
 
 // TEAM
 export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
 
@@ -175,7 +174,6 @@ export const getTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getTarget
 })
 
 export const getNewTargetParametersAllData = createAsyncThunk("LIVE_LEADS/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload)
     const json = await response.json()
 
@@ -197,7 +195,6 @@ export const getTotalTargetParametersData = createAsyncThunk("LIVE_LEADS/getTota
 })
 
 export const getUserWiseTargetParameters = createAsyncThunk("LIVE_LEADS/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
-
     const response = await client.post(URL.GET_LIVE_LEADS_TEAM(), payload);
     const json = await response.json()
 
@@ -407,6 +404,12 @@ export const getSourceModelDataForSelf = createAsyncThunk("LIVE_LEADS/getSourceM
     return json;
 })
 
+export const saveFilterPayload = createAsyncThunk(
+    "LIVE_LEADS/saveFilterPayload",
+    async (payload: any) => {
+        return payload;
+    }
+);
 
 const AVAILABLE_SCREENS = [
     {
@@ -464,7 +467,12 @@ export const liveLeadsSlice = createSlice({
         branchrank_list: [],
         designationList: [],
         deptList: [],
-        sourceModelData: []
+        sourceModelData: [],
+        dealerFilter: {},
+        filterPayload: {},
+        filterSelectedData: {},
+        levelSelected:[],
+        saveLiveleadObject:{}
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -491,6 +499,18 @@ export const liveLeadsSlice = createSlice({
             } else {
                 state.insights_target_parameters_data = action.payload.empData;
             }
+        },
+        updateDealerFilterData: (state, action) => {
+            state.dealerFilter = action.payload;
+        },
+        updateFilterSelectedData: (state, action) => {
+            state.filterSelectedData = action.payload;
+        },
+        updateFilterLevelSelectedData: (state, action) => {
+            state.levelSelected = action.payload;
+        },
+        updateLiveLeadObjectData: (state, action) => {
+            state.saveLiveleadObject = action.payload;
         },
         clearState: (state, action) => {
             state.serchtext = ""
@@ -532,6 +552,9 @@ export const liveLeadsSlice = createSlice({
             state.branchrank_list = []
             state.self_target_parameters_data =empData
             state.insights_target_parameters_data =empData
+            // state.dealerFilter= { }
+            // state.filterPayload= { }
+            // state.filterSelectedData ={ }
         },
     },
     extraReducers: (builder) => {
@@ -828,6 +851,8 @@ export const liveLeadsSlice = createSlice({
                         const {data, ...rest} = x;
                         x = rest;
                     })
+                   
+                    
                     state.insights_target_parameters_data = payloadData;
                     AsyncStore.storeData(
                       "TARGET_EMP_LIVE_LEADS",
@@ -999,6 +1024,7 @@ export const liveLeadsSlice = createSlice({
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = liveLeadsSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData
+    , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData  } = liveLeadsSlice.actions;
 export default liveLeadsSlice.reducer;
 

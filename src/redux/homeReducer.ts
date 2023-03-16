@@ -62,7 +62,7 @@ export const getOrganaizationHirarchyList = createAsyncThunk(
   "HOME/getOrganaizationHirarchyList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.get(
-      URL.ORG_HIRARCHY(payload.orgId, payload.branchId)
+      URL.ORG_HIRARCHY(payload.orgId, payload.empId)
     );
     const json = await response.json();
 
@@ -846,6 +846,8 @@ export const homeSlice = createSlice({
       employeeName:[]
     },
     leaderShipFIlterId: [],
+    receptionistFilterIds: [],
+    
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -856,6 +858,9 @@ export const homeSlice = createSlice({
     },
     updateLeaderShipFilter: (state, action) => {
       state.leaderShipFIlterId = action.payload;
+    },
+    updateReceptionistFilterids: (state, action) => {
+      state.receptionistFilterIds = action.payload;
     },
     updateFilterIds: (state, action) => {
       state.filterIds = action.payload;
@@ -948,6 +953,7 @@ export const homeSlice = createSlice({
         employeeName:[]
       };
       state.leaderShipFIlterId = [];
+      state.receptionistFilterIds = [];
     },
   },
   extraReducers: (builder) => {
@@ -1545,6 +1551,6 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown,updateLeaderShipFilter
+  updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids
 } = homeSlice.actions;
 export default homeSlice.reducer;

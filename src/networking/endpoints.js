@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://dev-api.cyepro.com/";
+export const baseUrl = "http://qa-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -403,8 +403,8 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
-  ORG_HIRARCHY: (orgId, branchId) => {
-    return orgnaizationHirarchy + `/active-levels/${orgId}/${branchId}`;
+  ORG_HIRARCHY: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   },
   LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
   VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",
@@ -417,6 +417,7 @@ const URL = {
   LEAD_DROPPED: () => sales_url + "/lead",
 
   DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS: () => sales_url + "/lead-drop/receptionist/leadlist",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
@@ -479,6 +480,9 @@ const URL = {
   },
   GET_LEAD_LIST_2: () => {
     return sales_url + "/lead/allByDateNew";
+  },
+  GET_LEAD_LIST_RECEPTINOST: () => {
+    return sales_url + "/lead/receptionist/allByDateNew";
   },
   GET_ALL_STATUS: () => {
     return sales_url + "/lead/alldatadropdown";

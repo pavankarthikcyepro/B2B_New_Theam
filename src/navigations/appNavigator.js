@@ -123,6 +123,7 @@ import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
+import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -899,6 +900,22 @@ const TabNavigator = ({ navigation, route }) => {
         name={TabStackIdentifiers.ems}
         component={EmsStackNavigator}
         options={{ title: "EMS" }}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            navigation.setParams(
+              {
+                screenName: "DEFAULT",
+                params: "",
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: "",
+                startDate: "",
+                endDate: "",
+                dealerCodes: "",
+                fromScreen: "DEFAULT"
+              })
+          },
+        })}
         // listeners={({ navigation, route }) => ({
         //     tabPress: e => {
         //         if (route.state && route.state.routeNames.length > 0) {
@@ -1070,7 +1087,7 @@ const DropAnalysisStack = createStackNavigator();
 
 const DropAnalysisStackNavigator = ({ navigation }) => {
   return (
-    <DropAnalysisStack.Navigator  screenOptions={screeOptionStyle}>
+    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle} initialRouteName={"DROP_ANALYSIS"} >
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
@@ -1087,6 +1104,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
             );
           },
         }}
+        initialParams={{ emp_id: "", fromScreen: "" }}
       />
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS_HISTORY"}
@@ -1113,6 +1131,20 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
         options={{
           title: "Live Leads",
           headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+        initialParams={{
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        }}
+      />
+      <LiveLeadsStack.Screen
+        name={"LIVE_LEADS_FILTERS"}
+        component={LiveLeadsfilterScreen}
+        options={{
+          title: "Live Leads Filters",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
     </LiveLeadsStack.Navigator>

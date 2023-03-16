@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -18,13 +18,14 @@ import { showToast } from "../../utils/toast";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { current } from "@reduxjs/toolkit";
 import AnimLoaderComp from "../../components/AnimLoaderComp";
+import lodash from 'lodash'
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 // let tempArr = ['DROPPED ' + `${(10)}` , 'APPROVED ' + `${(12)}`, 'REJECTED ' + `${(22)}`]
-const DropAnalysisScreen = ({ navigation }) => {
-
+const DropAnalysisScreen = ({ route, navigation }) => {
+    
     const selector = useSelector((state) => state.leaddropReducer);
     const appSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
@@ -88,6 +89,7 @@ const DropAnalysisScreen = ({ navigation }) => {
         setSelectedToDate(date);
     }
 
+    
 
     useEffect(() => {
         if (selector.leadDropList.length > 0) {
@@ -132,6 +134,49 @@ const DropAnalysisScreen = ({ navigation }) => {
         const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
        
         dispatch(getDropAnalysisFilter(payload))
+    }
+
+    const getDropAnalysisFromRedirections  = async (selectedEmpIds,from,branchCodes) => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const jsonObj = await JSON.parse(employeeData);
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        let payload;
+        
+        if (from ==="targetScreen1"){
+             payload = {
+                "loginEmpId": jsonObj.empId,
+                "startDate": CurrentMonthFirstDate,
+                "endDate": currentMonthLastDate,
+                "orgId": jsonObj.orgId,
+                "limit": 1000,
+                "offset": 0,
+                "filterValue": "",
+                "selectedEmpId": selectedEmpIds,
+                 "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes
+            }
+        } else if (from === "Home"){
+            payload = {
+                "loginEmpId": jsonObj.empId,
+                "startDate": CurrentMonthFirstDate,
+                "endDate": currentMonthLastDate,
+                "orgId": jsonObj.orgId,
+                "limit": 1000,
+                "offset": 0,
+                "filterValue": "",
+                "forDropped": true,
+                "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes
+            }
+        }
+        
+        // const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
+       
+
+        dispatch(getDropAnalysisRedirections(payload))
     }
 
 
@@ -310,12 +355,55 @@ const DropAnalysisScreen = ({ navigation }) => {
     useEffect(() => {
         navigation.addListener("focus", () => {
             getDataFromDB();
+            // setLeadsFilterDropDownText("All")
+            // setLeadsSubMenuFilterDropDownText("All");
+            
+            dispatch(getdropstagemenu());
+         
+            // if (route.params === undefined || route.params.fromScreen !== "targetScreen1" || route.params.fromScreen !== "Home"){
+            //     setLeadsFilterDropDownText("All")
+            //     setLeadsSubMenuFilterDropDownText("All");
+            //     getDropAnalysisWithFilterFromServer()
+            // }
+          
+            // if (route?.params?.fromScreen == "targetScreen1" || route?.params?.fromScreen !== "Home" && route?.params?.emp_id) {
+          
+            //     getDropAnalysisFromRedirections(route?.params?.emp_id)
+            // }
+
+            // if (route?.params?.fromScreen === "") {
+           
+            //     getDropAnalysisWithFilterFromServer()
+            //     setLeadsFilterDropDownText("All")
+            //     setLeadsSubMenuFilterDropDownText("All");
+            // }
+        });
+    
+    }, [navigation]);
+
+    useEffect(() => {
+       
+        // Do something when the screen is focused
+        if (route.params.fromScreen == "targetScreen1" && route?.params?.emp_id) {
+            
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreen1",route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
+        }else if (route.params.fromScreen === "Home"){
+            setLeadsFilterDropDownText("Contact")
+            setLeadsSubMenuFilterDropDownText("Contact");
+            getDropAnalysisFromRedirections("", "Home", route?.params?.dealercodes)
+        }
+
+        if (route.params.fromScreen === "") {
+            getDropAnalysisWithFilterFromServer()
             setLeadsFilterDropDownText("All")
             setLeadsSubMenuFilterDropDownText("All");
-            getDropAnalysisWithFilterFromServer()
-            dispatch(getdropstagemenu());
-        });
-    }, [navigation]);
+        }
+       
+    }, [route.params])
+    
+    
 
     useEffect(() => {
        

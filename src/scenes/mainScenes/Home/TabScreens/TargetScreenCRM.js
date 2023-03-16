@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState ,useMemo} from "react";
 import {
   Animated,
   Dimensions,
@@ -75,7 +75,7 @@ const data = [
 ]
 const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const CRMRole = ["CRM"];
-const TargetScreen = ({ route }) => {
+const TargetScreenCRM = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -135,6 +135,7 @@ const TargetScreen = ({ route }) => {
     hrmsRole: "",
     orgId: 0,
   });
+  const [isParentClicked, setisParentClicked] = useState(false)
   const scrollViewRef = useRef();
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -248,6 +249,95 @@ const TargetScreen = ({ route }) => {
       toggleIndex: 0,
     },
   ];
+
+  const data2 = [
+    {
+      empName: 'pallavi sanjay ',
+      id:1,
+      isOpen: true,
+      children: [
+        {
+          empName: 'Nivedithas',
+          isOpen: true,
+          id: 11,
+          parentId:1,
+          children: [
+            {
+              empName: 'cheten',
+              id: 111,
+              isOpen: false,
+              // children: [],
+            },
+          ],
+        }, {
+          empName: 'kartika',
+          isOpen: true,
+          parentId: 1,
+          id: 22,
+          children: [
+            {
+              empName: 'cheten',
+              id:222,
+              isOpen: false,
+              // children: [],
+            },
+          ],
+        },
+
+        {
+          empName: 'cheten',
+          id:33,
+          parentId: 1,
+          isOpen: false,
+          // children: [],
+        },
+      ],
+    },
+
+    {
+      empName: 'Node 2',
+      isOpen: true,
+      id:2,
+      children: [
+        {
+          empName: 'Nivedithas',
+          isOpen: true,
+          id: 12,
+          parentId: 2,
+          children: [
+            {
+              empName: 'cheten',
+              id: 121,
+              isOpen: false,
+              // children: [],
+            },
+          ],
+        }, {
+          empName: 'kartika',
+          isOpen: true,
+          parentId: 2,
+          id: 22,
+          children: [
+            {
+              empName: 'cheten',
+              id: 222,
+              isOpen: false,
+              // children: [],
+            },
+          ],
+        },
+
+        {
+          empName: 'cheten',
+          id: 33,
+          parentId:2,
+          isOpen: false,
+          // children: [],
+        },
+      ]
+    },
+  ];
+
   const getEmployeeListFromServer = async (user) => {
     const payload = {
       empId: user.empId,
@@ -928,8 +1018,7 @@ const TargetScreen = ({ route }) => {
         <View style={styles.scondView}>
           <Text style={{
             fontSize: 16,
-            // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
-            color: Colors.BLACK,
+            color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
             fontWeight: "700",
             paddingVertical: 10
           }}>{item.name}</Text>
@@ -952,6 +1041,223 @@ const TargetScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
       </View>)
+  }
+    // const  renderTreeMemo = useMemo(() => renderTree(data2), [data2]);
+  const renderTree = (item) => {
+    if (!item || item.length === 0) {
+      return null;
+    }
+    return item.map((item, index) => (
+     
+      <>
+        <ScrollView key={index + 1}>
+         
+          <View
+            style={{
+              paddingHorizontal: 8,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 12,
+              width: Dimensions.get("screen").width - 28,
+            }}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  textTransform: "capitalize",
+                }}
+              >
+                {item.empName}
+                {"  "}
+                {"-   " + item?.roleName}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}></View>
+          </View>
+          {/*Source/Model View END */}
+          <View
+            style={[
+              { flexDirection: "row" },
+              item.isOpenInner && {
+                borderRadius: 10,
+                borderWidth: 2,
+                borderColor: "#C62159",
+                marginHorizontal: 6,
+                overflow: "hidden",
+              },
+            ]}
+          >
+            {/*RIGHT SIDE VIEW*/}
+            <View style={[styles.view6]}>
+              <View style={styles.view7}>
+                <RenderLevel1NameView
+                  level={0}
+                  item={item}
+                  branchName={item.branch}
+                  color={"#C62159"}
+                  receptionManager={true}
+                  navigation={navigation}
+                  titleClick={async () => {
+                   
+                    if(item.isOpen){
+                      setisParentClicked(true);
+                    }else{
+                      setisParentClicked(false);
+                    }
+
+                  }}
+                  roleName={item.roleName}
+                  stopLocation={true}
+                />
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor:
+                      "rgba(223,228,231,0.67)",
+                    alignItems: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  {[
+                    item.totalAllocatedCount || 0,
+                    item.bookingCount || 0,
+                    item.RetailCount || 0,
+                    item.totalDroppedCount || 0,
+                  ].map((e) => {
+                    return (
+                      <View
+                        style={{
+                          width: 55,
+                          height: 30,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            // marginLeft: 50,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+              {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+            </View>
+          </View>
+        </ScrollView>
+        <View style={{borderColor:"red",borderWidth:1 ,marginVertical:10,marginLeft:10}}>
+          {isParentClicked && renderTree(item.children)}
+        </View>
+        
+        
+      </>
+    ));
+  };
+  const renderTreeView = (item,index)=>{
+    return (<View key={`${item.empName} ${index}`}>
+      <View
+        style={{
+          paddingHorizontal: 8,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 12,
+          width: Dimensions.get("screen").width - 28,
+        }}
+      >
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: "600",
+              textTransform: "capitalize",
+            }}
+          >
+            {item.empName}
+            {"  "}
+            {"-   " + item?.roleName}
+          </Text>
+        </View>
+        <View style={{ flexDirection: "row" }}></View>
+      </View>
+      {/*Source/Model View END */}
+      <View
+        style={[
+          { flexDirection: "row" },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: "#C62159",
+            marginHorizontal: 6,
+            overflow: "hidden",
+          },
+        ]}
+      >
+        {/*RIGHT SIDE VIEW*/}
+        <View style={[styles.view6]}>
+          <View style={styles.view7}>
+            <RenderLevel1NameView
+              level={0}
+              item={item}
+              branchName={item.branch}
+              color={"#C62159"}
+              receptionManager={true}
+              navigation={navigation}
+              titleClick={async () => {}}
+              roleName={item.roleName}
+              stopLocation={true}
+            />
+            <View
+              style={{
+                flex: 1,
+                backgroundColor:
+                  "rgba(223,228,231,0.67)",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              {[
+                item.totalAllocatedCount || 0,
+                item.bookingCount || 0,
+                item.RetailCount || 0,
+                item.totalDroppedCount || 0,
+              ].map((e) => {
+                return (
+                  <View
+                    style={{
+                      width: 55,
+                      height: 30,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "700",
+                        // marginLeft: 50,
+                      }}
+                    >
+                      {e || 0}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+          {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+        </View>
+      </View>
+    </View>)
   }
   
   return (
@@ -1022,107 +1328,17 @@ const TargetScreen = ({ route }) => {
                       <ScrollView
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
                       >
-                        {receptionistTeamParameters.length > 0 &&
-                          receptionistTeamParameters.map((item, index) => {
-                            console.log("item -> ", item);
-                            return (
-                              <View key={`${item.empName} ${index}`}>
-                                <View
-                                  style={{
-                                    paddingHorizontal: 8,
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 12,
-                                    width: Dimensions.get("screen").width - 28,
-                                  }}
-                                >
-                                  <View style={{ flexDirection: "row" }}>
-                                    <Text
-                                      style={{
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                        textTransform: "capitalize",
-                                      }}
-                                    >
-                                      {item.empName}
-                                      {"  "}
-                                      {"-   " + item?.roleName}
-                                    </Text>
-                                  </View>
-                                  <View style={{ flexDirection: "row" }}></View>
-                                </View>
-                                {/*Source/Model View END */}
-                                <View
-                                  style={[
-                                    { flexDirection: "row" },
-                                    item.isOpenInner && {
-                                      borderRadius: 10,
-                                      borderWidth: 2,
-                                      borderColor: "#C62159",
-                                      marginHorizontal: 6,
-                                      overflow: "hidden",
-                                    },
-                                  ]}
-                                >
-                                  {/*RIGHT SIDE VIEW*/}
-                                  <View style={[styles.view6]}>
-                                    <View style={styles.view7}>
-                                      <RenderLevel1NameView
-                                        level={0}
-                                        item={item}
-                                        branchName={item.branch}
-                                        color={"#C62159"}
-                                        receptionManager={true}
-                                        navigation={navigation}
-                                        titleClick={async () => {}}
-                                        roleName={item.roleName}
-                                        stopLocation={true}
-                                      />
-                                      <View
-                                        style={{
-                                          flex: 1,
-                                          backgroundColor:
-                                            "rgba(223,228,231,0.67)",
-                                          alignItems: "center",
-                                          flexDirection: "row",
-                                        }}
-                                      >
-                                        {[
-                                          item.totalAllocatedCount || 0,
-                                          item.bookingCount || 0,
-                                          item.RetailCount || 0,
-                                          item.totalDroppedCount || 0,
-                                        ].map((e) => {
-                                          return (
-                                            <View
-                                              style={{
-                                                width: 55,
-                                                height: 30,
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                              }}
-                                            >
-                                              <Text
-                                                style={{
-                                                  fontSize: 16,
-                                                  fontWeight: "700",
-                                                  // marginLeft: 50,
-                                                }}
-                                              >
-                                                {e || 0}
-                                              </Text>
-                                            </View>
-                                          );
-                                        })}
-                                      </View>
-                                    </View>
-                                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                                  </View>
-                                </View>
-                              </View>
-                            );
-                          })}
+                        {data2.length > 0 &&
+                          // data2.map((item, index) => {
+                          //   console.log("item -> ", item);
+                          //   return (
+                          //     //manthan 
+                          //     renderTreeView(item,index)
+                          //   )
+                          // })
+                            // renderTreeMemo()
+                          renderTree(data2)
+                          }
                       </ScrollView>
                     </View>
                     {/* Grand Total Section */}
@@ -1251,6 +1467,8 @@ const TargetScreen = ({ route }) => {
               </View>
             ) : null
           ) : null}
+
+          
           {/* {selector.filterIds?.employeeName?.length > 0 && <View
             style={{
               width: "100%",
@@ -1492,7 +1710,7 @@ const TargetScreen = ({ route }) => {
                                         0 &&
                                       item.employeeTargetAchievements.map(
                                         (innerItem1, innerIndex1) => {
-                                          return (
+                                          return (  
                                             <View
                                               key={innerIndex1}
                                               style={[
@@ -2890,7 +3108,7 @@ const TargetScreen = ({ route }) => {
                                     return (
                                       <View style={styles.view16}>
                                         <View style={styles.view17}>
-                                          <Text  numberOfLines={1}>
+                                          <Text numberOfLines={1}>
                                             {item?.emp_name}
                                           </Text>
                                         </View>
@@ -2899,7 +3117,7 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.GRAY,
+                                              borderColor: Colors.RED,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
@@ -2917,7 +3135,6 @@ const TargetScreen = ({ route }) => {
                                                   item?.enquiryCount > 0
                                                     ? "underline"
                                                     : "none",
-                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.enquiryCount}
@@ -2927,12 +3144,11 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.GRAY,
+                                              borderColor: Colors.RED,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
                                               alignItems: "center",
-                                              
                                             }}
                                           >
                                             <Text
@@ -2946,7 +3162,6 @@ const TargetScreen = ({ route }) => {
                                                   item?.bookingCount > 0
                                                     ? "underline"
                                                     : "none",
-                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.bookingCount}
@@ -2956,7 +3171,7 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.GRAY,
+                                              borderColor: Colors.RED,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
@@ -2974,7 +3189,6 @@ const TargetScreen = ({ route }) => {
                                                   item?.retailCount > 0
                                                     ? "underline"
                                                     : "none",
-                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.retailCount}
@@ -2984,7 +3198,7 @@ const TargetScreen = ({ route }) => {
                                             style={{
                                               minWidth: 45,
                                               height: 25,
-                                              borderColor: Colors.GRAY,
+                                              borderColor: Colors.RED,
                                               borderWidth: 1,
                                               borderRadius: 8,
                                               justifyContent: "center",
@@ -3002,7 +3216,6 @@ const TargetScreen = ({ route }) => {
                                                   item?.droppedCount > 0
                                                     ? "underline"
                                                     : "none",
-                                                color: Colors.PINK
                                               }}
                                             >
                                               {item?.droppedCount}
@@ -3053,7 +3266,6 @@ const TargetScreen = ({ route }) => {
                                               0
                                               ? "underline"
                                               : "none",
-                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.enquirysCount}
@@ -3078,7 +3290,6 @@ const TargetScreen = ({ route }) => {
                                               0
                                               ? "underline"
                                               : "none",
-                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.bookingsCount}
@@ -3102,7 +3313,6 @@ const TargetScreen = ({ route }) => {
                                             selector.receptionistData.RetailCount > 0
                                               ? "underline"
                                               : "none",
-                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.RetailCount}
@@ -3126,7 +3336,6 @@ const TargetScreen = ({ route }) => {
                                               0
                                               ? "underline"
                                               : "none",
-                                          color: Colors.PINK
                                         }}
                                       >
                                         {selector.receptionistData.totalLostCount}
@@ -3706,7 +3915,7 @@ const TargetScreen = ({ route }) => {
   );
 };
 
-export default TargetScreen;
+export default TargetScreenCRM;
 
 export const SourceModelView = ({ style = null, onClick }) => {
   return (

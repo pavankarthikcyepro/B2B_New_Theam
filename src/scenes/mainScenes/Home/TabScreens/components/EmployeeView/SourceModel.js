@@ -18,6 +18,7 @@ import SegmentedControl from "@react-native-segmented-control/segmented-control"
 import { IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
 import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
+import { useIsFocused } from "@react-navigation/native";
 
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ const SourceModel = ({ route, navigation }) => {
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef();
+  const isFocused = useIsFocused();
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -143,7 +145,7 @@ const SourceModel = ({ route, navigation }) => {
     };
     let key = moduleType !== "live-leads" ? "" : "LIVE-LEADS";
     dispatch(getSourceModelDataForSelf({ type, payload, key }));
-  }, [empId, navigation]);
+  }, [empId, navigation, isFocused]);
 
   useEffect(() => {
     setToggleParamsIndex(0);
