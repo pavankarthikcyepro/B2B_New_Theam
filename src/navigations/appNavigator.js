@@ -124,6 +124,7 @@ import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditCompl
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
+import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -410,6 +411,7 @@ export const HomeStackIdentifiers = {
   location: "MAP_TRACKER",
   receptionistFilter: "REECEPTION_FILTER",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
+  crmFilter:"CRM_FILTER"
 };
 
 export const EmsStackIdentifiers = {
@@ -546,6 +548,11 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name={HomeStackIdentifiers.receptionistFilter}
         component={ReceptionistFilterScreen}
+        options={{ title: "Filters" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.crmFilter}
+        component={CRMFilterscreen}
         options={{ title: "Filters" }}
       />
       <MainDrawerNavigator.Screen

@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://qa-api.cyepro.com/";
+export const baseUrl = "http://dev-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -493,6 +493,9 @@ const URL = {
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
   },
+  GET_CRM_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
+    return orgnaizationHirarchy + `/getcrmchild/${orgId}/${employeeId}`;
+  },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`;
@@ -820,6 +823,9 @@ const URL = {
   },
   RECEPTIONIST_MANAGER_DASHBOARD: () => {
     return dashboard + "/receptionistManager";
+  },
+  RECEPTIONIST_MANAGER_DASHBOARD_CRM: () => {
+    return dashboard + "/receptionistManagerTeam";
   },
   RECEPTIONIST_MANAGER_TEAM: () => {
     return dashboard + "/receptionistTeam";

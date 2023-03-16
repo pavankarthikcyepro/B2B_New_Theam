@@ -358,6 +358,22 @@ export const getEmployeesDropDownData = createAsyncThunk(
   }
 );
 
+
+export const getCRMEmployeesDropDownData = createAsyncThunk(
+  "HOME/getCRMEmployeesDropDownData",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_CRM_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId),
+      payload.selectedIds
+    );
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 export const getSalesData = createAsyncThunk(
   "HOME/getSalesData",
   async (payload: any, { rejectWithValue }) => {
@@ -707,6 +723,21 @@ export const getReceptionistManagerData = createAsyncThunk(
   }
 );
 
+export const getCRM_ReceptionistManagerData = createAsyncThunk(
+  "HOME/getCRM_ReceptionistManagerData",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD_CRM(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistSource = createAsyncThunk(
   "HOME/getReceptionistSource",
   async (payload, { rejectWithValue }) => {
@@ -832,6 +863,7 @@ export const homeSlice = createSlice({
       contactsCount: 0,
       enquirysCount: 0,
       totalLostCount: 0,
+      fullResponse:"",
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -847,6 +879,7 @@ export const homeSlice = createSlice({
     },
     leaderShipFIlterId: [],
     receptionistFilterIds: [],
+    crm_employees_drop_down_data: {},
     
   },
   reducers: {
@@ -943,6 +976,7 @@ export const homeSlice = createSlice({
         contactsCount: 0,
         enquirysCount: 0,
         totalLostCount: 0,
+        fullResponse:""
       };
       state.filterIds = {
         startDate: "",
@@ -954,6 +988,7 @@ export const homeSlice = createSlice({
       };
       state.leaderShipFIlterId = [];
       state.receptionistFilterIds = [];
+      state.crm_employees_drop_down_data = {}
     },
   },
   extraReducers: (builder) => {
@@ -1201,6 +1236,19 @@ export const homeSlice = createSlice({
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
         state.employees_drop_down_data = {};
+      })
+
+      // Get  CRM Employees Drop Down Data
+      .addCase(getCRMEmployeesDropDownData.pending, (state, action) => {
+        state.crm_employees_drop_down_data = {};
+      })
+      .addCase(getCRMEmployeesDropDownData.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.crm_employees_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getCRMEmployeesDropDownData.rejected, (state, action) => {
+        state.crm_employees_drop_down_data = {};
       })
       // Get Sales Data
       .addCase(getSalesData.pending, (state, action) => {
@@ -1485,6 +1533,25 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getReceptionistManagerData.rejected, (state, action) => {})
+
+      .addCase(getCRM_ReceptionistManagerData.pending, (state) => { })
+      .addCase(getCRM_ReceptionistManagerData.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistData = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount  ,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
+
+
       .addCase(getReceptionistSource.pending, (state) => {})
       .addCase(getReceptionistSource.fulfilled, (state, action) => {
         const dataObj = action.payload;

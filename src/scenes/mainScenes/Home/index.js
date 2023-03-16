@@ -56,6 +56,7 @@ import {
   getReceptionistData,
   updateIsModalVisible,
   getReceptionistManagerData,
+  getCRM_ReceptionistManagerData,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -287,7 +288,8 @@ const HomeScreen = ({ route, navigation }) => {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
       };
-      dispatch(getReceptionistManagerData(payload));
+      // dispatch(getReceptionistManagerData(payload));
+      dispatch(getCRM_ReceptionistManagerData(payload))
     }
   }, [userData, selector.receptionistFilterIds]);
 
@@ -405,10 +407,18 @@ const HomeScreen = ({ route, navigation }) => {
   };
   const moveToFilter = () => {
 
-    // if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
-    if (isReceptionist(userData.hrmsRole)) {
+    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRE" || userData.hrmsRole == "Tele Caller") {
+    // if (isReceptionist(userData.hrmsRole)) {
       navigation.navigate(
         AppNavigator.HomeStackIdentifiers.receptionistFilter,
+        {
+          isFromLogin: false,
+        }
+      );
+    }
+    else if (userData.hrmsRole == "CRM"){
+      navigation.navigate(
+        AppNavigator.HomeStackIdentifiers.crmFilter,
         {
           isFromLogin: false,
         }

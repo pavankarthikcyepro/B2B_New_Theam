@@ -40,6 +40,7 @@ import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import TextTicker from "react-native-text-ticker";
 import AnimLoaderComp from "../../../../components/AnimLoaderComp";
+import { isArrayBufferView } from "util/types";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -73,6 +74,7 @@ const data = [
   
   
 ]
+
 const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const CRMRole = ["CRM"];
 const TargetScreenCRM = ({ route }) => {
@@ -129,11 +131,20 @@ const TargetScreenCRM = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const translation = useRef(new Animated.Value(0)).current;
   const [slideRight, setSlideRight] = useState();
+
+  const [secondLevelCRMdata, setSecondLevelCRMdata] = useState([]);
+  const [thirdLevelCRMdata, setThirdLevelCRMdata] = useState([]);
+  const [isViewExpanded, setIsViewExpanded] = useState(false);
+  const [isShowSalesConsultant, setisShowSalesConsultant] = useState(false);
+  const [indexLocal, setIndexLocal] = useState(-1);
+  const [storeSecondLevelLocal, setstoreSecondLevelLocal] = useState([]);
+
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
     hrmsRole: "",
     orgId: 0,
+    branchs: [],
   });
   const [isParentClicked, setisParentClicked] = useState(false)
   const scrollViewRef = useRef();
@@ -569,6 +580,7 @@ const TargetScreenCRM = ({ route }) => {
         empName: jsonObj.empName,
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
+        branchs: jsonObj.branchs,
       });
       if (jsonObj.hrmsRole == "CRM") {
         getReceptionManagerTeam(jsonObj);
@@ -617,6 +629,23 @@ const TargetScreenCRM = ({ route }) => {
       setToggleParamsMetaData([...data]);
     }
   }, [selector.isTeam]);
+
+  useEffect(() => {
+
+   
+    if (selector.receptionistData?.fullResponse){
+      let data = selector.receptionistData.fullResponse?.manager
+      
+      let otherUserData = data.filter((item)=>{
+        return item.emp_id !== userData.empId 
+      })
+     
+      setSecondLevelCRMdata([...otherUserData])
+    }
+    
+   
+  }, [selector.receptionistData])
+  
 
   // const handleModalDropdownDataForShuffle = (user) => {
   //     if (delegateButtonClick) {
@@ -1004,7 +1033,7 @@ const TargetScreenCRM = ({ route }) => {
 
     return (
       <View style={{
-        width: 300,
+        // width: 300,
         padding: 10,
         borderColor: index === 0 ? Colors.PURPLE : index === 2 ? Colors.RED : index === 3 ? Colors.YELLOW : Colors.BLUE_V2,
         borderWidth: 1,
@@ -1018,7 +1047,8 @@ const TargetScreenCRM = ({ route }) => {
         <View style={styles.scondView}>
           <Text style={{
             fontSize: 16,
-            color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+            // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+            color: Colors.BLACK,
             fontWeight: "700",
             paddingVertical: 10
           }}>{item.name}</Text>
@@ -1042,228 +1072,688 @@ const TargetScreenCRM = ({ route }) => {
         </View>
       </View>)
   }
-    // const  renderTreeMemo = useMemo(() => renderTree(data2), [data2]);
-  const renderTree = (item) => {
-    if (!item || item.length === 0) {
-      return null;
-    }
-    return item.map((item, index) => (
+    
+  // const renderTree = (item) => {
+  //   if (!item || item.length === 0) {
+  //     return null;
+  //   }
+  //   return item.map((item, index) => (
      
-      <>
-        <ScrollView key={index + 1}>
+  //     <>
+  //       <ScrollView key={index + 1}>
          
-          <View
-            style={{
-              paddingHorizontal: 8,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 12,
-              width: Dimensions.get("screen").width - 28,
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  textTransform: "capitalize",
-                }}
-              >
-                {item.empName}
-                {"  "}
-                {"-   " + item?.roleName}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row" }}></View>
-          </View>
-          {/*Source/Model View END */}
-          <View
-            style={[
-              { flexDirection: "row" },
-              item.isOpenInner && {
-                borderRadius: 10,
-                borderWidth: 2,
-                borderColor: "#C62159",
-                marginHorizontal: 6,
-                overflow: "hidden",
-              },
-            ]}
-          >
-            {/*RIGHT SIDE VIEW*/}
-            <View style={[styles.view6]}>
-              <View style={styles.view7}>
-                <RenderLevel1NameView
-                  level={0}
-                  item={item}
-                  branchName={item.branch}
-                  color={"#C62159"}
-                  receptionManager={true}
-                  navigation={navigation}
-                  titleClick={async () => {
+  //         <View
+  //           style={{
+  //             paddingHorizontal: 8,
+  //             display: "flex",
+  //             flexDirection: "row",
+  //             justifyContent: "space-between",
+  //             marginTop: 12,
+  //             width: Dimensions.get("screen").width - 28,
+  //           }}
+  //         >
+  //           <View style={{ flexDirection: "row" }}>
+  //             <Text
+  //               style={{
+  //                 fontSize: 12,
+  //                 fontWeight: "600",
+  //                 textTransform: "capitalize",
+  //               }}
+  //             >
+  //               {item.empName}
+  //               {"  "}
+  //               {"-   " + item?.roleName}
+  //             </Text>
+  //           </View>
+  //           <View style={{ flexDirection: "row" }}></View>
+  //         </View>
+  //         {/*Source/Model View END */}
+  //         <View
+  //           style={[
+  //             { flexDirection: "row" },
+  //             item.isOpenInner && {
+  //               borderRadius: 10,
+  //               borderWidth: 2,
+  //               borderColor: "#C62159",
+  //               marginHorizontal: 6,
+  //               overflow: "hidden",
+  //             },
+  //           ]}
+  //         >
+  //           {/*RIGHT SIDE VIEW*/}
+  //           <View style={[styles.view6]}>
+  //             <View style={styles.view7}>
+  //               <RenderLevel1NameView
+  //                 level={0}
+  //                 item={item}
+  //                 branchName={item.branch}
+  //                 color={"#C62159"}
+  //                 receptionManager={true}
+  //                 navigation={navigation}
+  //                 titleClick={async () => {
                    
-                    if(item.isOpen){
-                      setisParentClicked(true);
-                    }else{
-                      setisParentClicked(false);
-                    }
+  //                   if(item.isOpen){
+  //                     setisParentClicked(true);
+  //                   }else{
+  //                     setisParentClicked(false);
+  //                   }
 
-                  }}
-                  roleName={item.roleName}
-                  stopLocation={true}
-                />
+  //                 }}
+  //                 roleName={item.roleName}
+  //                 stopLocation={true}
+  //               />
+  //               <View
+  //                 style={{
+  //                   flex: 1,
+  //                   backgroundColor:
+  //                     "rgba(223,228,231,0.67)",
+  //                   alignItems: "center",
+  //                   flexDirection: "row",
+  //                 }}
+  //               >
+  //                 {[
+  //                   item.totalAllocatedCount || 0,
+  //                   item.bookingCount || 0,
+  //                   item.RetailCount || 0,
+  //                   item.totalDroppedCount || 0,
+  //                 ].map((e) => {
+  //                   return (
+  //                     <View
+  //                       style={{
+  //                         width: 55,
+  //                         height: 30,
+  //                         justifyContent: "center",
+  //                         alignItems: "center",
+  //                       }}
+  //                     >
+  //                       <Text
+  //                         style={{
+  //                           fontSize: 16,
+  //                           fontWeight: "700",
+  //                           // marginLeft: 50,
+  //                         }}
+  //                       >
+  //                         {e || 0}
+  //                       </Text>
+  //                     </View>
+  //                   );
+  //                 })}
+  //               </View>
+  //             </View>
+  //             {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+  //           </View>
+  //         </View>
+  //       </ScrollView>
+  //       <View style={{borderColor:"red",borderWidth:1 ,marginVertical:10,marginLeft:10}}>
+  //         {isParentClicked && renderTree(item.children)}
+  //       </View>
+        
+        
+  //     </>
+  //   ));
+  // };
+  // const renderTreeView = (item,index)=>{
+  //   return (<View key={`${item.empName} ${index}`}>
+  //     <View
+  //       style={{
+  //         paddingHorizontal: 8,
+  //         display: "flex",
+  //         flexDirection: "row",
+  //         justifyContent: "space-between",
+  //         marginTop: 12,
+  //         width: Dimensions.get("screen").width - 28,
+  //       }}
+  //     >
+  //       <View style={{ flexDirection: "row" }}>
+  //         <Text
+  //           style={{
+  //             fontSize: 12,
+  //             fontWeight: "600",
+  //             textTransform: "capitalize",
+  //           }}
+  //         >
+  //           {item.empName}
+  //           {"  "}
+  //           {"-   " + item?.roleName}
+  //         </Text>
+  //       </View>
+  //       <View style={{ flexDirection: "row" }}></View>
+  //     </View>
+  //     {/*Source/Model View END */}
+  //     <View
+  //       style={[
+  //         { flexDirection: "row" },
+  //         item.isOpenInner && {
+  //           borderRadius: 10,
+  //           borderWidth: 2,
+  //           borderColor: "#C62159",
+  //           marginHorizontal: 6,
+  //           overflow: "hidden",
+  //         },
+  //       ]}
+  //     >
+  //       {/*RIGHT SIDE VIEW*/}
+  //       <View style={[styles.view6]}>
+  //         <View style={styles.view7}>
+  //           <RenderLevel1NameView
+  //             level={0}
+  //             item={item}
+  //             branchName={item.branch}
+  //             color={"#C62159"}
+  //             receptionManager={true}
+  //             navigation={navigation}
+  //             titleClick={async () => {}}
+  //             roleName={item.roleName}
+  //             stopLocation={true}
+  //           />
+  //           <View
+  //             style={{
+  //               flex: 1,
+  //               backgroundColor:
+  //                 "rgba(223,228,231,0.67)",
+  //               alignItems: "center",
+  //               flexDirection: "row",
+  //             }}
+  //           >
+  //             {[
+  //               item.totalAllocatedCount || 0,
+  //               item.bookingCount || 0,
+  //               item.RetailCount || 0,
+  //               item.totalDroppedCount || 0,
+  //             ].map((e) => {
+  //               return (
+  //                 <View
+  //                   style={{
+  //                     width: 55,
+  //                     height: 30,
+  //                     justifyContent: "center",
+  //                     alignItems: "center",
+  //                   }}
+  //                 >
+  //                   <Text
+  //                     style={{
+  //                       fontSize: 16,
+  //                       fontWeight: "700",
+  //                       // marginLeft: 50,
+  //                     }}
+  //                   >
+  //                     {e || 0}
+  //                   </Text>
+  //                 </View>
+  //               );
+  //             })}
+  //           </View>
+  //         </View>
+  //         {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+  //       </View>
+  //     </View>
+  //   </View>)
+  // }
+
+
+  const renderCRMTree = ()=>{
+    // todo manthan
+    return(
+    <View
+    // style={{ height: selector.isMD ? "81%" : "80%" }}
+    >
+      {selector.receptionistData.consultantList.length > 0 &&
+        selector.receptionistData.consultantList.map((item, index) => {
+         
+          if (item.emp_id === userData.empId) {
+            return (
+              <View key={`${item.emp_name} ${index}`} 
+              style={{ 
+                borderColor: isViewExpanded ? Colors.PINK : "",
+                borderWidth:isViewExpanded? 1: 0, 
+                borderRadius:10,
+                margin: isViewExpanded?10:0
+                 }}>
                 <View
                   style={{
-                    flex: 1,
-                    backgroundColor:
-                      "rgba(223,228,231,0.67)",
-                    alignItems: "center",
+                    paddingHorizontal: 8,
+                    display: "flex",
                     flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                   
+                    
                   }}
                 >
-                  {[
-                    item.totalAllocatedCount || 0,
-                    item.bookingCount || 0,
-                    item.RetailCount || 0,
-                    item.totalDroppedCount || 0,
-                  ].map((e) => {
-                    return (
-                      <View
-                        style={{
-                          width: 55,
-                          height: 30,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            fontWeight: "700",
-                            // marginLeft: 50,
-                          }}
-                        >
-                          {e || 0}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              </View>
-              {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-            </View>
-          </View>
-        </ScrollView>
-        <View style={{borderColor:"red",borderWidth:1 ,marginVertical:10,marginLeft:10}}>
-          {isParentClicked && renderTree(item.children)}
-        </View>
-        
-        
-      </>
-    ));
-  };
-  const renderTreeView = (item,index)=>{
-    return (<View key={`${item.empName} ${index}`}>
-      <View
-        style={{
-          paddingHorizontal: 8,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginTop: 12,
-          width: Dimensions.get("screen").width - 28,
-        }}
-      >
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: "600",
-              textTransform: "capitalize",
-            }}
-          >
-            {item.empName}
-            {"  "}
-            {"-   " + item?.roleName}
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row" }}></View>
-      </View>
-      {/*Source/Model View END */}
-      <View
-        style={[
-          { flexDirection: "row" },
-          item.isOpenInner && {
-            borderRadius: 10,
-            borderWidth: 2,
-            borderColor: "#C62159",
-            marginHorizontal: 6,
-            overflow: "hidden",
-          },
-        ]}
-      >
-        {/*RIGHT SIDE VIEW*/}
-        <View style={[styles.view6]}>
-          <View style={styles.view7}>
-            <RenderLevel1NameView
-              level={0}
-              item={item}
-              branchName={item.branch}
-              color={"#C62159"}
-              receptionManager={true}
-              navigation={navigation}
-              titleClick={async () => {}}
-              roleName={item.roleName}
-              stopLocation={true}
-            />
-            <View
-              style={{
-                flex: 1,
-                backgroundColor:
-                  "rgba(223,228,231,0.67)",
-                alignItems: "center",
-                flexDirection: "row",
-              }}
-            >
-              {[
-                item.totalAllocatedCount || 0,
-                item.bookingCount || 0,
-                item.RetailCount || 0,
-                item.totalDroppedCount || 0,
-              ].map((e) => {
-                return (
-                  <View
-                    style={{
-                      width: 55,
-                      height: 30,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
+                  <View style={{ flexDirection: "row" }}>
                     <Text
                       style={{
-                        fontSize: 16,
-                        fontWeight: "700",
-                        // marginLeft: 50,
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
                       }}
                     >
-                      {e || 0}
+                      {item.emp_name}
+                      {"  "}
+                      {"-   " + item?.roleName}
                     </Text>
                   </View>
-                );
-              })}
-            </View>
-          </View>
-          {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-        </View>
-      </View>
+                  <View style={{ flexDirection: "row" }}></View>
+                  <View style={{ flexDirection: "row" }}>
+                    {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                      <Animated.View
+                        style={{
+                          transform: [
+                            { translateX: translation },
+                          ],
+                        }}
+                      >
+                        <View
+                          style={{
+                            backgroundColor: "lightgrey",
+                            flexDirection: "row",
+                            paddingHorizontal: 7,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: 5,
+                            alignSelf: "flex-start",
+                            marginLeft: 7,
+                            // transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <MaterialIcons
+                            name="person"
+                            size={15}
+                            color={Colors.BLACK}
+                          />
+                          <Text>{selector.receptionistData?.fullResponse?.childUserCount}</Text>
+                        </View>
+                      </Animated.View>
+                    )}
+                    <SourceModelView
+                      onClick={() => {
+                        navigation.navigate(
+                          "RECEP_SOURCE_MODEL",
+                          {
+                            empId: item?.emp_id,
+                            headerTitle: item?.emp_name,
+                            loggedInEmpId: item.emp_id,
+                            type: "TEAM",
+                            moduleType: "home",
+                            headerTitle: "Source/Model",
+                            orgId: userData.orgId,
+                            role: userData.hrmsRole,
+                            branchList: userData.branchs.map(
+                              (a) => a.branchId
+                            ),
+                          }
+                        );
+                      }}
+                      style={{
+                        transform: [
+                          { translateX: translation },
+                        ],
+                      }}
+                    />
+                  </View>
+                </View>
+                
+                {/*Source/Model View END */}
+                <View
+                  style={[
+                    { flexDirection: "row" },
+                    item.isOpenInner && {
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: "#C62159",
+                      marginHorizontal: 6,
+                      overflow: "hidden",
+                    },
+                  ]}
+                >
+                  {/*RIGHT SIDE VIEW*/}
+                  <View style={[styles.view6]}>
+                    <View style={styles.view7}>
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={item.branch}
+                        color={"#C62159"}
+                        receptionManager={true}
+                        navigation={navigation}
+                        titleClick={async (e) => { 
+
+                          setIsViewExpanded(!isViewExpanded)  
+                        
+                        }}
+                        roleName={item.roleName}
+                        stopLocation={true}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor:
+                            "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {[
+                          isViewExpanded ? item.enquiryCount :  selector.receptionistData.enquirysCount || 0,
+                          isViewExpanded ? item.bookingCount :  selector.receptionistData.bookingsCount || 0,
+                          isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
+                          isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
+                        ].map((e) => {
+                          return (
+                            <Pressable onPress={()=>{
+                             
+                              // todo redirections logic 
+                            }}>
+                            <View
+                              style={{
+                                width: 55,
+                                height: 30,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  fontWeight: "700",
+                                    textDecorationLine: e  > 0 ?"underline":"none"
+                                  // marginLeft: 50,
+                                }}
+                              >
+                                {e || 0}
+                              </Text>
+                            </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isViewExpanded  && renderCRMTreeChild()}
+              </View>
+            );
+            }
+        
+        })}
+       
     </View>)
+  }
+
+  const renderCRMTreeChild = () => {
+    // todo manthan
+  
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {secondLevelCRMdata.length > 0 &&
+          secondLevelCRMdata.map((item, index) => {
+          
+            // if (item.emp_id == userData.empId) {
+              return (
+                <View key={`${item.emp_name} ${index}`}
+                  style={{
+                    borderColor: isShowSalesConsultant && indexLocal === index ? Colors.BLUE : "",
+                    borderWidth: isShowSalesConsultant && indexLocal === index ? 1 : 0,
+                    borderRadius: 10,
+                    margin: isShowSalesConsultant && indexLocal === index ? 10 : 0
+                  }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      width: Dimensions.get("screen").width - 28,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {item.emp_name}
+                        {"  "}
+                        {"-   " + item?.roleName}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}></View>
+                    
+                  </View>
+
+                  {/*Source/Model View END */}
+                  <View
+                    style={[
+                      { flexDirection: "row" },
+                      item.isOpenInner && {
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: "#C62159",
+                        marginHorizontal: 6,
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
+                    {/*RIGHT SIDE VIEW*/}
+                    <View style={[styles.view6]}>
+                      <View style={styles.view7}>
+                        <RenderLevel1NameViewCRM
+                          level={0}
+                          item={item}
+                          branchName={item.branch}
+                          color={"#C62159"}
+                          receptionManager={true}
+                          navigation={navigation}
+                          titleClick={async (e) => { 
+                            
+                            formateSaleConsutantDataCRM(item,index)
+                         }}
+                          roleName={item.roleName}
+                          stopLocation={true}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            backgroundColor:
+                              "rgba(223,228,231,0.67)",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {[
+                            item.enquiryCount || 0,
+                            item.bookingCount || 0,
+                            item.retailCount || 0,
+                            item.droppedCount || 0,
+                          ].map((e) => {
+                            return (
+                              <Pressable onPress={() => {
+
+                                // todo redirections logic 
+                              }}>
+                                <View
+                                  style={{
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine: e > 0 ? "underline" : "none"
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </View>
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                    </View>
+                  </View>
+                  {isShowSalesConsultant && indexLocal === index && renderCRMTreeChildSaleConsultants()}
+                </View>
+              );
+            // }
+
+          })}
+      </View>)
+  }
+
+  const renderCRMTreeChildSaleConsultants = () => {
+    // todo manthan
+   
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {thirdLevelCRMdata.length > 0 &&
+          thirdLevelCRMdata.map((item, index) => {
+            console.log("manthan---ffitem.emp_id !== userData.empId ", item.emp_id !== userData.empId);
+            if (item.emp_id !== userData.empId) {
+            return (
+              <View key={`${item.emp_name} ${index}`}
+                style={{
+                  // borderColor: isViewExpanded ? Colors.PINK : "",
+                  // borderWidth: isViewExpanded ? 1 : 0,
+                  // borderRadius: 10,
+                  // margin: isViewExpanded ? 10 : 0
+                }}>
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item.emp_name}
+                      {"  "}
+                      {"-   " + "sales Consultant"}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}></View>
+                 
+                </View>
+
+                {/*Source/Model View END */}
+                <View
+                  style={[
+                    { flexDirection: "row" },
+                    item.isOpenInner && {
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: "#C62159",
+                      marginHorizontal: 6,
+                      overflow: "hidden",
+                    },
+                  ]}
+                >
+                  {/*RIGHT SIDE VIEW*/}
+                  <View style={[styles.view6]}>
+                    <View style={styles.view7}>
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={item.branch}
+                        color={"#C62159"}
+                        receptionManager={true}
+                        navigation={navigation}
+                        titleClick={async (e) => { console.log("manthan---ff ", item); }}
+                        roleName={"sales Consultant"}
+                        stopLocation={true}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor:
+                            "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {[
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                          item.droppedCount || 0,
+                        ].map((e) => {
+                          return (
+                            <Pressable onPress={() => {
+
+                              // todo redirections logic 
+                            }}>
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+              </View>
+            );
+            }
+
+          })}
+      </View>)
+  }
+  const formateSaleConsutantDataCRM = (item,index)=>{
+    // let salesconsultant = item.salesconsultant;
+    setIndexLocal(index)
+    setisShowSalesConsultant(!isShowSalesConsultant);
+    setThirdLevelCRMdata(item.salesconsultant)
+    console.log("manthan---dd ", item.salesconsultant);
   }
   
   return (
     <React.Fragment>
       {!selector.isLoading ? (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}  >
           {receptionistRole.includes(userData.hrmsRole) ? (
             selector.isTeam ? (
               <View>
@@ -1276,7 +1766,10 @@ const TargetScreenCRM = ({ route }) => {
                   <AnimLoaderComp visible={true} />
                 ) : (
                   <ScrollView
-                    contentContainerStyle={styles.scrollview}
+                    contentContainerStyle={{
+                      paddingRight: 0,
+                      flexDirection: "column",
+              }}
                     horizontal={true}
                     directionalLockEnabled={true}
                     showsHorizontalScrollIndicator={false}
@@ -1325,21 +1818,16 @@ const TargetScreenCRM = ({ route }) => {
                           })}
                         </View>
                       </View>
-                      <ScrollView
-                      // style={{ height: selector.isMD ? "81%" : "80%" }}
-                      >
-                        {data2.length > 0 &&
-                          // data2.map((item, index) => {
-                          //   console.log("item -> ", item);
-                          //   return (
-                          //     //manthan 
-                          //     renderTreeView(item,index)
-                          //   )
-                          // })
-                            // renderTreeMemo()
-                          renderTree(data2)
-                          }
-                      </ScrollView>
+                      {/* <View
+                    
+                      > */}
+                        
+                          {renderCRMTree()}
+                          
+                          
+                      {/* </View> */}
+                       
+                        
                     </View>
                     {/* Grand Total Section */}
                     {totalOfTeam && (
@@ -3904,7 +4392,7 @@ const TargetScreenCRM = ({ route }) => {
               </>
             )
           )}
-        </View>
+        </ScrollView>
       ) : (
         <LoaderComponent
           visible={selector.isLoading}
@@ -3982,6 +4470,104 @@ export const RenderLevel1NameView = ({
             }}
           >
             {item?.empName?.charAt(0)}
+          </Text>
+        </TouchableOpacity>
+        {/* {level === 0 && !!branchName && ( */}
+        {branchName ? (
+          <TouchableOpacity
+            disabled={stopLocation}
+            onPress={() => {
+              if (item.roleName !== "MD" && item.roleName !== "CEO") {
+                navigation.navigate(
+                  AppNavigator.HomeStackIdentifiers.location,
+                  {
+                    empId: item.empId,
+                    orgId: item.orgId,
+                  }
+                );
+              }
+            }}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+        {/* )} */}
+      </View>
+      <View
+        style={{
+          width: "25%",
+          justifyContent: "space-around",
+          textAlign: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "ACH"}
+        </Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "TGT"}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+
+export const RenderLevel1NameViewCRM = ({
+  level,
+  item,
+  branchName = "",
+  color,
+  titleClick,
+  navigation,
+  disable = false,
+  receptionManager = false,
+  stopLocation = false,
+}) => {
+  return (
+    <View
+      style={{
+        width: 100,
+        justifyContent: "center",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
+      <View
+        style={{ width: 60, justifyContent: "center", alignItems: "center" }}
+      >
+        <TouchableOpacity
+          disabled={disable}
+          style={{
+            width: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: color,
+            borderRadius: 20,
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+          onPress={titleClick}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#fff",
+            }}
+          >
+            {item?.emp_name?.charAt(0)}
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
