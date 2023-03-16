@@ -1083,13 +1083,34 @@ const LeadsScreen = ({ route, navigation }) => {
       ? moment().format(dateFormat)
       : currentDate;
 
+  function onAssignByMeLength(data) {
+    if (data.length > 0) {
+      let newData = data.filter(
+        (i) => i.createdBy === userData.empName
+        // &&
+        // userData.empName === i.salesConsultant
+      );
+      return newData.length;
+    } else {
+      return 0;
+    }
+  }
+
+ function onAssignToMeLength(data) {
+    if (data.length > 0) {
+      let newData = data.filter((i) => userData.empName === i.salesConsultant);
+      return newData.length;
+    } else {
+      return 0;
+    }
+  }
+
   function onAssignByMe(data) {
     if (data.length > 0) {
       let newData = data.filter(
-        (i) =>
-          i.createdBy === userData.empName 
-          // &&
-          // userData.empName === i.salesConsultant
+        (i) => i.createdBy === userData.empName
+        // &&
+        // userData.empName === i.salesConsultant
       );
       dispatch(updateTheCount(newData.length));
       return newData;
@@ -1302,6 +1323,11 @@ const LeadsScreen = ({ route, navigation }) => {
               setAssignByMe(true);
               setAssignToMe(false);
             }}
+            data={
+              searchedData.length > 0
+                ? onAssignByMeLength(searchedData)
+                : 0
+            }
           />
           <RadioTextItem1
             label={"Assigned to Me"}
@@ -1312,6 +1338,11 @@ const LeadsScreen = ({ route, navigation }) => {
               setAssignByMe(false);
               setAssignToMe(true);
             }}
+            data={
+              searchedData.length > 0
+                ? onAssignToMeLength(searchedData)
+                : 0
+            }
           />
         </View>
 
@@ -1534,10 +1565,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    backgroundColor:Colors.WHITE,
-    borderWidth:0.5,
-    borderColor:Colors.LIGHT_GRAY,
-    borderRadius:5,
+    backgroundColor: Colors.WHITE,
+    borderWidth: 0.5,
+    borderColor: Colors.LIGHT_GRAY,
+    borderRadius: 5,
   },
   AssignView1: {
     flexDirection: "row",
