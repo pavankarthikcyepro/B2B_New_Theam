@@ -4,7 +4,6 @@ import {
     StyleSheet,
     View,
     FlatList,
-    ActivityIndicator,
     Text,
     RefreshControl,
     Pressable,
@@ -24,6 +23,7 @@ import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -271,10 +271,10 @@ const EnquiryScreen = ({ navigation }) => {
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
         return (
-            <View style={styles.footer}>
-                <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY} />
-            </View>
+          <View style={styles.footer}>
+            <Text style={styles.btnText}>Loading More...</Text>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     };
 

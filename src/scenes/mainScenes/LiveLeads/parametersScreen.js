@@ -22,7 +22,7 @@ import {
   getUserWiseTargetParameters,
 } from "../../../redux/liveLeadsReducer";
 import { useNavigation } from "@react-navigation/native";
-import { ActivityIndicator, Card, IconButton } from "react-native-paper";
+import { Card, IconButton } from "react-native-paper";
 import { RenderGrandTotal } from "../Home/TabScreens/components/RenderGrandTotal";
 import { RenderEmployeeParameters } from "../Home/TabScreens/components/RenderEmployeeParameters";
 import { AppNavigator } from "../../../navigations";
@@ -32,6 +32,7 @@ import {
 } from "../../../navigations/emsTopTabNavigator";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -646,7 +647,7 @@ const ParametersScreen = ({ route }) => {
               {/*</View>*/}
             </View>
             {isLoading ? (
-              <ActivityIndicator color={Colors.RED} size={"large"} />
+              <AnimLoaderComp visible={true} />
             ) : (
               <ScrollView
                 contentContainerStyle={{

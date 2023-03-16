@@ -17,6 +17,8 @@ export const GEOLOCATION = "GEOLOCATION";
 export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
 export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
+export const COMPLAINT_TRACKER = "REPORT_DOWNLOAD";
+
 
 const data = [
   {
@@ -43,18 +45,18 @@ const data = [
     screen: 118,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
-  // {
-  //   title: "Event Dashboard",
-  //   icon: EVENT_DASHBOARD,
-  //   screen: 119,
-  //   pngIcon: require("../assets/images/Target_Planning-01.png"),
-  // },
-  // {
-  //   title: "My Attendance",
-  //   icon: ATTENDANCE,
-  //   screen: 116,
-  //   pngIcon: require("../assets/images/Target_Planning-01.png"),
-  // },
+  {
+    title: "Event Dashboard",
+    icon: EVENT_DASHBOARD,
+    screen: 119,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
   // {
   //   title: "Download Report",
   //   icon: REPORT_DOWNLOAD,
@@ -91,12 +93,12 @@ const data = [
   //   screen: 103,
   //   pngIcon: require('../assets/images/Event_Management-01.png')
   // },
-  // {
-  //   title: "Task Transfer",
-  //   icon: TRANSFER_STR,
-  //   screen: 109,
-  //   pngIcon: require("../assets/images/Task_Trasnfer-01.png"),
-  // },
+  {
+    title: "Task Transfer",
+    icon: TRANSFER_STR,
+    screen: 109,
+    pngIcon: require("../assets/images/Task_Trasnfer-01.png"),
+  },
   // {
   //   title: "Team Shuffle",
   //   icon: GROUP_STR,
@@ -139,11 +141,17 @@ const data = [
     pngIcon: require("../assets/images/Settings-01.png"),
   },
   {
+    title: "Complaint Tracker",
+    icon: COMPLAINT_TRACKER,
+    screen: 123,
+    pngIcon: require("../assets/images/review.png"),
+  },
+  {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
     pngIcon: require("../assets/images/Signout-01.png"),
-  },
+  }
 ];
 
 const dataForManager = [
@@ -163,12 +171,12 @@ const dataForManager = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
   },
-  // {
-  //   title: "My Attendance",
-  //   icon: ATTENDANCE,
-  //   screen: 116,
-  //   pngIcon: require("../assets/images/Target_Planning-01.png"),
-  // },
+  {
+    title: "My Attendance",
+    icon: ATTENDANCE,
+    screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
   // {
   //   title: "Task Management",
   //   icon: CUSTOMER_RELATIONSHIP_STR,
@@ -184,11 +192,11 @@ const dataForManager = [
   //   icon: EVENT_MANAGEMENT_STR,
   //   screen: 103,
   // },
-  // {
-  //   title: "Task Transfer",
-  //   icon: CUSTOMER_RELATIONSHIP_STR,
-  //   screen: 109,
-  // },
+  {
+    title: "Task Transfer",
+    icon: CUSTOMER_RELATIONSHIP_STR,
+    screen: 109,
+  },
   // {
   //   title: "Team Shuffle",
   //   icon: CUSTOMER_RELATIONSHIP_STR,
@@ -219,7 +227,14 @@ const dataForManager = [
     icon: DROP_ANALYSIS,
     screen: 113,
   },
+  {
+    title: "Complaint Tracker",
+    icon: COMPLAINT_TRACKER,
+    screen: 123,
+    // pngIcon: require("../assets/images/review.png"),
+  },
   { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
+
 ];
 
 // {

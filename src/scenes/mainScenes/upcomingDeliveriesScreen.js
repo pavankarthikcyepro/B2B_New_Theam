@@ -8,7 +8,6 @@ import {
   Pressable,
   Alert,
   RefreshControl,
-  ActivityIndicator
 } from "react-native";
 import { Colors, GlobalStyle } from "../../styles";
 import { UpcomingDeliveriesItem } from "../../pureComponents/upcomingDeliveriesItem";
@@ -23,6 +22,7 @@ import {
   getMoreUpcmoingDeliveriesListApi
 } from "../../redux/upcomingDeliveriesReducer";
 import moment from "moment";
+import AnimLoaderComp from "../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -108,7 +108,7 @@ const UpcomingDeliveriesScreen = () => {
     return (
       <View style={styles.footer}>
         <Text style={styles.btnText}>Loading More...</Text>
-        <ActivityIndicator color={Colors.GRAY} />
+        <AnimLoaderComp visible={true} />
       </View>
     );
   };

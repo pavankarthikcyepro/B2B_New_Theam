@@ -83,6 +83,7 @@ const AttendanceScreen = ({ route, navigation }) => {
     wfh: 0,
     totalTime: "0",
     total: 0,
+    notLoggedIn: 0,
   });
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedFromDate, setSelectedFromDate] = useState("");
@@ -122,11 +123,10 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      // getCurrentLocation();
       setFromDateState(lastMonthFirstDate);
       setToDateState(currentDate);
-      GetCountByMonth(lastMonthFirstDate, lastMonthLastDate);
-      getAttendanceByMonth(lastMonthFirstDate, lastMonthLastDate);
+      GetCountByMonth(lastMonthFirstDate, currentDate);
+      getAttendanceByMonth(lastMonthFirstDate, currentDate);
       SetFilterStart(false);
       getProfilePic();
       // setLoading(true);
@@ -160,7 +160,7 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (filterStart) {
-      getAttendanceFilter();
+      // getAttendanceFilter();
     }
   }, [selectedFromDate, selectedToDate]);
 
@@ -476,6 +476,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
           total: json?.total || 0,
+          notLoggedIn: json?.notLoggedIn || 0,
         });
       }
     } catch (error) {}
@@ -502,6 +503,7 @@ const AttendanceScreen = ({ route, navigation }) => {
           wfh: json?.wfh || 0,
           totalTime: json?.totalTime || "0",
           total: json?.total || 0,
+          notLoggedIn: json?.notLoggedIn || 0,
         });
       }
     } catch (error) {}
@@ -533,6 +535,7 @@ const AttendanceScreen = ({ route, navigation }) => {
             wfh: json?.wfh || 0,
             totalTime: json?.totalTime || "0",
             total: json?.total || 0,
+            notLoggedIn: json?.notLoggedIn || 0,
           });
         }
       }
@@ -555,7 +558,9 @@ const AttendanceScreen = ({ route, navigation }) => {
           URL.GET_ATTENDANCE_EMPID2(jsonObj.empId, jsonObj.orgId, start, end)
         );
         const json = await response.json();
-        const response1 = await client.get(URL.GET_HOLIDAYS(jsonObj.orgId));
+        const response1 = await client.get(
+          URL.GET_HOLIDAYS(jsonObj.orgId, start, end)
+        );
         const json1 = await response1.json();
         if (json) {
           let newArray = [];
@@ -701,6 +706,46 @@ const AttendanceScreen = ({ route, navigation }) => {
           //     };
           //   }
           // }
+          setMarker(obj);
+        } else {
+          let newArray = [];
+          let dateArray = [];
+          let weekArray = [];
+          if (json1.length > 0) {
+            for (let i = 0; i <= json1.length - 1; i++) {
+              let format = {
+                customStyles: {
+                  container: {
+                    backgroundColor: Colors.DARK_GRAY,
+                  },
+                  text: {
+                    color: Colors.WHITE,
+                    fontWeight: "bold",
+                  },
+                },
+              };
+              let date = new Date(json1[i].date);
+              let formatedDate = moment(date).format(dateFormat);
+              selectedDates.push(formatedDate);
+              dateArray.push(formatedDate);
+              newArray.push(format);
+            }
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
+          }
+          for (let i = 1; i <= 31; i++) {
+            const date = new Date(
+              new Date(start).getFullYear(),
+              new Date(start).getMonth(),
+              i
+            );
+            if (date.getDay() === 0 || date.getDay() === 6) {
+              selectedDates.push(moment(date).format(dateFormat));
+            }
+          }
           setMarker(obj);
         }
       }
@@ -951,8 +996,18 @@ const AttendanceScreen = ({ route, navigation }) => {
                 setToDateState(endDate);
               }
               if (!filterStart) {
-                GetCountByMonth(startDate, endDate);
-                getAttendanceByMonth(startDate, endDate);
+                let newDate = moment(endDate).month();
+                let newYear = moment(endDate).year();
+                if (
+                  newDate == new Date().getMonth() &&
+                  newYear == new Date().getFullYear()
+                ) {
+                  getAttendanceByMonth(startDate, currentDate);
+                  GetCountByMonth(startDate, currentDate);
+                } else {
+                  getAttendanceByMonth(startDate, endDate);
+                  GetCountByMonth(startDate, endDate);
+                }
                 // setCurrentMonth(new Date(month.dateString));
               }
             }}
@@ -1071,7 +1126,9 @@ const AttendanceScreen = ({ route, navigation }) => {
             />
             <View style={styles.parameterCountView}>
               <Text style={styles.parameterText}>{"No Logged"}</Text>
-              <Text style={styles.parameterText}>{attendanceCount.total}</Text>
+              <Text style={styles.parameterText}>
+                {attendanceCount.notLoggedIn}
+              </Text>
             </View>
           </View>
           <View style={styles.parameterView}>

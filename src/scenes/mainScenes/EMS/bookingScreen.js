@@ -6,7 +6,6 @@ import {
     FlatList,
     RefreshControl,
     Text,
-    ActivityIndicator,
     Pressable,
 } from "react-native";
 import {IconButton, Searchbar} from "react-native-paper";
@@ -30,6 +29,7 @@ import moment from "moment";
 import { Category_Type_List_For_Filter } from "../../../jsonData/enquiryFormScreenJsonData";
 import { MyTaskNewItem } from "../MyTasks/components/MyTasksNewItem";
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -316,10 +316,10 @@ const BookingScreen = ({ navigation }) => {
             return null;
         }
         return (
-            <View style={styles.footer}>
-                <Text style={styles.btnText}>Loading More...</Text>
-                <ActivityIndicator color={Colors.GRAY} />
-            </View>
+          <View style={styles.footer}>
+            <Text style={styles.btnText}>Loading More...</Text>
+            <AnimLoaderComp visible={true} />
+          </View>
         );
     };
 

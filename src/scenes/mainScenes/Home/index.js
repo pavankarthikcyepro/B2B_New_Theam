@@ -107,6 +107,8 @@ const officeLocation = {
   longitude: -122.0312186,
 };
 const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().format(dateFormat);
 
 const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -184,7 +186,7 @@ const HomeScreen = ({ route, navigation }) => {
       selector.isModalVisible
       // && !isEmpty(initialPosition)
     ) {
-      // getDetails(); // Attendance POP up
+      getDetails(); // Attendance POP up
     }
   }, [selector.isModalVisible, initialPosition]);
 
@@ -216,6 +218,13 @@ const HomeScreen = ({ route, navigation }) => {
             )
           );
           const json = await response.json();
+          const response1 = await client.get(
+            URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
+          );
+          const json1 = await response1.json();
+          if (json1?.length>0) {
+            return
+          }
           if (json.length != 0) {
             let date = new Date(json[json.length - 1].createdtimestamp);
             // let dist = getDistanceBetweenTwoPoints(
@@ -969,7 +978,7 @@ const HomeScreen = ({ route, navigation }) => {
           }
         })
         .catch((e) => {
-          console.log("FFFf", e);
+          console.log("Error", e);
           setLoading(false);
         });
     }
@@ -1184,13 +1193,13 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      {/* <AttendanceFromSelf
+      <AttendanceFromSelf
         visible={attendance}
         showReason={reason}
         inVisible={() => {
           setAttendance(false);
         }}
-      /> */}
+      />
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
@@ -1412,7 +1421,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.contactsCount
                         ? "underline"
@@ -1443,7 +1452,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.totalDroppedCount
                         ? "underline"
@@ -1468,7 +1477,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.enquirysCount
                         ? "underline"
@@ -1491,7 +1500,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData
                         ?.bookingsCount
                         ? "underline"
@@ -1513,7 +1522,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <Text
                     style={{
                       ...styles.rankText,
-                      color: "blue",
+                      color: Colors.RED,
                       textDecorationLine: selector.receptionistData?.RetailCount
                         ? "underline"
                         : "none",
@@ -1710,20 +1719,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: 3,
-    height: 70,
     marginTop: 10,
-    width: "100%",
+    width: "95%",
+    alignSelf: "center",
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    elevation: 5,
+    shadowRadius: 2,
+    shadowOpacity: 0.8,
+    paddingHorizontal: 10,
+    paddingTop: 5,
+    marginBottom: 7,
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.BORDER_COLOR,
   },
   rankIconBox: {
-    height: 40,
-    width: 40,
+    height: 35,
+    width: 35,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.8,
     shadowRadius: 1,
     borderStyle: "solid",
     borderWidth: 1,
@@ -1732,6 +1755,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
+    backgroundColor: Colors.WHITE
   },
   rankHeadingText: {
     fontSize: 10,
@@ -1845,6 +1869,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+
+    width: "95%",
+    alignSelf: "center",
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    elevation: 5,
+    shadowRadius: 2,
+    shadowOpacity: 0.8,
+    paddingTop: 5,
+    marginBottom: 7,
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.WHITE,
+    borderColor: Colors.BORDER_COLOR,
   },
   hideRankBox: {
     paddingTop: 5,

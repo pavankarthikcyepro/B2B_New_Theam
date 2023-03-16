@@ -14,14 +14,17 @@ import {
   Image,
   Pressable,
   ScrollView,
-  ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { getTargetParametersEmpDataInsights } from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
-import { DatePickerComponent, DropDownComponant } from "../../../components";
+import {
+  DatePickerComponent,
+  DropDownComponant,
+  LoaderComponent,
+} from "../../../components";
 import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
 import moment from "moment";
 import { Button } from "react-native-paper";
@@ -49,6 +52,7 @@ import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import RNFetchBlob from "rn-fetch-blob";
 import _ from "lodash";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -64,7 +68,7 @@ const AcitivityLoader = () => {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size={"small"} color={Colors.GRAY} />
+      <AnimLoaderComp visible={true} />
     </View>
   );
 };
@@ -100,10 +104,10 @@ const DownloadReportScreen = ({ route, navigation }) => {
   const [selectedLocation, setSelectedLocation] = useState({});
   const [selectedDealerCode, setSelectedDealerCode] = useState({});
   const [Designation, setDesignation] = useState([]);
-  const [selectedDesignation, setSelectedDesignation] = useState({});
+  const [selectedDesignation, setSelectedDesignation] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployeeName, setSelectedEmployeeName] = useState({});
-
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState([]);
+  const [loader, setLoader] = useState(false);
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -111,7 +115,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       clearBtn();
-      setEmloyeeTitleNameList([]);
+      // setEmloyeeTitleNameList([]);
     });
   }, [navigation]);
 
@@ -135,12 +139,9 @@ const DownloadReportScreen = ({ route, navigation }) => {
   const getDropDown = async (user) => {
     try {
       const response = await client.get(URL.LOCATION_LIST(user.orgId));
-      // const response1 = await client.get(URL.DEALER_CODE_LIST1(user.orgId));
       const json = await response.json();
-      // const json1 = await response1.json();
       if (json) {
         setLocation(json);
-        // setDealerCode(json1);
       }
     } catch (error) {}
   };
@@ -162,7 +163,10 @@ const DownloadReportScreen = ({ route, navigation }) => {
       );
       const json = await response.json();
       if (json) {
-        setDesignation(json);
+        const newArr2 = json.map((v) =>
+          Object.assign(v, { name: v?.designationName })
+        );
+        setDesignation(newArr2);
       }
     } catch (error) {
       console.log(error);
@@ -176,7 +180,10 @@ const DownloadReportScreen = ({ route, navigation }) => {
       );
       const json = await response.json();
       if (json) {
-        setEmployees(json);
+        const newArr2 = json.map((v) =>
+          Object.assign(v, { name: v?.empName })
+        );
+        setEmployees(newArr2);
       }
     } catch (error) {
       console.log(error);
@@ -189,7 +196,6 @@ const DownloadReportScreen = ({ route, navigation }) => {
       for (let key in selector.filter_drop_down_data) {
         names.push(key);
       }
-      console.log(names);
       setNameKeyList(names);
       setTotalDataObj(selector.filter_drop_down_data);
     }
@@ -206,395 +212,6 @@ const DownloadReportScreen = ({ route, navigation }) => {
     setFromDate(monthFirstDate);
     setToDate(currentDate);
   }, [selector.filter_drop_down_data]);
-
-  //   useEffect(() => {
-  //     if (nameKeyList.length > 0) {
-  //       dropDownItemClicked(4, true);
-  //     }
-  //   }, [nameKeyList, userData]);
-
-  const dropDownItemClicked = async (index, initalCall = false) => {
-    const topRowSelectedIds = [];
-    if (index > 0) {
-      const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
-      topRowData.forEach((item) => {
-        if (item.selected != undefined && item.selected === true) {
-          topRowSelectedIds.push(Number(item.id));
-        }
-      });
-    }
-
-    let data = [];
-    if (topRowSelectedIds.length > 0) {
-      const subLevels = totalDataObj[nameKeyList[index]].sublevels;
-      subLevels.forEach((subItem) => {
-        const obj = { ...subItem };
-        obj.selected = false;
-        if (topRowSelectedIds.includes(Number(subItem.parentId))) {
-          data.push(obj);
-        }
-      });
-    } else {
-      data = totalDataObj[nameKeyList[index]].sublevels;
-    }
-    let newData = [];
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      for (let i = 0; i < data.length; i++) {
-        const id = data[i];
-        for (let j = 0; j < jsonObj.branchs.length; j++) {
-          const id2 = jsonObj.branchs[j];
-          if (id2.branchName === id.name) {
-            newData.push(id);
-          }
-        }
-      }
-    }
-
-    if (index === 4) {
-      setDropDownData([...newData]);
-      if (initalCall) {
-        let updatedMultipleData = [...newData];
-        const obj = { ...updatedMultipleData[0] };
-        if (obj.selected != undefined) {
-          obj.selected = !obj.selected;
-        } else {
-          obj.selected = true;
-        }
-        updatedMultipleData[0] = obj;
-        updateSelectedItems(updatedMultipleData, index, true);
-      } else {
-        // updateSelectedItemsForEmployeeDropDown(newData, index);
-      }
-      //   submitBtnClicked(null)
-    } else {
-      setDropDownData([...data]);
-    }
-    setSelectedItemIndex(index);
-    !initalCall && setShowDropDownModel(true);
-    setDropDownFrom("ORG_TABLE");
-  };
-
-  const dropDownItemClicked2 = (index) => {
-    // const topRowSelectedIds = [];
-    // if (index > 0) {
-    //     const topRowData = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    //     topRowData.forEach((item) => {
-    //         if (item.selected != undefined && item.selected === true) {
-    //             topRowSelectedIds.push(Number(item.id));
-    //         }
-    //     })
-    // }
-    const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    let newIndex = index == 0 ? 0 : index - 1;
-    let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
-    const tempData = employeeDropDownDataLocal[newItem];
-    const isSelected = tempData.filter((e) => e.selected == true);
-    let newArr = [];
-    if (isSelected[0]?.id && index !== 0) {
-      const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
-      newArr = [...newList];
-    }
-    let tempArr = index == 0 ? data : newArr;
-
-    setDropDownData([...tempArr]);
-    setSelectedItemIndex(index);
-    setShowDropDownModel(true);
-    setDropDownFrom("EMPLOYEE_TABLE");
-  };
-
-  const updateSelectedItems = (data, index, initalCall = false) => {
-    const totalDataObjLocal = { ...totalDataObj };
-    if (index > 0) {
-      let selectedParendIds = [];
-      let unselectedParentIds = [];
-      selectedParendIds.push(Number(data.parentId));
-      // data.forEach((item) => {
-      //   if (item.selected != undefined && item.selected == true) {
-      //     selectedParendIds.push(Number(item.parentId));
-      //   } else {
-      //     unselectedParentIds.push(Number(item.parentId));
-      //   }
-      // });
-
-      let localIndex = index - 1;
-
-      for (localIndex; localIndex >= 0; localIndex--) {
-        let selectedNewParentIds = [];
-        let unselectedNewParentIds = [];
-
-        let key = nameKeyList[localIndex];
-        const dataArray = totalDataObjLocal[key].sublevels;
-
-        if (dataArray.length > 0) {
-          const newDataArry = dataArray.map((subItem, index) => {
-            const obj = { ...subItem };
-            if (selectedParendIds.includes(Number(obj.id))) {
-              obj.selected = true;
-              selectedNewParentIds.push(Number(obj.parentId));
-            } else if (unselectedParentIds.includes(Number(obj.id))) {
-              if (obj.selected == undefined) {
-                obj.selected = false;
-              }
-              unselectedNewParentIds.push(Number(obj.parentId));
-            }
-            return obj;
-          });
-          const newOBJ = {
-            sublevels: newDataArry,
-          };
-          totalDataObjLocal[key] = newOBJ;
-        }
-        selectedParendIds = selectedNewParentIds;
-        unselectedParentIds = unselectedNewParentIds;
-      }
-    }
-
-    let localIndex2 = index + 1;
-    for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
-      let key = nameKeyList[localIndex2];
-      const dataArray = totalDataObjLocal[key].sublevels;
-      if (dataArray.length > 0) {
-        const newDataArry = dataArray.map((subItem, index) => {
-          const obj = { ...subItem };
-          obj.selected = false;
-          return obj;
-        });
-        const newOBJ = {
-          sublevels: newDataArry,
-        };
-        totalDataObjLocal[key] = newOBJ;
-      }
-    }
-
-    let key = nameKeyList[index];
-    var newArr = totalDataObjLocal[key].sublevels;
-    const result = newArr.map((file) => {
-      return { ...file, selected: false };
-    });
-    let objIndex = result.findIndex((obj) => obj.id == data.id);
-    for (let i = 0; i < result.length; i++) {
-      if (objIndex === i) {
-        result[i].selected = true;
-      } else {
-        result[i].selected = false;
-      }
-    }
-    const newOBJ = {
-      sublevels: result,
-    };
-    totalDataObjLocal[key] = newOBJ;
-    setTotalDataObj({ ...totalDataObjLocal });
-    index == 4 && submitBtnClicked(totalDataObjLocal);
-  };
-
-  const updateSelectedItemsForEmployeeDropDown = (data, index) => {
-    let key = employeeTitleNameList[index];
-    const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
-    let objIndex = newTotalDataObjLocal[key].findIndex(
-      (obj) => obj.id == data.id
-    );
-    for (let i = 0; i < newTotalDataObjLocal[key].length; i++) {
-      if (objIndex === i) {
-        newTotalDataObjLocal[key][i].selected = true;
-      } else {
-        newTotalDataObjLocal[key][i].selected = false;
-      }
-    }
-    setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
-  };
-
-  const clearBtnClicked = () => {
-    const totalDataObjLocal = { ...totalDataObj };
-    let i = 0;
-    for (i; i < nameKeyList.length; i++) {
-      let key = nameKeyList[i];
-      const dataArray = totalDataObjLocal[key].sublevels;
-      if (dataArray.length > 0) {
-        const newDataArry = dataArray.map((subItem, index) => {
-          const obj = { ...subItem };
-          obj.selected = false;
-          return obj;
-        });
-        const newOBJ = {
-          sublevels: newDataArry,
-        };
-        totalDataObjLocal[key] = newOBJ;
-      }
-    }
-    setTotalDataObj({ ...totalDataObjLocal });
-  };
-
-  const submitBtnClicked = (initialData) => {
-    let i = 0;
-    const selectedIds = [];
-    for (i; i < nameKeyList.length; i++) {
-      let key = nameKeyList[i];
-      const dataArray = initialData
-        ? initialData[key].sublevels
-        : totalDataObj[key].sublevels;
-      if (dataArray.length > 0) {
-        dataArray.forEach((item, index) => {
-          if (item.selected != undefined && item.selected == true) {
-            selectedIds.push(item.id);
-          }
-        });
-      }
-    }
-    if (selectedIds.length > 0) {
-      setIsLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "LEVEL");
-    } else {
-      showToast("Please select any value");
-    }
-  };
-
-  const getDashboadTableDataFromServer = (selectedIds, from) => {
-    const payload = {
-      startDate: fromDate,
-      endDate: toDate,
-      loggedInEmpId: userData.employeeId,
-    };
-    if (from == "LEVEL") {
-      payload["levelSelected"] = selectedIds;
-    } else {
-      payload["empSelected"] = selectedIds;
-    }
-
-    const payload2 = {
-      ...payload,
-      pageNo: 0,
-      size: 5,
-    };
-
-    const payload1 = {
-      orgId: userData.orgId,
-      empId: userData.employeeId,
-      selectedIds: selectedIds,
-    };
-
-    Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-      .then(() => {})
-      .catch(() => {
-        setIsLoading(false);
-      });
-    if (from == "EMPLOYEE") {
-      // if (true) {
-      //   navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
-      //     params: { from: "Filter" },
-      //   });
-      // } else {
-      //   navigation.goBack();
-      // }
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
-    } else {
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-    }
-  };
-
-  useEffect(() => {
-    if (selector.employees_drop_down_data) {
-      let names = [];
-      let newDataObj = {};
-      for (let key in selector.employees_drop_down_data) {
-        const arrayData = selector.employees_drop_down_data[key];
-        if (arrayData.length != 0) {
-          names.push(key);
-        }
-        const newArray = [];
-        if (arrayData.length > 0) {
-          arrayData.forEach((element) => {
-            newArray.push({
-              ...element,
-              id: element.code,
-              selected: false,
-            });
-          });
-        }
-        newDataObj[key] = newArray;
-      }
-      setName(names, newDataObj);
-    }
-  }, [selector.employees_drop_down_data]);
-
-  const setName = useCallback(
-    (names, newDataObj) => {
-      function isEmpty(obj) {
-        return Object.keys(obj).length === 0;
-      }
-      if (!isEmpty(names) && !isEmpty(newDataObj)) {
-        setEmloyeeTitleNameList(names);
-        setEmployeeDropDownDataLocal(newDataObj);
-        setIsLoading(false);
-      }
-    },
-    [employeeDropDownDataLocal, employeeTitleNameList]
-  );
-
-  const clearBtnForEmployeeData = () => {
-    let newDataObj = {};
-    for (let key in employeeDropDownDataLocal) {
-      const arrayData = employeeDropDownDataLocal[key];
-      const newArray = [];
-      if (arrayData.length > 0) {
-        arrayData.forEach((element) => {
-          newArray.push({
-            ...element,
-            selected: false,
-          });
-        });
-      }
-      newDataObj[key] = newArray;
-    }
-    setEmployeeDropDownDataLocal(newDataObj);
-  };
-
-  const submitBtnForEmployeeData = () => {
-    let selectedIds = [];
-    for (let key in employeeDropDownDataLocal) {
-      const arrayData = employeeDropDownDataLocal[key];
-      if (arrayData.length != 0) {
-        arrayData.forEach((element) => {
-          if (element.selected === true) {
-            selectedIds.push(element.code);
-          }
-        });
-      }
-    }
-
-    let x =
-      employeeDropDownDataLocal[
-        Object.keys(employeeDropDownDataLocal)[
-          Object.keys(employeeDropDownDataLocal).length - 1
-        ]
-      ];
-    let selectedID = x.filter((e) => e.selected == true);
-
-    let orgID = totalDataObj["Dealer Code"].sublevels.filter(
-      (e) => e.selected == true
-    );
-    // return
-    // navigation.goBack()
-    navigation.navigate(AttendanceTopTabNavigatorIdentifiers.dashboard, {
-      params: {
-        from: "Filter",
-        selectedID: selectedIds[selectedIds.length - 1],
-        orgId: orgID[0]?.orgId,
-        fromDate: fromDate,
-        toDate: toDate,
-      },
-    });
-    // let selectedID = x[x-1];
-    // return;
-    // if (selectedIds.length > 0) {
-    //   getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-    // } else {
-    //   showToast("Please select any value");
-    // }
-  };
 
   const updateSelectedDate = (date, key) => {
     const formatDate = moment(date).format(dateFormat);
@@ -644,32 +261,6 @@ const DownloadReportScreen = ({ route, navigation }) => {
     }
   };
 
-  const downloadReport = async () => {
-    try {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const payload = {
-          orgId: jsonObj.orgId,
-          fromDate: fromDate,
-          toDate: toDate,
-        };
-        const response = await client.post(
-          URL.GET_ATTENDANCE_REPORT(),
-          payload
-        );
-        const json = await response.json();
-        if (json.downloadUrl) {
-          downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
-        }
-      }
-    } catch (error) {
-      alert("Something went wrong");
-    }
-  };
-
   const getFileExtention = (fileUrl) => {
     // To get the file extension
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
@@ -709,9 +300,10 @@ const DownloadReportScreen = ({ route, navigation }) => {
           .then((res) => {
             RNFetchBlob.android.actionViewIntent(res.path());
             // do some magic here
+            setLoader(false);
           })
           .catch((err) => {
-            console.error(err);
+            setLoader(false);
           });
       });
     }
@@ -737,7 +329,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
             Authorization: "Bearer " + token,
           })
           .then((res) => {
-            setLoading(false);
+            setLoader(false);
             setTimeout(() => {
               // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
               RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
@@ -745,7 +337,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
             }, 300);
           })
           .catch((errorMessage) => {
-            setLoading(false);
+            setLoader(false);
           });
       });
     }
@@ -756,9 +348,9 @@ const DownloadReportScreen = ({ route, navigation }) => {
     setSelectedLocation({});
     setDealerCode([]);
     setSelectedDealerCode({});
-    setSelectedDesignation({});
+    setSelectedDesignation([]);
     setDesignation([]);
-    setSelectedEmployeeName({});
+    setSelectedEmployeeName([]);
     setEmployees([]);
   };
 
@@ -791,43 +383,90 @@ const DownloadReportScreen = ({ route, navigation }) => {
     }
   };
 
-  const submit = () => {
-    validation();
+  const submit = async () => {
+    try {
+      validation();
+      setLoader(true);
+      let empIds = [];
+      for (let i = 0; i < selectedEmployeeName.length; i++) {
+        const element = selectedEmployeeName[i];
+        if (element?.selected == true) {
+          empIds.push(element.empId);
+        }
+      }
+      let payload = {
+        fromDate: fromDate,
+        toDate: toDate,
+        orgId: userData.orgId,
+        userId: userData.employeeId,
+        dealerCodes: [selectedDealerCode.id],
+        empIds: empIds,
+      };
+      const response = await client.post(URL.GET_ATTENDANCE_REPORT(), payload);
+      const json = await response.json();
+      console.log(json,payload);
+      if (json.downloadUrl) {
+        downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
+      } else {
+        setLoader(false);
+      }
+    } catch (error) {
+      setLoader(false);
+    }
   };
+
+  function formatName(list) {
+    let names = "";
+    if (list.length > 0) {
+      for (let i = 0; i < list.length; i++) {
+        const element = list[i];
+        names += element.name + ", ";
+      }
+      return names;
+    } else {
+      return names;
+    }
+  }
+
+  function selectedDropDown(item) {
+    if (dropDownFrom === "Location") {
+      setDealerCode([]);
+      setSelectedDealerCode({});
+      setSelectedDesignation({});
+      setDesignation([]);
+      setSelectedEmployeeName([]);
+      setEmployees([]);
+      setSelectedLocation(item);
+      getDealerDropDown(item);
+    } else if (dropDownFrom === "Dealer Code") {
+      setSelectedDesignation({});
+      setDesignation([]);
+      setSelectedEmployeeName([]);
+      setEmployees([]);
+      setSelectedDealerCode(item);
+      getDesignationDropdown(item);
+    } else if (dropDownFrom === "Designation") {
+      setSelectedEmployeeName([]);
+      setEmployees([]);
+      setSelectedDesignation(item);
+      getEmployeesDropdown(item);
+    } else if (dropDownFrom === "Employee Name") {
+      setSelectedEmployeeName(item);
+      setEmployees(item);
+    }
+    setShowDropDownModel(false);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <DropDown
         visible={showDropDownModel}
-        multiple={false}
+        multiple={dropDownFrom === "Employee Name" ? true : false}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          if (dropDownFrom === "Location") {
-            setDealerCode([]);
-            setSelectedDealerCode({});
-            setSelectedDesignation({});
-            setDesignation([]);
-            setSelectedEmployeeName({});
-            setEmployees([]);
-            setSelectedLocation(item);
-            getDealerDropDown(item);
-          } else if (dropDownFrom === "Dealer Code") {
-            setSelectedDesignation({});
-            setDesignation([]);
-            setSelectedEmployeeName({});
-            setEmployees([]);
-            setSelectedDealerCode(item);
-            getDesignationDropdown(item);
-          } else if (dropDownFrom === "Designation") {
-            setSelectedEmployeeName({});
-            setEmployees([]);
-            setSelectedDesignation(item);
-            getEmployeesDropdown(item);
-          } else if (dropDownFrom === "Employee Name") {
-            setSelectedEmployeeName(item);
-          }
-          setShowDropDownModel(false);
+          selectedDropDown(item);
         }}
       />
       <DatePickerComponent
@@ -857,7 +496,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
         }}
       >
         <FlatList
-          data={employeeTitleNameList.length > 0 ? [1, 2, 3] : [1, 2]}
+          data={[1, 2]}
           keyExtractor={(item, index) => "MAIN" + index.toString()}
           renderItem={({ item, index }) => {
             if (index === 0) {
@@ -916,7 +555,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Designation"}
-                        value={selectedDesignation?.designationName}
+                        value={selectedDesignation?.name}
                         onPress={() => dropDownItemClicked3("Designation")}
                         takeMinHeight={true}
                         // disabled={disabletemp}
@@ -925,7 +564,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                         label={"Employee Name"}
-                        value={selectedEmployeeName?.empName}
+                        value={formatName(selectedEmployeeName)}
                         onPress={() => dropDownItemClicked3("Employee Name")}
                         takeMinHeight={true}
                         // disabled={disabletemp}
@@ -964,6 +603,7 @@ const DownloadReportScreen = ({ route, navigation }) => {
           }}
         />
       </View>
+      <LoaderComponent visible={loader} onRequestClose={() => {}} />
     </SafeAreaView>
   );
 };

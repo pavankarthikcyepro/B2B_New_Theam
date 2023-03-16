@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "https://stage-api.cyepro.com/";
+export const baseUrl = "http://dev-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -115,6 +115,9 @@ export const dashboard = baseUrl + "dfd/dashboard";
 export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
+
+
+
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
@@ -345,6 +348,12 @@ const URL = {
     );
   },
   CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
+
+  GET_DET_FROM_PHONE: (phone, orgId) =>
+    sales_url + `/lead/phone/${phone}/${orgId}`,
+  GET_COMPLAIN_FACTOR_DATA: (orgId) =>
+    baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
+
   GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
   GET_EVENTS: () => {
     return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;
@@ -488,16 +497,21 @@ const URL = {
       `/employeeTracking/getDetailsByDate/${employeeId}/${orgId}/${date}`
     );
   },
-  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (orgId, employeeId) => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8092/dfd/oh/team-attendance/${orgId}/${employeeId}`;
-    return baseUrl + `dfd/oh/team-attendance/${orgId}/${employeeId}`;
+  GET_EMPLOYEES_DROP_DOWN_DATA_FOR_ATTENDANCE: (
+    orgId,
+    employeeId,
+    startDate,
+    endDate
+  ) => {
+    return (
+      baseUrl +
+      `dfd/oh/team-attendance/${orgId}/${employeeId}/${startDate}/${endDate}`
+    );
   },
   GET_ATTENDANCE_REPORT: () => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/attendance_report`;
     return sales_url + "/reports/attendance_report";
   },
   GET_DOWNLOAD_URL: (file) => {
-    // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/reports/downloadFile/${file}`;
     return sales_url + `/reports/downloadFile/${file}`;
   },
   GET_TEAM_ATTENDANCE_COUNT: () => {
@@ -567,6 +581,9 @@ const URL = {
   },
   DEALER_CODE_LIST1: (orgId) => {
     return `${baseUrl}dfd/oh/data-nodes?orgId=${orgId}&levelCode=Level5`;
+  },
+  DEALER_CODE_BRANCH_LIST: (orgId, locationId) => {
+    return `${baseUrl}dfd/oh/getLocationBasedBranches?orgId=${orgId}&locationId=${locationId}`;
   },
   GET_DESIGNATION: (orgId, branchId) => {
     return `${sales_url}/employees/get/designations/${orgId}/${branchId}`;
@@ -665,6 +682,36 @@ const URL = {
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
     return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
+
+  GET_DASHBOARD_COUNT_COMPLAINT: (empId) => {
+    return sales_url + `/complainttracker/getCounts/${empId}`;
+  },
+  GEY_COMPLAINT_DET_FROMID: (complaintId) => {
+    return sales_url + `/complainttracker/getCt/${complaintId}`;
+  },
+
+  GET_COMPLAINT_DROPDOWN_MAIN: () => {
+    return baseUrl + `dfd/common/dropComplaintMenuFilter`;
+  },
+  GET_COMPLAINT_CONSULTANT: (orgId, branchId) => {
+    return sales_url + `/employees/salesconsultant/${orgId}/${branchId}`;
+  },
+  GET_COMPLAINT_MANAGER: (empid) => {
+    return sales_url + `/employees/manager/${empid}`;
+  },
+  POST_GETSUBMENU_COMPLAINT: () => {
+    return baseUrl + `dfd/common/dropComplaintSubMenu`;
+  },
+
+  POST_COMPLAINT: () => {
+    return sales_url + `/complainttracker/save`;
+  },
+  POST_COMPLAINT_CLOSE: () => {
+    return sales_url + `/complainttracker/savecomplaint`;
+  },
+  GET_COMPLAINT_LIST: () => {
+    return sales_url + `/complainttracker/filter`;
+  },
   TRANSFER_TASK: (fromUserId, toUserId) => {
     return (
       sales_url +
@@ -725,9 +772,11 @@ const URL = {
       `/${empId}/${orgId}/${start}/${end}`
     );
   },
-  GET_HOLIDAYS: (orgId) => {
+  GET_HOLIDAYS: (orgId, start, end) => {
     return (
-      sales_url + "/employeeHolidayList/getAllHolidayDetails/" + `${orgId}`
+      sales_url +
+      "/employeeHolidayList/getAllHolidayDetails/" +
+      `${orgId}/${start}/${end}`
     );
   },
   NOTIFICATION_LIST: (empId) => {

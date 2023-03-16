@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Colors } from "../styles";
 import { IconButton, Checkbox, Button } from "react-native-paper";
-import { RadioTextItem } from "../pureComponents";
+import { DropDownSelectionItem, RadioTextItem } from "../pureComponents";
 import { Dropdown } from "react-native-element-dropdown";
 import { TextinputComp } from "./textinputComp";
 import * as AsyncStore from "../asyncStore";
@@ -24,6 +24,8 @@ import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../navigations";
 import moment from "moment";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
+import { useSelector } from "react-redux";
+import { showToastRedAlert } from "../utils/toast";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -60,6 +62,8 @@ const AttendanceFromSelf = ({
   showReason,
 }) => {
   const navigation = useNavigation();
+  const selector = useSelector((state) => state.homeReducer);
+
   const [comment, setComment] = useState("");
   const [commentError, setCommentError] = useState("");
   const [present, setPresent] = useState(true);
@@ -72,6 +76,34 @@ const AttendanceFromSelf = ({
   const [active, setActive] = useState(false);
   const [alreadyPresent, setAlreadyPresent] = useState(false);
   const [status, setStatus] = useState("");
+  const [DropDownData, setDropDownData] = useState({});
+  const [location, setLocation] = useState([]);
+  const [DealerCodes, setDealerCodes] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedDealerCode, setSelectedDealerCode] = useState("");
+
+  useEffect(async () => {
+    if (selector.filter_drop_down_data) {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        setDropDownData(selector.filter_drop_down_data);
+        var vals = jsonObj.branchs.map(function (a) {
+          return a.branchName;
+        });
+        let branchs = selector.filter_drop_down_data[
+          "Dealer Code"
+        ]?.sublevels?.filter((i) => vals.includes(i.name) == true);
+        setDealerCodes(
+          selector.filter_drop_down_data["Dealer Code"]?.sublevels
+        );
+        setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
+      }
+    }
+  }, [selector.filter_drop_down_data]);
+
   useEffect(() => {
     getDetails();
   }, [visible]);
@@ -143,6 +175,16 @@ const AttendanceFromSelf = ({
         error = true;
       }
     }
+    if (userData?.branchs?.length > 1) {
+      if (selectedLocation == "") {
+        error = true;
+        showToastRedAlert("Please Select Location");
+      }
+      if (selectedDealerCode == "") {
+        error = true;
+        showToastRedAlert("Please Select Dealer Code");
+      }
+    }
     if (!error) {
       return true;
     } else {
@@ -180,6 +222,16 @@ const AttendanceFromSelf = ({
           reason: reason ? reason : "",
           punchIn: present ? n : workFromHome ? n : null,
           punchOut: null,
+          dealerCodeLogin:
+            userData?.branchs?.length > 1
+              ? selectedDealerCode.name
+              : userData.branchs[0].branchName,
+          // dealerCodeLogout: null,
+          locationLogin:
+            userData?.branchs?.length > 1
+              ? selectedLocation.name
+              : userData.branchs[0].location,
+          // locationLogout: null,
         };
         var d = new Date();
         const response = await client.get(
@@ -254,6 +306,16 @@ const AttendanceFromSelf = ({
           : present && endBetween <= now && now <= endDate2
           ? n
           : null,
+        dealerCodeLogin: json[json.length - 1].dealerCodeLogin,
+        dealerCodeLogout:
+          userData?.branchs?.length > 1
+            ? selectedDealerCode.name
+            : userData.branchs[0].location,
+        locationLogin: json[json.length - 1].locationLogin,
+        locationLogout:
+          userData?.branchs?.length > 1
+            ? selectedLocation.name
+            : userData.branchs[0].location,
       };
       const updateData = await client.put(
         URL.UPDATE_EMPLOYEE_ATTENDANCE(json[json.length - 1].id),
@@ -277,6 +339,16 @@ const AttendanceFromSelf = ({
 
   const LogOut = async () => {
     try {
+      if (userData?.branchs?.length > 1) {
+        if (selectedLocation == "") {
+          showToastRedAlert("Please Select Location");
+          return;
+        }
+        if (selectedDealerCode == "") {
+          showToastRedAlert("Please Select Dealer Code");
+          return;
+        }
+      }
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -381,6 +453,56 @@ const AttendanceFromSelf = ({
               )}
             </View>
           </View>
+          {userData?.branchs?.length > 1 &&
+            DealerCodes?.length > 0 &&
+            location?.length > 0 && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                }}
+              >
+                <Dropdown
+                  label={"Location"}
+                  visible={true}
+                  underLine
+                  onChange={(item) => {
+                    setSelectedLocation(item);
+                  }}
+                  data={location || []}
+                  value={selectedLocation ? selectedLocation.name : ""}
+                  labelField={"name"}
+                  valueField={"name"}
+                  placeholder={"Location"}
+                  style={[styles.dropdownElement]}
+                  placeholderStyle={{
+                    color: Colors.GRAY,
+                  }}
+                />
+                <Dropdown
+                  label={"Dealer Code"}
+                  value={selectedDealerCode ? selectedDealerCode.name : ""}
+                  visible={true}
+                  underLine
+                  onChange={(item) => {
+                    setSelectedDealerCode(item);
+                  }}
+                  data={
+                    DealerCodes.filter(
+                      (i) => i.refParentId == selectedLocation.id
+                    ) || []
+                  }
+                  labelField={"name"}
+                  valueField={"name"}
+                  placeholder={"Dealer Code"}
+                  style={[styles.dropdownElement]}
+                  placeholderStyle={{
+                    color: Colors.GRAY,
+                  }}
+                />
+              </View>
+            )}
           <View style={{ flexDirection: "row" }}>
             {/* {punched ? (
               present ? (
@@ -718,4 +840,17 @@ const styles = StyleSheet.create({
     marginRight: 42,
   },
   badgeText: { fontSize: 12, color: Colors.WHITE, fontWeight: "bold" },
+  dropdownElement: {
+    height: 50,
+    width: "40%",
+    fontSize: 16,
+    fontWeight: "400",
+    backgroundColor: Colors.WHITE,
+    marginTop: 10,
+    borderRadius: 6,
+    padding: 15,
+    color: Colors.BLACK,
+    borderBottomColor: Colors.BLACK,
+    borderBottomWidth: 1,
+  },
 });

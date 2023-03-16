@@ -117,6 +117,11 @@ import Orientation from "react-native-orientation-locker";
 import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
+import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
+import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
+import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
+import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
+import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
 
 const drawerWidth = 300;
@@ -381,7 +386,8 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
-  reportDownload:"REPORT_DOWNLOAD"
+  reportDownload:"REPORT_DOWNLOAD",
+  complaintTracker:"COMPLAINT_TRACKER"
 };
 
 export const TabStackIdentifiers = {
@@ -463,6 +469,15 @@ export const EventDashboardStackIdentifiers = {
   home: "EVENT_DASHBOARD",
   event: "EVENT",
   sourceModel: "EVENT_SOURCE_MODEL",
+};
+
+export const ComplainTrackerIdentifires = {
+  complainTrackerDashboard: "COMPLAIN_TRACKER",
+  complainTrackerList: "COMPLAINT_LIST",
+  complainTrackerTop:"COMPLAINT_TRACKER_TOP",
+  closedComplainTeackerList:"CLOCSED_LIST",
+  addEditComplaint:"ADD_EDIT_COMPLAINT"
+  
 };
 
 const HomeStack = createStackNavigator();
@@ -1055,7 +1070,7 @@ const DropAnalysisStack = createStackNavigator();
 
 const DropAnalysisStackNavigator = ({ navigation }) => {
   return (
-    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle}>
+    <DropAnalysisStack.Navigator  screenOptions={screeOptionStyle}>
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
@@ -1101,6 +1116,58 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
         }}
       />
     </LiveLeadsStack.Navigator>
+  );
+};
+
+const ComplainTrackgerStack = createStackNavigator();
+
+const ComplainTrackgerStackNavigator = ({ navigation }) => {
+  return (
+    <ComplainTrackgerStack.Navigator
+      initialRouteName={ComplainTrackerIdentifires.complainTrackerDashboard}
+      screenOptions={screeOptionStyle}
+    >
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerDashboard}
+        component={ComplaintTrackerMain}
+        options={{
+          title: "Complaint Tracker",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerTop}
+        component={ComplaintsTrackerTopTabNavigator}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complainTrackerList}
+        component={ComplaintList}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.closedComplainTeackerList}
+        component={ClosedComplaintList}
+        options={{
+          title: "Complaints",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.addEditComplaint}
+        component={AddEditComplaint}
+        options={{
+          title: "Complaint Tracker",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </ComplainTrackgerStack.Navigator>
   );
 };
 
@@ -1260,6 +1327,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.liveLeads}
         component={LiveLeadsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.complaintTracker}
+        component={ComplainTrackgerStackNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.monthlyTarget}
