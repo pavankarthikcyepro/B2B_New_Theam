@@ -125,6 +125,7 @@ import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedCom
 import * as AsyncStore from "../asyncStore";
 import SearchCustomer from "../scenes/mainScenes/Home/SearchCustomer";
 import SearchCustomerResult from "../scenes/mainScenes/Home/SearchCustomerResult";
+import AddCustomerInfo from "../scenes/mainScenes/Home/AddCustomerInfo";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -411,6 +412,7 @@ export const HomeStackIdentifiers = {
   location: "MAP_TRACKER",
   receptionistFilter: "REECEPTION_FILTER",
   searchCustomer: "SEARCH_CUSTOMER",
+  addCustomerInfo: "ADD_CUSTOMER_INFO",
   searchCustomerResult: "SEARCH_CUSTOMER_RESULT",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
 };
@@ -560,6 +562,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.searchCustomerResult}
         component={SearchCustomerResult}
         options={{ title: "Results" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.addCustomerInfo}
+        component={AddCustomerInfo}
+        options={{ title: "Customer Information" }}
       />
       <MainDrawerNavigator.Screen
         name={HomeStackIdentifiers.location}

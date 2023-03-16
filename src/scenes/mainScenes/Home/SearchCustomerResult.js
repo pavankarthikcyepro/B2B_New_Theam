@@ -15,7 +15,7 @@ const IconComp = ({ iconName, onPress, opacity = 1 }) => {
 };
 
 const SearchCustomerResult = ({ navigation, route }) => {
-  const [results, setResults] = useState(["", ""]);
+  const [results, setResults] = useState([]);
 
   const noData = () => {
     return (
@@ -25,7 +25,7 @@ const SearchCustomerResult = ({ navigation, route }) => {
         <View style={{ marginHorizontal: 15 }}>
           <ButtonComp
             title={"Add Customer"}
-            onPress={() => navigation.navigate("SEARCH_CUSTOMER_RESULT")}
+            onPress={() => navigation.navigate("ADD_CUSTOMER_INFO")}
           />
         </View>
       </View>

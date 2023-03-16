@@ -261,6 +261,9 @@ const URL = {
   GET_CUSTOMER_TYPES: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
   },
+  GET_SOURCE_TYPE: (ten) => {
+    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
+  },
   GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },

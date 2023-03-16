@@ -3936,7 +3936,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   maxLength={6}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) => {
-                    // get addreess by pincode
                     if (text?.length === 6) {
                       updateAddressDetails(text);
                     }
