@@ -18,6 +18,10 @@ const statusBgColors = {
     color: Colors.RED,
     title: "Cancelled",
   },
+  CLOSED: {
+    color: Colors.GREEN_V2,
+    title: "Closed",
+  },
   ASSIGNED: {
     color: Colors.GREEN,
     title: "Assigned",
@@ -127,6 +131,7 @@ export const MyTaskNewItem = ({
     status === "CANCELLED" ||
     status === "ASSIGNED" ||
     status === "SENT_FOR_APPROVAL" ||
+    status === "CLOSED" ||
     status === "RESCHEDULED"
   ) {
     bgColor = statusBgColors[status].color;
@@ -233,18 +238,24 @@ export const MyTaskNewItem = ({
                       </View>
                     )}
                 </>
-
-                <Text
-                  style={[
-                    styles.text3,
-                    { color: getStageColor(leadStage, leadStatus) },
-                  ]}
-                >
-                  {leadStage === "PREBOOKING" ? "BOOKING APPROVAL" : leadStage}
-                </Text>
+                {leadStage ? (
+                  <Text
+                    style={[
+                      styles.text3,
+                      { color: getStageColor(leadStage, leadStatus) },
+                    ]}
+                  >
+                    {leadStage === "PREBOOKING"
+                      ? "BOOKING APPROVAL"
+                      : leadStage}
+                  </Text>
+                ) : null}
               </View>
             )}
           </>
+          {(status === "CANCELLED" || status === "CLOSED") && (
+            <Text style={[styles.text2, { color: bgColor }]}>{statusName}</Text>
+          )}
         </View>
         <View style={{ width: "35%", alignItems: "center" }}>
           {uniqueId ? (
@@ -252,9 +263,7 @@ export const MyTaskNewItem = ({
           ) : null}
           <View style={styles.modal}>
             <Text style={styles.text4}>{model}</Text>
-            {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
           </View>
-          {/* <View style={{ height: 8 }}></View> */}
           <View
             style={{
               flexDirection: "row",
