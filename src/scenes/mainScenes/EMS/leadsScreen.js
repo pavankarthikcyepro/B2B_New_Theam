@@ -12,7 +12,11 @@ import {
   View,
 } from "react-native";
 import { Button, IconButton, Searchbar } from "react-native-paper";
-import { EmptyListView } from "../../../pureComponents";
+import {
+  EmptyListView,
+  RadioTextItem,
+  RadioTextItem1,
+} from "../../../pureComponents";
 import {
   DatePickerComponent,
   DateRangeComp,
@@ -27,6 +31,7 @@ import * as AsyncStore from "../../../asyncStore";
 import {
   getEnquiryList,
   getMoreEnquiryList,
+  updateTheCount,
 } from "../../../redux/enquiryReducer";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from "../../../jsonData/enquiryFormScreenJsonData";
@@ -121,6 +126,9 @@ const LeadsScreen = ({ route, navigation }) => {
     orgId: 0,
   });
   const [stageAccess, setStageAccess] = useState([]);
+  const [AssignByMe, setAssignByMe] = useState(false);
+  const [AssignToMe, setAssignToMe] = useState(false);
+
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
   const fromDateRef = React.useRef(selectedFromDate);
@@ -287,7 +295,7 @@ const LeadsScreen = ({ route, navigation }) => {
           leadStage = leadStage.filter(function (item, index, inputArray) {
             return inputArray.indexOf(item) == index;
           });
-       
+
           setDefualtLeadStage(leadStage);
           setdefualtLeadStatus(leadStatus);
           const newArr = path.map((v) => ({ ...v, checked: false }));
@@ -630,10 +638,8 @@ const LeadsScreen = ({ route, navigation }) => {
     getAllData = false,
     employeeDetail = {}
   ) => {
-    
     Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
       .then((response) => {
-        
         let path = response[0]?.payload[0]?.allLeadsSubstagesEntity;
         if (getAllData) {
           setSearchedData([]);
@@ -818,8 +824,8 @@ const LeadsScreen = ({ route, navigation }) => {
         route?.params?.param !== "Retail"
       ) {
         if (leadStages[0] === "INVOICECOMPLETED") {
-          leadStages[0] = "INVOICE"
-          return
+          leadStages[0] = "INVOICE";
+          return;
         } else {
           const invoiceIndex = leadStages.findIndex(
             (x) => x === "INVOICECOMPLETED"
@@ -829,8 +835,6 @@ const LeadsScreen = ({ route, navigation }) => {
             leadStages.splice(invoiceIndex, 1);
           }
         }
-
-
       }
 
       let isLive = false;
@@ -1079,6 +1083,32 @@ const LeadsScreen = ({ route, navigation }) => {
       ? moment().format(dateFormat)
       : currentDate;
 
+  function onAssignByMe(data) {
+    if (data.length > 0) {
+      let newData = data.filter(
+        (i) =>
+          i.createdBy === userData.empName 
+          // &&
+          // userData.empName === i.salesConsultant
+      );
+      dispatch(updateTheCount(newData.length));
+      return newData;
+    } else {
+      dispatch(updateTheCount(0));
+      return [];
+    }
+  }
+
+  function onAssignToMe(data) {
+    if (data.length > 0) {
+      let newData = data.filter((i) => userData.empName === i.salesConsultant);
+      dispatch(updateTheCount(newData.length));
+      return newData;
+    } else {
+      dispatch(updateTheCount(0));
+      return [];
+    }
+  }
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -1223,7 +1253,7 @@ const LeadsScreen = ({ route, navigation }) => {
               onPress={() => {
                 setLeadsSubMenuFilterVisible(true);
               }}
-              disabled={subMenu.length<=0 ? true : false}
+              disabled={subMenu.length <= 0 ? true : false}
             >
               <View
                 style={{
@@ -1261,6 +1291,44 @@ const LeadsScreen = ({ route, navigation }) => {
           </View>
         )}
       </View>
+      <View style={styles.AssignView}>
+        <View style={styles.AssignView1}>
+          <RadioTextItem1
+            label={"Assigned by Me"}
+            value={"Assigned by Me"}
+            disabled={false}
+            status={AssignByMe}
+            onPress={() => {
+              setAssignByMe(true);
+              setAssignToMe(false);
+            }}
+          />
+          <RadioTextItem1
+            label={"Assigned to Me"}
+            value={"Assigned to Me"}
+            disabled={false}
+            status={AssignToMe}
+            onPress={() => {
+              setAssignByMe(false);
+              setAssignToMe(true);
+            }}
+          />
+        </View>
+
+        <Pressable style={{ alignItems: "center", alignSelf: "center" }}>
+          <IconButton
+            icon="close-circle-outline"
+            color={Colors.RED}
+            style={{ padding: 0, margin: 0 }}
+            size={25}
+            onPress={() => {
+              setAssignByMe(false);
+              setAssignToMe(false);
+              dispatch(updateTheCount(""));
+            }}
+          />
+        </Pressable>
+      </View>
       <View>
         <Searchbar
           placeholder="Search"
@@ -1278,7 +1346,13 @@ const LeadsScreen = ({ route, navigation }) => {
         <View style={[styles.flatlistView]}>
           <FlatList
             initialNumToRender={searchedData?.length}
-            data={searchedData}
+            data={
+              searchedData.length > 0 && AssignByMe
+                ? onAssignByMe(searchedData)
+                : AssignToMe
+                ? onAssignToMe(searchedData)
+                : searchedData
+            }
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={
@@ -1455,5 +1529,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LIGHT_GRAY,
     flex: 1,
     marginBottom: 10,
+  },
+  AssignView: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    backgroundColor:Colors.WHITE,
+    borderWidth:0.5,
+    borderColor:Colors.LIGHT_GRAY,
+    borderRadius:5,
+  },
+  AssignView1: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
   },
 });
