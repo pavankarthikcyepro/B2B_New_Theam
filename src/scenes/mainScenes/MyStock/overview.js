@@ -1,38 +1,15 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  Keyboard,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-  Image,
-  ScrollView,
-  useWindowDimensions,
-  FlatList,
-} from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Colors, GlobalStyle } from "../../../styles";
+import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { updateCurrentScreen } from "../../../redux/myStockReducer";
 import { RadioTextItem1 } from "../../../pureComponents/radioTextItem";
 import { LoaderComponent } from "../../../components";
 import _ from "lodash";
-// import { RadioTextItem1 } from "../../../pureComponents";
-
-const dateFormat = "YYYY-MM-DD";
-const currentDate = moment().format(dateFormat);
-const lastMonthFirstDate = moment(currentDate, dateFormat)
-  .subtract(0, "months")
-  .startOf("month")
-  .format(dateFormat);
-const screenWidth = Dimensions.get("window").width;
 
 let tableData = [
   { title: ">90", value: 0 },
@@ -43,11 +20,7 @@ let tableData = [
 ];
 
 let sample = {
-  locationWise_available_count: [
-    // { name: "Hydrabad", price: 15000, count: 15 },
-    // { name: "Hydrabad", price: 15000, count: 15 },
-    // { name: "Hydrabad", price: 15000, count: 15 },
-  ],
+  locationWise_available_count: [],
   intransit_stock: [],
   locationWise_intrsnsit_count: [],
   available_stock: [],
@@ -104,30 +77,30 @@ const OverviewScreen = ({ route, navigation }) => {
         const json = await response.json();
         if (json) {
           setInventory(json);
-          if (json.available_stock) {
-            let path = json.available_stock;
-            setAvailableAgingData(FormatAging(path));
-          } else {
-            setAvailableAgingData(tableData);
-          }
-          if (json.intransit_stock) {
-            let path = json.intransit_stock;
-            setInTransitAgingData(FormatAging(path));
-          } else {
-            setInTransitAgingData(tableData);
-          }
+          // if (json.available_stock) {
+          //   let path = json.available_stock;
+          //   setAvailableAgingData(FormatAging(path));
+          // } else {
+          //   setAvailableAgingData(tableData);
+          // }
+          // if (json.intransit_stock) {
+          //   let path = json.intransit_stock;
+          //   setInTransitAgingData(FormatAging(path));
+          // } else {
+          //   setInTransitAgingData(tableData);
+          // }
         } else {
           setInventory({});
-          setAvailableAgingData(tableData);
-          setInTransitAgingData(tableData);
+          // setAvailableAgingData(tableData);
+          // setInTransitAgingData(tableData);
         }
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
       setInventory(sample);
-      setAvailableAgingData(tableData);
-      setInTransitAgingData(tableData);
+      // setAvailableAgingData(tableData);
+      // setInTransitAgingData(tableData);
     }
   };
 

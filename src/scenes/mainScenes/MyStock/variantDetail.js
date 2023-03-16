@@ -1,97 +1,19 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect,useState } from "react";
 import {
   View,
   Text,
-  Keyboard,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-  Image,
   ScrollView,
-  useWindowDimensions,
-  FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Colors, GlobalStyle } from "../../../styles";
+import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import moment from "moment";
-import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { LoaderComponent } from "../../../components";
 import _ from "lodash";
 
-const dateFormat = "YYYY-MM-DD";
-const currentDate = moment().format(dateFormat);
-const lastMonthFirstDate = moment(currentDate, dateFormat)
-  .subtract(0, "months")
-  .startOf("month")
-  .format(dateFormat);
-const screenWidth = Dimensions.get("window").width;
-const data = [
-  {
-    title: "Creta E",
-    value: "15",
-    innerVariant: false,
-    data: [
-      { title: "Phantom Black", value: "15" },
-      { title: "Typhoon silver", value: "20" },
-      { title: "Titan Grey", value: "15" },
-    ],
-  },
-  {
-    title: "Creta EX",
-    value: "20",
-    innerVariant: false,
-    data: [
-      { title: "Phantom Black", value: "15" },
-      { title: "Typhoon silver", value: "20" },
-      { title: "Titan Grey", value: "15" },
-    ],
-  },
-  {
-    title: "Creta S",
-    value: "15",
-    innerVariant: false,
-    data: [
-      { title: "Phantom Black", value: "15" },
-      { title: "Typhoon silver", value: "20" },
-      { title: "Titan Grey", value: "15" },
-    ],
-  },
-  {
-    title: "Creta S+",
-    value: "20",
-    innerVariant: false,
-    data: [
-      { title: "Phantom Black", value: "15" },
-      { title: "Typhoon silver", value: "20" },
-      { title: "Titan Grey", value: "15" },
-    ],
-  },
-  {
-    title: "Creta SX",
-    value: "15",
-    innerVariant: false,
-    data: [
-      { title: "Phantom Black", value: "15" },
-      { title: "Typhoon silver", value: "20" },
-      { title: "Titan Grey", value: "15" },
-    ],
-  },
-  {
-    title: "Creta SX(O)",
-    value: "20",
-    innerVariant: false,
-    data: [
-      { title: "Phantom Black", value: "15" },
-      { title: "Typhoon silver", value: "20" },
-      { title: "Titan Grey", value: "15" },
-    ],
-  },
-];
 
 const sample = {
   varientWise_intransit_stock: [],
@@ -117,8 +39,7 @@ const Total = [
 
 const VariantDetailScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.homeReducer);
-  const [newData, setNewData] = useState(data);
+  const selector = useSelector((state) => state.myStockReducer);
   const [loading, setLoading] = useState(false);
   const [available, setAvailable] = useState(true);
   const [models, setModels] = useState(sample);
@@ -138,8 +59,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
   const getVariant = async (item) => {
     try {
       setLoading(true);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
       let payload = {
-        orgId: item?.orgId.toString(),
+        orgId: jsonObj?.orgId.toString(),
         model: item?.headerTitle,
         branchName: item?.branchName,
       };
@@ -147,6 +73,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
         let data = {
           maxAge: selector.agingTo,
           minAge: selector.agingFrom,
+          branchName: selector.dealerCode.name,
         };
         payload = { ...payload, ...data };
       }
@@ -183,6 +110,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
         }
       }
       setLoading(false);
+    }
     } catch (error) {
       setModels(sample);
       setLoading(false);
@@ -212,6 +140,14 @@ const VariantDetailScreen = ({ route, navigation }) => {
         model: route.params?.headerTitle,
         varient: item?.varient,
       };
+      if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+        let data = {
+          maxAge: selector.agingTo,
+          minAge: selector.agingFrom,
+          branchName: selector.dealerCode.name,
+        };
+        payload = { ...payload, ...data };
+      }
       const response = await client.post(
         URL.GET_INVENTORY_BY_VEHICLE_COLOR(),
         payload

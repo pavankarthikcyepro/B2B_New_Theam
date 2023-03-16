@@ -1,36 +1,21 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
-  Keyboard,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-  Image,
   ScrollView,
-  useWindowDimensions,
-  FlatList,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Colors, GlobalStyle } from "../../../styles";
+import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import moment from "moment";
 import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockNavigator";
 import { updateCurrentScreen } from "../../../redux/myStockReducer";
 import { RadioTextItem1 } from "../../../pureComponents/radioTextItem";
 import { LoaderComponent } from "../../../components";
-
-const dateFormat = "YYYY-MM-DD";
-const currentDate = moment().format(dateFormat);
-const lastMonthFirstDate = moment(currentDate, dateFormat)
-  .subtract(0, "months")
-  .startOf("month")
-  .format(dateFormat);
-const screenWidth = Dimensions.get("window").width;
+import _ from "lodash";
 
 const sample = {
   modelWise_intransit_stock: [],
@@ -84,6 +69,7 @@ const AvailableScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (route.params) {
       getInventory();
+      setAvailable(route.params.available);
     }
   }, [route.params]);
 
@@ -175,7 +161,9 @@ const AvailableScreen = ({ route, navigation }) => {
               !noBorder &&
                 navigation.navigate(MyStockTopTabNavigatorIdentifiers.variant, {
                   headerTitle: item.model,
-                  branchName: branchName,
+                  branchName: !_.isEmpty(selector.dealerCode)
+                    ? selector.dealerCode.name
+                    : route?.params?.headerTitle,
                   orgId: orgID,
                   available: available,
                 });

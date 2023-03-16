@@ -52,6 +52,7 @@ export const NumberInput = ({ label, value, disabled = false, onPress, onChange 
                     ? Colors.GRAY
                     : Colors.BLACK
                   : Colors.GRAY,
+                  minWidth:'70%'
               },
             ]}
             keyboardType="numeric"
