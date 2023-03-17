@@ -392,9 +392,9 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     }
     setTotalDataObj({ ...totalDataObjLocal });
     dispatch(updateFilterLevelSelectedData({}))
-    dispatch(updateFilterSelectedData({}))
+  
     dispatch(updateDealerFilterData({}))
-    dispatch(updateFilterSelectedData({}))
+    // dispatch(updateFilterSelectedData({}))
     dispatch(updateLiveLeadObjectData({}))
   };
 
@@ -545,7 +545,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
   );
 
   const clearBtnForEmployeeData = () => {
-    clearBtnClicked();
+    // clearBtnClicked();
     let newDataObj = {};
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
@@ -561,10 +561,12 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       newDataObj[key] = newArray;
     }
     // dispatch({})
-
-    dispatch(updateFilterSelectedData({}));
-    dispatch(updateDealerFilterData({}));
+   
+    // dispatch(updateFilterSelectedData({}));
+    // dispatch(updateDealerFilterData({}));
     setEmployeeDropDownDataLocal(newDataObj);
+    dispatch(updateFilterSelectedData({}))
+    dispatch(updateLiveLeadObjectData({}))
   };
 
   const submitBtnForEmployeeData = () => {

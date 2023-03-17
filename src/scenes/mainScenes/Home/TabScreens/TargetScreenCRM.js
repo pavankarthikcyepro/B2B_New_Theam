@@ -644,8 +644,17 @@ const TargetScreenCRM = ({ route }) => {
       let consultantDataForCRM = data.filter((item) => {
         return item.emp_id === userData.empId
       })
-      console.log("manthan--dddsssss ", consultantDataForCRM);
-     
+  
+      if(consultantDataForCRM.length>0){
+        
+        consultantDataForCRM.map((item)=>{
+          item.salesconsultant.forEach(element => {
+            otherUserData.push(element)
+          });
+         
+        })
+      }
+      
       setSecondLevelCRMdata([...otherUserData])
     }
     
@@ -1427,7 +1436,7 @@ const TargetScreenCRM = ({ route }) => {
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => { 
-
+                          
                           setIsViewExpanded(!isViewExpanded)  
                         
                         }}
@@ -1534,7 +1543,18 @@ const TargetScreenCRM = ({ route }) => {
                       </Text>
                     </View>
                     <View style={{ flexDirection: "row" }}></View>
-                    
+                    <SourceModelView
+                      onClick={() => {
+                        handleSourceModalNavigation(item)
+                       
+                        
+                      }}
+                      style={{
+                        transform: [
+                          { translateX: translation },
+                        ],
+                      }}
+                    />
                   </View>
 
                   {/*Source/Model View END */}
@@ -1562,6 +1582,8 @@ const TargetScreenCRM = ({ route }) => {
                           navigation={navigation}
                           titleClick={async (e) => { 
                             // setThirdLevelCRMdata([])
+                            // todo add condition for sales consultants 
+                            
                             formateSaleConsutantDataCRM(item,index)
                             
                          }}
@@ -1667,7 +1689,23 @@ const TargetScreenCRM = ({ route }) => {
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row" }}></View>
-                 
+                  <SourceModelView
+                    onClick={() => {
+                      handleSourceModalNavigation(item)
+                      
+                      
+                      
+                    }}
+                    style={{
+                      transform:
+                        [
+                          {
+                            translateX:
+                              translation,
+                          },
+                        ],
+                    }}
+                  />
                 </View>
 
                 {/*Source/Model View END */}
@@ -1753,14 +1791,85 @@ const TargetScreenCRM = ({ route }) => {
   }
   const formateSaleConsutantDataCRM = (itemMain,index)=>{
     // let salesconsultant = item.salesconsultant;
+ 
     setIndexLocal(index)
-    setisShowSalesConsultant(!isShowSalesConsultant);
+    
+    if(index === indexLocal){
+      setisShowSalesConsultant(false)
+    }else{
+      setisShowSalesConsultant(true)
+    }
+    // setisShowSalesConsultant(!isShowSalesConsultant);
     setThirdLevelCRMdata(itemMain.salesconsultant)
     // console.log("manthan---dd ", itemMain.salesconsultant);
 
     let findSelectedRecData = itemMain.salesconsultant.filter(item => item.emp_id === itemMain.emp_id);
     setStoreSelectedRecData(findSelectedRecData)
     // console.log("manthan---dd findSelectedRecData ", findSelectedRecData);
+  }
+
+  const handleSourceModalNavigation=(item)=>{
+    console.log("manthan sssss ",item.roleName.toLowerCase());
+    switch (item.roleName.toLowerCase()) {
+      case "tele caller":
+        navigation.navigate(
+          "RECEP_SOURCE_MODEL",
+          {
+            empId: item?.emp_id,
+            headerTitle: item?.emp_name,
+            loggedInEmpId: item.emp_id,
+            type: "TEAM",
+            moduleType: "home",
+            headerTitle: "Source/Model",
+            orgId: userData.orgId,
+            role: userData.hrmsRole,
+            branchList: userData.branchs.map(
+              (a) => a.branchId
+            ),
+          }
+        );
+        break;
+      case "cre": 
+        navigation.navigate(
+          "RECEP_SOURCE_MODEL",
+          {
+            empId: item?.emp_id,
+            headerTitle: item?.emp_name,
+            loggedInEmpId: item.emp_id,
+            type: "TEAM",
+            moduleType: "home",
+            headerTitle: "Source/Model",
+            orgId: userData.orgId,
+            role: userData.hrmsRole,
+            branchList: userData.branchs.map(
+              (a) => a.branchId
+            ),
+          }
+        );
+      break;
+      case "dse" :
+       
+          navigation.navigate(
+            AppNavigator
+              .HomeStackIdentifiers
+              .sourceModel,
+            {
+              empId:
+                item.emp_id,
+              headerTitle:
+                item.emp_name,
+              type: "TEAM",
+              moduleType:
+                "home",
+            }
+          );
+        
+        break;
+
+      default:
+        break;
+    }
+    
   }
   
   return (

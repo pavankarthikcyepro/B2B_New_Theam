@@ -494,7 +494,7 @@ const URL = {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
   },
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
-    return orgnaizationHirarchy + `/getcrmchild/${orgId}/${employeeId}`;
+    return orgnaizationHirarchy + `/getcrmchild/digital/${orgId}/${employeeId}`;
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
