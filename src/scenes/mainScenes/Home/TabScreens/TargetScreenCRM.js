@@ -41,6 +41,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import TextTicker from "react-native-text-ticker";
 import AnimLoaderComp from "../../../../components/AnimLoaderComp";
 import { isArrayBufferView } from "util/types";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -134,6 +135,7 @@ const TargetScreenCRM = ({ route }) => {
 
   const [secondLevelCRMdata, setSecondLevelCRMdata] = useState([]);
   const [thirdLevelCRMdata, setThirdLevelCRMdata] = useState([]);
+  const [storeSelectedRecData, setStoreSelectedRecData] = useState([]);
   const [isViewExpanded, setIsViewExpanded] = useState(false);
   const [isShowSalesConsultant, setisShowSalesConsultant] = useState(false);
   const [indexLocal, setIndexLocal] = useState(-1);
@@ -639,6 +641,10 @@ const TargetScreenCRM = ({ route }) => {
       let otherUserData = data.filter((item)=>{
         return item.emp_id !== userData.empId 
       })
+      let consultantDataForCRM = data.filter((item) => {
+        return item.emp_id === userData.empId
+      })
+      console.log("manthan--dddsssss ", consultantDataForCRM);
      
       setSecondLevelCRMdata([...otherUserData])
     }
@@ -761,6 +767,8 @@ const TargetScreenCRM = ({ route }) => {
       setBookingData(null);
       setRetailData(null);
       setSlideRight(0);
+      setIsViewExpanded(false)
+      setisShowSalesConsultant(false)
     });
     setSlideRight(0);
   }, [navigation, selector.isTeam]);
@@ -1553,8 +1561,9 @@ const TargetScreenCRM = ({ route }) => {
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => { 
-                            
+                            // setThirdLevelCRMdata([])
                             formateSaleConsutantDataCRM(item,index)
+                            
                          }}
                           roleName={item.roleName}
                           stopLocation={true}
@@ -1568,11 +1577,12 @@ const TargetScreenCRM = ({ route }) => {
                             flexDirection: "row",
                           }}
                         >
+                          {/* {console.log("manthanddddddd ", !_.isEmpty(storeSelectedRecData[0].enquiryCount))} */}
                           {[
-                            item.enquiryCount || 0,
-                            item.bookingCount || 0,
-                            item.retailCount || 0,
-                            item.droppedCount || 0,
+                            isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.enquiryCount:  item.enquiryCount || 0,
+                            isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.bookingCount :  item.bookingCount || 0,
+                            isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.retailCount :  item.retailCount || 0,
+                            isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.droppedCount : item.droppedCount || 0,
                           ].map((e) => {
                             return (
                               <Pressable onPress={() => {
@@ -1624,7 +1634,6 @@ const TargetScreenCRM = ({ route }) => {
       >
         {thirdLevelCRMdata.length > 0 &&
           thirdLevelCRMdata.map((item, index) => {
-            console.log("manthan---ffitem.emp_id !== userData.empId ", item.emp_id !== userData.empId);
             if (item.emp_id !== userData.empId) {
             return (
               <View key={`${item.emp_name} ${index}`}
@@ -1742,12 +1751,16 @@ const TargetScreenCRM = ({ route }) => {
           })}
       </View>)
   }
-  const formateSaleConsutantDataCRM = (item,index)=>{
+  const formateSaleConsutantDataCRM = (itemMain,index)=>{
     // let salesconsultant = item.salesconsultant;
     setIndexLocal(index)
     setisShowSalesConsultant(!isShowSalesConsultant);
-    setThirdLevelCRMdata(item.salesconsultant)
-    console.log("manthan---dd ", item.salesconsultant);
+    setThirdLevelCRMdata(itemMain.salesconsultant)
+    // console.log("manthan---dd ", itemMain.salesconsultant);
+
+    let findSelectedRecData = itemMain.salesconsultant.filter(item => item.emp_id === itemMain.emp_id);
+    setStoreSelectedRecData(findSelectedRecData)
+    // console.log("manthan---dd findSelectedRecData ", findSelectedRecData);
   }
   
   return (

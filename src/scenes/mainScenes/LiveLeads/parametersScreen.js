@@ -715,13 +715,30 @@ const ParametersScreen = ({ route }) => {
     const isContact = paramName.toLowerCase() === "preenquiry";
     const isLead = leads.includes(paramName.toLowerCase());
     // let makeparams = paramName
+    let employeeDetail;
+    if(filterParameters.length>0){
+       employeeDetail = {
+        empName: "",
+        empId: selector.saveLiveleadObject?.selectedempId[0],
+        orgId: "",
+        branchId: "",
+      };
+    }else{
+       employeeDetail = {
+        empName: "",
+        empId: "",
+        orgId: "",
+        branchId: "",
+      };
+    }
+    
     if (isLead) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
       setTimeout(() => {
         navigation.navigate("LEADS", {
           param: paramName === "INVOICE" ? "Retail" : paramName,
           moduleType: "live-leads",
-          employeeDetail: "",
+          employeeDetail: employeeDetail,
           // screenName: "",
           // selectedEmpId: "",
           // startDate: "",
@@ -735,7 +752,7 @@ const ParametersScreen = ({ route }) => {
       setTimeout(() => {
         navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
           moduleType: "live-leads",
-          employeeDetail: "",
+          employeeDetail: employeeDetail
         });
       }, 100);
     }

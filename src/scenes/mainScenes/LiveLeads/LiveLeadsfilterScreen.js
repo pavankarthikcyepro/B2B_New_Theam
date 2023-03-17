@@ -709,14 +709,14 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
               return (
                 <View
                   style={{
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    paddingBottom: 5,
-                    borderColor: Colors.BORDER_COLOR,
-                    borderWidth: 1,
+                    // flexDirection: "row",
+                    // justifyContent: "space-evenly",
+                    // paddingBottom: 5,
+                    // borderColor: Colors.BORDER_COLOR,
+                    // borderWidth: 1,
                   }}
                 >
-                  <View style={{ width: "48%" }}>
+                  {/* <View style={{ width: "48%" }}>
                     <DateSelectItem
                       label={"From Date"}
                       value={fromDate}
@@ -730,7 +730,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
                       value={toDate}
                       onPress={() => showDatePickerMethod("TO_DATE")}
                     />
-                  </View>
+                  </View> */}
                 </View>
               );
             } else if (index === 1) {

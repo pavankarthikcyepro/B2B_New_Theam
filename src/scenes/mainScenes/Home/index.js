@@ -1250,6 +1250,7 @@ const HomeScreen = ({ route, navigation }) => {
         navigation={navigation}
       />
       <ScrollView
+      nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, paddingHorizontal: 10 }}
       >

@@ -362,7 +362,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
 
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
     let key = employeeTitleNameList[index];
-    console.log("manthan---ff ");
+    
     const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
     let objIndex = newTotalDataObjLocal[key].findIndex(
       (obj) => obj.id == data.id  
