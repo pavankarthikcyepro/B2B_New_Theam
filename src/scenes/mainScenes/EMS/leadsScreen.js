@@ -11,11 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Button, IconButton, Searchbar } from "react-native-paper";
-import {
-  EmptyListView,
-  RadioTextItem2,
-} from "../../../pureComponents";
+import { Button, IconButton, Searchbar, Switch } from "react-native-paper";
+import { EmptyListView, RadioTextItem2 } from "../../../pureComponents";
 import {
   DatePickerComponent,
   DateRangeComp,
@@ -127,6 +124,7 @@ const LeadsScreen = ({ route, navigation }) => {
   const [stageAccess, setStageAccess] = useState([]);
   const [AssignByMe, setAssignByMe] = useState(false);
   const [AssignToMe, setAssignToMe] = useState(false);
+  const [isVip, setIsVip] = useState(false);
 
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
@@ -989,8 +987,9 @@ const LeadsScreen = ({ route, navigation }) => {
   const renderItem = ({ item, index }) => {
     return (
       <>
-        <View>
+        <View style={{ marginTop: index == 0 ? 10 : 0 }}>
           <MyTaskNewItem
+            IsVip={item.isVip === "Y" ? true : false}
             tdflage={item?.tdflage ? item.tdflage : ""}
             from={item.leadStage}
             name={
@@ -1084,21 +1083,39 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMeLength(data) {
     if (data.length > 0) {
-      let newData = data.filter(
-        (i) => i.createdBy === userData.empName
-        // &&
-        // userData.empName === i.salesConsultant
-      );
-      return newData.length;
+      if (isVip) {
+        let newData = data.filter(
+          (i) => i.createdBy === userData.empName && i.isVip === "Y"
+          // &&
+          // userData.empName === i.salesConsultant
+        );
+        return newData.length;
+      } else {
+        let newData = data.filter(
+          (i) => i.createdBy === userData.empName
+          // &&
+          // userData.empName === i.salesConsultant
+        );
+        return newData.length;
+      }
     } else {
       return 0;
     }
   }
 
- function onAssignToMeLength(data) {
+  function onAssignToMeLength(data) {
     if (data.length > 0) {
-      let newData = data.filter((i) => userData.empName === i.salesConsultant);
-      return newData.length;
+      if (isVip) {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+        );
+        return newData.length;
+      } else {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant
+        );
+        return newData.length;
+      }
     } else {
       return 0;
     }
@@ -1106,13 +1123,23 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMe(data) {
     if (data.length > 0) {
-      let newData = data.filter(
-        (i) => i.createdBy === userData.empName
-        // &&
-        // userData.empName === i.salesConsultant
-      );
-      dispatch(updateTheCount(newData.length));
-      return newData;
+      if (isVip) {
+        let newData = data.filter(
+          (i) => i.createdBy === userData.empName && i.isVip === "Y"
+          // &&
+          // userData.empName === i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else {
+        let newData = data.filter(
+          (i) => i.createdBy === userData.empName
+          // &&
+          // userData.empName === i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      }
     } else {
       dispatch(updateTheCount(0));
       return [];
@@ -1121,9 +1148,36 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMe(data) {
     if (data.length > 0) {
-      let newData = data.filter((i) => userData.empName === i.salesConsultant);
-      dispatch(updateTheCount(newData.length));
-      return newData;
+      if (isVip) {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      }
+    } else {
+      dispatch(updateTheCount(0));
+      return [];
+    }
+  }
+
+  function OnVip(data) {
+    if (data.length > 0) {
+      if (isVip) {
+        let newData = data.filter((i) => i.isVip === "Y");
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else {
+        let newData = data;
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      }
     } else {
       dispatch(updateTheCount(0));
       return [];
@@ -1241,7 +1295,7 @@ const LeadsScreen = ({ route, navigation }) => {
         </Pressable>
       </View>
       <View style={styles.view3}>
-        <View style={{ width: subMenu?.length > 1 ? "45%" : "100%" }}>
+        <View style={{ width: subMenu?.length > 1 ? "35%" : "70%" }}>
           <Pressable
             onPress={() => {
               setLeadsFilterVisible(true);
@@ -1263,7 +1317,7 @@ const LeadsScreen = ({ route, navigation }) => {
         {subMenu?.length > 1 && (
           <View
             style={{
-              width: "50%",
+              width: "35%",
               alignSelf: "center",
               backgroundColor: "white",
               marginBottom: 5,
@@ -1310,6 +1364,19 @@ const LeadsScreen = ({ route, navigation }) => {
             </Pressable>
           </View>
         )}
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "600",
+              marginRight: 5,
+              color: Colors.RED,
+            }}
+          >
+            VIP
+          </Text>
+          <Switch color={Colors.RED} value={isVip} onValueChange={setIsVip} />
+        </View>
       </View>
       <View style={styles.AssignView}>
         <View style={styles.AssignView1}>
@@ -1323,9 +1390,7 @@ const LeadsScreen = ({ route, navigation }) => {
               setAssignToMe(false);
             }}
             data={
-              searchedData.length > 0
-                ? onAssignByMeLength(searchedData)
-                : 0
+              searchedData.length > 0 ? onAssignByMeLength(searchedData) : 0
             }
           />
           <RadioTextItem2
@@ -1338,13 +1403,10 @@ const LeadsScreen = ({ route, navigation }) => {
               setAssignToMe(true);
             }}
             data={
-              searchedData.length > 0
-                ? onAssignToMeLength(searchedData)
-                : 0
+              searchedData.length > 0 ? onAssignToMeLength(searchedData) : 0
             }
           />
         </View>
-
         <Pressable style={{ alignItems: "center", alignSelf: "center" }}>
           <IconButton
             icon="close-circle-outline"
@@ -1381,7 +1443,7 @@ const LeadsScreen = ({ route, navigation }) => {
                 ? onAssignByMe(searchedData)
                 : AssignToMe
                 ? onAssignToMe(searchedData)
-                : searchedData
+                : OnVip(searchedData)
             }
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}

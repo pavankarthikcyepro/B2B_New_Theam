@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Text, Pressable, Dimensions } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { Colors } from "../styles";
 
@@ -33,6 +33,8 @@ const RadioTextItem = ({
     </Pressable>
   );
 };
+const { width, height } = Dimensions.get("window");
+const circleSize = Math.min(width, height) * 0.8;
 
 const RadioTextItem2 = ({
   label,
@@ -87,12 +89,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "400",
   },
   tabContainer: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     position: "relative",
   },
   titleText: {
@@ -105,6 +107,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     justifyContent: "center",
     alignItems: "center",
+    // backgroundColor: Colors.RED,
+    // borderRadius: 15,
+    // width:25,
+    // aspectRatio:4/4,
+    // padding: 5,
   },
-  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
+  badgeText: { fontSize: 11, color: Colors.RED, fontWeight: "bold" },
 });
