@@ -157,7 +157,6 @@ const CRMFilterscreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       if (!isEmpty(selector.dealerFilter)) {
         const temp = { ...selector.dealerFilter };
-        console.log("manthan---fffffss ", temp);
         setTotalDataObj(temp);
 
          
@@ -381,14 +380,14 @@ const CRMFilterscreen = ({ route, navigation }) => {
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
-    let key = employeeTitleNameList[index];
+    let keyMain = employeeTitleNameList[index];
     // clearBtnForEmployeeData();
-    dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData({}))
+    // dispatch(updateFilterSelectedData({}))
+    // dispatch(updateLiveLeadObjectData({}))
   
-    console.log("manthan----fff index ",index);
-    console.log("manthan----fffindex1  ", index1);
-    console.log("manthan----fffindex1  ", employeeDropDownDataLocal);
+   
+ 
+   
     if(index === 0 ){ 
       
       let temparr = dropDownData.map((item,i) =>{
@@ -400,22 +399,16 @@ const CRMFilterscreen = ({ route, navigation }) => {
         item.selected = false;
       
       })
-      
-     
-      // let newDataObj = {};
+      // let arrayData = [];
       // for (let key in employeeDropDownDataLocal) {
-      //   const arrayData = employeeDropDownDataLocal[key];
-      //   const newArray = [];
-      //   if (arrayData.length > 0) {
-      //     arrayData.forEach((element) => {
-      //       newArray.push({
-      //         ...element,
-      //         selected: false,
-      //       });
-      //     });
-      //   }
-      //   newDataObj[key] = newArray;
+      //   arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+      //     
+      //     element.name === data.name ? element.selected = true : element.selected = false;
+
+      //   });
+       
       // }
+     
 
       // setEmployeeDropDownDataLocal(newDataObj);
     }else{
@@ -424,7 +417,6 @@ const CRMFilterscreen = ({ route, navigation }) => {
         
         index1 === i ? item.selected = true : item.selected = false
       })
-      
     }
     
     // setEmployeeDropDownDataLocal(tempEmployeeArr);
@@ -450,10 +442,16 @@ const CRMFilterscreen = ({ route, navigation }) => {
     }
     setTotalDataObj({ ...totalDataObjLocal });
     dispatch(updateFilterLevelSelectedData({}))
-
+    let obj = {
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
     dispatch(updateDealerFilterData({}))
     // dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData({}))
+    dispatch(updateLiveLeadObjectData(obj))
     clearBtnForEmployeeData();
     
   };
@@ -657,11 +655,17 @@ const CRMFilterscreen = ({ route, navigation }) => {
       }
       newDataObj[key] = newArray;
     }
-    
+    let obj ={
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
     setEmloyeeTitleNameList([])
   
     dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData({}))
+    dispatch(updateLiveLeadObjectData(obj))
     setEmployeeDropDownDataLocal(newDataObj);
   };
 
@@ -698,7 +702,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
           }
         );
       });
-      // console.log("manthan---fff ", temp);
+     
       
       if (temp.length > 0) {
         let tempArr = [];
@@ -929,7 +933,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
                           renderItem={({ item, index }) => {
                           
                             const data = employeeDropDownDataLocal[item];
-                            console.log("manthan ssss ", data);
+                         
                             let selectedNames = "";
                             // if (item) {
                             //   for (let i = 1; i < employeeTitleNameList.length; i++) {

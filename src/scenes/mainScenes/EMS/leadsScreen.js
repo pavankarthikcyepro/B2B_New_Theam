@@ -368,13 +368,13 @@ const LeadsScreen = ({ route, navigation }) => {
       
       // setSearchedData([])
       let payloadReceptionist = {
-        "loginEmpId": userData.empId,
+        "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : userData.empId  ,
         "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
         "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
         "orgId": userData.orgId,
         "branchCodes": route.params.dealerCodes,
         "stageName": route?.params?.params,
-        "selectedEmpId": route?.params?.selectedEmpId,
+        "selectedEmpId": route?.params?.ignoreSelectedId? [] :route?.params?.selectedEmpId,
         "limit": 1000,
         "offset": 0
       }

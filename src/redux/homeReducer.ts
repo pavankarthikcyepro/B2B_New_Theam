@@ -884,7 +884,13 @@ export const homeSlice = createSlice({
     filterPayload: {},
     filterSelectedData: {},
     levelSelected: [],
-    saveCRMfilterObj: {}
+    saveCRMfilterObj: {
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -1532,6 +1538,7 @@ export const homeSlice = createSlice({
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
           totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})

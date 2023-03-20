@@ -1083,18 +1083,36 @@ const HomeScreen = ({ route, navigation }) => {
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
     if (!screenName) {
-      setTimeout(() => {
-        navigation.navigate("LEADS", {
-          screenName: "Home" ,
-          params: params,
-          moduleType: "",
-          employeeDetail: "",
-          selectedEmpId: selectedEmpId,
-          startDate: selector.receptionistFilterIds.startDate,
-          endDate: selector.receptionistFilterIds.endDate,
-          dealerCodes: selector.receptionistFilterIds.dealerCodes
-        });
-      }, 1000);
+      if (selector.saveCRMfilterObj?.selectedempId){
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "Home",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+            startDate: selector.saveCRMfilterObj.startDate,
+            endDate: selector.saveCRMfilterObj.endDate,
+            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+            ignoreSelectedId : true
+          });
+        }, 1000);
+      }else{
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "Home",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: selector.receptionistFilterIds.startDate,
+            endDate: selector.receptionistFilterIds.endDate,
+            dealerCodes: selector.receptionistFilterIds.dealerCodes,
+            ignoreSelectedId: true
+          });
+        }, 1000);
+      }
+      
     }
   }
   function navigateToContact(params) {

@@ -919,7 +919,8 @@ const TabNavigator = ({ navigation, route }) => {
                 startDate: "",
                 endDate: "",
                 dealerCodes: "",
-                fromScreen: "DEFAULT"
+                fromScreen: "DEFAULT",
+                ignoreSelectedId: false
               })
           },
         })}

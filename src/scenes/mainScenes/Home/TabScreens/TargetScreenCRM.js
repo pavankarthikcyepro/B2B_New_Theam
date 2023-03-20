@@ -586,7 +586,7 @@ const TargetScreenCRM = ({ route }) => {
         branchs: jsonObj.branchs,
       });
       if (jsonObj.hrmsRole == "CRM") {
-        getReceptionManagerTeam(jsonObj);
+        // getReceptionManagerTeam(jsonObj);
       }
       if (
         selector.login_employee_details.hasOwnProperty("roles") &&
@@ -636,29 +636,41 @@ const TargetScreenCRM = ({ route }) => {
   useEffect(() => {
 
    
-    if (selector.receptionistData?.fullResponse){
+    if (selector.receptionistData?.fullResponse && _.isEmpty(selector.saveCRMfilterObj.selectedempId)){
       let data = selector.receptionistData.fullResponse?.manager
-      
-      let otherUserData = data.filter((item)=>{
-        return item.emp_id !== userData.empId 
-      })
-      let consultantDataForCRM = data.filter((item) => {
-        return item.emp_id === userData.empId
-      })
-  
-      if(consultantDataForCRM.length>0){
-        
-        consultantDataForCRM.map((item)=>{
-          item.salesconsultant.forEach(element => {
-            otherUserData.push(element)
-          });
-         
+      if (data?.length > 0 ){
+        let otherUserData = data.filter((item) => {
+          return item.emp_id !== userData.empId
         })
+        let consultantDataForCRM = data.filter((item) => {
+          return item.emp_id === userData.empId
+        })
+
+        if (consultantDataForCRM.length > 0) {
+
+          consultantDataForCRM.map((item) => {
+            item.salesconsultant.forEach(element => {
+              otherUserData.push(element)
+            });
+
+          })
+        }
+
+        setSecondLevelCRMdata([...otherUserData])
       }
+     
       
-      setSecondLevelCRMdata([...otherUserData])
     }
     
+    if(selector.receptionistData){
+      let totalKey1 = selector?.receptionistData?.enquirysCount;
+      let totalKey2 = selector?.receptionistData?.bookingsCount;
+      let totalKey3 = selector?.receptionistData?.RetailCount;
+      let totalKey4 = selector?.receptionistData?.totalDroppedCount;
+
+      let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+      setTotalofTeam(total);
+    }
    
   }, [selector.receptionistData])
   
@@ -796,7 +808,7 @@ const TargetScreenCRM = ({ route }) => {
   
    
     if (selector.saveCRMfilterObj?.selectedempId){
-      console.log("manthan---dd", selector.saveCRMfilterObj);
+     
       CRMFilterApplied();
     }
   }, [selector.saveCRMfilterObj])
@@ -818,6 +830,10 @@ const TargetScreenCRM = ({ route }) => {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
       };
+      // let payload = {
+      //   orgId: userData.orgId,
+      //   loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0] ? selector.saveCRMfilterObj?.selectedempId[0] : userData.empID ,
+      // };
       const response = await client.post(
         URL.RECEPTIONIST_MANAGER_TEAM(),
         payload
@@ -1043,19 +1059,37 @@ const TargetScreenCRM = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = [],isIgnore = false) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
-      navigation.navigate("LEADS", {
-        screenName: "TARGETSCREEN1",
-        params: params,
-        moduleType: "",
-        employeeDetail: "",
-        selectedEmpId: selectedEmpId,
-        startDate: selector.receptionistFilterIds.startDate,
-        endDate: selector.receptionistFilterIds.endDate,
-        dealerCodes: selector.receptionistFilterIds.dealerCodes
-      });
+      if (selector.saveCRMfilterObj?.selectedempId) {
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "Home",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+            startDate: selector.saveCRMfilterObj.startDate,
+            endDate: selector.saveCRMfilterObj.endDate,
+            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+            ignoreSelectedId: isIgnore
+          });
+        }, 1000);
+      }else{
+        navigation.navigate("LEADS", {
+          screenName: "TARGETSCREEN1",
+          params: params,
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: selectedEmpId,
+          startDate: selector.receptionistFilterIds.startDate,
+          endDate: selector.receptionistFilterIds.endDate,
+          dealerCodes: selector.receptionistFilterIds.dealerCodes,
+          ignoreSelectedId: false
+        });
+      }
+      
     }, 1000);
   }
 
@@ -1114,8 +1148,16 @@ const TargetScreenCRM = ({ route }) => {
     
 
   const renderCRMTreeFilterApplied = () => {
-    // todo manthan filtr CRm
+   
     return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {selector.receptionistData.consultantList.length > 0 &&
+          selector.receptionistData.consultantList.map((item, index) => {
+
+            if (item.emp_id === selector.saveCRMfilterObj.selectedempId[0]) {
+              return (
                 <View key={`${item.emp_name} ${index}`}
                   style={{
                     borderColor: isViewExpanded ? Colors.PINK : "",
@@ -1234,7 +1276,7 @@ const TargetScreenCRM = ({ route }) => {
                           navigation={navigation}
                           titleClick={async (e) => {
 
-                            setIsViewExpanded(!isViewExpanded)
+                            // setIsViewExpanded(!isViewExpanded)
 
                           }}
                           roleName={item.roleName}
@@ -1259,6 +1301,19 @@ const TargetScreenCRM = ({ route }) => {
                               <Pressable onPress={() => {
 
                                 // todo redirections logic 
+                              
+                                if (selector.receptionistData.enquirysCount === e){
+                                 
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id],true);
+                                } else if (selector.receptionistData.bookingsCount === e){
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                } else if (selector.receptionistData.RetailCount === e){
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                } else if (selector.receptionistData.totalLostCount === e){
+                                    // todo navigate to lost 
+                                }
+
+
                               }}>
                                 <View
                                   style={{
@@ -1287,10 +1342,13 @@ const TargetScreenCRM = ({ route }) => {
                       {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                     </View>
                   </View>
-                
                 </View>
-              
-      )
+              );
+            }
+
+          })}
+
+      </View>)
   }
 
   const renderCRMTree = ()=>{
@@ -1447,6 +1505,16 @@ const TargetScreenCRM = ({ route }) => {
                             <Pressable onPress={()=>{
                              
                               // todo redirections logic 
+                              if (selector.receptionistData.enquirysCount === e) {
+
+                                navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                              } else if (selector.receptionistData.bookingsCount === e) {
+                                navigateToEMS("BOOKING", "", [item.emp_id, true]);
+                              } else if (selector.receptionistData.RetailCount === e) {
+                                navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                              } else if (selector.receptionistData.totalLostCount === e) {
+                                // todo navigate to lost 
+                              }
                             }}>
                             <View
                               style={{
@@ -1593,8 +1661,18 @@ const TargetScreenCRM = ({ route }) => {
                           ].map((e) => {
                             return (
                               <Pressable onPress={() => {
-
+                                console.log("manthan ---ff ",e);
                                 // todo redirections logic 
+                                if (item.enquiryCount === e) {
+
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id],true);
+                                } else if (item.bookingCount === e) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                } else if (item.retailCount === e) {
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                } else if (item.droppedCount === e) {
+                                  // todo navigate to lost 
+                                }
                               }}>
                                 <View
                                   style={{
@@ -1786,11 +1864,11 @@ const TargetScreenCRM = ({ route }) => {
     }
     // setisShowSalesConsultant(!isShowSalesConsultant);
     setThirdLevelCRMdata(itemMain?.salesconsultant)
-    // console.log("manthan---dd ", itemMain.salesconsultant);
+   
 
     let findSelectedRecData = itemMain?.salesconsultant?.filter(item => item.emp_id === itemMain.emp_id);
     setStoreSelectedRecData(findSelectedRecData)
-    // console.log("manthan---dd findSelectedRecData ", findSelectedRecData);
+    
   }
 
   const handleSourceModalNavigation=(item)=>{
@@ -1929,8 +2007,8 @@ const TargetScreenCRM = ({ route }) => {
                     
                       > */}
                         
-                          {renderCRMTree()}
-                          
+                        {!selector.saveCRMfilterObj.selectedempId ? renderCRMTree() : renderCRMTreeFilterApplied() } 
+                        
                           
                       {/* </View> */}
                        
