@@ -219,7 +219,10 @@ const FilterScreen = ({ route, navigation }) => {
       }
     }
     if (index === 4) {
-      setDropDownData([...newData]);
+     
+      // setDropDownData([...data]);
+        setDropDownData([...newData]);
+    
       if (initalCall) {
         let levelIds = selector.filterIds?.levelSelected;
         let updatedMultipleData = [...newData];
@@ -460,7 +463,7 @@ const FilterScreen = ({ route, navigation }) => {
     if (userData) {
       const payload = {
         orgId: userData.orgId,
-        branchId: userData.branchId,
+        empId: userData.employeeId,
       };
       Promise.all([dispatch(getOrganaizationHirarchyList(payload))]);
     }
@@ -871,7 +874,8 @@ const FilterScreen = ({ route, navigation }) => {
                                   label={item}
                                   value={selectedNames}
                                   onPress={() =>
-                                    dropDownItemClicked(index, item)
+                                  {
+                                    dropDownItemClicked(index, item)}
                                   }
                                   takeMinHeight={true}
                                 />
@@ -884,7 +888,8 @@ const FilterScreen = ({ route, navigation }) => {
                               <DropDownSelectionItem
                                 label={item}
                                 value={selectedNames}
-                                onPress={() => dropDownItemClicked(index, item)}
+                                onPress={() => {
+                                  dropDownItemClicked(index, item)}}
                                 takeMinHeight={true}
                               />
                             </View>

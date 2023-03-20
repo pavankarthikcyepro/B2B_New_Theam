@@ -756,7 +756,11 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+    // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: "DROP_ANALYSIS",
+      params: { emp_id: "", fromScreen: "" },
+    });
   }
   return (
     <React.Fragment>

@@ -176,6 +176,33 @@ const EMSTopTabNavigatorTwo = () => {
             />
           ),
         }}
+        initialParams={{
+          screenName: "DEFAULT",
+          params: "",
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: "",
+          startDate: "",
+          endDate: "",
+          dealerCodes: "",
+          fromScreen:"DEFAULT"
+        }}
+        // listeners={({ navigation, route }) => ({
+        //     tabPress: e => {
+        //     navigation.setParams(
+        //       {
+        //         screenName: "DEFAULT",
+        //         params: "",
+        //         moduleType: "",
+        //         employeeDetail: "",
+        //         selectedEmpId: "",
+        //         startDate: "",
+        //         endDate: "",
+        //         dealerCodes: "",
+        //         fromScreen: "DEFAULT"
+        //       })
+        //     },
+        // })}
       />
       {/*<EMSTopTab.Screen*/}
       {/*  name={EmsTopTabNavigatorIdentifiers.enquiry}*/}
