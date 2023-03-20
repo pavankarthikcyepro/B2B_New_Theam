@@ -880,7 +880,11 @@ export const homeSlice = createSlice({
     leaderShipFIlterId: [],
     receptionistFilterIds: [],
     crm_employees_drop_down_data: {},
-    
+    dealerFilter: {},
+    filterPayload: {},
+    filterSelectedData: {},
+    levelSelected: [],
+    saveCRMfilterObj: {}
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -922,6 +926,18 @@ export const homeSlice = createSlice({
       } else {
         state.insights_target_parameters_data = action.payload.empData;
       }
+    },
+    updateDealerFilterData: (state, action) => {
+      state.dealerFilter = action.payload;
+    },
+    updateFilterSelectedData: (state, action) => {
+      state.filterSelectedData = action.payload;
+    },
+    updateFilterLevelSelectedData: (state, action) => {
+      state.levelSelected = action.payload;
+    },
+    updateLiveLeadObjectData: (state, action) => {
+      state.saveCRMfilterObj = action.payload;
     },
     clearState: (state, action) => {
       state.serchtext = "";
@@ -989,6 +1005,7 @@ export const homeSlice = createSlice({
       state.leaderShipFIlterId = [];
       state.receptionistFilterIds = [];
       state.crm_employees_drop_down_data = {}
+      // state.dealerFilter= { }
     },
   },
   extraReducers: (builder) => {
@@ -1618,6 +1635,7 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids
+  updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
+  updateFilterSelectedData,updateLiveLeadObjectData
 } = homeSlice.actions;
 export default homeSlice.reducer;

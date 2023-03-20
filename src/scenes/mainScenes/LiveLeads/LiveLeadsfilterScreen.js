@@ -600,19 +600,20 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
           }
         );
       });
-      let tempArr = [];
-      const selected_ids = temp.map(item => {
-          tempArr.push(parseInt(item.id))
-      })
-      let tempPayload ={
-        startDate: fromDate,
-        endDate: toDate,
-        levelSelected: levelSelected,
-        selectedempId: [tempArr[tempArr.length -1]]
-      }
-      dispatch(updateLiveLeadObjectData(tempPayload))
-      dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+      
       if (temp.length > 0) {
+        let tempArr = [];
+        const selected_ids = temp.map(item => {
+          tempArr.push(parseInt(item.id))
+        })
+        let tempPayload = {
+          startDate: fromDate,
+          endDate: toDate,
+          levelSelected: levelSelected,
+          selectedempId: [tempArr[tempArr.length - 1]]
+        }
+        dispatch(updateLiveLeadObjectData(tempPayload))
+        dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
         navigation.navigate("LIVE_LEADS", {
           screenName: "LIVE_LEADS",
             fromScreen: "Filter",
@@ -623,6 +624,8 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
         
         });
         
+      }else{
+        showToast("Please select any value");
       }
 
       // let selectedID = x[x-1];

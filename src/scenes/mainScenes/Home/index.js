@@ -283,7 +283,7 @@ const HomeScreen = ({ route, navigation }) => {
         "dealerCodes": selector.receptionistFilterIds.dealerCodes
       };
       dispatch(getReceptionistData(payload));
-    } else if (userData.hrmsRole === "CRM") {
+    } else if (userData.hrmsRole === "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
