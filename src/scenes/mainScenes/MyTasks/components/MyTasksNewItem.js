@@ -12,6 +12,7 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from "../../../../asyncStore";
 import { showToastRedAlert } from "../../../../utils/toast";
+import { VIP_ICON, VIP_ICON2 } from "../../../../assets/icon";
 
 const statusBgColors = {
   CANCELLED: {
@@ -116,7 +117,9 @@ export const MyTaskNewItem = ({
   onlylead = false,
   EmployeesRoles,
   userData,
-  tdflage = "", updatedOn
+  tdflage = "",
+  updatedOn,
+  IsVip = false,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -185,12 +188,36 @@ export const MyTaskNewItem = ({
       >
         <View style={{ width: "65%" }}>
           <View style={{ flexDirection: "row" }}>
-            <View style={{ maxWidth: "73%" }}>
+            <View
+              style={{
+                maxWidth: "73%",
+                flexDirection: "row",
+                alignItems: "flex-end",
+                position: "relative",
+                paddingTop:5
+              }}
+            >
               <Text style={styles.text1}>{name}</Text>
+              <View style={styles.badgeContainer}>
+                {/* <Text style={styles.badgeText}>{"VIP"}</Text> */}
+                {IsVip && <Image
+                  source={VIP_ICON2}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    // top: 0,
+                    right: -25,
+                    position: "absolute",
+                    zIndex: 1000,
+                  }}
+                  resizeMode={"contain"}
+                />}
+              </View>
             </View>
             {/*<Text style={styles.catText}>{enqCat}</Text>*/}
           </View>
           <Text style={styles.text2}>{date}</Text>
+
           <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
           <Text style={styles.text2}>{phone}</Text>
           <>
@@ -257,7 +284,7 @@ export const MyTaskNewItem = ({
             <Text style={[styles.text2, { color: bgColor }]}>{statusName}</Text>
           )}
         </View>
-        <View style={{ width: "35%", alignItems: "center" }}>
+        <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
@@ -370,6 +397,20 @@ export const MyTaskNewItem = ({
           </View>
         </View>
       </View>
+      {/* {IsVip && (
+        <Image
+          source={VIP_ICON}
+          style={{
+            width: 40,
+            height: 40,
+            top: -15,
+            right: -10,
+            position: "absolute",
+            zIndex: 1000,
+          }}
+          resizeMode={"contain"}
+        />
+      )} */}
     </TouchableOpacity>
   );
 };
@@ -415,6 +456,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal: 5,
     marginVertical: 6,
+    position: "relative",
   },
   modal: {
     backgroundColor: Colors.RED,
@@ -438,4 +480,12 @@ const styles = StyleSheet.create({
     width: 30,
     borderRadius: 15,
   },
+  badgeContainer: {
+    marginLeft: 3,
+    bottom: 4,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
 });
