@@ -261,8 +261,11 @@ const URL = {
   GET_CUSTOMER_TYPES: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
   },
-  GET_SOURCE_TYPE: (ten) => {
-    return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
+  GET_SOURCE_TYPE: (tenantId) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/${tenantId}/master-data/lead-source/all-by-hierarchy`
+    );
   },
   GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;

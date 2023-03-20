@@ -32,7 +32,7 @@ export const getCustomerTypesApi = createAsyncThunk(
 export const getSourceTypesApi = createAsyncThunk(
   "CUSTOMER_INFO_SLICE/getSourceTypesApi",
   async (tenantId, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_CUSTOMER_TYPES(tenantId));
+    const response = await client.get(URL.GET_SOURCE_TYPE(tenantId));
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -42,6 +42,7 @@ export const getSourceTypesApi = createAsyncThunk(
 );
 
 const initialState = {
+  // Customer Info
   salutation: "",
   gender_types_data: [],
   relation_types_data: [],
@@ -58,7 +59,48 @@ const initialState = {
   subSourceType: "",
   customerTypesResponse: [],
   customerTypes: "",
+  sourceTypesResponse: [],
   sourceTypes: "",
+  // Customer Address
+  pincode: "",
+  urban_or_rural: 0,
+  houseNum: "",
+  streetName: "",
+  village: "",
+  mandal: "",
+  city: "",
+  district: "",
+  state: "",
+  isAddressSet: false,
+  // Vehicle Information
+  vehicleRegNo: "",
+  vehicleMaker: "",
+  vehicleModel: "",
+  vehicleVariant: "",
+  vehicleTransmissionType: "",
+  vehicleFuelType: "",
+  vehicleColor: "",
+  vin: "",
+  engineNumber: "",
+  kmReading: "",
+  saleDate: "",
+  makingMonth: "",
+  makingYear: "",
+  sellingDealer: "",
+  sellingLocation: "",
+  // Service Information
+  serviceDate: "",
+  serviceType: "",
+  subServiceType: "",
+  serviceAmount: "",
+  serviceCenter: "",
+  readingAtService: "",
+  serviceAdvisor: "",
+  serviceDealerName: "",
+  serviceDealerLocation: "",
+  serviceFeedback: "",
+  complaintReason: "",
+  complaintStatus: "",
 };
 
 const customerInfoReducer = createSlice({
@@ -69,6 +111,7 @@ const customerInfoReducer = createSlice({
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
       switch (key) {
+        // Customer Info
         case "SALUTATION":
           if (state.salutation !== value) {
             const genderData = Gender_Data_Obj[value.toLowerCase()];
@@ -92,6 +135,32 @@ const customerInfoReducer = createSlice({
           break;
         case "CUSTOMER_TYPE":
           state.customerTypes = value;
+          break;
+        // Vehicle Info
+        case "VEHICLE_MAKER":
+          state.vehicleMaker = value;
+          break;
+        case "VEHICLE_MODEL":
+          state.vehicleModel = value;
+          break;
+        case "VEHICLE_VARIANT":
+          state.vehicleVariant = value;
+          break;
+        case "VEHICLE_TRANSMISSION_TYPE":
+          state.vehicleTransmissionType = value;
+          break;
+        case "VEHICLE_FUEL_TYPE":
+          state.vehicleFuelType = value;
+          break;
+        case "VEHICLE_COLOR":
+          state.vehicleColor = value;
+          break;
+        // Service Info
+        case "SERVICE_TYPE":
+          state.serviceType = value;
+          break;
+        case "SUB_SERVICE_TYPE":
+          state.subServiceType = value;
           break;
       }
     },
@@ -144,6 +213,14 @@ const customerInfoReducer = createSlice({
           }
           state.maxDate = new Date();
           break;
+        case "SALE_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "SERVICE_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
         default:
           state.minDate = null;
           state.maxDate = null;
@@ -171,10 +248,115 @@ const customerInfoReducer = createSlice({
         case "ANNIVERSARY_DATE":
           state.anniversaryDate = selectedDate;
           break;
+        case "SALE_DATE":
+          state.saleDate = selectedDate;
+          break;
+        case "MAKING_MONTH":
+          state.saleDate = selectedDate;
+          break;
+        case "SERVICE_DATE":
+          state.serviceDate = selectedDate;
+          break;
         case "NONE":
           break;
       }
       state.showDatepicker = !state.showDatepicker;
+    },
+    setCommunicationAddress: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "PINCODE":
+          state.pincode = text;
+          break;
+        case "RURAL_URBAN":
+          state.urban_or_rural = Number(text);
+          break;
+        case "HOUSE_NO":
+          state.houseNum = text;
+          break;
+        case "STREET_NAME":
+          state.streetName = text;
+          break;
+        case "VILLAGE":
+          state.village = text;
+          break;
+        case "MANDAL":
+          state.mandal = text;
+          break;
+        case "CITY":
+          state.city = text;
+          break;
+        case "STATE":
+          state.state = text;
+          break;
+        case "DISTRICT":
+          state.district = text;
+          break;
+      }
+    },
+    updateAddressByPincode: (state, action) => {
+      state.village = action.payload.Block || "";
+      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || "";
+      state.city = action.payload.District || "";
+      state.district = action.payload.District || "";
+      state.state = action.payload.State || "";
+      if (Object.keys(action.payload).length > 0) {
+        state.isAddressSet = true;
+      } else {
+        state.isAddressSet = false;
+      }
+    },
+    setVehicleInformation: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "VEHICLE_REG_NO":
+          state.vehicleRegNo = text;
+          break;
+        case "VIN":
+          state.vin = text;
+          break;
+        case "ENGINE_NUMBER":
+          state.engineNumber = text;
+          break;
+        case "KM_READING":
+          state.kmReading = text;
+          break;
+        case "SELLING_DEALER":
+          state.sellingDealer = text;
+          break;
+        case "SELLING_LOCATION":
+          state.sellingLocation = text;
+          break;
+      }
+    },
+    setServiceInfo: (state, action: PayloadAction<PersonalIntroModel>) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "SERVICE_AMOUNT":
+          state.serviceAmount = text;
+          break;
+        case "SERVICE_CENTER":
+          state.serviceCenter = text;
+          break;
+        case "READING_AT_SERVICE":
+          state.readingAtService = text;
+          break;
+        case "SERVICE_ADVISOR":
+          state.serviceAdvisor = text;
+          break;
+        case "SERVICE_DEALER_NAME":
+          state.serviceDealerName = text;
+          break;
+        case "SERVICE_DEALER_LOCATION":
+          state.serviceDealerLocation = text;
+          break;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -193,6 +375,22 @@ const customerInfoReducer = createSlice({
         state.customerTypesResponse = [];
         state.customerTypes = null;
       });
+
+    // Get Source Types
+    builder
+      .addCase(getSourceTypesApi.pending, (state, action) => {
+        state.sourceTypesResponse = [];
+        state.sourceTypes = null;
+      })
+      .addCase(getSourceTypesApi.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.sourceTypesResponse = action.payload;
+        }
+      })
+      .addCase(getSourceTypesApi.rejected, (state, action) => {
+        state.sourceTypesResponse = [];
+        state.sourceTypes = null;
+      });
   },
 });
 
@@ -202,5 +400,9 @@ export const {
   setPersonalIntro,
   setDatePicker,
   updateSelectedDate,
+  setCommunicationAddress,
+  updateAddressByPincode,
+  setVehicleInformation,
+  setServiceInfo,
 } = customerInfoReducer.actions;
 export default customerInfoReducer.reducer;
