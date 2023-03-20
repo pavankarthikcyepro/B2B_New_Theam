@@ -66,6 +66,19 @@ export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bo
   return json;
 })
 
+export const saveTestDrive = createAsyncThunk(
+  "TEST_DRIVE_SLICE/saveTestDrive",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.SAVETESTDRIVE(), payload);
+
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);

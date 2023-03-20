@@ -39,6 +39,7 @@ import {
   getTestDriveHistoryCount,
   clearOTP,
   getTestDriveAppointmentDetailsApi2,
+  saveTestDrive,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -789,6 +790,27 @@ const TestDriveScreen = ({ route, navigation }) => {
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
 
+    let newPayload = {
+      address: customerAddress,
+      branchId: selectedBranchId,
+      customerHaveingDl: customerHavingDrivingLicense === 1,
+      customerId: universalId,
+      dlBackUrl: "",
+      dlFrontUrl: "",
+      dseId: selectedDseDetails.id,
+      orgId: userData.orgId,
+      source: "ShowroomWalkin",
+      startTime: actualStartTime,
+      location: location,
+      orgId: userData.orgId,
+      testDriveDatetime: prefferedTime,
+      testdriveId: 0,
+      status: status,
+      varientId: varientId,
+      vehicleId: vehicleId,
+      driverId: selectedDriverDetails.id.toString(),
+    };
+
     let appointmentObj = {
       address: customerAddress,
       branchId: selectedBranchId,
@@ -819,7 +841,12 @@ const TestDriveScreen = ({ route, navigation }) => {
     const payload = {
       appointment: appointmentObj,
     };
-    dispatch(bookTestDriveAppointmentApi(payload));
+
+    Promise.all([
+      dispatch(bookTestDriveAppointmentApi(payload)),
+      dispatch(saveTestDrive(newPayload)),
+    ]).catch(() => {});
+
     // navigation.goBack()
   };
 
@@ -1322,8 +1349,27 @@ const TestDriveScreen = ({ route, navigation }) => {
       testdriveId: 0,
       customerHaveingDl: customerHavingDrivingLicense === 1,
     };
-
-    dispatch(postReOpenTestDrive(reopenSubmitObj));
+    let newPayload = {
+      address: customerAddress,
+      branchId: selectedBranchId,
+      customerHaveingDl: customerHavingDrivingLicense === 1,
+      customerId: universalId,
+      dlBackUrl: "",
+      dlFrontUrl: "",
+      dseId: selectedDseDetails.id,
+      orgId: userData.orgId,
+      source: "ShowroomWalkin",
+      startTime: actualStartTime,
+      location: location,
+      orgId: userData.orgId,
+      testDriveDatetime: prefferedTime,
+      testdriveId: 0,
+      status: status,
+      varientId: varientId,
+      vehicleId: vehicleId,
+      driverId: selectedDriverDetails.id.toString(),
+    };
+    dispatch(saveTestDrive(newPayload));
   };
   useEffect(() => {
     if (selector.reopen_test_drive_res_status === "successs") {
