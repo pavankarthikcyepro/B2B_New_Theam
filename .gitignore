@@ -112,3 +112,4 @@ buck-out/
 
 package-lock.json
 yarn.lock
+src/scenes/mainScenes/EMS/B2B_New_Theam.code-workspace

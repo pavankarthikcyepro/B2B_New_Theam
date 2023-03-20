@@ -408,6 +408,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
   const [receiptDocModel, setReceiptDocModel] = useState(false);
+  const [isVip, setIsVip] = useState(null);
 
   // Edit buttons shows
   useEffect(() => {
@@ -418,7 +419,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ) {
       const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
       let isEditFlag = false;
-
+      setIsVip(
+        selector.pre_booking_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
       if (
         uploadedImagesDataObj.receipt &&
         uploadedImagesDataObj.receipt.fileName
@@ -1564,7 +1569,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Buyer_Type_Data]);
         break;
       case "CUSTOMER_TYPE":
-          if (selector.customer_types_data?.length === 0) {
+        if (selector.customer_types_data?.length === 0) {
           showToast("No Customer Types found");
           return;
         }
@@ -4118,6 +4123,48 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     },
                   ]}
                 ></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    disabled={!isInputsEditable()}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    disabled={!isInputsEditable()}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={[GlobalStyle.underline]}></Text>
                 {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
                     <DateSelectItem
@@ -7655,7 +7702,7 @@ const styles = StyleSheet.create({
   },
   chooseTitleText: {
     marginTop: 15,
-    alignSelf: "center"
+    alignSelf: "center",
   },
   photoOptionBtn: {
     borderRadius: 5,

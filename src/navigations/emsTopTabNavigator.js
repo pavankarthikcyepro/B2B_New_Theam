@@ -13,11 +13,11 @@ import { useSelector } from "react-redux";
 
 export const EmsTopTabNavigatorIdentifiers = {
   preEnquiry: "PRE_ENQUIRY",
-  leads: 'LEADS',
+  leads: "LEADS",
   enquiry: "ENQUIRY",
   preBooking: "PRE_BOOKING",
-  booking:"BOOKING",
-  proceedToBooking: 'PROCEED_BOOKING'
+  booking: "BOOKING",
+  proceedToBooking: "PROCEED_BOOKING",
 };
 
 const EMSTopTab = createMaterialTopTabNavigator();
@@ -32,10 +32,9 @@ const tabBarOptions = {
     fontSize: 12,
     fontWeight: "600",
   },
-}
+};
 
 const EMSTopTabNavigatorOne = () => {
-
   return (
     <EMSTopTab.Navigator
       initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
@@ -70,18 +69,83 @@ const Badge = ({ focused, title, countList }) => {
             : countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
             ? countList.dmsEntity.leadDtoPage.totalElements
             : 0} */}
-          { countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
-              ? countList.dmsEntity.leadDtoPage.totalElements
-              : 0}
+          {countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+            ? countList.dmsEntity.leadDtoPage.totalElements
+            : 0}
         </Text>
       </View>
     </View>
   );
 };
 
+const Badge1 = ({ focused, title, countList }) => {
+  const { updateCount } = useSelector((state) => state.enquiryReducer);
+  const [count, setCount] = useState(null);
+  useEffect(() => {
+    setCount(updateCount);
+  }, [updateCount]);
+
+  if (count) {
+    return (
+      <View style={styles.tabContainer}>
+        <Text
+          style={[
+            styles.titleText,
+            { color: focused ? Colors.RED : Colors.DARK_GRAY },
+          ]}
+        >
+          {title}
+        </Text>
+        <View style={styles.badgeContainer}>
+          <Text style={styles.badgeText}>
+            {/* {title == "CONTACTS"
+            ? countList
+              ? countList.length
+              : 0
+            : countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+            ? countList.dmsEntity.leadDtoPage.totalElements
+            : 0} */}
+            {count}
+          </Text>
+        </View>
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.tabContainer}>
+        <Text
+          style={[
+            styles.titleText,
+            { color: focused ? Colors.RED : Colors.DARK_GRAY },
+          ]}
+        >
+          {title}
+        </Text>
+        <View style={styles.badgeContainer}>
+          <Text style={styles.badgeText}>
+            {/* {title == "CONTACTS"
+            ? countList
+              ? countList.length
+              : 0
+            : countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+            ? countList.dmsEntity.leadDtoPage.totalElements
+            : 0} */}
+            {countList && countList?.dmsEntity?.leadDtoPage?.totalElements > 0
+              ? countList.dmsEntity.leadDtoPage.totalElements
+              : 0}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+};
 const EMSTopTabNavigatorTwo = () => {
-  const { pre_enquiry_list_TotalElements } = useSelector((state) => state.preEnquiryReducer);
-  const { leadList_totoalElemntData } = useSelector((state) => state.enquiryReducer);
+  const { pre_enquiry_list_TotalElements } = useSelector(
+    (state) => state.preEnquiryReducer
+  );
+  const { leadList_totoalElemntData } = useSelector(
+    (state) => state.enquiryReducer
+  );
   return (
     <EMSTopTab.Navigator
       initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
@@ -105,7 +169,11 @@ const EMSTopTabNavigatorTwo = () => {
         component={Leads}
         options={{
           title: ({ focused }) => (
-            <Badge title={"LEADS"} focused={focused} countList={leadList_totoalElemntData} />
+            <Badge1
+              title={"LEADS"}
+              focused={focused}
+              countList={leadList_totoalElemntData}
+            />
           ),
         }}
         initialParams={{

@@ -333,6 +333,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
+  const [isVip, setIsVip] = useState(null);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -1045,6 +1047,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please fill Sub Source Of Enquiry");
       return;
     }
+    if (isVip === null) {
+      showToast("Please select VIP");
+      return;
+    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1382,6 +1388,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             companyName: selector.company_name,
           },
           dmsLeadDto: {
+            isVip: isVip ? "Y" : "N",
             branchId: jsonObj.branchs[0]?.branchId,
             createdBy: jsonObj.empName,
             enquirySegment: selector.enquiry_segment,
@@ -1628,7 +1635,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
         // if aadhar number
         if (!aadharArr.length && selector.adhaar_number) {
-         let newObj = {
+          let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.adhaar_number,
             documentType: "aadhar",
@@ -4094,7 +4101,46 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   }
                   isDropDownIconShow={false}
                 />
-
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
                   value={selector.buyer_type}
