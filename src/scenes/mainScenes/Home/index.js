@@ -1097,7 +1097,24 @@ const HomeScreen = ({ route, navigation }) => {
             ignoreSelectedId : true
           });
         }, 1000);
-      }else{
+      } else if (userData.hrmsRole === "CRM"){
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "TargetScreenCRM",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: "",
+            endDate: "",
+            dealerCodes: [],
+            ignoreSelectedId:false,
+            parentId: selectedEmpId[0],
+            istotalClick: true
+          });
+        }, 1000);
+      }
+      else{
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "Home",
@@ -1226,11 +1243,19 @@ const HomeScreen = ({ route, navigation }) => {
     );
   };
   function navigateToDropLostCancel(params) {
-    
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-      screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-      params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes },
-    });
+    if (selector.saveCRMfilterObj.selectedempId){
+      
+      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+        screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+        params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "Home", dealercodes: selector.saveCRMfilterObj.dealerCodes, isForDropped: true, isFilterApplied: true },
+      });
+    }else{
+      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+        screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+        params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: false },
+      });
+    }
+   
   }
 
   return (

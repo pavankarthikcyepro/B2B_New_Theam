@@ -418,6 +418,7 @@ const URL = {
 
   DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
   DROP_ANALYSIS_LIST_REDIRECTIONS: () => sales_url + "/lead-drop/receptionist/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () => sales_url + "/lead-drop/receptionistManager/leadlist",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
@@ -483,6 +484,9 @@ const URL = {
   },
   GET_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionist/allByDateNew";
+  },
+  GET_LEAD_LIST_CRM: () => {
+    return sales_url + "/lead/receptionistManager/allByDateNew";
   },
   GET_ALL_STATUS: () => {
     return sales_url + "/lead/alldatadropdown";

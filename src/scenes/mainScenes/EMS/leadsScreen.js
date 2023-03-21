@@ -26,6 +26,7 @@ import { AppNavigator } from "../../../navigations";
 import * as AsyncStore from "../../../asyncStore";
 import {
   getEnquiryList,
+  getLeadsListCRM,
   getLeadsListReceptionist,
   getMoreEnquiryList,
   updateTheCount,
@@ -381,6 +382,43 @@ const LeadsScreen = ({ route, navigation }) => {
       
       dispatch(getLeadsListReceptionist(payloadReceptionist))
      
+    }
+    if (route?.params?.screenName === "TargetScreenCRM") {
+      //  todo call new api here 
+      
+      // setSearchedData([])
+
+      if (route?.params?.istotalClick){
+        let payloadReceptionist = {
+          "loggedInEmpId": route?.params?.parentId,
+          "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+          "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+          "orgId": userData.orgId,
+          // "branchCodes": route.params.dealerCodes,
+          "stageName": route?.params?.params,
+          // "selectedEmpId": route?.params?.selectedEmpId,
+          "limit": 1000,
+          "offset": 0
+        }
+
+        dispatch(getLeadsListCRM(payloadReceptionist))
+      }else{
+        let payloadReceptionist = {
+          "loginEmpId": route?.params?.parentId,
+          "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+          "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+          "orgId": userData.orgId,
+          "branchCodes": route.params.dealerCodes,
+          "stageName": route?.params?.params,
+          "selectedEmpId": route?.params?.selectedEmpId,
+          "limit": 1000,
+          "offset": 0
+        }
+
+        dispatch(getLeadsListReceptionist(payloadReceptionist))
+      }
+      
+
     }
    
 

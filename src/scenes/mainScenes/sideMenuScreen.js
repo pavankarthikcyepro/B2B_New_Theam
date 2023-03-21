@@ -350,7 +350,7 @@ const SideMenuScreen = ({ navigation }) => {
         // added empty params to reset & manage APi call in dropanalysis screen 
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: "", fromScreen: "" },
+          params: { emp_id: "", fromScreen: "", isForDropped: false, isFilterApplied:false },
         });
         
         break;

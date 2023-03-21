@@ -137,10 +137,12 @@ const TargetScreenCRM = ({ route }) => {
   const [secondLevelCRMdata, setSecondLevelCRMdata] = useState([]);
   const [thirdLevelCRMdata, setThirdLevelCRMdata] = useState([]);
   const [storeSelectedRecData, setStoreSelectedRecData] = useState([]);
+  const [storeFirstLevelSelectedRecData, setStoreFirstLevelSelectedRecData] = useState([]);
   const [isViewExpanded, setIsViewExpanded] = useState(false);
   const [isShowSalesConsultant, setisShowSalesConsultant] = useState(false);
   const [indexLocal, setIndexLocal] = useState(-1);
   const [storeSecondLevelLocal, setstoreSecondLevelLocal] = useState([]);
+  const [storeFirstLevelLocal, setStoreFirstLevelLocal] = useState([]);
 
   const [userData, setUserData] = useState({
     empId: 0,
@@ -645,17 +647,23 @@ const TargetScreenCRM = ({ route }) => {
         let consultantDataForCRM = data.filter((item) => {
           return item.emp_id === userData.empId
         })
+        
 
         if (consultantDataForCRM.length > 0) {
 
           consultantDataForCRM.map((item) => {
             item.salesconsultant.forEach(element => {
-              otherUserData.push(element)
+              if (element.emp_id !== userData.empId)
+              {
+                otherUserData.push(element)
+              }
+             
             });
 
           })
         }
-
+        
+      
         setSecondLevelCRMdata([...otherUserData])
       }
      
@@ -666,7 +674,7 @@ const TargetScreenCRM = ({ route }) => {
       let totalKey1 = selector?.receptionistData?.enquirysCount;
       let totalKey2 = selector?.receptionistData?.bookingsCount;
       let totalKey3 = selector?.receptionistData?.RetailCount;
-      let totalKey4 = selector?.receptionistData?.totalDroppedCount;
+      let totalKey4 = selector?.receptionistData?.totalLostCount;
 
       let total = [totalKey1, totalKey2, totalKey3, totalKey4];
       setTotalofTeam(total);
@@ -1059,7 +1067,7 @@ const TargetScreenCRM = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params = "", screenName = "", selectedEmpId = [],isIgnore = false) {
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = [],isIgnore = false,parentId = "",istotalClick= false) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       if (selector.saveCRMfilterObj?.selectedempId) {
@@ -1076,7 +1084,64 @@ const TargetScreenCRM = ({ route }) => {
             ignoreSelectedId: isIgnore
           });
         }, 1000);
-      }else{
+      }
+      else if (isIgnore){
+        if(parentId){
+          if (istotalClick)
+          {
+            setTimeout(() => {
+              navigation.navigate("LEADS", {
+                screenName: "TargetScreenCRM",
+                params: params,
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: selectedEmpId,
+                startDate: "",
+                endDate: "",
+                dealerCodes: [],
+                ignoreSelectedId: isIgnore,
+                parentId: parentId,
+                istotalClick: true
+              });
+            }, 1000);
+          }
+          else{
+            setTimeout(() => {
+              navigation.navigate("LEADS", {
+                screenName: "TargetScreenCRM",
+                params: params,
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: selectedEmpId,
+                startDate: "",
+                endDate: "",
+                dealerCodes: [],
+                ignoreSelectedId: isIgnore,
+                parentId: parentId
+              });
+            }, 1000);
+          }
+          
+        }else{
+          setTimeout(() => {
+            navigation.navigate("LEADS", {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: "",
+              endDate: "",
+              dealerCodes: [],
+              ignoreSelectedId: isIgnore
+            });
+          }, 1000);
+        }
+
+       
+      }
+      
+      else{
         navigation.navigate("LEADS", {
           screenName: "TARGETSCREEN1",
           params: params,
@@ -1102,6 +1167,35 @@ const TargetScreenCRM = ({ route }) => {
     
 
   }
+
+  function navigateToDropAnalysis(params,isfromTree= false,parentId = "") {
+    
+    if (selector.saveCRMfilterObj.selectedempId){
+      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+        screen: "DROP_ANALYSIS",
+        params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: selector.saveCRMfilterObj.dealerCodes,isFilterApplied :true },
+      });
+    }else{
+     
+      if(isfromTree){
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: [], isFilterApplied: true, parentId: parentId },
+        });
+      }else{
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: [], isFilterApplied: false },
+        });
+      }
+    
+    }
+   
+
+
+  }
+
+  
   const renderItem = (item, index) => {
 
     return (
@@ -1129,10 +1223,19 @@ const TargetScreenCRM = ({ route }) => {
           <TouchableOpacity onPress={() => {
             
             {
-              item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId]) :
-                item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId]) :
-                  item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]) :
-                    item.id === 3 ? navigateToDropLostCancel([userData.empId]) : null
+              // todo add logic for redirections filer applied
+              if (selector.saveCRMfilterObj.selectedempId){
+                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true) :
+                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true) :
+                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true) :
+                      item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+              }else{
+                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true, userData.empId,true) :
+                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true, userData.empId, true) :
+                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true, userData.empId, true) :
+                      item.id === 3 ? navigateToDropAnalysis(userData.empId) : null
+              }
+              
             }
           }}>
             {item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> : 
@@ -1296,23 +1399,24 @@ const TargetScreenCRM = ({ route }) => {
                             isViewExpanded ? item.bookingCount : selector.receptionistData.bookingsCount || 0,
                             isViewExpanded ? item.retailCount : selector.receptionistData.RetailCount || 0,
                             isViewExpanded ? item.droppedCount : selector.receptionistData.totalLostCount || 0,
-                          ].map((e) => {
+                          ].map((e, indexss) => {
                             return (
                               <Pressable onPress={() => {
 
-                                // todo redirections logic 
-                              
-                                if (selector.receptionistData.enquirysCount === e){
-                                 
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id],true);
-                                } else if (selector.receptionistData.bookingsCount === e){
-                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
-                                } else if (selector.receptionistData.RetailCount === e){
-                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                                } else if (selector.receptionistData.totalLostCount === e){
-                                    // todo navigate to lost 
-                                }
+                                // todo redirections logic filter UI 
+                                if (e > 0) {
+                                if (indexss === 0) {
 
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                                } else if (indexss === 1) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                } else if (indexss === 2) {
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                } else if (indexss === 3) {
+                                  // todo navigate to lost 
+                                  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0],true)
+                                }
+                              }
 
                               }}>
                                 <View
@@ -1349,6 +1453,13 @@ const TargetScreenCRM = ({ route }) => {
           })}
 
       </View>)
+  }
+  const formateFirstLevelData = (data)=>{
+   setStoreFirstLevelLocal(data);
+    let findSelectedRecData = data?.salesconsultant?.filter(item => item.emp_id === data.emp_id);
+    setStoreFirstLevelSelectedRecData(findSelectedRecData)
+    
+
   }
 
   const renderCRMTree = ()=>{
@@ -1481,7 +1592,7 @@ const TargetScreenCRM = ({ route }) => {
                         titleClick={async (e) => { 
                           
                           setIsViewExpanded(!isViewExpanded)  
-                        
+                          formateFirstLevelData(item)
                         }}
                         roleName={item.roleName}
                         stopLocation={true}
@@ -1495,26 +1606,52 @@ const TargetScreenCRM = ({ route }) => {
                           flexDirection: "row",
                         }}
                       >
-                        {[
+                        {/* {[
                           isViewExpanded ? item.enquiryCount :  selector.receptionistData.enquirysCount || 0,
                           isViewExpanded ? item.bookingCount :  selector.receptionistData.bookingsCount || 0,
                           isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
                           isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
-                        ].map((e) => {
+                        ] */}
+                        
+                         {[
+                          isViewExpanded && storeFirstLevelSelectedRecData ? storeFirstLevelSelectedRecData[0].enquiryCount : selector.receptionistData.enquirysCount || 0,
+                          isViewExpanded && storeFirstLevelSelectedRecData ? storeFirstLevelSelectedRecData[0].bookingCount : selector.receptionistData.bookingsCount || 0,
+                          isViewExpanded && storeFirstLevelSelectedRecData ? storeFirstLevelSelectedRecData[0].retailCount : selector.receptionistData.RetailCount || 0,
+                          isViewExpanded && storeFirstLevelSelectedRecData ? storeFirstLevelSelectedRecData[0].droppedCount : selector.receptionistData.totalLostCount || 0,
+                        ].map((e,indexss) => {
                           return (
                             <Pressable onPress={()=>{
-                             
-                              // todo redirections logic 
-                              if (selector.receptionistData.enquirysCount === e) {
+                          
+                              // todo redirections logic  first level
+                              if (e > 0) {
+                              if (!isViewExpanded){
+                                if (indexss === 0) {
 
-                                navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                              } else if (selector.receptionistData.bookingsCount === e) {
-                                navigateToEMS("BOOKING", "", [item.emp_id, true]);
-                              } else if (selector.receptionistData.RetailCount === e) {
-                                navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                              } else if (selector.receptionistData.totalLostCount === e) {
-                                // todo navigate to lost 
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true, userData.empId,true);
+                                } else if (indexss === 1) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true, userData.empId,true);
+                                } else if (indexss === 2) {
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId,true);
+                                } else if (indexss === 3) {
+                                  // todo navigate to lost 
+                                  navigateToDropAnalysis(item.emp_id)
+                                }
                               }
+                                else{
+                                if (indexss === 0) {
+
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                } else if (indexss === 1) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                } else if (indexss === 2) {
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                } else if (indexss === 3) {
+                                  // todo navigate to lost 
+                                  navigateToDropAnalysis(item.emp_id,true)
+                                }
+                                }
+                              }
+                             
                             }}>
                             <View
                               style={{
@@ -1658,21 +1795,55 @@ const TargetScreenCRM = ({ route }) => {
                             isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.bookingCount :  item.bookingCount || 0,
                             isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.retailCount :  item.retailCount || 0,
                             isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.droppedCount : item.droppedCount || 0,
-                          ].map((e) => {
+                          ].map((e,indexss ) => {
                             return (
                               <Pressable onPress={() => {
-                                console.log("manthan ---ff ",e);
-                                // todo redirections logic 
-                                if (item.enquiryCount === e) {
+                               
+                                
+                                // todo redirections logic  second level 
+                                if(e > 0){
+                                  // if (indexss === 0) {
 
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id],true);
-                                } else if (item.bookingCount === e) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
-                                } else if (item.retailCount === e) {
-                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                                } else if (item.droppedCount === e) {
-                                  // todo navigate to lost 
+                                  //   navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                                  // } else if (indexss === 1) {
+                                  //   navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                  // } else if (indexss === 2) {
+                                  //   navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                  // } else if (indexss === 3) {
+                                  //   // todo navigate to lost 
+                                  //   navigateToDropAnalysis(item.emp_id, true)
+                                  // }
+
+                                  if (isShowSalesConsultant) {
+                                    
+                                    if (indexss === 0) {
+
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeSelectedRecData[0].emp_id, false);
+                                    } else if (indexss === 1) {
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true, storeSelectedRecData[0].emp_id, false);
+                                    } else if (indexss === 2) {
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeSelectedRecData[0].emp_id, false);
+                                    } else if (indexss === 3) {
+                                      // todo navigate to lost 
+                                      navigateToDropAnalysis(item.emp_id, true, item.emp_id)
+                                    }
+                                  }
+                                  else {
+                                   
+                                    if (indexss === 0) {
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                                      // navigateToEMS("ENQUIRY", "", [item.emp_id] );
+                                    } else if (indexss === 1) {
+                                      navigateToEMS("BOOKING", "", [item.emp_id] );
+                                    } else if (indexss === 2) {
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id]);
+                                    } else if (indexss === 3) {
+                                      // todo navigate to lost 
+                                      navigateToDropAnalysis(item.emp_id, true)
+                                    }
+                                  }
                                 }
+                                
                               }}>
                                 <View
                                   style={{
@@ -1719,7 +1890,8 @@ const TargetScreenCRM = ({ route }) => {
       >
         {thirdLevelCRMdata?.length > 0 &&
           thirdLevelCRMdata?.map((item, index) => {
-            if (item.emp_id !== userData.empId) {
+            if (item.emp_id !== userData.empId && storeSelectedRecData[0].emp_id !== item.emp_id) {
+            
             return (
               <View key={`${item.emp_name} ${index}`}
                 style={{
@@ -1748,7 +1920,7 @@ const TargetScreenCRM = ({ route }) => {
                     >
                       {item.emp_name}
                       {"  "}
-                      {"-   " + "sales Consultant"}
+                      {"-   " + item.roleName}
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row" }}></View>
@@ -1795,7 +1967,7 @@ const TargetScreenCRM = ({ route }) => {
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => { console.log("manthan---ff ", item); }}
-                        roleName={"sales Consultant"}
+                        roleName={item.roleName}
                         stopLocation={true}
                       />
                       <View
@@ -1812,11 +1984,24 @@ const TargetScreenCRM = ({ route }) => {
                           item.bookingCount || 0,
                           item.retailCount || 0,
                           item.droppedCount || 0,
-                        ].map((e) => {
+                        ].map((e, indexss) => {
                           return (
                             <Pressable onPress={() => {
+                              
+                              // todo redirections logic  third level 
+                              if (e > 0) {
+                              if (indexss === 0) {
 
-                              // todo redirections logic 
+                                navigateToEMS("ENQUIRY", "", [item.emp_id], true,storeSecondLevelLocal.emp_id);
+                              } else if (indexss === 1) {
+                                navigateToEMS("BOOKING", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                              } else if (indexss === 2) {
+                                navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                              } else if (indexss === 3) {
+                                // todo navigate to lost 
+                                navigateToDropAnalysis(storeSecondLevelLocal.emp_id, true, item.emp_id )
+                              }
+                            }
                             }}>
                               <View
                                 style={{
@@ -1858,13 +2043,13 @@ const TargetScreenCRM = ({ route }) => {
     setIndexLocal(index)
     
     if(index === indexLocal){
-      setisShowSalesConsultant(false)
+      setisShowSalesConsultant(!isShowSalesConsultant)
     }else{
       setisShowSalesConsultant(true)
     }
-    // setisShowSalesConsultant(!isShowSalesConsultant);
-    setThirdLevelCRMdata(itemMain?.salesconsultant)
    
+    setThirdLevelCRMdata(itemMain?.salesconsultant)
+    setstoreSecondLevelLocal(itemMain)
 
     let findSelectedRecData = itemMain?.salesconsultant?.filter(item => item.emp_id === itemMain.emp_id);
     setStoreSelectedRecData(findSelectedRecData)
@@ -1872,7 +2057,6 @@ const TargetScreenCRM = ({ route }) => {
   }
 
   const handleSourceModalNavigation=(item)=>{
-    console.log("manthan sssss ",item.roleName.toLowerCase());
     switch (item.roleName.toLowerCase()) {
       case "tele caller":
         navigation.navigate(
@@ -1910,7 +2094,7 @@ const TargetScreenCRM = ({ route }) => {
           }
         );
       break;
-      case "dse" :
+      case "field dse" :
        
           navigation.navigate(
             AppNavigator
