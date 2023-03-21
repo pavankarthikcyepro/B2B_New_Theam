@@ -12,7 +12,7 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from "../../../../asyncStore";
 import { showToastRedAlert } from "../../../../utils/toast";
-import { VIP_ICON, VIP_ICON2 } from "../../../../assets/icon";
+import { VIP_ICON, VIP_ICON2, VIP_ICON3, VIP_ICON4 } from "../../../../assets/icon";
 
 const statusBgColors = {
   CANCELLED: {
@@ -186,7 +186,7 @@ export const MyTaskNewItem = ({
           position: "relative",
         }}
       >
-        <View style={{ width: "65%" }}>
+        <View style={{ width: "60%" }}>
           <View style={{ flexDirection: "row" }}>
             <View
               style={{
@@ -194,13 +194,13 @@ export const MyTaskNewItem = ({
                 flexDirection: "row",
                 alignItems: "flex-end",
                 position: "relative",
-                paddingTop:5
+                paddingTop: 5,
               }}
             >
               <Text style={styles.text1}>{name}</Text>
               <View style={styles.badgeContainer}>
                 {/* <Text style={styles.badgeText}>{"VIP"}</Text> */}
-                {IsVip && <Image
+                {/* {IsVip && <Image
                   source={VIP_ICON2}
                   style={{
                     width: 25,
@@ -211,7 +211,7 @@ export const MyTaskNewItem = ({
                     zIndex: 1000,
                   }}
                   resizeMode={"contain"}
-                />}
+                />} */}
               </View>
             </View>
             {/*<Text style={styles.catText}>{enqCat}</Text>*/}
@@ -284,20 +284,34 @@ export const MyTaskNewItem = ({
             <Text style={[styles.text2, { color: bgColor }]}>{statusName}</Text>
           )}
         </View>
-        <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
+        <View style={{ width: "40%", alignItems: "center", paddingTop: 10 }}>
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
           <View style={styles.modal}>
-            <Text style={styles.text4}>{model}</Text>
+            <Text numberOfLines={2} style={styles.text4}>
+              {model}
+            </Text>
           </View>
           <View
             style={{
               flexDirection: "row",
               width: "100%",
               justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
+            {IsVip && (
+              <Image
+                source={VIP_ICON4}
+                style={{
+                  width: 32,
+                  height: 32,
+                  marginRight: 5,
+                }}
+                resizeMode={"contain"}
+              />
+            )}
             <IconComp
               iconName={"format-list-bulleted-square"}
               disabled={true}
@@ -445,6 +459,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     paddingHorizontal: 2,
+    width: "80%",
   },
   section: {
     // flex: 1,
