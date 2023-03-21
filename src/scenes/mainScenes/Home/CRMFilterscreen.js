@@ -34,12 +34,13 @@ import {
   getEmployeesDropDownData,
   getSalesData,
   getSalesComparisonData,
+  getCRMEmployeesDropDownData,
 } from "../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 
-import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, updateFilterLevelSelectedData, updateLiveLeadObjectData, } from "../../../redux/liveLeadsReducer"
+import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, updateFilterLevelSelectedData, updateLiveLeadObjectData, } from "../../../redux/homeReducer"
 import { useIsFocused } from "@react-navigation/native";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { Colors } from "../../../styles";
@@ -65,11 +66,13 @@ const AcitivityLoader = () => {
     </View>
   );
 };
-
-const LiveLeadsfilterScreen = ({ route, navigation }) => {
+ const data = [
+    "Select Designation","Select Employee"
+]
+const CRMFilterscreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-  const targetSelector = useSelector((state) => state.liveLeadsReducer);
+  // const targetSelector = useSelector((state) => state.liveLeadsReducer);
   const [totalDataObj, setTotalDataObj] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -80,6 +83,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
   const [toDate, setToDate] = useState("");
   const [nameKeyList, setNameKeyList] = useState([]);
   const [levelSelected, setLevelSelected] = useState([]);
+  const [selectedBranchName, setSelectedBranchName] = useState([]);
   const [userData, setUserData] = useState({
     branchId: "",
     orgId: "",
@@ -94,6 +98,8 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const isFocused = useIsFocused();
+  const [selectDesignationsData, setSelectDesignationsData] = useState([]);
+  const [selectEmployeeData, setSelectEmployeeData] = useState([]);
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -144,21 +150,44 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     //   setEmployeeDropDownDataLocal(temp);
     // }
     // });
+    
   }, [isFocused]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      if (!isEmpty(targetSelector.dealerFilter)) {
-        const temp = { ...targetSelector.dealerFilter };
+      if (!isEmpty(selector.dealerFilter)) {
+        const temp = { ...selector.dealerFilter };
         setTotalDataObj(temp);
+
+         
       }
     });
   }, [navigation]);
-  //   useEffect(() => {
-  //     if (nameKeyList.length > 0) {
-  //       dropDownItemClicked(4, true);
-  //     }
-  //   }, [nameKeyList, userData]);
+    useEffect(() => {
+      if (nameKeyList.length > 0) {
+        // dropDownItemClicked(4, true);
+        let i = 0;
+        const selectedIds = [];
+        const selectedDealerCodeName = [];
+        for (i; i < nameKeyList.length; i++) {
+          let key = nameKeyList[i];
+          const dataArray =  totalDataObj[key].sublevels;
+          if (dataArray.length > 0) {
+            dataArray.forEach((item, index) => {
+              if (item.selected != undefined && item.selected == true) {
+                selectedIds.push(item.id);
+                if (item.type === "Level5") {
+                  selectedDealerCodeName.push(item.name)
+
+                }
+              }
+            });
+          }
+        }
+        setLevelSelected(selectedIds);
+        setSelectedBranchName(selectedDealerCodeName);
+      }
+    }, [nameKeyList, userData]);
   function isEmpty(obj = {}) {
     return Object.keys(obj).length === 0;
   }
@@ -229,46 +258,38 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
   };
 
   const dropDownItemClicked2 = (index) => {
-    // const topRowSelectedIds = [];
-    // if (index > 0) {
-    //     const topRowData = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    //     topRowData.forEach((item) => {
-    //         if (item.selected != undefined && item.selected === true) {
-    //             topRowSelectedIds.push(Number(item.id));
-    //         }
-    //     })
-    // }
-    const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    let newIndex = index == 0 ? 0 : index - 1;
-    let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
-    const tempData = employeeDropDownDataLocal[newItem];
-    const isSelected = tempData.filter((e) => e.selected == true);
-    let newArr = [];
-    if (isSelected[0]?.id && index !== 0) {
-      const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
-      newArr = [...newList];
-    }
-    let tempArr = index == 0 ? data : newArr;
-    // if (tempArr.length == 0) {
-    //   const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    //   let newIndex = index == 0 ? 0 : index - 2;
+    
+    if(index === 0){
+      const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
 
-    //   let newItem = Object.keys(employeeDropDownDataLocal)[newIndex];
-    //   const tempData = employeeDropDownDataLocal[newItem];
-    //   const isSelected = tempData?.filter((e) => e.selected == true);
-    //   let newArr = [];
-    //   if (isSelected[0]?.id && index !== 0) {
-    //     const newList = data.filter((e) => e.parentId == isSelected[0]?.id);
-    //     newArr = [...newList];
-    //   }
-    //   let tempArr = index == 0 ? data : newArr;
-    //   setDropDownData([...tempArr]);
-    // } else {
-    setDropDownData([...tempArr]);
-    // }
-    setSelectedItemIndex(index);
-    setShowDropDownModel(true);
-    setDropDownFrom("EMPLOYEE_TABLE");
+
+      setDropDownData(data);
+      setSelectedItemIndex(index);
+      setShowDropDownModel(true);
+      setDropDownFrom("EMPLOYEE_TABLE");
+    }else{
+      // selectEmployeeData.filter(item => item.designation === data.name);
+      let tempFinal="";
+      let findEmployee = selectDesignationsData.filter(item => item.selected == true);
+      if(findEmployee.length >0){
+        // let ind = employeeDropDownDataLocal[employeeTitleNameList[index]]
+        findEmployee.map(item => {
+        
+          tempFinal = selectEmployeeData.filter(item2 => item2.designation === item.name);
+         
+        })
+      }
+    
+      if (tempFinal.length > 0){
+        setDropDownData(tempFinal);
+
+        setSelectedItemIndex(index);
+        setShowDropDownModel(true);
+        setDropDownFrom("EMPLOYEE_TABLE");
+      }
+      
+    }
+   
   };
 
   const updateSelectedItems = (data, index, initalCall = false) => {
@@ -352,24 +373,53 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       sublevels: result,
     };
     totalDataObjLocal[key] = newOBJ;
+    
     dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
     setTotalDataObj({ ...totalDataObjLocal });
-    index == 4 && submitBtnClicked(totalDataObjLocal,"");
+    // index == 4 && submitBtnClicked(totalDataObjLocal,"");
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
-    let key = employeeTitleNameList[index];
-    const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
-    let objIndex = newTotalDataObjLocal[key].findIndex(
-      (obj) => obj.id == data.id  
-    );
-    const a = newTotalDataObjLocal[key].map((data, index) =>
-      index === objIndex
-        ? { ...newTotalDataObjLocal[key][index], selected: true }
-        : { ...newTotalDataObjLocal[key][index], selected: false }
-    );
-    newTotalDataObjLocal[key] = a;
-    setEmployeeDropDownDataLocal(newTotalDataObjLocal);
+    let keyMain = employeeTitleNameList[index];
+    // clearBtnForEmployeeData();
+    // dispatch(updateFilterSelectedData({}))
+    // dispatch(updateLiveLeadObjectData({}))
+  
+   
+ 
+   
+    if(index === 0 ){ 
+      
+      let temparr = dropDownData.map((item,i) =>{
+         
+       index1===i? item.selected = true : item.selected = false
+      })
+      let temparr2 = selectEmployeeData.map((item, i) => {
+        
+        item.selected = false;
+      
+      })
+      // let arrayData = [];
+      // for (let key in employeeDropDownDataLocal) {
+      //   arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+      //     
+      //     element.name === data.name ? element.selected = true : element.selected = false;
+
+      //   });
+       
+      // }
+     
+
+      // setEmployeeDropDownDataLocal(newDataObj);
+    }else{
+      let temparr2 = dropDownData.map((item, i) => {
+       
+        
+        index1 === i ? item.selected = true : item.selected = false
+      })
+    }
+    
+    // setEmployeeDropDownDataLocal(tempEmployeeArr);
   };
 
   const clearBtnClicked = () => {
@@ -392,15 +442,24 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     }
     setTotalDataObj({ ...totalDataObjLocal });
     dispatch(updateFilterLevelSelectedData({}))
-  
+    let obj = {
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
     dispatch(updateDealerFilterData({}))
     // dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData({}))
+    dispatch(updateLiveLeadObjectData(obj))
+    clearBtnForEmployeeData();
+    
   };
 
   const submitBtnClicked = (initialData,from) => {
     let i = 0;
     const selectedIds = [];
+    const selectedDealerCodeName = [];
     for (i; i < nameKeyList.length; i++) {
       let key = nameKeyList[i];
       const dataArray = initialData
@@ -410,6 +469,10 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
             selectedIds.push(item.id);
+            if (item.type === "Level5") {
+              selectedDealerCodeName.push(item.name)
+
+            }
           }
         });
       }
@@ -417,13 +480,13 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
 
     if (selectedIds.length > 0) {
       // setIsLoading(true);
-      getDashboadTableDataFromServer(selectedIds, from);
+      getDashboadTableDataFromServer(selectedIds, from, selectedDealerCodeName);
     } else {
       showToast("Please select any value");
     }
   };
 
-  const getDashboadTableDataFromServer = async (selectedIds, from) => {
+  const getDashboadTableDataFromServer = async (selectedIds, from, selectedBranchName = "") => {
     const payload = {
       startDate: fromDate,
       endDate: toDate,
@@ -446,12 +509,27 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
+    let obj = {
+      startDate: fromDate,
+      endDate: toDate,
+      dealerCodes: selectedBranchName,
+      levelSelected: selectedIds
+    }
     setLevelSelected(selectedIds)
+    setSelectedBranchName(selectedBranchName)
+    let tempPayload = {
+      startDate: fromDate,
+      endDate: toDate,
+      levelSelected: selectedIds,
+      selectedempId: "",
+      dealerCodes: selectedBranchName,
+    }
+    dispatch(updateLiveLeadObjectData(tempPayload))
     dispatch(updateFilterLevelSelectedData(selectedIds))
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
     if (!selector.isDSE){
-      Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+      Promise.all([dispatch(getCRMEmployeesDropDownData(payload1))])
         .then(() => {
           // Promise.all([
           // //   dispatch(getLeadSourceTableList(payload)),
@@ -477,53 +555,69 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
         });
       
     }else{
-      if(from ==="submit"){
-        let tempPayload = {
-          startDate: fromDate,
-          endDate: toDate,
-          levelSelected: selectedIds,
-          // selectedempId: ""
-        }
-        dispatch(updateLiveLeadObjectData(tempPayload))
+      // if(from ==="submit"){
+      //   let tempPayload = {
+      //     startDate: fromDate,
+      //     endDate: toDate,
+      //     levelSelected: selectedIds,
+      //     // selectedempId: ""
+      //   }
+      //   dispatch(updateLiveLeadObjectData(tempPayload))
 
-        navigation.navigate("LIVE_LEADS", {
-          screenName: "LIVE_LEADS",
-          fromScreen: "Filter",
-          selectedID: [],
-          fromDate: fromDate,
-          toDate: toDate,
+      //   navigation.navigate("LIVE_LEADS", {
+      //     screenName: "LIVE_LEADS",
+      //     fromScreen: "Filter",
+      //     selectedID: [],
+      //     fromDate: fromDate,
+      //     toDate: toDate,
 
-        });
-      }
+      //   });
+      // }
      
     }
     
   };
 
   useEffect(() => {
-    if (selector.employees_drop_down_data) {
+    if (selector.crm_employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-      for (let key in selector.employees_drop_down_data) {
-        const arrayData = selector.employees_drop_down_data[key];
+      for (let key in selector.crm_employees_drop_down_data) {
+        const arrayData = selector.crm_employees_drop_down_data[key];
         if (arrayData.length != 0) {
           names.push(key);
         }
         const newArray = [];
         if (arrayData.length > 0) {
           arrayData.forEach((element) => {
-            newArray.push({
-              ...element,
-              id: element.code,
-              selected: false,
-            });
+            if (key ==="Select Designation"){
+              newArray.push({
+                name:element,
+                selected: false,
+              });
+            }else{
+              newArray.push({
+                ...element,
+                // id: element.code,
+                selected: false,
+              });
+            }
+            
           });
         }
         newDataObj[key] = newArray;
+        if (key === "Select Designation") {
+          setSelectDesignationsData(newDataObj[key])
+        }else{
+          setSelectEmployeeData(newDataObj[key])
+        }
       }
+      // setEmloyeeTitleNameList(names);
+      // setEmployeeDropDownDataLocal(names)
       setName(names, newDataObj);
     }
-  }, [selector.employees_drop_down_data]);
+    
+  }, [selector.crm_employees_drop_down_data]);
 
   const setName = useCallback(
     (names, newDataObj) => {
@@ -532,10 +626,11 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       }
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmloyeeTitleNameList(names);
-        if (!isEmpty(targetSelector.filterSelectedData)) {
-          const temp = { ...targetSelector.filterSelectedData };
+        if (!isEmpty(selector.filterSelectedData)) {
+          const temp = { ...selector.filterSelectedData };
           setEmployeeDropDownDataLocal(temp);
         } else {
+          
           setEmployeeDropDownDataLocal(newDataObj);
         }
         setIsLoading(false);
@@ -560,17 +655,24 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       }
       newDataObj[key] = newArray;
     }
-    // dispatch({})
-   
-    // dispatch(updateFilterSelectedData({}));
-    // dispatch(updateDealerFilterData({}));
-    setEmployeeDropDownDataLocal(newDataObj);
+    let obj ={
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
+    setEmloyeeTitleNameList([])
+  
     dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData({}))
+    dispatch(updateLiveLeadObjectData(obj))
+    setEmployeeDropDownDataLocal(newDataObj);
   };
 
+  
+
   const submitBtnForEmployeeData = () => {
-    if (!_.isEmpty(targetSelector.dealerFilter)) {
+    if (!_.isEmpty(selector.dealerFilter)) {
       let selectedIds = [];
       for (let key in employeeDropDownDataLocal) {
         const arrayData = employeeDropDownDataLocal[key];
@@ -600,41 +702,31 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
           }
         );
       });
+     
       
       if (temp.length > 0) {
         let tempArr = [];
         const selected_ids = temp.map(item => {
-          tempArr.push(parseInt(item.id))
+          tempArr.push(parseInt(item.code))
         })
         let tempPayload = {
           startDate: fromDate,
           endDate: toDate,
           levelSelected: levelSelected,
-          selectedempId: [tempArr[tempArr.length - 1]]
+          selectedempId: [tempArr[tempArr.length - 1]],
+          dealerCodes: selectedBranchName,
         }
         dispatch(updateLiveLeadObjectData(tempPayload))
         dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        navigation.navigate("LIVE_LEADS", {
-          screenName: "LIVE_LEADS",
-            fromScreen: "Filter",
-            // selectedID: selectedIds[selectedIds.length - 1],
-            selectedID: temp[temp.length - 1].id,
-            fromDate: fromDate,
-            toDate: toDate,
-        
+        navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+          screen: "Home",
+          params: { from: "Filter" },
         });
+       
         
-      }else{
-        showToast("Please select any value");
       }
 
-      // let selectedID = x[x-1];
-      // return;
-      // if (selectedIds.length > 0) {
-      //   getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-      // } else {
-      //   showToast("Please select any value");
-      // }
+      
     } else {
       showToast("Please select Dealer Code");
     }
@@ -714,14 +806,14 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
               return (
                 <View
                   style={{
-                    // flexDirection: "row",
-                    // justifyContent: "space-evenly",
-                    // paddingBottom: 5,
-                    // borderColor: Colors.BORDER_COLOR,
-                    // borderWidth: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    paddingBottom: 5,
+                    borderColor: Colors.BORDER_COLOR,
+                    borderWidth: 1,
                   }}
                 >
-                  {/* <View style={{ width: "48%" }}>
+                  <View style={{ width: "48%" }}>
                     <DateSelectItem
                       label={"From Date"}
                       value={fromDate}
@@ -735,7 +827,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
                       value={toDate}
                       onPress={() => showDatePickerMethod("TO_DATE")}
                     />
-                  </View> */}
+                  </View>
                 </View>
               );
             } else if (index === 1) {
@@ -839,7 +931,9 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
                           }
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
+                          
                             const data = employeeDropDownDataLocal[item];
+                         
                             let selectedNames = "";
                             // if (item) {
                             //   for (let i = 1; i < employeeTitleNameList.length; i++) {
@@ -879,6 +973,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
                             //   //   }
                             //   // }
                             // }
+                           
                             data.forEach((obj, index) => {
                               if (
                                 obj.selected != undefined &&
@@ -894,7 +989,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
                                 selectedNames.length - 1
                               );
                             }
-
+                            
                             return (
                               <View>
                                 <DropDownSelectionItem
@@ -945,7 +1040,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
   );
 };
 
-export default LiveLeadsfilterScreen;
+export default CRMFilterscreen;
 
 const styles = StyleSheet.create({
   container: {
