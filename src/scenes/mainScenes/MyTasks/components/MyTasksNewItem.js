@@ -12,7 +12,7 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from "../../../../asyncStore";
 import { showToastRedAlert } from "../../../../utils/toast";
-import { VIP_ICON, VIP_ICON2, VIP_ICON3 } from "../../../../assets/icon";
+import { VIP_ICON, VIP_ICON2, VIP_ICON3, VIP_ICON4 } from "../../../../assets/icon";
 
 const statusBgColors = {
   CANCELLED: {
@@ -303,7 +303,7 @@ export const MyTaskNewItem = ({
           >
             {IsVip && (
               <Image
-                source={VIP_ICON3}
+                source={VIP_ICON4}
                 style={{
                   width: 32,
                   height: 32,
