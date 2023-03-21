@@ -1,4 +1,6 @@
 apply plugin: "com.android.application"
+apply plugin: "com.google.gms.google-services"
+// apply plugin: "com.google.firebase.crashlytics"
 
 import com.android.build.OutputFile
 
@@ -229,7 +231,9 @@ dependencies {
     // } else {
     //     implementation 'org.webkit:android-jsc:+'
     // }
-
+    implementation platform('com.google.firebase:firebase-bom:31.2.3')
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
