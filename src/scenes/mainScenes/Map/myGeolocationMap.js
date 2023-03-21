@@ -306,6 +306,30 @@ const GeolocationMapScreen = ({ route }) => {
     );
   };
 
+  const IconMarker = () => {
+    return (
+      <Svg
+        version="1.0"
+        xmlns="http://www.w3.org/2000/svg"
+        width="30.000000pt"
+        height="30.000000pt"
+        viewBox="0 0 80.000000 128.000000"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {" "}
+        <G
+          transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+          fill="#000000"
+          stroke="none"
+        >
+          {" "}
+          <Path d="M310 1196 c-145 -42 -241 -147 -270 -293 -24 -120 36 -294 171 -497 61 -91 180 -245 189 -245 3 0 37 41 76 92 155 199 253 378 280 507 46 224 -113 432 -341 446 -33 2 -80 -2 -105 -10z m243 -49 c155 -76 222 -248 167 -428 -28 -95 -72 -180 -155 -304 -72 -107 -156 -215 -167 -215 -12 0 -166 206 -208 280 -44 76 -108 217 -119 262 -37 156 21 312 144 386 71 43 109 52 201 49 64 -3 93 -9 137 -30z" />{" "}
+          <Path d="M345 987 c-69 -40 -95 -77 -99 -142 -6 -100 104 -186 198 -155 42 13 89 65 106 113 21 66 -21 147 -97 186 -27 14 -82 13 -108 -2z m146 -56 c33 -33 39 -45 39 -82 0 -134 -156 -188 -239 -83 -15 19 -21 41 -21 77 0 44 4 53 39 88 35 35 44 39 91 39 47 0 56 -4 91 -39z" />{" "}
+        </G>{" "}
+      </Svg>
+    );
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -348,12 +372,12 @@ const GeolocationMapScreen = ({ route }) => {
                 coordinate={marker}
                 tracksViewChanges={false}
                 // icon={require("../../../assets/images/cyepro-tick.svg")}
-                // style={{
-                //   height: 15,
-                //   width: 15,
-                //   // padding:5,
-                //   // flex:1
-                // }}
+                style={{
+                  height: 15,
+                  width: 15,
+                  // padding:5,
+                  // flex:1
+                }}
                 // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
                 // title={marker}
@@ -362,7 +386,7 @@ const GeolocationMapScreen = ({ route }) => {
                 {/* <View
                   style={{ width: 33, height: Platform.OS === "ios" ? 59 : 37 }}
                 >
-                  {addIcon()}
+                  {IconMarker()}
                 </View> */}
                 {/* <Svg width={40} height={30}>
                   <Image
