@@ -12,7 +12,13 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from "../../../../asyncStore";
 import { showToastRedAlert } from "../../../../utils/toast";
-import { VIP_ICON, VIP_ICON2, VIP_ICON3, VIP_ICON4, VIP_ICON5 } from "../../../../assets/icon";
+import {
+  VIP_ICON,
+  VIP_ICON2,
+  VIP_ICON3,
+  VIP_ICON4,
+  VIP_ICON5,
+} from "../../../../assets/icon";
 
 const statusBgColors = {
   CANCELLED: {
@@ -177,7 +183,14 @@ export const MyTaskNewItem = ({
   };
 
   return (
-    <TouchableOpacity onPress={onItemPress} style={styles.section}>
+    <TouchableOpacity
+      onPress={onItemPress}
+      style={{
+        ...styles.section,
+        borderLeftWidth: IsVip ? 3 : 0,
+        borderLeftColor: Colors.RED,
+      }}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -226,7 +239,7 @@ export const MyTaskNewItem = ({
               <Text style={styles.text2}>{phone}</Text>
             </View>
             <View>
-              {true && (
+              {/* {true && (
                 <Image
                   source={VIP_ICON5}
                   style={{
@@ -236,7 +249,7 @@ export const MyTaskNewItem = ({
                   }}
                   resizeMode={"contain"}
                 />
-              )}
+              )} */}
             </View>
           </View>
 
@@ -305,6 +318,7 @@ export const MyTaskNewItem = ({
           )}
         </View>
         <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
+          {IsVip && <Text style={styles.badgeText}>{"VIP"}</Text>}
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
@@ -468,7 +482,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     paddingHorizontal: 2,
-    width: "80%",
   },
   section: {
     // flex: 1,
@@ -511,5 +524,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
+  badgeText: { fontSize: 15, color: Colors.PINK, fontWeight: "bold" },
 });
