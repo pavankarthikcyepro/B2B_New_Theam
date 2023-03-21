@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DatePickerComponent, DropDownComponant, TextinputComp } from '../../../components';
 import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
-import { clearStateData, getCustomerTypesApi, getSourceTypesApi, setCommunicationAddress, setDatePicker, setDropDownData, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
+import { clearStateData, getCustomerTypesApi, getSourceTypesApi, setCommunicationAddress, setDatePicker, setDropDownData, setInsuranceInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
@@ -89,13 +89,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
           showToast("No Source Types found");
           return;
         }
-        // let cNewData = cData?.map((val) => {
-        //   return {
-        //     ...val,
-        //     name: val?.customer_type,
-        //   };
-        // });
-        // setDataForDropDown([...cNewData]);
+        setDataForDropDown([...selector.sourceTypesResponse]);
         break;
       case "SUB_SOURCE_TYPE":
         if (selector.sourceTypesResponse?.length === 0) {
@@ -960,6 +954,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 }
               />
             </List.Accordion>
+            <View style={styles.space} />
             <List.Accordion
               id={"5"}
               title={"Insurance"}
@@ -976,7 +971,177 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 styles.accordionBorder,
               ]}
             >
-
+              <DropDownSelectionItem
+                label={"Insurance Company"}
+                value={selector.insuranceCompany}
+                onPress={() =>
+                  showDropDownModelMethod(
+                    "INSURANCE_COMPANY",
+                    "Select Insurance Company"
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"Insurance Start Date"}
+                value={selector.insuranceStartDate}
+                onPress={() =>
+                  showDatePickerModelMethod("INSURANCE_START_DATE")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"Insurance Expiry Date"}
+                value={selector.insuranceExpiryDate}
+                onPress={() =>
+                  showDatePickerModelMethod("INSURANCE_EXPIRY_DATE")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.insuranceAmount}
+                label={"Insurance Amount"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setInsuranceInfo({ key: "INSURANCE_AMOUNT", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.insurancePolicyNo}
+                label={"Insurance Policy No"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setInsuranceInfo({ key: "INSURANCE_POLICY_NO", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+            </List.Accordion>
+            <View style={styles.space} />
+            <List.Accordion
+              id={"6"}
+              title={"Warranty"}
+              titleStyle={{
+                color: openAccordion === "6" ? Colors.BLACK : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={[
+                {
+                  backgroundColor:
+                    openAccordion === "6" ? Colors.RED : Colors.WHITE,
+                },
+                styles.accordionBorder,
+              ]}
+            >
+              <DropDownSelectionItem
+                label={"OEM Period"}
+                value={selector.oemPeriod}
+                onPress={() =>
+                  showDropDownModelMethod("OEM_PERIOD", "Select OEM Period")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"OEM Start Date"}
+                value={selector.oemStartDate}
+                onPress={() => showDatePickerModelMethod("OEM_START_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"OEM Expiry Date"}
+                value={selector.oemExpiryDate}
+                onPress={() => showDatePickerModelMethod("OEM_EXPIRY_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.oemAmountPaid}
+                label={"OEM Amount Paid"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setInsuranceInfo({ key: "OEM_AMOUNT_PAID", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DropDownSelectionItem
+                label={"EW Name"}
+                value={selector.ewName}
+                onPress={() =>
+                  showDropDownModelMethod("OEM_PERIOD", "Select EW Name")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"EW Start Date"}
+                value={selector.ewStartDate}
+                onPress={() => showDatePickerModelMethod("EW_START_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"EW Expiry Date"}
+                value={selector.ewExpiryDate}
+                onPress={() => showDatePickerModelMethod("EW_EXPIRY_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.ewAmountPaid}
+                label={"EW Amount Paid"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setInsuranceInfo({ key: "EW_AMOUNT_PAID", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"MCP Start Date"}
+                value={selector.mcpStartDate}
+                onPress={() => showDatePickerModelMethod("MCP_START_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"MCP Expiry Date"}
+                value={selector.mcpExpiryDate}
+                onPress={() => showDatePickerModelMethod("MCP_EXPIRY_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.mcpAmountPaid}
+                label={"MCP Amount Paid"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setInsuranceInfo({ key: "MCP_AMOUNT_PAID", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DropDownSelectionItem
+                label={"AMC Name"}
+                value={selector.amcName}
+                onPress={() =>
+                  showDropDownModelMethod("AMC_NAME", "Select AMC Name")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DropDownSelectionItem
+                label={"Fastag"}
+                value={selector.fastag}
+                onPress={() =>
+                  showDropDownModelMethod("FASTAG", "Select Fastag")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
             </List.Accordion>
           </List.AccordionGroup>
         </ScrollView>

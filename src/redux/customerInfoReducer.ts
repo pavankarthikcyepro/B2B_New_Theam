@@ -101,6 +101,26 @@ const initialState = {
   serviceFeedback: "",
   complaintReason: "",
   complaintStatus: "",
+  // Insurance Information
+  insuranceCompany: "",
+  insuranceStartDate: "",
+  insuranceExpiryDate: "",
+  insuranceAmount: "",
+  insurancePolicyNo: "",
+  // Warranty Information
+  oemPeriod: "",
+  oemStartDate: "",
+  oemExpiryDate: "",
+  oemAmountPaid: "",
+  ewName: "",
+  ewStartDate: "",
+  ewExpiryDate: "",
+  ewAmountPaid: "",
+  mcpStartDate: "",
+  mcpExpiryDate: "",
+  mcpAmountPaid: "",
+  amcName: "",
+  fastag: "",
 };
 
 const customerInfoReducer = createSlice({
@@ -206,11 +226,7 @@ const customerInfoReducer = createSlice({
           state.maxDate = new Date();
           break;
         case "ANNIVERSARY_DATE":
-          if (state.dateOfBirth) {
-            state.minDate = null;
-          } else {
-            state.minDate = null;
-          }
+          state.minDate = null;
           state.maxDate = new Date();
           break;
         case "SALE_DATE":
@@ -220,6 +236,38 @@ const customerInfoReducer = createSlice({
         case "SERVICE_DATE":
           state.minDate = null;
           state.maxDate = new Date();
+          break;
+        case "INSURANCE_START_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "INSURANCE_EXPIRY_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "OEM_START_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "OEM_EXPIRY_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "EW_START_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "EW_EXPIRY_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "MCP_START_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "MCP_EXPIRY_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
           break;
         default:
           state.minDate = null;
@@ -256,6 +304,30 @@ const customerInfoReducer = createSlice({
           break;
         case "SERVICE_DATE":
           state.serviceDate = selectedDate;
+          break;
+        case "INSURANCE_START_DATE":
+          state.insuranceStartDate = selectedDate;
+          break;
+        case "INSURANCE_EXPIRY_DATE":
+          state.insuranceExpiryDate = selectedDate;
+          break;
+        case "OEM_START_DATE":
+          state.oemStartDate = selectedDate;
+          break;
+        case "OEM_EXPIRY_DATE":
+          state.oemExpiryDate = selectedDate;
+          break;
+        case "EW_START_DATE":
+          state.ewStartDate = selectedDate;
+          break;
+        case "EW_EXPIRY_DATE":
+          state.ewExpiryDate = selectedDate;
+          break;
+        case "MCP_START_DATE":
+          state.mcpStartDate = selectedDate;
+          break;
+        case "MCP_EXPIRY_DATE":
+          state.mcpExpiryDate = selectedDate;
           break;
         case "NONE":
           break;
@@ -358,6 +430,17 @@ const customerInfoReducer = createSlice({
           break;
       }
     },
+    setInsuranceInfo: (state, action: PayloadAction<PersonalIntroModel>) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "INSURANCE_AMOUNT":
+          state.insuranceAmount = text;
+          break;
+        case "INSURANCE_POLICY_NO":
+          state.insurancePolicyNo = text;
+          break;
+      }
+    },
   },
   extraReducers: (builder) => {
     // Get Customer Types
@@ -384,7 +467,24 @@ const customerInfoReducer = createSlice({
       })
       .addCase(getSourceTypesApi.fulfilled, (state, action) => {
         if (action.payload) {
-          state.sourceTypesResponse = action.payload;
+          let sData = action.payload.body;
+          let newArr = [];
+
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].type };
+            if (data.subtypeMap?.length > 0) {
+              for (let j = 0; j < data.subtypeMap; j++) {
+                const element = {
+                  ...data.subtypeMap[j],
+                  name: data.subtypeMap[j],
+                };
+                data = { ...data, subtypeMap: element };
+              }
+            }
+            newArr.push(Object.assign({}, data));
+          }
+
+          state.sourceTypesResponse = [...newArr];
         }
       })
       .addCase(getSourceTypesApi.rejected, (state, action) => {
@@ -404,5 +504,6 @@ export const {
   updateAddressByPincode,
   setVehicleInformation,
   setServiceInfo,
+  setInsuranceInfo,
 } = customerInfoReducer.actions;
 export default customerInfoReducer.reducer;

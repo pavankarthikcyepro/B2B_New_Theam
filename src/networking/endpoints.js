@@ -264,7 +264,7 @@ const URL = {
   GET_SOURCE_TYPE: (tenantId) => {
     return (
       baseUrl +
-      `vehicle-services/api/tenant/${tenantId}/master-data/lead-source/all-by-hierarchy`
+      `vehicle-services/api/tenant/1/master-data/lead-source/all-by-hierarchy`
     );
   },
   GET_ENQUIRY_TYPE: (orgId) => {
