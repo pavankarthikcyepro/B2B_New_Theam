@@ -31,7 +31,7 @@ const tabBarOptions = {
     innerWidth: '90%'
   }
 }
-const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
+const receptionistRole = ["CRM"];
 const DashboardTopTabNavigatorNew = () => {
   const [userData, setUserData] = useState({
     empId: 0,
@@ -56,7 +56,7 @@ const DashboardTopTabNavigatorNew = () => {
       <View>
       {receptionistRole.includes(userData.hrmsRole) ? 
 
-        <TargetScreen />
+        <TargetScreenCRM />
          : 
           <TargetScreen />}
         

@@ -139,10 +139,21 @@ const RecepSourceModel = ({ route, navigation }) => {
     if (role == "Reception" || role == "Tele Caller") {
       dispatch(getReceptionistSource(newPayload));
       dispatch(getReceptionistModel(newPayload));
-    } else if (role == "CRM") {
+    } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
       dispatch(getReceptionistManagerSource(newPayload));
       dispatch(getReceptionistManagerModel(newPayload));
-    } else {
+    } else if (selector.saveCRMfilterObj?.selectedempId){
+      let newPayload2 = {
+        orgId: orgId,
+        loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+        "startDate": selector.saveCRMfilterObj.startDate,
+        "endDate": selector.saveCRMfilterObj.endDate,
+        "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+      };
+      dispatch(getReceptionistSource(newPayload2));
+      dispatch(getReceptionistModel(newPayload2));
+    }
+     else {
       dispatch(getReceptionistManagerSource(payload));
       dispatch(getReceptionistManagerModel(payload));
     }
