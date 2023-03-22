@@ -750,6 +750,31 @@ export const getReceptionistSource = createAsyncThunk(
   }
 );
 
+// live receptinist/tele caller / cre
+export const getReceptionistSourceLive = createAsyncThunk(
+  "HOME/getReceptionistSourceLive",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_SOURCE_LIVE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+// live receptinist/tele caller / cre
+export const getReceptionistModelLive = createAsyncThunk(
+  "HOME/getReceptionistModelLive",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_MODEL_LIVE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistModel = createAsyncThunk(
   "HOME/getReceptionistModel",
   async (payload, { rejectWithValue }) => {
@@ -1582,6 +1607,16 @@ export const homeSlice = createSlice({
         state.receptionistSource = dataObj;
       })
       .addCase(getReceptionistSource.rejected, (state, action) => {})
+
+      // live receptinist/tele caller / cre
+      .addCase(getReceptionistSourceLive.pending, (state) => { })
+      .addCase(getReceptionistSourceLive.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistSource = dataObj;
+      })
+      .addCase(getReceptionistSourceLive.rejected, (state, action) => { })
+
+
       .addCase(getReceptionistManagerSource.pending, (state) => {})
       .addCase(getReceptionistManagerSource.fulfilled, (state, action) => {
         const dataObj = action.payload;
@@ -1594,6 +1629,16 @@ export const homeSlice = createSlice({
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModel.rejected, (state, action) => {})
+      
+      // live receptinist/tele caller / cre
+      .addCase(getReceptionistModelLive.pending, (state) => { })
+      .addCase(getReceptionistModelLive.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getReceptionistModelLive.rejected, (state, action) => { })
+
+
       .addCase(getReceptionistManagerModel.pending, (state) => {})
       .addCase(getReceptionistManagerModel.fulfilled, (state, action) => {
         const dataObj = action.payload;

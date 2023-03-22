@@ -2069,7 +2069,7 @@ const TargetScreenCRM = ({ route }) => {
             moduleType: "home",
             headerTitle: "Source/Model",
             orgId: userData.orgId,
-            role: userData.hrmsRole,
+            role: item.roleName,
             branchList: userData.branchs.map(
               (a) => a.branchId
             ),
@@ -2087,7 +2087,7 @@ const TargetScreenCRM = ({ route }) => {
             moduleType: "home",
             headerTitle: "Source/Model",
             orgId: userData.orgId,
-            role: userData.hrmsRole,
+            role: item.roleName,
             branchList: userData.branchs.map(
               (a) => a.branchId
             ),

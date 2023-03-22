@@ -351,6 +351,10 @@ const URL = {
 
   GET_DET_FROM_PHONE: (phone, orgId) =>
     sales_url + `/lead/phone/${phone}/${orgId}`,
+
+  GET_DET_COMPLAINT_EMP_DASHBOARD: (empid) =>
+    sales_url + `/complainttracker/getEmpComplaintDashboard/${empid}`,
+
   GET_COMPLAIN_FACTOR_DATA: (orgId) =>
     baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
 
@@ -749,6 +753,10 @@ const URL = {
     `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
   GET_LIVE_LEADS_SELF: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
+    
+  GET_LIVE_LEADS_SELF_RECEPTIONIST: () =>
+    `${dashboard}/receptionistLiveLeads`,
+
   GET_LIVE_LEADS_INSIGHTS: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () =>
@@ -836,6 +844,12 @@ const URL = {
   },
   RECEPTIONIST_SOURCE: () => {
     return dashboard + "/receptionist/source";
+  },
+  RECEPTIONIST_SOURCE_LIVE: () => {
+    return dashboard + "/liveLeads/source";
+  },
+  RECEPTIONIST_MODEL_LIVE: () => {
+    return dashboard + "/liveLeads/model";
   },
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";

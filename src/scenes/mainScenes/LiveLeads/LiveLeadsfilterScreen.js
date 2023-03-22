@@ -65,7 +65,7 @@ const AcitivityLoader = () => {
     </View>
   );
 };
-
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const LiveLeadsfilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -86,6 +86,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     employeeId: "",
     employeeName: "",
     primaryDesignation: "",
+    hrmsRole: "",
   });
   const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
   const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState(
@@ -110,6 +111,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
         primaryDesignation: jsonObj.primaryDesignation,
+        hrmsRole: jsonObj.hrmsRole,
       });
     }
   };
@@ -448,9 +450,9 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     };
     setLevelSelected(selectedIds)
     dispatch(updateFilterLevelSelectedData(selectedIds))
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
-    if (!selector.isDSE){
+    if (!selector.isDSE && !receptionistRole.includes(userData.hrmsRole)){
       Promise.all([dispatch(getEmployeesDropDownData(payload1))])
         .then(() => {
           // Promise.all([

@@ -1250,10 +1250,18 @@ const HomeScreen = ({ route, navigation }) => {
         params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "Home", dealercodes: selector.saveCRMfilterObj.dealerCodes, isForDropped: true, isFilterApplied: true },
       });
     }else{
-      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-        screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-        params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: false },
-      });
+      if(userData.hrmsRole === "CRM"){
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+          params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: false },
+        });
+      }else{
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+          params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: true },
+        });
+      }
+      
     }
    
   }

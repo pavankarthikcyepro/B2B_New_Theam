@@ -222,6 +222,15 @@ export const getTargetParametersEmpData = createAsyncThunk("LIVE_LEADS/getTarget
     }
  return json;
 })
+// self Receptionist/ tele caller / CRE
+export const getTargetReceptionistData = createAsyncThunk("LIVE_LEADS/getTargetReceptionistData", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_SELF_RECEPTIONIST(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
 
 export const getGroupDealerRanking = createAsyncThunk("LIVE_LEADS/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
 
@@ -472,7 +481,8 @@ export const liveLeadsSlice = createSlice({
         filterPayload: {},
         filterSelectedData: {},
         levelSelected:[],
-        saveLiveleadObject:{}
+        saveLiveleadObject:{},
+        receptionist_self_data:[]
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -488,6 +498,8 @@ export const liveLeadsSlice = createSlice({
             state.isMD = action.payload;
         },
         updateIsDSE: (state, action) => {
+            console.log("manthan ssssss ", action.payload);
+            
             state.isDSE = action.payload;
         },
         updateTargetData: (state, action) => {
@@ -552,6 +564,7 @@ export const liveLeadsSlice = createSlice({
             state.branchrank_list = []
             state.self_target_parameters_data =empData
             state.insights_target_parameters_data =empData
+            state.receptionist_self_data = []
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -840,6 +853,23 @@ export const liveLeadsSlice = createSlice({
                 state.self_target_parameters_data = empData;
                 state.isLoading = false;
             })
+
+            // self receptionist / tele caller / cre
+            .addCase(getTargetReceptionistData.pending, (state, action) => {
+                state.receptionist_self_data = [];
+                state.isLoading = true;
+            })
+            .addCase(getTargetReceptionistData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.receptionist_self_data = action.payload;
+                }
+                state.isLoading = false;
+            })
+            .addCase(getTargetReceptionistData.rejected, (state, action) => {
+                state.receptionist_self_data = [];
+                state.isLoading = false;
+            })
+
             .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
                 state.insights_target_parameters_data = empData;
                 state.isLoading = true;

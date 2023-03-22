@@ -19,6 +19,7 @@ import {
   delegateTask,
   getEmployeesList,
   getReportingManagerList,
+  getTargetReceptionistData,
   getUserWiseTargetParameters,
 } from "../../../redux/liveLeadsReducer";
 import { useNavigation } from "@react-navigation/native";
@@ -33,7 +34,9 @@ import {
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import _ from "lodash";
 
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 const boxHeight = 35;
@@ -47,7 +50,13 @@ const ParametersScreen = ({ route }) => {
   const [enqData, setEnqData] = useState(null);
   const [contactData, setContactData] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
-
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+    branchs: [],
+  });
   const [selfInsightsData, setSelfInsightsData] = useState([]);
 
   const [allParameters, setAllParameters] = useState([]);
@@ -116,6 +125,44 @@ const ParametersScreen = ({ route }) => {
     // {color: '#C62159', paramName: 'Accessories', shortName: 'Acc', initial: 'A', toggleIndex: 1},
   ];
 
+  const LocalDataForReceptionist = [
+    {
+      "target": "0",
+      "paramName": "PreEnquiry",
+      "shortfall": "0",
+      "achievment": "0",
+      "shortFallPerc": "0%",
+      "achivementPerc": "0%",
+      "paramShortName": "Con"
+    },
+    {
+      "target": "0",
+      "paramName": "Enquiry",
+      "shortfall": "0",
+      "achievment": "0",
+      "shortFallPerc": "0%",
+      "achivementPerc": "0%",
+      "paramShortName": "Enq"
+    },
+    {
+      "target": "0",
+      "paramName": "Booking",
+      "shortfall": "0",
+      "achievment": "0",
+      "shortFallPerc": "0%",
+      "achivementPerc": "0%",
+      "paramShortName": "Bkg"
+    },
+    {
+      "target": "0",
+      "paramName": "INVOICE",
+      "shortfall": "0",
+      "achievment": "0",
+      "shortFallPerc": "0%",
+      "achivementPerc": "0%",
+      "paramShortName": "Ret"
+    }
+  ]
   const getEmployeeListFromServer = async (user) => {
     const payload = {
       empId: user.empId,
@@ -140,10 +187,50 @@ const ParametersScreen = ({ route }) => {
   };
 
   useEffect(() => {
-    navigation.addListener("focus", () => {
+    navigation.addListener("focus", async () => {
       setSelfInsightsData([]);
+
+      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+      if(employeeData){
+        const jsonObj = JSON.parse(employeeData);
+        setUserData({
+          empId: jsonObj.empId,
+          empName: jsonObj.empName,
+          hrmsRole: jsonObj.hrmsRole,
+          orgId: jsonObj.orgId,
+          branchs: jsonObj.branchs,
+        })
+        if (receptionistRole.includes(jsonObj.hrmsRole)){
+          let payload = { "orgId": jsonObj.orgId, "loggedInEmpId": jsonObj.empId }
+          dispatch(getTargetReceptionistData(payload));
+        }
+       
+      }
+
     });
   }, [navigation]);
+
+  useEffect(() => {
+    if (!_.isEmpty(selector.receptionist_self_data)){
+      
+
+      let updateReceptinistData = LocalDataForReceptionist.map(item => {
+        if (item.paramName === "PreEnquiry"){
+          item.achievment = selector.receptionist_self_data.contactsCount;
+        } else if (item.paramName === "Enquiry"){
+          item.achievment = selector.receptionist_self_data.enquirysCount;
+        } else if (item.paramName === "Booking") {
+          item.achievment = selector.receptionist_self_data.bookingsCount;
+        } else if (item.paramName === "INVOICE") {
+          item.achievment = selector.receptionist_self_data.RetailCount;
+        }
+      })
+      
+      setSelfInsightsData([...LocalDataForReceptionist])
+    }  
+  
+  }, [selector.receptionist_self_data])
+  
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -203,7 +290,7 @@ const ParametersScreen = ({ route }) => {
         tempCon[0] = params;
         setContactData(tempCon[0]);
       }
-
+      
       setSelfInsightsData([
         tempCon[0],
         tempEnq[0],
@@ -370,6 +457,10 @@ const ParametersScreen = ({ route }) => {
       setIsLoading(false);
     }
   }, [selector.saveLiveleadObject]);
+
+
+  
+  
 
   const getDataAfterFilter = async()=>{
     
@@ -3538,50 +3629,116 @@ const ParametersScreen = ({ route }) => {
         ) : (
           // IF Self or insights
           <>
-            <View style={{ marginTop: 16, marginHorizontal: 24 }}>
-              <Pressable
-                style={{ alignSelf: "flex-end" }}
-                onPress={() => {
-                  navigation.navigate(
-                    AppNavigator.HomeStackIdentifiers.sourceModel,
-                    {
-                      empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
-                      headerTitle: "Source/Model",
-                      loggedInEmpId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
-                      type: selector.isDSE ? "SELF" : "INSIGHTS",
-                      moduleType: "live-leads",
-                      orgId: selector.login_employee_details.orgId,
-                    }
-                  );
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: Colors.BLUE,
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  Source/Model
-                </Text>
-              </Pressable>
-            </View>
 
-            <View>
-              {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
-              {selfInsightsData &&
-                selfInsightsData.length > 0 &&
-                !selector.isLoading && (
-                  <FlatList
-                    data={selfInsightsData}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item, index }) =>
-                      renderSelfInsightsView(item, index)
-                    }
-                  />
-                )}
-            </View>
+              {!receptionistRole.includes(userData.hrmsRole) ? <>
+                <View style={{ marginTop: 16, marginHorizontal: 24 }}>
+                  <Pressable
+                    style={{ alignSelf: "flex-end" }}
+                    onPress={() => {
+                      navigation.navigate(
+                        AppNavigator.HomeStackIdentifiers.sourceModel,
+                        {
+                          empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                          headerTitle: "Source/Model",
+                          loggedInEmpId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                          type: selector.isDSE ? "SELF" : "INSIGHTS",
+                          moduleType: "live-leads",
+                          orgId: selector.login_employee_details.orgId,
+                        }
+                      );
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        color: Colors.BLUE,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      Source/Model
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <View>
+                  {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
+                  {selfInsightsData &&
+                    selfInsightsData.length > 0 &&
+                    !selector.isLoading && (
+                      <FlatList
+                        data={selfInsightsData}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item, index }) =>
+                          renderSelfInsightsView(item, index)
+                        }
+                      />
+                    )}
+                </View>
+              </> : null}
+            
+            {receptionistRole.includes(userData.hrmsRole) ? <>
+                <View style={{ marginTop: 16, marginHorizontal: 24 }}>
+                  <Pressable
+                    style={{ alignSelf: "flex-end" }}
+                    onPress={() => {
+                      navigation.navigate(
+                        "RECEP_SOURCE_MODEL",
+                        {
+                          empId: selector.login_employee_details.empId,
+                          headerTitle: "Source/Model",
+                          loggedInEmpId: selector.login_employee_details.empId,
+                          type: "TEAM",
+                          moduleType: "live-leads",
+                          orgId: userData.orgId,
+                          role: userData.hrmsRole,
+                          branchList: userData.branchs.map(
+                            (a) => a.branchId
+                          ),
+                        }
+                      );
+                      // navigation.navigate(
+                      //   AppNavigator.HomeStackIdentifiers.sourceModel,
+                      //   {
+                      //     empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                      //     headerTitle: "Source/Model",
+                      //     loggedInEmpId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                      //     type: selector.isDSE ? "SELF" : "INSIGHTS",
+                      //     moduleType: "live-leads",
+                      //     orgId: selector.login_employee_details.orgId,
+                      //   }
+                      // );
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        color: Colors.BLUE,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      Source/Model
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <View>
+                  {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
+                  {selfInsightsData &&
+                    selfInsightsData.length > 0 &&
+                    !selector.isLoading && (
+                      <FlatList
+                        data={selfInsightsData}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item, index }) =>
+                          renderSelfInsightsView(item, index)
+                        }
+                      />
+                    )}
+                </View>
+            </> : null }
+
           </>
         )}
       </View>

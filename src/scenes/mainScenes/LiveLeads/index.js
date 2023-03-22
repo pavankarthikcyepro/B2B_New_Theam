@@ -60,7 +60,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
 import _ from "lodash";
-const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
+const receptionistRole = ["Reception","Tele Caller", "CRE"];
 
 const LiveLeadsScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.liveLeadsReducer);
@@ -610,18 +610,21 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     //   // dispatch(getTargetParametersData(payload1))
     // }
      
+    if(!receptionistRole.includes(jsonObj.hrmsRole)){
+      Promise.allSettled([
+        // commented manthan
+        // dispatch(getTargetParametersData(payload1)),
+        dispatch(
+          !isTeamPresentLocal
+            ? getTargetParametersEmpData(payload1)
+            : getTargetParametersEmpDataInsights(payload1)
+        ),
+      ])
+        .then(() => { })
+        .catch((y) => { });
+    }
         
-        Promise.allSettled([
-          // commented manthan
-          // dispatch(getTargetParametersData(payload1)),
-          dispatch(
-            !isTeamPresentLocal
-              ? getTargetParametersEmpData(payload1)
-              : getTargetParametersEmpDataInsights(payload1)
-          ),
-        ])
-          .then(() => { })
-          .catch((y) => { });
+        
      
   
   }
