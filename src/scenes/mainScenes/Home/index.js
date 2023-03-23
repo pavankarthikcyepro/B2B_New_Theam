@@ -108,6 +108,7 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
+const creCrmRole = ["CRE", "CRM"];
 const receptionistRole = ["Reception", "CRM", "Tele Caller","CRE"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
