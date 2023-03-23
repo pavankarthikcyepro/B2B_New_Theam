@@ -418,6 +418,7 @@ const URL = {
 
   DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
   DROP_ANALYSIS_LIST_REDIRECTIONS: () => sales_url + "/lead-drop/receptionist/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () => sales_url + "/lead-drop/receptionistManager/leadlist",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
@@ -484,6 +485,9 @@ const URL = {
   GET_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionist/allByDateNew";
   },
+  GET_LEAD_LIST_CRM: () => {
+    return sales_url + "/lead/receptionistManager/allByDateNew";
+  },
   GET_ALL_STATUS: () => {
     return sales_url + "/lead/alldatadropdown";
   },
@@ -492,6 +496,9 @@ const URL = {
   },
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
+  },
+  GET_CRM_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
+    return orgnaizationHirarchy + `/getcrmchild/digital/${orgId}/${employeeId}`;
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
@@ -820,6 +827,9 @@ const URL = {
   },
   RECEPTIONIST_MANAGER_DASHBOARD: () => {
     return dashboard + "/receptionistManager";
+  },
+  RECEPTIONIST_MANAGER_DASHBOARD_CRM: () => {
+    return dashboard + "/receptionistManagerTeam";
   },
   RECEPTIONIST_MANAGER_TEAM: () => {
     return dashboard + "/receptionistTeam";

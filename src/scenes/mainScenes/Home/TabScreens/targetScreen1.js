@@ -896,7 +896,8 @@ const TargetScreen = ({ route }) => {
         selectedEmpId: selectedEmpId,
         startDate: selector.receptionistFilterIds.startDate,
         endDate: selector.receptionistFilterIds.endDate,
-        dealerCodes: selector.receptionistFilterIds.dealerCodes
+        dealerCodes: selector.receptionistFilterIds.dealerCodes,
+        ignoreSelectedId: false
       });
     }, 1000);
   }

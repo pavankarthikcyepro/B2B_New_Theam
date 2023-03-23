@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -159,24 +159,90 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                 "selectedEmpId": selectedEmpIds,
                  "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes
             }
+            dispatch(getDropAnalysisRedirections(payload))
         } else if (from === "Home"){
-            payload = {
-                "loginEmpId": jsonObj.empId,
-                "startDate": CurrentMonthFirstDate,
-                "endDate": currentMonthLastDate,
-                "orgId": jsonObj.orgId,
-                "limit": 1000,
-                "offset": 0,
-                "filterValue": "",
-                "forDropped": true,
-                "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes
+            if (route.params.isForDropped){
+              
+                    payload = {
+                        "loginEmpId": selectedEmpIds,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "forDropped": true,
+                        "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes
+                    }
+                    dispatch(getDropAnalysisRedirections(payload))
+                
+                
+            }else{
+                if (!route.params.isFilterApplied) {
+                        payload = {
+                            "loggedInEmpId": jsonObj.empId,
+                            "startDate": CurrentMonthFirstDate,
+                            "endDate": currentMonthLastDate,
+                            "orgId": jsonObj.orgId,
+                            "limit": 1000,
+                            "offset": 0,
+                            "filterValue": "",
+                            "forDropped": true,
+                        }
+                        dispatch(getDropAnalysisRedirectionsCRM(payload))
+                    } else {
+                    payload = {
+                        "loginEmpId": jsonObj.empId,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "forDropped": true,
+                        "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes
+                    }
+                    dispatch(getDropAnalysisRedirections(payload))
+                }
             }
+
+            
+        } else if (from === "targetScreen1CRM") {
+
+            if (!route.params.isFilterApplied){
+                payload = {
+                    "loggedInEmpId": selectedEmpIds,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "orgId": jsonObj.orgId,
+                    "limit": 1000,
+                    "offset": 0,
+                    "filterValue": "",
+                    "forDropped": false,
+                }
+                dispatch(getDropAnalysisRedirectionsCRM(payload))
+            }else{
+                payload = {
+                    "loginEmpId": selectedEmpIds,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "orgId": jsonObj.orgId,
+                    "limit": 1000,
+                    "offset": 0,
+                    "filterValue": "",
+                    "selectedEmpId": route.params.parentId? [route.params.parentId] : [],
+                    "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                    "forDropped": false,
+                }
+                dispatch(getDropAnalysisRedirections(payload))
+            }
+           
         }
         
         // const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
        
 
-        dispatch(getDropAnalysisRedirections(payload))
+       
     }
 
 
@@ -385,14 +451,18 @@ const DropAnalysisScreen = ({ route, navigation }) => {
        
         // Do something when the screen is focused
         if (route.params.fromScreen == "targetScreen1" && route?.params?.emp_id) {
-            
+           
             getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreen1",route?.params?.dealercodes)
             setLeadsFilterDropDownText("Enquiry")
             setLeadsSubMenuFilterDropDownText("All");
         }else if (route.params.fromScreen === "Home"){
             setLeadsFilterDropDownText("Contact")
             setLeadsSubMenuFilterDropDownText("Contact");
-            getDropAnalysisFromRedirections("", "Home", route?.params?.dealercodes)
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "Home", route?.params?.dealercodes)
+        } else if (route.params.fromScreen == "targetScreen1CRM" && route?.params?.emp_id) {
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreen1CRM", route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
         }
 
         if (route.params.fromScreen === "") {
