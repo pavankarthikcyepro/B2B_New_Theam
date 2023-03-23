@@ -244,7 +244,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
     updateBranchNameInHeader();
     getMenuListFromServer();
-    getCustomerType();
+    // getCustomerType(); not geting used in live leads 
     checkLoginUserAndEnableReportButton();
     // getLoginEmployeeDetailsFromAsyn();
     // }
@@ -360,41 +360,41 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
       Promise.all([
         dispatch(getOrganaizationHirarchyList(payload)),
-        dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
-        dispatch(
-          getVehicalModalList({
-            bu: jsonObj.orgId,
-            dropdownType: "model",
-            parentId: 0,
-          })
-        ),
-        dispatch(
-          getDealerRanking({
-            payload: {
-              endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
-              startDate: monthFirstDate,
-              levelSelected: null,
-              pageNo: 0,
-              size: 0,
-            },
-            orgId: jsonObj.orgId,
-            branchId: jsonObj.branchId,
-          })
-        ),
-        dispatch(
-          getGroupDealerRanking({
-            payload: {
-              endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
-              startDate: monthFirstDate,
-              levelSelected: null,
-              pageNo: 0,
-              size: 0,
-            },
-            orgId: jsonObj.orgId,
-          })
-        ),
+        // dispatch(getSourceOfEnquiryList(jsonObj.orgId)), not getting used in live leads 
+        // dispatch(  not getting used in live leads
+        //   getVehicalModalList({
+        //     bu: jsonObj.orgId,
+        //     dropdownType: "model",
+        //     parentId: 0,
+        //   })
+        // ),
+        // dispatch( not getting used in live-leads 
+        //   getDealerRanking({
+        //     payload: {
+        //       endDate: monthLastDate,
+        //       loggedInEmpId: jsonObj.empId,
+        //       startDate: monthFirstDate,
+        //       levelSelected: null,
+        //       pageNo: 0,
+        //       size: 0,
+        //     },
+        //     orgId: jsonObj.orgId,
+        //     branchId: jsonObj.branchId,
+        //   })
+        // ),
+        // dispatch( not getting used in live-leads 
+        //   getGroupDealerRanking({
+        //     payload: {
+        //       endDate: monthLastDate,
+        //       loggedInEmpId: jsonObj.empId,
+        //       startDate: monthFirstDate,
+        //       levelSelected: null,
+        //       pageNo: 0,
+        //       size: 0,
+        //     },
+        //     orgId: jsonObj.orgId,
+        //   })
+        // ),
       ]).then(() => {});
       // if (
       //   jsonObj?.hrmsRole === "Admin" ||
@@ -551,9 +551,9 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     }
     
     Promise.all([
-      dispatch(getLeadSourceTableList(payload)),
-      dispatch(getVehicleModelTableList(payload)),
-      dispatch(getEventTableList(payload)),
+      // dispatch(getLeadSourceTableList(payload)), not getting used in live leads
+      // dispatch(getVehicleModelTableList(payload)),not getting used in live leads
+      // dispatch(getEventTableList(payload)),,not getting used in live leads
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
@@ -570,9 +570,9 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       size: 5,
     };
     Promise.all([
-      dispatch(getTaskTableList(payload)),
-      dispatch(getSalesData(payload)),
-      dispatch(getSalesComparisonData(payload)),
+      // dispatch(getTaskTableList(payload)), not getting used in live lead
+      // dispatch(getSalesData(payload)), not getting used in live leads 
+      // dispatch(getSalesComparisonData(payload)), not getting used in live leads 
     ]).then(() => {});
   };
 
@@ -647,7 +647,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         "empSelected": empSelected ? [empSelected] : null // selected employes id active-dropdowns APi
       }
       return payload;
-      // console.log("manthan final -- ",payload);
+      
       // dispatch(getTargetParametersEmpDataInsights(payload))
     }
     

@@ -498,8 +498,6 @@ export const liveLeadsSlice = createSlice({
             state.isMD = action.payload;
         },
         updateIsDSE: (state, action) => {
-            console.log("manthan ssssss ", action.payload);
-            
             state.isDSE = action.payload;
         },
         updateTargetData: (state, action) => {

@@ -77,6 +77,7 @@ const RecepSourceModel = ({ route, navigation }) => {
   const idFocused= useIsFocused();
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
+  const liveLeads_selector = useSelector((state) => state.liveLeadsReducer);
   const {
     empId,
     loggedInEmpId,
@@ -85,7 +86,7 @@ const RecepSourceModel = ({ route, navigation }) => {
     type,
     moduleType,
     role,
-    branchList,
+    branchList, empList
   } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -133,25 +134,26 @@ const RecepSourceModel = ({ route, navigation }) => {
         setIsSourceIndex(0);
       }
       setIsLoading(true);
-      console.log("manthan ssssss ", moduleType);
+     
       if (moduleType === "live-leads") {
-        let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
-        dispatch(getReceptionistSourceLive(payloadReceptionist));
-        dispatch(getReceptionistModelLive(payloadReceptionist));
+        // let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": selector.saveLiveleadObject?.levelSelected }
+        // dispatch(getReceptionistSourceLive(payloadReceptionist));
+        // dispatch(getReceptionistModelLive(payloadReceptionist));
       } else {
         let newPayload = {
           orgId: orgId,
           loggedInEmpId: loggedInEmpId,
           "startDate": selector.receptionistFilterIds.startDate,
           "endDate": selector.receptionistFilterIds.endDate,
-          "dealerCodes": selector.receptionistFilterIds.dealerCodes
+          "dealerCodes": selector.receptionistFilterIds.dealerCodes,
+          "empList":empList? empList : null
         };
         let payload = {
           orgId: orgId,
           branchList: branchList,
         };
-        console.log("manthan--- ? role ", role);
-        if (role == "Reception" || role == "Tele Caller" || role == "CRE") {
+       
+        if (role == "Reception" || role == "Tele Caller" || role == "CRE" || role == "Field DSE" || role == "CRM_INd") {
           dispatch(getReceptionistSource(newPayload));
           dispatch(getReceptionistModel(newPayload));
         } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
@@ -188,6 +190,28 @@ const RecepSourceModel = ({ route, navigation }) => {
     // data = data.filter((x) => x.toggleIndex === 0);
     setToggleParamsMetaData([...data]);
   }, [isSourceIndex]);
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      if (moduleType === "live-leads") {
+      
+        if (liveLeads_selector.saveLiveleadObject?.levelSelected !== "") {
+          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected }
+          dispatch(getReceptionistSourceLive(payloadReceptionist));
+          dispatch(getReceptionistModelLive(payloadReceptionist));
+        } else {
+          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+          dispatch(getReceptionistSourceLive(payloadReceptionist));
+          dispatch(getReceptionistModelLive(payloadReceptionist));
+        }
+
+      }
+    })
+    
+  
+    
+  }, [liveLeads_selector.saveLiveleadObject])
+  
 
   useEffect(() => {
     if (selector.sourceModelData) {

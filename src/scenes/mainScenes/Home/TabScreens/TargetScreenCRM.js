@@ -1106,6 +1106,7 @@ const TargetScreenCRM = ({ route }) => {
             }, 1000);
           }
           else{
+            
             setTimeout(() => {
               navigation.navigate("LEADS", {
                 screenName: "TargetScreenCRM",
@@ -1117,7 +1118,8 @@ const TargetScreenCRM = ({ route }) => {
                 endDate: "",
                 dealerCodes: [],
                 ignoreSelectedId: isIgnore,
-                parentId: parentId
+                parentId: parentId,
+                istotalClick: false
               });
             }, 1000);
           }
@@ -1140,7 +1142,6 @@ const TargetScreenCRM = ({ route }) => {
 
        
       }
-      
       else{
         navigation.navigate("LEADS", {
           screenName: "TARGETSCREEN1",
@@ -1540,22 +1541,32 @@ const TargetScreenCRM = ({ route }) => {
                     )}
                     <SourceModelView
                       onClick={() => {
-                        navigation.navigate(
-                          "RECEP_SOURCE_MODEL",
-                          {
-                            empId: item?.emp_id,
-                            headerTitle: item?.emp_name,
-                            loggedInEmpId: item.emp_id,
-                            type: "TEAM",
-                            moduleType: "home",
-                            headerTitle: "Source/Model",
-                            orgId: userData.orgId,
-                            role: userData.hrmsRole,
-                            branchList: userData.branchs.map(
-                              (a) => a.branchId
-                            ),
-                          }
-                        );
+                       
+                        if (isViewExpanded){
+                        
+                          // handleSourceModalNavigation()
+                          handleSourceModalNavigation(item, item?.emp_id, [item.emp_id],"CRM_INd")
+                        }else{
+                         
+                          handleSourceModalNavigation(item, "", [],"CRM")
+                        }
+                        
+                        // navigation.navigate(
+                        //   "RECEP_SOURCE_MODEL",
+                        //   {
+                        //     empId: item?.emp_id,
+                        //     headerTitle: item?.emp_name,
+                        //     loggedInEmpId: item.emp_id,
+                        //     type: "TEAM",
+                        //     moduleType: "home",
+                        //     headerTitle: "Source/Model",
+                        //     orgId: userData.orgId,
+                        //     role: userData.hrmsRole,
+                        //     branchList: userData.branchs.map(
+                        //       (a) => a.branchId
+                        //     ),
+                        //   }
+                        // );
                       }}
                       style={{
                         transform: [
@@ -1624,6 +1635,10 @@ const TargetScreenCRM = ({ route }) => {
                           
                               // todo redirections logic  first level
                               if (e > 0) {
+
+                                
+
+
                               if (!isViewExpanded){
                                 if (indexss === 0) {
 
@@ -1735,8 +1750,19 @@ const TargetScreenCRM = ({ route }) => {
                     <View style={{ flexDirection: "row" }}></View>
                     <SourceModelView
                       onClick={() => {
-                        handleSourceModalNavigation(item)
-                       
+                      
+                        if (isShowSalesConsultant) {
+                         
+                          handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id, [storeSecondLevelLocal.emp_id])
+                        }else{
+                         
+                          if (item.roleName === "Field DSE"){
+                            handleSourceModalNavigation(item, storeFirstLevelLocal.emp_id, [item.emp_id])
+                          }else{
+                            handleSourceModalNavigation(item)
+                          }
+                         
+                        }
                         
                       }}
                       style={{
@@ -1789,7 +1815,7 @@ const TargetScreenCRM = ({ route }) => {
                             flexDirection: "row",
                           }}
                         >
-                          {/* {console.log("manthanddddddd ", !_.isEmpty(storeSelectedRecData[0].enquiryCount))} */}
+                          
                           {[
                             isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.enquiryCount:  item.enquiryCount || 0,
                             isShowSalesConsultant && indexLocal === index && storeSelectedRecData ? storeSelectedRecData[0]?.bookingCount :  item.bookingCount || 0,
@@ -1815,10 +1841,10 @@ const TargetScreenCRM = ({ route }) => {
                                   // }
 
                                   if (isShowSalesConsultant) {
-                                    
+                                   
                                     if (indexss === 0) {
 
-                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeSelectedRecData[0].emp_id, false);
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeSelectedRecData[0].emp_id,false );
                                     } else if (indexss === 1) {
                                       navigateToEMS("BOOKING", "", [item.emp_id], true, storeSelectedRecData[0].emp_id, false);
                                     } else if (indexss === 2) {
@@ -1829,18 +1855,38 @@ const TargetScreenCRM = ({ route }) => {
                                     }
                                   }
                                   else {
+
+                                    if (item.roleName.toLowerCase() === "field dse") {
+                                      if (e > 0) {
+                                        if (indexss === 0) {
+
+                                          navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                        } else if (indexss === 1) {
+                                          navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                        } else if (indexss === 2) {
+                                          navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                        } else if (indexss === 3) {
+                                          // todo navigate to lost
+                                          navigateToDropAnalysis(storeFirstLevelLocal.emp_id, true, item.emp_id)
+                                        }
+                                      }
                                    
+                                      return;
+                                    }
+                                    
                                     if (indexss === 0) {
-                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, );
                                       // navigateToEMS("ENQUIRY", "", [item.emp_id] );
                                     } else if (indexss === 1) {
-                                      navigateToEMS("BOOKING", "", [item.emp_id] );
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true );
                                     } else if (indexss === 2) {
-                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id]);
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
                                     } else if (indexss === 3) {
                                       // todo navigate to lost 
                                       navigateToDropAnalysis(item.emp_id, true)
                                     }
+
+                                    
                                   }
                                 }
                                 
@@ -1926,7 +1972,8 @@ const TargetScreenCRM = ({ route }) => {
                   <View style={{ flexDirection: "row" }}></View>
                   <SourceModelView
                     onClick={() => {
-                      handleSourceModalNavigation(item)
+                      
+                      handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id ,[item.emp_id])
                       
                       
                       
@@ -2001,7 +2048,7 @@ const TargetScreenCRM = ({ route }) => {
                                 // todo navigate to lost 
                                 navigateToDropAnalysis(storeSecondLevelLocal.emp_id, true, item.emp_id )
                               }
-                            }
+                            } 
                             }}>
                               <View
                                 style={{
@@ -2056,15 +2103,15 @@ const TargetScreenCRM = ({ route }) => {
     
   }
 
-  const handleSourceModalNavigation=(item)=>{
+  const handleSourceModalNavigation = (item, parentId = "", empList =[],role="")=>{
     switch (item.roleName.toLowerCase()) {
       case "tele caller":
         navigation.navigate(
           "RECEP_SOURCE_MODEL",
           {
-            empId: item?.emp_id,
+            empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
-            loggedInEmpId: item.emp_id,
+            loggedInEmpId: parentId ? parentId : item.emp_id,
             type: "TEAM",
             moduleType: "home",
             headerTitle: "Source/Model",
@@ -2073,6 +2120,7 @@ const TargetScreenCRM = ({ route }) => {
             branchList: userData.branchs.map(
               (a) => a.branchId
             ),
+            empList: empList
           }
         );
         break;
@@ -2080,9 +2128,9 @@ const TargetScreenCRM = ({ route }) => {
         navigation.navigate(
           "RECEP_SOURCE_MODEL",
           {
-            empId: item?.emp_id,
+            empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
-            loggedInEmpId: item.emp_id,
+            loggedInEmpId: parentId ? parentId : item.emp_id,
             type: "TEAM",
             moduleType: "home",
             headerTitle: "Source/Model",
@@ -2091,28 +2139,65 @@ const TargetScreenCRM = ({ route }) => {
             branchList: userData.branchs.map(
               (a) => a.branchId
             ),
+            empList: empList
           }
         );
       break;
       case "field dse" :
-       
-          navigation.navigate(
-            AppNavigator
-              .HomeStackIdentifiers
-              .sourceModel,
-            {
-              empId:
-                item.emp_id,
-              headerTitle:
-                item.emp_name,
-              type: "TEAM",
-              moduleType:
-                "home",
-            }
-          );
+
+        navigation.navigate(
+          "RECEP_SOURCE_MODEL",
+          {
+            empId: parentId ? parentId : item?.emp_id,
+            headerTitle: item?.emp_name,
+            loggedInEmpId: parentId ? parentId : item.emp_id,
+            type: "TEAM",
+            moduleType: "home",
+            headerTitle: "Source/Model",
+            orgId: userData.orgId,
+            role: item.roleName,
+            branchList: userData.branchs.map(
+              (a) => a.branchId
+            ),
+            empList: empList
+          }
+        );
+          // navigation.navigate(
+          //   AppNavigator
+          //     .HomeStackIdentifiers
+          //     .sourceModel,
+          //   {
+          //     empId:
+          //       item.emp_id,
+          //     headerTitle:
+          //       item.emp_name,
+          //     type: "TEAM",
+          //     moduleType:
+          //       "home",
+          //   }
+          // );
         
         break;
+      case "crm":
 
+        navigation.navigate(
+          "RECEP_SOURCE_MODEL",
+          {
+            empId: parentId ? parentId : item?.emp_id,
+            headerTitle: item?.emp_name,
+            loggedInEmpId: parentId ? parentId : item.emp_id,
+            type: "TEAM",
+            moduleType: "home",
+            headerTitle: "Source/Model",
+            orgId: userData.orgId,
+            role: role === "CRM" ? "CRM" :"CRM_INd",
+            branchList: userData.branchs.map(
+              (a) => a.branchId
+            ),
+            empList: empList
+          }
+        );
+        break;
       default:
         break;
     }

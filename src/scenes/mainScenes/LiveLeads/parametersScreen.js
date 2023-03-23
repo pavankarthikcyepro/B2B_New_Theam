@@ -188,7 +188,7 @@ const ParametersScreen = ({ route }) => {
 
   useEffect(() => {
     navigation.addListener("focus", async () => {
-      setSelfInsightsData([]);
+      // setSelfInsightsData([]);
 
       let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
       if(employeeData){
@@ -200,15 +200,50 @@ const ParametersScreen = ({ route }) => {
           orgId: jsonObj.orgId,
           branchs: jsonObj.branchs,
         })
-        if (receptionistRole.includes(jsonObj.hrmsRole)){
-          let payload = { "orgId": jsonObj.orgId, "loggedInEmpId": jsonObj.empId }
-          dispatch(getTargetReceptionistData(payload));
-        }
+        // if (receptionistRole.includes(jsonObj.hrmsRole)){}
+         
+      
        
       }
 
     });
   }, [navigation]);
+
+  useEffect(async() => {
+    // navigation.addListener("focus", async () => {
+     
+      if (selector.saveLiveleadObject?.levelSelected) {
+        
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+
+          if (receptionistRole.includes(jsonObj.hrmsRole)) {
+            let payload = { "orgId": jsonObj.orgId, "loggedInEmpId": jsonObj.empId, "branchList": selector.saveLiveleadObject?.levelSelected }
+            dispatch(getTargetReceptionistData(payload));
+          }
+
+        }
+      } else {
+        
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+
+          if (receptionistRole.includes(jsonObj.hrmsRole)) {
+            let payload = { "orgId": jsonObj.orgId, "loggedInEmpId": jsonObj.empId }
+            dispatch(getTargetReceptionistData(payload));
+          }
+
+        }
+      }
+
+    // })
+   
+    
+    
+  }, [selector.saveLiveleadObject])
+  
 
   useEffect(() => {
     if (!_.isEmpty(selector.receptionist_self_data)){
@@ -228,7 +263,7 @@ const ParametersScreen = ({ route }) => {
       
       setSelfInsightsData([...LocalDataForReceptionist])
     }  
-  
+    
   }, [selector.receptionist_self_data])
   
 

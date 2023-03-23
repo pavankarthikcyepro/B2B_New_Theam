@@ -487,15 +487,15 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
           // selectedempId: ""
         }
         dispatch(updateLiveLeadObjectData(tempPayload))
+      
+          navigation.navigate("LIVE_LEADS", {
+            screenName: "LIVE_LEADS",
+            fromScreen: "Filter",
+            selectedID: [],
+            fromDate: fromDate,
+            toDate: toDate,
 
-        navigation.navigate("LIVE_LEADS", {
-          screenName: "LIVE_LEADS",
-          fromScreen: "Filter",
-          selectedID: [],
-          fromDate: fromDate,
-          toDate: toDate,
-
-        });
+          });
       }
      
     }

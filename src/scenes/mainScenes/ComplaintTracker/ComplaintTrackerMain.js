@@ -179,8 +179,8 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                     empId: jsonObj.empId
                 }
 
-                // dispatch(getCountsComplaintsDashboard(payload));
-                dispatch(getEmpComplaintDashboard(payload));
+                dispatch(getCountsComplaintsDashboard(payload));
+                // dispatch(getEmpComplaintDashboard(payload));
             }
         } catch (error) {
             alert(error);
@@ -297,7 +297,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.conatiner}>
-            <View style={{ padding: 10, }}>
+            {/* <View style={{ padding: 10, }}>
                 <View
                     style={{
                        backgroundColor:Colors.WHITE,
@@ -334,26 +334,19 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 
 
                     </View>
-                    {/* <View
-                        style={{
-                            padding: 10
-                        }}>
-                        {eventListTableRow("Total", "Active", "Closed")}
-                    </View> */}
+                    
                 </View>
                
                 
-            </View>
+            </View> */}
 
-            {/* <View style={{ padding: 10, }}>
+            <View style={{ padding: 10, }}>
                 <FlatList
                     data={data}
                     bounces={false}
                     renderItem={({ item, index }) => renderItem(item, index)}
-                //   contentContainerStyle={styles.titleRow}
-                //   bounces={false}
                 />
-            </View> */}
+            </View>
             {userData.isCRE || userData.isCRM ? <TouchableOpacity
                 onPress={() => {
                     navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
