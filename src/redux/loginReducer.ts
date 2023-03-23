@@ -63,7 +63,11 @@ export const postUserData = createAsyncThunk(
   "LOGIN_SLICE/postUserData",
   async (inputData, { rejectWithValue }) => {
     const response = await client.post(URL.LOGIN(), inputData, {}, false);
+    console.log("response", response);
+    
     const json = await response.json();
+    console.log("JSON", json);
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }

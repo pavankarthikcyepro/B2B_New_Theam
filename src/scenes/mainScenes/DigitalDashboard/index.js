@@ -449,7 +449,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       });
       const payload = {
         orgId: jsonObj.orgId,
-        branchId: jsonObj.branchId,
+        empId: jsonObj.empId,
       };
       setHeaderText(jsonObj.empName);
       const dateFormat = "YYYY-MM-DD";
@@ -863,7 +863,11 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+    // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: "DROP_ANALYSIS",
+      params: { emp_id: "", fromScreen: "" },
+    });
   }
   
   function navigateToContact(params) {

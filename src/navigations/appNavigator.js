@@ -126,6 +126,8 @@ import * as AsyncStore from "../asyncStore";
 import SearchCustomer from "../scenes/mainScenes/Home/SearchCustomer";
 import SearchCustomerResult from "../scenes/mainScenes/Home/SearchCustomerResult";
 import AddCustomerInfo from "../scenes/mainScenes/Home/AddCustomerInfo";
+import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
+import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -415,6 +417,7 @@ export const HomeStackIdentifiers = {
   addCustomerInfo: "ADD_CUSTOMER_INFO",
   searchCustomerResult: "SEARCH_CUSTOMER_RESULT",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
+  crmFilter:"CRM_FILTER"
 };
 
 export const EmsStackIdentifiers = {
@@ -567,6 +570,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.addCustomerInfo}
         component={AddCustomerInfo}
         options={{ title: "Customer Information" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.crmFilter}
+        component={CRMFilterscreen}
+        options={{ title: "Filters" }}
       />
       <MainDrawerNavigator.Screen
         name={HomeStackIdentifiers.location}
@@ -920,6 +928,23 @@ const TabNavigator = ({ navigation, route }) => {
         name={TabStackIdentifiers.ems}
         component={EmsStackNavigator}
         options={{ title: "EMS" }}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            navigation.setParams(
+              {
+                screenName: "DEFAULT",
+                params: "",
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: "",
+                startDate: "",
+                endDate: "",
+                dealerCodes: "",
+                fromScreen: "DEFAULT",
+                ignoreSelectedId: false
+              })
+          },
+        })}
         // listeners={({ navigation, route }) => ({
         //     tabPress: e => {
         //         if (route.state && route.state.routeNames.length > 0) {
@@ -1091,7 +1116,7 @@ const DropAnalysisStack = createStackNavigator();
 
 const DropAnalysisStackNavigator = ({ navigation }) => {
   return (
-    <DropAnalysisStack.Navigator  screenOptions={screeOptionStyle}>
+    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle} initialRouteName={"DROP_ANALYSIS"} >
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
@@ -1108,6 +1133,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
             );
           },
         }}
+        initialParams={{ emp_id: "", fromScreen: "" }}
       />
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS_HISTORY"}
@@ -1134,6 +1160,20 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
         options={{
           title: "Live Leads",
           headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+        initialParams={{
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        }}
+      />
+      <LiveLeadsStack.Screen
+        name={"LIVE_LEADS_FILTERS"}
+        component={LiveLeadsfilterScreen}
+        options={{
+          title: "Live Leads Filters",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
     </LiveLeadsStack.Navigator>

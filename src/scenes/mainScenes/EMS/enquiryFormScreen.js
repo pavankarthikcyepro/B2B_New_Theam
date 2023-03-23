@@ -328,6 +328,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [eventConfigRes, setEventConfigRes] = useState([]);
+  const [isVip, setIsVip] = useState(null);
 
   // todo
   useLayoutEffect(() => {
@@ -755,6 +756,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.enquiry_details_response) {
       setShowPreBookingBtn(false);
+      setIsVip(
+        selector.enquiry_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -1412,7 +1418,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.dmsLeadProducts = carModelsList;
-
+      dmsLeadDto.isVip = isVip ? "Y" : "N";
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
       dmsLeadDto.model = primaryModel[0].model;
 
@@ -2293,46 +2299,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.update_enquiry_details_response]);
 
-
   useEffect(() => {
-    if (leadStatus === "ENQUIRYCOMPLETED" &&
+    if (
+      leadStatus === "ENQUIRYCOMPLETED" &&
       leadStage === "ENQUIRY" &&
       carModelsList &&
-      carModelsList.length >0){
-      navigation.setOptions(
-        {
-         
-          headerRight: () => (
-            <TouchableOpacity
+      carModelsList.length > 0
+    ) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity
+            style={{
+              width: 110,
+              height: 30,
+              borderRadius: 15,
+              borderColor: Colors.RED,
+              borderWidth: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 5,
+              flexDirection: "row",
+            }}
+            onPress={() => {
+              navigateToProforma();
+            }}
+          >
+            <Text
               style={{
-                width: 110,
-                height: 30,
-                borderRadius: 15,
-                borderColor: Colors.RED,
-                borderWidth: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
-                flexDirection: "row",
+                fontSize: 12,
+                fontWeight: "600",
+                color: "#fff",
+                marginLeft: 5,
               }}
-              onPress={()=>{navigateToProforma()}}
             >
-             
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color: "#fff",
-                  marginLeft: 5,
-                }}
-              >Proforma Invoice</Text>
-              {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
-            </TouchableOpacity>
-          ),
-        });
-      }
-  }, [leadStatus, carModelsList])
-  
+              Proforma Invoice
+            </Text>
+            {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [leadStatus, carModelsList]);
+
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
       let endUrl =
@@ -3264,7 +3272,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-
             {/* {leadStatus === "ENQUIRYCOMPLETED" &&
               leadStage === "ENQUIRY" &&
               carModelsList &&
@@ -3838,7 +3845,46 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                   isDropDownIconShow={false}
                 />
-
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
                   value={selector.buyer_type}
@@ -6533,7 +6579,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "flex-end",
     marginVertical: 6,
-    marginBottom:10
+    marginBottom: 10,
   },
   tochable1: {
     width: 140,

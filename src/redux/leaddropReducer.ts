@@ -198,6 +198,34 @@ export const getDropAnalysisFilter = createAsyncThunk(
   }
 );
 
+export const getDropAnalysisRedirections  = createAsyncThunk(
+  "DROPANALYSIS/getDropAnalysisRedirections",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.DROP_ANALYSIS_LIST_REDIRECTIONS(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getDropAnalysisRedirectionsCRM = createAsyncThunk(
+  "DROPANALYSIS/getDropAnalysisRedirectionsCRM",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.DROP_ANALYSIS_LIST_REDIRECTIONS_CRM(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getdropstagemenu = createAsyncThunk(
   "DROPANALYSIS/getdropstagemenu",
   async (payload, { rejectWithValue }) => {
@@ -441,6 +469,70 @@ const leaddropListSlice = createSlice({
       state.isLoading = false;
       state.status = "failed";
     });
+
+
+    builder.addCase(getDropAnalysisRedirections.pending, (state) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getDropAnalysisRedirections.fulfilled, (state, action) => {
+      const dmsLeadDropInfos = action.payload.dmsLeadDropInfos;
+
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      if (dmsLeadDropInfos) {
+        state.totalPages = dmsLeadDropInfos.totalPages;
+        state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
+        state.leadDropList = dmsLeadDropInfos.content;
+
+      }
+      state.isLoading = false;
+      state.status = "sucess";
+
+    });
+    builder.addCase(getDropAnalysisRedirections.rejected, (state, action) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = false;
+      state.status = "failed";
+    });
+
+
+
+    builder.addCase(getDropAnalysisRedirectionsCRM.pending, (state) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getDropAnalysisRedirectionsCRM.fulfilled, (state, action) => {
+      const dmsLeadDropInfos = action.payload.dmsLeadDropInfos;
+
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      if (dmsLeadDropInfos) {
+        state.totalPages = dmsLeadDropInfos.totalPages;
+        state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
+        state.leadDropList = dmsLeadDropInfos.content;
+
+      }
+      state.isLoading = false;
+      state.status = "sucess";
+
+    });
+    builder.addCase(getDropAnalysisRedirectionsCRM.rejected, (state, action) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = false;
+      state.status = "failed";
+    });
+
 
 
     builder.addCase(getdropstagemenu.pending, (state) => {

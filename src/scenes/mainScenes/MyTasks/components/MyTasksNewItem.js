@@ -12,11 +12,22 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from "../../../../asyncStore";
 import { showToastRedAlert } from "../../../../utils/toast";
+import {
+  VIP_ICON,
+  VIP_ICON2,
+  VIP_ICON3,
+  VIP_ICON4,
+  VIP_ICON5,
+} from "../../../../assets/icon";
 
 const statusBgColors = {
   CANCELLED: {
     color: Colors.RED,
     title: "Cancelled",
+  },
+  CLOSED: {
+    color: Colors.GREEN_V2,
+    title: "Closed",
   },
   ASSIGNED: {
     color: Colors.GREEN,
@@ -112,7 +123,9 @@ export const MyTaskNewItem = ({
   onlylead = false,
   EmployeesRoles,
   userData,
-  tdflage = "", updatedOn
+  tdflage = "",
+  updatedOn,
+  IsVip = false,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -127,6 +140,7 @@ export const MyTaskNewItem = ({
     status === "CANCELLED" ||
     status === "ASSIGNED" ||
     status === "SENT_FOR_APPROVAL" ||
+    status === "CLOSED" ||
     status === "RESCHEDULED"
   ) {
     bgColor = statusBgColors[status].color;
@@ -169,7 +183,14 @@ export const MyTaskNewItem = ({
   };
 
   return (
-    <TouchableOpacity onPress={onItemPress} style={styles.section}>
+    <TouchableOpacity
+      onPress={onItemPress}
+      style={{
+        ...styles.section,
+        borderLeftWidth: IsVip ? 3 : 0,
+        borderLeftColor: Colors.RED,
+      }}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -180,14 +201,58 @@ export const MyTaskNewItem = ({
       >
         <View style={{ width: "65%" }}>
           <View style={{ flexDirection: "row" }}>
-            <View style={{ maxWidth: "73%" }}>
+            <View
+              style={{
+                maxWidth: "73%",
+                flexDirection: "row",
+                alignItems: "flex-end",
+                position: "relative",
+                paddingTop: 5,
+              }}
+            >
               <Text style={styles.text1}>{name}</Text>
+              <View style={styles.badgeContainer}>
+                {/* <Text style={styles.badgeText}>{"VIP"}</Text> */}
+                {/* {IsVip && <Image
+                  source={VIP_ICON2}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    // top: 0,
+                    right: -25,
+                    position: "absolute",
+                    zIndex: 1000,
+                  }}
+                  resizeMode={"contain"}
+                />} */}
+              </View>
             </View>
             {/*<Text style={styles.catText}>{enqCat}</Text>*/}
           </View>
-          <Text style={styles.text2}>{date}</Text>
-          <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
-          <Text style={styles.text2}>{phone}</Text>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <View>
+              <Text style={styles.text2}>{date}</Text>
+
+              <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+              <Text style={styles.text2}>{phone}</Text>
+            </View>
+            <View>
+              {/* {true && (
+                <Image
+                  source={VIP_ICON5}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    marginRight: 5,
+                  }}
+                  resizeMode={"contain"}
+                />
+              )} */}
+            </View>
+          </View>
+
           <>
             {from !== "PRE_ENQUIRY" && (
               <View
@@ -233,33 +298,41 @@ export const MyTaskNewItem = ({
                       </View>
                     )}
                 </>
-
-                <Text
-                  style={[
-                    styles.text3,
-                    { color: getStageColor(leadStage, leadStatus) },
-                  ]}
-                >
-                  {leadStage === "PREBOOKING" ? "BOOKING APPROVAL" : leadStage}
-                </Text>
+                {leadStage ? (
+                  <Text
+                    style={[
+                      styles.text3,
+                      { color: getStageColor(leadStage, leadStatus) },
+                    ]}
+                  >
+                    {leadStage === "PREBOOKING"
+                      ? "BOOKING APPROVAL"
+                      : leadStage}
+                  </Text>
+                ) : null}
               </View>
             )}
           </>
+          {(status === "CANCELLED" || status === "CLOSED") && (
+            <Text style={[styles.text2, { color: bgColor }]}>{statusName}</Text>
+          )}
         </View>
-        <View style={{ width: "35%", alignItems: "center" }}>
+        <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
+          {IsVip && <Text style={styles.badgeText}>{"VIP"}</Text>}
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
           <View style={styles.modal}>
-            <Text style={styles.text4}>{model}</Text>
-            {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
+            <Text numberOfLines={2} style={styles.text4}>
+              {model}
+            </Text>
           </View>
-          {/* <View style={{ height: 8 }}></View> */}
           <View
             style={{
               flexDirection: "row",
               width: "100%",
               justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
             <IconComp
@@ -361,6 +434,20 @@ export const MyTaskNewItem = ({
           </View>
         </View>
       </View>
+      {/* {IsVip && (
+        <Image
+          source={VIP_ICON}
+          style={{
+            width: 40,
+            height: 40,
+            top: -15,
+            right: -10,
+            position: "absolute",
+            zIndex: 1000,
+          }}
+          resizeMode={"contain"}
+        />
+      )} */}
     </TouchableOpacity>
   );
 };
@@ -406,6 +493,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal: 5,
     marginVertical: 6,
+    position: "relative",
   },
   modal: {
     backgroundColor: Colors.RED,
@@ -429,4 +517,12 @@ const styles = StyleSheet.create({
     width: 30,
     borderRadius: 15,
   },
+  badgeContainer: {
+    marginLeft: 3,
+    bottom: 4,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: { fontSize: 15, color: Colors.PINK, fontWeight: "bold" },
 });
