@@ -1395,16 +1395,17 @@ const LeadsScreen = ({ route, navigation }) => {
     if (data.length > 0) {
       if (isVip) {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName && i.isVip === "Y"
-          // &&
-          // userData.empName === i.salesConsultant
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            userData.empName !== i.salesConsultant
         );
         return newData.length;
       } else {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName
-          // &&
-          // userData.empName === i.salesConsultant
+          (i) => i.createdBy === userData.empName 
+          &&
+          userData.empName !== i.salesConsultant
         );
         return newData.length;
       }
@@ -1436,14 +1437,16 @@ const LeadsScreen = ({ route, navigation }) => {
       if (isVip) {
         let newData = data.filter(
           (i) => i.createdBy === userData.empName && i.isVip === "Y"
-          // &&
-          // userData.empName === i.salesConsultant
+          &&
+          userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName
+          (i) =>
+            i.createdBy === userData.empName &&
+            userData.empName !== i.salesConsultant
           // &&
           // userData.empName === i.salesConsultant
         );
