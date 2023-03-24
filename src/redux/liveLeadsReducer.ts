@@ -420,6 +420,17 @@ export const saveFilterPayload = createAsyncThunk(
     }
 );
 
+// CRM live leads tree
+export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS/getManagerLiveLeads", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_MANAGERDATA(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
 const AVAILABLE_SCREENS = [
     {
         "menuId": 81,
@@ -482,7 +493,8 @@ export const liveLeadsSlice = createSlice({
         filterSelectedData: {},
         levelSelected:[],
         saveLiveleadObject:{},
-        receptionist_self_data:[]
+        receptionist_self_data:[],
+        crm_response_data: []
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -562,7 +574,8 @@ export const liveLeadsSlice = createSlice({
             state.branchrank_list = []
             state.self_target_parameters_data =empData
             state.insights_target_parameters_data =empData
-            state.receptionist_self_data = []
+            state.receptionist_self_data = [],
+            state.crm_response_data = []
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -1048,6 +1061,24 @@ export const liveLeadsSlice = createSlice({
         })
         builder.addCase(getDesignationDropdown.rejected, (state, action) => {
             // state.isLoading = false;
+        })
+
+
+        // Get CRM Live leads Data
+        builder.addCase(getCRM_ManagerLiveLeads.pending, (state, action) => {
+            state.isLoading = true;
+            state.crm_response_data= [];
+        })
+        builder.addCase(getCRM_ManagerLiveLeads.fulfilled, (state, action) => {
+            if (action.payload) {
+                
+                state.crm_response_data = action.payload; 
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getCRM_ManagerLiveLeads.rejected, (state, action) => {
+            state.isLoading = false;
+            state.crm_response_data = [];
         })
     }
 });

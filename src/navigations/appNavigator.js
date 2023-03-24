@@ -125,6 +125,8 @@ import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedCom
 import * as AsyncStore from "../asyncStore";
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
+import CRMLiveleadsFilterscreen from "../scenes/mainScenes/LiveLeads/CRMLiveleadsFilterscreen";
+import RecepSourceModelCRM from "../scenes/mainScenes/LiveLeads/RecepSourceModelCRM";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -1153,6 +1155,20 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
         options={{
           title: "Live Leads Filters",
           // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+
+      <LiveLeadsStack.Screen
+        name={"CRM_LIVE_FILTERS"}
+        component={CRMLiveleadsFilterscreen}
+        options={{ title: "CRM Filters" }}
+      />
+
+      <LiveLeadsStack.Screen
+        name={"RECEP_SOURCE_MODEL_CRM"}
+        component={RecepSourceModelCRM}
+        options={{
+          title: "Source/Model",
         }}
       />
     </LiveLeadsStack.Navigator>

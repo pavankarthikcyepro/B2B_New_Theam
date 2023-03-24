@@ -61,6 +61,7 @@ import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
 import _ from "lodash";
 const receptionistRole = ["Reception","Tele Caller", "CRE"];
+const crmRole = ["CRM"];
 
 const LiveLeadsScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.liveLeadsReducer);
@@ -95,32 +96,17 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     }
   }, [isFocused, isDrawerOpen]);
 
-  useLayoutEffect(() => {
-    navigation.addListener("focus", () => {
-      setTargetData().then((r) => {});
+  useLayoutEffect( () => {
 
-      
-      navigation.setOptions(
-        {
-          headerTitleStyle: {
-            fontSize: 16,
-            fontWeight: "600",
-          },
-          headerStyle: {
-            backgroundColor: Colors.DARK_GRAY,
-          },
-          headerTintColor: Colors.WHITE,
-          headerBackTitleVisible: false,
-          headerRight: () => (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {/* <SearchIcon /> */}
-              <MyTaskFilter navigation={navigation} />
-
-            </View>
-          ),
-        });
-    });
+    
+     const sub = navigation.addListener("focus", () => {
+        getUserData()
+     
+      });
+    return sub
   }, [navigation]);
+
+
 
     useEffect(async() => {
      
@@ -154,6 +140,65 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       
     }, [selector.levelSelected, selector.saveLiveleadObject,isFocused])
     
+
+  const getUserData = async () => {
+    try {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+
+
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+
+
+        if (crmRole.includes(jsonObj.hrmsRole)) {
+          navigation.setOptions(
+            {
+              headerTitleStyle: {
+                fontSize: 16,
+                fontWeight: "600",
+              },
+              headerStyle: {
+                backgroundColor: Colors.DARK_GRAY,
+              },
+              headerTintColor: Colors.WHITE,
+              headerBackTitleVisible: false,
+              headerRight: () => (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {/* <SearchIcon /> */}
+                  <MyTaskFilter navigation={navigation} screenName="CRM_LIVE_FILTERS" />
+
+                </View>
+              ),
+            });
+        } else {
+          navigation.setOptions(
+            {
+              headerTitleStyle: {
+                fontSize: 16,
+                fontWeight: "600",
+              },
+              headerStyle: {
+                backgroundColor: Colors.DARK_GRAY,
+              },
+              headerTintColor: Colors.WHITE,
+              headerBackTitleVisible: false,
+              headerRight: () => (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {/* <SearchIcon /> */}
+                  <MyTaskFilter navigation={navigation} screenName="LIVE_LEADS_FILTERS" />
+
+                </View>
+              ),
+            });
+        }
+
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
   const setTargetData = async () => {
     numk++;
     // commented manthan
@@ -261,7 +306,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const MyTaskFilter = ({ navigation }) => {
+  const MyTaskFilter =  ({ navigation, screenName= "" }) => {
     // const screen = useSelector((state) => state.mytaskReducer.currentScreen);
     // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
     return (
@@ -272,7 +317,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         size={25}
         onPress={() => {
 
-          navigation.navigate("LIVE_LEADS_FILTERS", {});
+          navigation.navigate(screenName, {});
         }
         }
       />

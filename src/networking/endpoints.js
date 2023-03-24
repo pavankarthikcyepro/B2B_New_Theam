@@ -757,6 +757,9 @@ const URL = {
   GET_LIVE_LEADS_SELF_RECEPTIONIST: () =>
     `${dashboard}/receptionistLiveLeads`,
 
+  GET_LIVE_LEADS_MANAGERDATA: () =>
+    `${dashboard}/managerLiveLeads`,
+
   GET_LIVE_LEADS_INSIGHTS: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () =>
@@ -851,6 +854,14 @@ const URL = {
   RECEPTIONIST_MODEL_LIVE: () => {
     return dashboard + "/liveLeads/model";
   },
+
+  CRM_SOURCE_LIVE: () => {
+    return dashboard + "/managerLiveLeads/source";
+  },
+  CRM_MODAL_LIVE: () => {
+    return dashboard + "/managerLiveLeads/model";
+  },
+
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";
   },

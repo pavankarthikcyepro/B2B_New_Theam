@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../../../../../../styles";
+
 import moment from "moment/moment";
-import { RenderSourceModelParameters } from "../RenderSourceModelParameters";
-import PercentageToggleControl from "./PercentageToggleControl";
-import URL from "../../../../../../networking/endpoints";
+
+
+
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getCRMModelLive,
+  getCRMSourceLive,
   getReceptionistManagerModel,
   getReceptionistManagerSource,
   getReceptionistModel,
@@ -21,15 +23,19 @@ import {
   getReceptionistSource,
   getReceptionistSourceLive,
   getSourceModelDataForSelf,
-} from "../../../../../../redux/homeReducer";
+} from "../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { IconButton } from "react-native-paper";
-import { AppNavigator } from "../../../../../../navigations";
-import { achievementPercentage } from "../../../../../../utils/helperFunctions";
-import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
-import { useIsFocused } from "@react-navigation/native";
 
-const RecepSourceModel = ({ route, navigation }) => {
+import { achievementPercentage } from "../../../../../../utils/helperFunctions";
+
+import { useIsFocused } from "@react-navigation/native";
+import { Colors } from "../../../styles";
+import { AppNavigator } from "../../../navigations";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
+
+const RecepSourceModelCRM = ({ route, navigation }) => {
   const paramsMetadata = [
     {
       color: "#FA03B9",
@@ -71,6 +77,13 @@ const RecepSourceModel = ({ route, navigation }) => {
       paramName: "Lost",
       shortName: "Lost",
       initial: "L",
+      toggleIndex: 0,
+    },
+    {
+      color: "#9E31BE",
+      paramName: "Contact",
+      shortName: "Con",
+      initial: "C",
       toggleIndex: 0,
     },
   ];
@@ -137,7 +150,7 @@ const RecepSourceModel = ({ route, navigation }) => {
         setIsSourceIndex(0);
       }
       setIsLoading(true);
-     
+      
       if (moduleType === "live-leads") {
         // let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": selector.saveLiveleadObject?.levelSelected }
         // dispatch(getReceptionistSourceLive(payloadReceptionist));
@@ -197,15 +210,28 @@ const RecepSourceModel = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener("focus", () => {
       if (moduleType === "live-leads") {
-      
+        console.log("manthan sssss ff ", role);
         if (liveLeads_selector.saveLiveleadObject?.levelSelected !== "") {
-          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected }
-          dispatch(getReceptionistSourceLive(payloadReceptionist));
-          dispatch(getReceptionistModelLive(payloadReceptionist));
+          if (role === "CRM") {
+            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+            dispatch(getCRMModelLive(payloadCRM))
+            dispatch(getCRMSourceLive(payloadCRM))
+          } else {
+            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected }
+            dispatch(getReceptionistSourceLive(payloadReceptionist));
+            dispatch(getReceptionistModelLive(payloadReceptionist));
+          }
         } else {
-          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
-          dispatch(getReceptionistSourceLive(payloadReceptionist));
-          dispatch(getReceptionistModelLive(payloadReceptionist));
+          if (role === "CRM") {
+            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+            dispatch(getCRMModelLive(payloadCRM))
+            dispatch(getCRMSourceLive(payloadCRM))
+          } else {
+            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+            dispatch(getReceptionistSourceLive(payloadReceptionist));
+            dispatch(getReceptionistModelLive(payloadReceptionist));
+          }
+
         }
 
       }
@@ -631,7 +657,7 @@ const RecepSourceModel = ({ route, navigation }) => {
   );
 };
 
-export default RecepSourceModel;
+export default RecepSourceModelCRM;
 
 const styles = StyleSheet.create({
   flexRow: { flexDirection: "row", display: "flex" },

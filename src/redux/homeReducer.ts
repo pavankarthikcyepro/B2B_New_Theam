@@ -775,6 +775,32 @@ export const getReceptionistModelLive = createAsyncThunk(
   }
 );
 
+
+// live crm 
+export const getCRMSourceLive = createAsyncThunk(
+  "HOME/getCRMSourceLive",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.CRM_SOURCE_LIVE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+// live crm
+export const getCRMModelLive = createAsyncThunk(
+  "HOME/getCRMModelLive",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.CRM_MODAL_LIVE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistModel = createAsyncThunk(
   "HOME/getReceptionistModel",
   async (payload, { rejectWithValue }) => {
@@ -1637,6 +1663,22 @@ export const homeSlice = createSlice({
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModelLive.rejected, (state, action) => { })
+
+      // live crm
+      .addCase(getCRMModelLive.pending, (state) => { })
+      .addCase(getCRMModelLive.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getCRMModelLive.rejected, (state, action) => { })
+
+      // live crm
+      .addCase(getCRMSourceLive.pending, (state) => { })
+      .addCase(getCRMSourceLive.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistSource = dataObj;
+      })
+      .addCase(getCRMSourceLive.rejected, (state, action) => { })
 
 
       .addCase(getReceptionistManagerModel.pending, (state) => {})
