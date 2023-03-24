@@ -92,9 +92,29 @@ const AddCustomerInfo = ({ navigation, route }) => {
         setDataForDropDown([...selector.sourceTypesResponse]);
         break;
       case "SUB_SOURCE_TYPE":
-        if (selector.sourceTypesResponse?.length === 0) {
-          showToast("No Sub Source Types found");
-          return;
+        let flag = 0;
+        if (selector.sourceType != "") {
+          for (let i = 0; i < selector.sourceTypesResponse.length; i++) {
+            const element = selector.sourceTypesResponse[i];
+            if (
+              element.name == selector.sourceType &&
+              element?.subtypeMap?.length > 0
+            ) {
+              flag = 1;
+              dispatch(
+                setPersonalIntro({
+                  key: "SUB_SOURCE_RES",
+                  text: element.subtypeMap,
+                })
+              );
+              setDataForDropDown([...element.subtypeMap]);
+              break;
+            }
+          }
+        }
+        if (flag == 0) {
+          setDataForDropDown([]);
+          break;
         }
         break;
     }

@@ -60,7 +60,7 @@ const initialState = {
   customerTypesResponse: [],
   customerTypes: "",
   sourceTypesResponse: [],
-  sourceTypes: "",
+  subSourceTypesResponse: [],
   // Customer Address
   pincode: "",
   urban_or_rural: 0,
@@ -153,6 +153,14 @@ const customerInfoReducer = createSlice({
         case "RELATION":
           state.relation = value;
           break;
+        case "SOURCE_TYPE":
+          state.sourceType = value;
+          state.subSourceType = "";
+          state.subSourceTypesResponse = [];
+          break;
+        case "SUB_SOURCE_TYPE":
+          state.subSourceType = value;
+          break;
         case "CUSTOMER_TYPE":
           state.customerTypes = value;
           break;
@@ -216,6 +224,9 @@ const customerInfoReducer = createSlice({
           break;
         case "ANNIVE_DATE":
           state.anniversaryDate = text;
+          break;
+        case "SUB_SOURCE_RES":
+          state.subSourceTypesResponse = text;
           break;
       }
     },
@@ -463,33 +474,36 @@ const customerInfoReducer = createSlice({
     builder
       .addCase(getSourceTypesApi.pending, (state, action) => {
         state.sourceTypesResponse = [];
-        state.sourceTypes = null;
+        state.subSourceTypesResponse = [];
       })
       .addCase(getSourceTypesApi.fulfilled, (state, action) => {
         if (action.payload) {
           let sData = action.payload.body;
           let newArr = [];
-
+          
           for (let i = 0; i < sData.length; i++) {
             let data = { ...sData[i], name: sData[i].type };
-            if (data.subtypeMap?.length > 0) {
-              for (let j = 0; j < data.subtypeMap; j++) {
+            if (sData[i]?.subtypeMap && Object.keys(sData[i].subtypeMap).length > 0) {
+              let subSource = [];
+              let newSubSource = Object.values(sData[i].subtypeMap);
+              for (let j = 0; j < newSubSource.length; j++) {
                 const element = {
-                  ...data.subtypeMap[j],
-                  name: data.subtypeMap[j],
+                  ...newSubSource[j],
+                  name: newSubSource[j].type,
                 };
-                data = { ...data, subtypeMap: element };
+                subSource.push(element);
               }
+              data.subtypeMap = subSource;
             }
+
             newArr.push(Object.assign({}, data));
           }
-
           state.sourceTypesResponse = [...newArr];
         }
       })
       .addCase(getSourceTypesApi.rejected, (state, action) => {
         state.sourceTypesResponse = [];
-        state.sourceTypes = null;
+        state.subSourceTypesResponse = [];
       });
   },
 });
