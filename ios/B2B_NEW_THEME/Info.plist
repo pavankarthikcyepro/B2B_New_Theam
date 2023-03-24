@@ -57,7 +57,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>$(PRODUCT_NAME) required to gain permission to access location services on app in the background and should describe how your app uses location services.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Required to access the location to mark in map</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires permission to select photos. Granting access will allow you to add them to attachment fields.</string>
 	<key>UIAppFonts</key>
