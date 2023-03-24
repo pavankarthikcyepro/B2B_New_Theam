@@ -417,12 +417,106 @@ const AttendanceFilter = ({ route, navigation }) => {
         })
       );
 
-      navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
-      //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
+      // navigation.navigate(AttendanceTopTabNavigatorIdentifiers.team);
+        getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select Dealer Code");
     }
   };
+   const getDashboadTableDataFromServer = (
+     selectedIds,
+     from,
+     initalCall = false,
+     selectedEmployee
+   ) => {
+     const payload = {
+       startDate: fromDate,
+       endDate: toDate,
+       loggedInEmpId: userData.employeeId,
+     };
+     if (from == "LEVEL") {
+       payload["levelSelected"] = selectedIds;
+     } else {
+       payload["empSelected"] = selectedIds;
+     }
+
+     const payload1 = {
+       orgId: userData.orgId,
+       empId: userData.employeeId,
+       selectedIds: selectedIds,
+     };
+     Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+       .then(() => {
+         !initalCall && setIsFilterLoading(false);
+         let keys = [];
+         let allEmpIds = [];
+         for (let key in employeeDropDownDataLocal) {
+           keys.push(key);
+           let localData = employeeDropDownDataLocal[key];
+           localData.forEach((obj) => {
+             if (obj.selected) {
+               allEmpIds.push(obj.code);
+             }
+           });
+         }
+         let filterPayload = {
+           ...selector.filterIds,
+           startDate: payload.startDate,
+           endDate: payload.endDate,
+         };
+         if (from == "LEVEL") {
+           filterPayload["levelSelected"] = selectedIds;
+           if (!initalCall) {
+             filterPayload["empSelected"] = [];
+             filterPayload["allEmpSelected"] = [];
+             filterPayload["employeeName"] = [];
+           }
+         } else {
+           filterPayload["empSelected"] = selectedIds;
+           filterPayload["allEmpSelected"] = allEmpIds;
+           filterPayload["employeeName"] = selectedEmployee;
+         }
+         Promise.all([
+           // dispatch(getLeadSourceTableList(payload)), // h
+           // dispatch(getVehicleModelTableList(payload)), //h
+           // dispatch(getEventTableList(payload)), //h
+           dispatch(getLostDropChartData(payload)), //c in home
+           dispatch(updateFilterIds(filterPayload)),
+           // getFilterDropDownData()
+           // dispatch(updateFilterDropDownData(totalDataObj)), /// not for home
+           // // Table Data
+           // dispatch(getTaskTableList(payload2)), //h
+           // dispatch(getSalesData(payload2)), //h
+           // dispatch(getSalesComparisonData(payload2)), //h
+           // // Target Params Data
+           // dispatch(getTargetParametersData(payload2)), //h
+           // dispatch(getTargetParametersEmpDataInsights(payload2)), // h // Added to filter an Home Screen's INSIGHT
+         ])
+           .then(() => {
+             if (from == "EMPLOYEE") {
+               navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+                 screen: "Home",
+                 params: { from: "Filter" },
+               });
+             }
+             setIsEmployeeLoading(false);
+           })
+           .catch(() => {
+             setIsEmployeeLoading(false);
+             showToast("Something Went Wrong!");
+           });
+       })
+       .catch(() => {
+         setIsFilterLoading(false);
+         setIsEmployeeLoading(false);
+         showToast("Something Went Wrong!");
+       });
+
+     // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
+     // } else {
+     // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+     // }
+   };
 
   useEffect(() => {
     if (selector.employees_drop_down_data) {
@@ -501,14 +595,6 @@ const AttendanceFilter = ({ route, navigation }) => {
       ];
     let selectedID = x.filter((e) => e.selected == true);
     // return
-    navigation.navigate("MONTHLY_TARGET_SCREEN", {
-      params: {
-        from: "Filter",
-        selectedID: selectedID[0],
-        fromDate: fromDate,
-        toDate: toDate,
-      },
-    });
   };
 
   const updateSelectedDate = (date, key) => {
@@ -571,7 +657,7 @@ const AttendanceFilter = ({ route, navigation }) => {
         }}
       >
         <FlatList
-          data={employeeTitleNameList.length > 0 ? [1, 2] : [1, 2]}
+          data={employeeTitleNameList.length > 0 ? [1, 2,3] : [1, 2]}
           keyExtractor={(item, index) => "MAIN" + index.toString()}
           renderItem={({ item, index }) => {
             if (index === 0) {
