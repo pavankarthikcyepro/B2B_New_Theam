@@ -44,6 +44,7 @@ import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, up
 import { useIsFocused } from "@react-navigation/native";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { Colors } from "../../../styles";
+import { updateLiveLeadObjectDataCRM } from "../../../redux/liveLeadsReducer";
 
 
 const screenWidth = Dimensions.get("window").width;
@@ -452,6 +453,7 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
     dispatch(updateDealerFilterData({}))
     // dispatch(updateFilterSelectedData({}))
     dispatch(updateLiveLeadObjectData(obj))
+    dispatch(updateLiveLeadObjectDataCRM({}))
     clearBtnForEmployeeData();
     
   };
@@ -524,7 +526,7 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
       selectedempId: "",
       dealerCodes: selectedBranchName,
     }
-    dispatch(updateLiveLeadObjectData(tempPayload))
+    // dispatch(updateLiveLeadObjectData(tempPayload))
     dispatch(updateFilterLevelSelectedData(selectedIds))
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
@@ -665,7 +667,7 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
     setEmloyeeTitleNameList([])
   
     dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData(obj))
+    dispatch(updateLiveLeadObjectDataCRM({}))
     setEmployeeDropDownDataLocal(newDataObj);
   };
 
@@ -716,13 +718,14 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
           selectedempId: [tempArr[tempArr.length - 1]],
           dealerCodes: selectedBranchName,
         }
-        dispatch(updateLiveLeadObjectData(tempPayload))
+        dispatch(updateLiveLeadObjectDataCRM(tempPayload))
         dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
-          screen: "Home",
-          params: { from: "Filter" },
-        });
-       
+        // navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+        //   screen: "Home",
+        //   params: { from: "Filter" },
+        // });
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.liveLeads)
         
       }
 
@@ -806,14 +809,14 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
               return (
                 <View
                   style={{
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    paddingBottom: 5,
-                    borderColor: Colors.BORDER_COLOR,
-                    borderWidth: 1,
+                    // flexDirection: "row",
+                    // justifyContent: "space-evenly",
+                    // paddingBottom: 5,
+                    // borderColor: Colors.BORDER_COLOR,
+                    // borderWidth: 1,
                   }}
                 >
-                  <View style={{ width: "48%" }}>
+                  {/* <View style={{ width: "48%" }}>
                     <DateSelectItem
                       label={"From Date"}
                       value={fromDate}
@@ -827,7 +830,7 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
                       value={toDate}
                       onPress={() => showDatePickerMethod("TO_DATE")}
                     />
-                  </View>
+                  </View> */}
                 </View>
               );
             } else if (index === 1) {

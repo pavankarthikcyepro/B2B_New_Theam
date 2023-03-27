@@ -655,7 +655,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     //   // dispatch(getTargetParametersData(payload1))
     // }
      
-    if(!receptionistRole.includes(jsonObj.hrmsRole)){
+      if (!receptionistRole.includes(jsonObj.hrmsRole) && !crmRole.includes(jsonObj.hrmsRole)){
       Promise.allSettled([
         // commented manthan
         // dispatch(getTargetParametersData(payload1)),
@@ -762,14 +762,17 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       "selectedEmpId": jsonObj.empId
     }
     //todo 
-    Promise.allSettled([
-      //dispatch(getTargetParametersAllData(payload1)),
-      dispatch(getTotalTargetParametersData(payload4)), // grand total
-      dispatch(getNewTargetParametersAllData(payload4)), // TEAM
-      // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
-    ])
-      .then(() => {})
-      .catch((y) => {});
+      if (!crmRole.includes(jsonObj.hrmsRole)){
+        Promise.allSettled([
+          //dispatch(getTargetParametersAllData(payload1)),
+          dispatch(getTotalTargetParametersData(payload4)), // grand total
+          dispatch(getNewTargetParametersAllData(payload4)), // TEAM
+          // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
+        ])
+          .then(() => { })
+          .catch((y) => { });
+      }
+    
   }
   };
 

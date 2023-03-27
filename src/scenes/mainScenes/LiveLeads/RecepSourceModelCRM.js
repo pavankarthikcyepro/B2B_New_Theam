@@ -38,6 +38,13 @@ import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/
 const RecepSourceModelCRM = ({ route, navigation }) => {
   const paramsMetadata = [
     {
+      color: "#9E31BE",
+      paramName: "contact",
+      shortName: "Con",
+      initial: "contact",
+      toggleIndex: 0,
+    },
+    {
       color: "#FA03B9",
       paramName: "Enquiry",
       shortName: "Enq",
@@ -72,20 +79,14 @@ const RecepSourceModelCRM = ({ route, navigation }) => {
       initial: "R",
       toggleIndex: 0,
     },
-    {
-      color: "#9E31BE",
-      paramName: "Lost",
-      shortName: "Lost",
-      initial: "L",
-      toggleIndex: 0,
-    },
-    {
-      color: "#9E31BE",
-      paramName: "Contact",
-      shortName: "Con",
-      initial: "C",
-      toggleIndex: 0,
-    },
+    // {
+    //   color: "#9E31BE",
+    //   paramName: "Lost",
+    //   shortName: "Lost",
+    //   initial: "L",
+    //   toggleIndex: 0,
+    // },
+    
   ];
   const idFocused= useIsFocused();
   const dispatch = useDispatch();
@@ -99,7 +100,7 @@ const RecepSourceModelCRM = ({ route, navigation }) => {
     type,
     moduleType,
     role,
-    branchList, empList
+    branchList, empList, self
   } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -210,24 +211,33 @@ const RecepSourceModelCRM = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener("focus", () => {
       if (moduleType === "live-leads") {
-        console.log("manthan sssss ff ", role);
+     
         if (liveLeads_selector.saveLiveleadObject?.levelSelected !== "") {
+          
           if (role === "CRM") {
-            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "self":self}
             dispatch(getCRMModelLive(payloadCRM))
             dispatch(getCRMSourceLive(payloadCRM))
           } else {
-            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected }
-            dispatch(getReceptionistSourceLive(payloadReceptionist));
-            dispatch(getReceptionistModelLive(payloadReceptionist));
+            if (liveLeads_selector.saveLiveleadObjectCRM.levelSelected !== undefined){
+              let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObjectCRM?.levelSelected, "empList": empList ? empList : null }
+              dispatch(getReceptionistSourceLive(payloadReceptionist));
+              dispatch(getReceptionistModelLive(payloadReceptionist));
+            }else{
+              let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "empList": empList ? empList : null }
+              dispatch(getReceptionistSourceLive(payloadReceptionist));
+              dispatch(getReceptionistModelLive(payloadReceptionist));
+            }
+           
           }
         } else {
+         
           if (role === "CRM") {
-            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, }
             dispatch(getCRMModelLive(payloadCRM))
             dispatch(getCRMSourceLive(payloadCRM))
           } else {
-            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null }
             dispatch(getReceptionistSourceLive(payloadReceptionist));
             dispatch(getReceptionistModelLive(payloadReceptionist));
           }
@@ -239,7 +249,7 @@ const RecepSourceModelCRM = ({ route, navigation }) => {
     
   
     
-  }, [liveLeads_selector.saveLiveleadObject])
+  }, [liveLeads_selector.saveLiveleadObject, liveLeads_selector.saveLiveleadObjectCRM])
   
 
   useEffect(() => {
@@ -350,6 +360,8 @@ const RecepSourceModelCRM = ({ route, navigation }) => {
       isSourceIndex === 0
         ? selector.receptionistSource
         : selector.receptionistModel;
+
+       
     return (
       <>
         {

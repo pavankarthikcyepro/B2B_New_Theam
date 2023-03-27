@@ -274,7 +274,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
     );
     
     const renderItemV2 = (item, index) => {
-        console.log("manthan ");
+        
        
         return (<>
            

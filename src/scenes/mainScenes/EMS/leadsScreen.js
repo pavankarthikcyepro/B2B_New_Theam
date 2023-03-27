@@ -379,8 +379,10 @@ const LeadsScreen = ({ route, navigation }) => {
         "limit": 1000,
         "offset": 0
       }
+      setTimeout(() => {
+        dispatch(getLeadsListReceptionist(payloadReceptionist))
+      }, 2000);
       
-      dispatch(getLeadsListReceptionist(payloadReceptionist))
      
     }
     if (route?.params?.screenName === "TargetScreenCRM") {
@@ -400,8 +402,10 @@ const LeadsScreen = ({ route, navigation }) => {
           "limit": 1000,
           "offset": 0
         }
-
-        dispatch(getLeadsListCRM(payloadReceptionist))
+        setTimeout(() => {
+          dispatch(getLeadsListCRM(payloadReceptionist))
+        }, 2000);
+       
       }else{
         let payloadReceptionist = {
           "loginEmpId": route?.params?.parentId,
@@ -414,8 +418,10 @@ const LeadsScreen = ({ route, navigation }) => {
           "limit": 1000,
           "offset": 0
         }
-
-        dispatch(getLeadsListReceptionist(payloadReceptionist))
+        setTimeout(() => {
+          dispatch(getLeadsListReceptionist(payloadReceptionist))
+        }, 2000);
+        
       }
       
 
