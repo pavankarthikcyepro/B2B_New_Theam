@@ -267,6 +267,15 @@ const URL = {
       `vehicle-services/api/tenant/1/master-data/lead-source/all-by-hierarchy`
     );
   },
+  GET_SERVICE_TYPE: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/service-categories`;
+  },
+  GET_SUB_SERVICE_TYPE: (tenantId, catId) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/master-data/service-category/${catId}/service-types`
+    );
+  },
   GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },

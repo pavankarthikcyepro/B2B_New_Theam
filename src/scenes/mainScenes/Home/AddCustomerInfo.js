@@ -6,16 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DatePickerComponent, DropDownComponant, TextinputComp } from '../../../components';
 import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
-import { clearStateData, getCustomerTypesApi, getSourceTypesApi, setCommunicationAddress, setDatePicker, setDropDownData, setInsuranceInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
+import { clearStateData, getCustomerTypesApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, setCommunicationAddress, setDatePicker, setDropDownData, setInsuranceInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
 import { PincodeDetailsNew } from '../../../utils/helperFunctions';
 import { Dropdown } from 'react-native-element-dropdown';
+import { COMPLAINT_STATUS, MONTH } from '../../../jsonData/addCustomerScreenJsonData';
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.customerInfoReducer);
+
+  const [userData, setUserData] = useState("");
 
   const [openAccordion, setOpenAccordion] = useState(0);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -53,8 +56,10 @@ const AddCustomerInfo = ({ navigation, route }) => {
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData(jsonObj);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
       dispatch(getSourceTypesApi(jsonObj.branchId));
+      dispatch(getServiceTypesApi(jsonObj.branchId));
     }
   };
   
@@ -117,6 +122,18 @@ const AddCustomerInfo = ({ navigation, route }) => {
           break;
         }
         break;
+      case "MAKING_MONTH":
+        setDataForDropDown([...MONTH]);
+        break;
+      case "COMPLAINT_STATUS":
+        setDataForDropDown([...COMPLAINT_STATUS]);
+        break;
+      case "SERVICE_TYPE":
+        setDataForDropDown([...selector.serviceTypeResponse]);
+        break;
+      case "SUB_SERVICE_TYPE":
+        setDataForDropDown([...selector.subServiceTypeResponse]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -174,6 +191,13 @@ const AddCustomerInfo = ({ navigation, route }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           setShowDropDownModel(false);
+          if (dropDownKey == "SERVICE_TYPE") {
+            let payload = {
+              tenantId: userData?.branchId,
+              catId: item.id,
+            };
+            dispatch(getSubServiceTypesApi(payload));
+          }
           dispatch(
             setDropDownData({
               key: dropDownKey,
@@ -774,12 +798,6 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 onPress={() => showDatePickerModelMethod("SALE_DATE")}
               />
               <Text style={GlobalStyle.underline} />
-              <DateSelectItem
-                label={"Making Month"}
-                value={selector.makingMonth}
-                // onPress={() => showDatePickerModelMethod("MAKING_MONTH")}
-              />
-              <Text style={GlobalStyle.underline} />
               <TextinputComp
                 value={selector.sellingDealer}
                 label={"Selling Dealer"}
@@ -799,6 +817,26 @@ const AddCustomerInfo = ({ navigation, route }) => {
                       key: "SELLING_LOCATION",
                       text: text,
                     })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DropDownSelectionItem
+                label={"Making Month"}
+                value={selector.makingMonth}
+                onPress={() =>
+                  showDropDownModelMethod("MAKING_MONTH", "Select Making Month")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.makingYear}
+                maxLength={4}
+                keyboardType="number-pad"
+                label={"Making Year"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setVehicleInformation({ key: "MAKING_YEAR", text: text })
                   )
                 }
               />

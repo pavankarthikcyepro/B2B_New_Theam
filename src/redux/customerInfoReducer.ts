@@ -41,6 +41,33 @@ export const getSourceTypesApi = createAsyncThunk(
   }
 );
 
+export const getServiceTypesApi = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/getServiceTypesApi",
+  async (tenantId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_SERVICE_TYPE(tenantId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getSubServiceTypesApi = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/getSubServiceTypesApi",
+  async (payload, { rejectWithValue }) => {
+    const { tenantId, catId } = payload;
+    const response = await client.get(
+      URL.GET_SUB_SERVICE_TYPE(tenantId, catId)
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const initialState = {
   // Customer Info
   salutation: "",
@@ -91,7 +118,9 @@ const initialState = {
   // Service Information
   serviceDate: "",
   serviceType: "",
+  serviceTypeResponse: [],
   subServiceType: "",
+  subServiceTypeResponse: [],
   serviceAmount: "",
   serviceCenter: "",
   readingAtService: "",
@@ -183,12 +212,19 @@ const customerInfoReducer = createSlice({
         case "VEHICLE_COLOR":
           state.vehicleColor = value;
           break;
+        case "MAKING_MONTH":
+          state.makingMonth = value;
+          break;
         // Service Info
         case "SERVICE_TYPE":
           state.serviceType = value;
+          state.subServiceType = "";
           break;
         case "SUB_SERVICE_TYPE":
           state.subServiceType = value;
+          break;
+        case "COMPLAINT_STATUS":
+          state.complaintStatus = value;
           break;
       }
     },
@@ -416,6 +452,9 @@ const customerInfoReducer = createSlice({
         case "SELLING_LOCATION":
           state.sellingLocation = text;
           break;
+        case "MAKING_YEAR":
+          state.makingYear = text;
+          break;
       }
     },
     setServiceInfo: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -455,8 +494,7 @@ const customerInfoReducer = createSlice({
   },
   extraReducers: (builder) => {
     // Get Customer Types
-    builder
-      .addCase(getCustomerTypesApi.pending, (state, action) => {
+    builder.addCase(getCustomerTypesApi.pending, (state, action) => {
         state.customerTypesResponse = [];
         state.customerTypes = null;
       })
@@ -504,6 +542,50 @@ const customerInfoReducer = createSlice({
       .addCase(getSourceTypesApi.rejected, (state, action) => {
         state.sourceTypesResponse = [];
         state.subSourceTypesResponse = [];
+      });
+
+    // Get Service Types
+    builder
+      .addCase(getServiceTypesApi.pending, (state, action) => {
+        state.serviceTypeResponse = [];
+        state.subServiceTypeResponse = [];
+      })
+      .addCase(getServiceTypesApi.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload.body;
+          let newArr = [];
+          
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].categoryName };
+            newArr.push(Object.assign({}, data));
+          }
+          state.serviceTypeResponse = [...newArr];
+        }
+      })
+      .addCase(getServiceTypesApi.rejected, (state, action) => {
+        state.serviceTypeResponse = [];
+        state.subServiceTypeResponse = [];
+      });
+   
+      // Get Sub Service Types
+    builder
+      .addCase(getSubServiceTypesApi.pending, (state, action) => {
+        state.subServiceTypeResponse = [];
+      })
+      .addCase(getSubServiceTypesApi.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload.body;
+          let newArr = [];
+          
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].serviceName };
+            newArr.push(Object.assign({}, data));
+          }
+          state.subServiceTypeResponse = [...newArr];
+        }
+      })
+      .addCase(getSubServiceTypesApi.rejected, (state, action) => {
+        state.subServiceTypeResponse = [];
       });
   },
 });
