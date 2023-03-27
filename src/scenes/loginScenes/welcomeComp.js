@@ -139,8 +139,8 @@ const WelcomeScreen = ({ navigation }) => {
         }}
       >
         <Image
-          style={{ width: getWidth(80), height: 80 }}
-          resizeMode={"center"}
+          style={{ width: getWidth(80), height: 95 }}
+          resizeMode={"contain"}
           source={require("../../assets/images/logo.png")}
         />
       </View>

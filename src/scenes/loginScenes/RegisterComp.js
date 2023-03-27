@@ -29,6 +29,7 @@ import {
 import URL from "../../networking/endpoints";
 import { client } from "../../networking/client";
 import {
+  getWidth,
   isEmail,
   isValidate,
   PincodeDetailsNew,
@@ -281,8 +282,8 @@ const RegisterScreen = ({ navigation }) => {
             }}
           >
             <Image
-              style={{ width: 200, height: ScreenHeight * 0.4 }}
-              resizeMode={"center"}
+              style={{ width: getWidth(80), height: 70 }}
+              resizeMode={"contain"}
               source={require("../../assets/images/logo.png")}
             />
           </View>
