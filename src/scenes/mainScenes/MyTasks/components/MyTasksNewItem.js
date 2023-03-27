@@ -124,6 +124,8 @@ export const MyTaskNewItem = ({
   EmployeesRoles,
   userData,
   tdflage = "",
+  hvflage = "",
+  showTdHvHighLight = false,
   updatedOn,
   IsVip = false,
 }) => {
@@ -262,13 +264,55 @@ export const MyTaskNewItem = ({
                   alignItems: "center",
                 }}
               >
-                {tdflage == "CLOSED" ? (
-                  <Image
-                    source={require("./../../../../assets/images/test_drive_icon.png")}
-                    style={styles.testDriveIconImage}
-                    resizeMode="contain"
-                  />
+                {/* {showTdHvHighLight ? (
+                  <View style={styles.tdHvRow}>
+                    <View style={styles.tdHvContainer}>
+                      {tdflage == "CLOSED" ? (
+                        <IconButton
+                          icon={"check-all"}
+                          size={12}
+                          color={Colors.PINK}
+                          style={{ margin: 0 }}
+                        />
+                      ) : null}
+                      <Text style={styles.tdHvText}>TD</Text>
+                    </View>
+                    <View style={styles.tdHvDivider} />
+                    <View style={styles.tdHvContainer}>
+                      {hvflage == "CLOSED" ? (
+                        <IconButton
+                          icon={"check-all"}
+                          size={12}
+                          color={Colors.PINK}
+                          style={{ margin: 0 }}
+                        />
+                      ) : null}
+                      <Text style={styles.tdHvText}>HV</Text>
+                    </View>
+                  </View>
+                ) : null} */}
+
+                {showTdHvHighLight &&
+                (tdflage == "CLOSED" || hvflage == "CLOSED") ? (
+                  <View style={styles.tdHvRow}>
+                    {tdflage == "CLOSED" ? (
+                      <View style={styles.tdHvContainer}>
+                        <Text style={styles.tdHvText}>TD</Text>
+                      </View>
+                    ) : null}
+
+                    {tdflage == "CLOSED" && hvflage == "CLOSED" ? (
+                      <View style={styles.tdHvDivider} />
+                    ) : null}
+
+                    {hvflage == "CLOSED" ? (
+                      <View style={styles.tdHvContainer}>
+                        <Text style={styles.tdHvText}>HV</Text>
+                      </View>
+                    ) : null}
+                  </View>
                 ) : null}
+
                 <>
                   {leadStage == "ENQUIRY" &&
                     enqCat !== "" &&
@@ -511,6 +555,31 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 5,
     textTransform: "uppercase",
+  },
+  tdHvRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 5,
+  },
+  tdHvContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 24,
+    width: 24,
+    borderRadius: 24 / 2,
+    borderColor: "#18a835",
+    // borderColor: Colors.DARK_GREEN,
+    borderWidth: 2,
+  },
+  tdHvText: {
+    fontSize: 10,
+    color: Colors.GRAY,
+  },
+  tdHvDivider: {
+    height: 12,
+    width: 1,
+    backgroundColor: Colors.PINK,
+    marginHorizontal: 5,
   },
   testDriveIconImage: {
     height: 30,

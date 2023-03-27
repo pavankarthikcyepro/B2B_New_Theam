@@ -1301,6 +1301,8 @@ const LeadsScreen = ({ route, navigation }) => {
           <MyTaskNewItem
             IsVip={item.isVip === "Y" ? true : false}
             tdflage={item?.tdflage ? item.tdflage : ""}
+            hvflage={item?.hvflage ? item.hvflage : ""}
+            showTdHvHighLight={true}
             from={item.leadStage}
             name={
               getFirstLetterUpperCase(item.firstName) +
