@@ -348,12 +348,12 @@ const GeolocationMapScreen = ({ route }) => {
                 coordinate={marker}
                 tracksViewChanges={false}
                 // icon={require("../../../assets/images/cyepro-tick.svg")}
-                // style={{
-                //   height: 15,
-                //   width: 15,
-                //   // padding:5,
-                //   // flex:1
-                // }}
+                style={{
+                  height: 15,
+                  width: 15,
+                  // padding:5,
+                  // flex:1
+                }}
                 // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
                 // title={marker}

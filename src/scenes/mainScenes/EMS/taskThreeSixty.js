@@ -243,6 +243,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
           sections={dataForSectionList}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item, index, section }) => {
+            console.log(item.taskUpdatedTime);
             const date = moment(item.taskUpdatedTime).format("DD/MM/YY h:mm a").split(" ");
 
             let topBcgColor = Colors.LIGHT_GRAY;
@@ -389,7 +390,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                         height: 25,
                                         width: 15,
                                       }}
-                                      source={require("../../../assets/images/location-pin.png")}
+                                      source={require("../../../assets/images/local2.png")}
                                       tintColor={Colors.PINK}
                                     />
                                   </TouchableOpacity>
@@ -572,7 +573,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                       height: 25,
                                       width: 15,
                                     }}
-                                    source={require("../../../assets/images/location-pin.png")}
+                                    source={require("../../../assets/images/local2.png")}
                                     tintColor={Colors.PINK}
                                   />
                                 </TouchableOpacity>

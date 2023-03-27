@@ -94,17 +94,17 @@ export const RenderEmployeeTarget = (parameter) => {
             ? item?.tempTargetAchievements?.filter(
                 (x) => x.paramName === param
               )[0]
-            : item.targetAchievements.filter((x) => x.paramName === param)[0]
-          : item.targetAchievements.filter((x) => x.paramName === param)[0];
+            : item?.targetAchievements?.filter((x) => x.paramName === param)[0]
+          : item?.targetAchievements?.filter((x) => x.paramName === param)[0];
         const enquiryParameter = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
                 (item) => item.paramName === "Enquiry"
               )[0]
-            : item.targetAchievements.filter(
+            : item.targetAchievements?.filter(
                 (item) => item.paramName === "Enquiry"
               )[0]
-          : item.targetAchievements.filter(
+          : item.targetAchievements?.filter(
               (item) => item.paramName === "Enquiry"
             )[0];
         // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));

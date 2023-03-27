@@ -976,6 +976,7 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   const downloadInLocal = async (url) => {
+    let iOSUrl = url.replace("https", "http");
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
       ios: fs.dirs.DocumentDir,
@@ -1033,12 +1034,13 @@ const HomeScreen = ({ route, navigation }) => {
       };
       AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
         config(options)
-          .fetch("GET", url, {
+          .fetch("GET", iOSUrl, {
             Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: "Bearer " + token,
           })
           .then((res) => {
+            console.log("res", res);
             setLoading(false);
             setTimeout(() => {
               // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
@@ -1047,9 +1049,10 @@ const HomeScreen = ({ route, navigation }) => {
             }, 300);
           })
           .catch((errorMessage) => {
+            console.log(errorMessage);
             setLoading(false);
           });
-      });
+      }).catch((er)=>{console.log(er);});
     }
   };
 
