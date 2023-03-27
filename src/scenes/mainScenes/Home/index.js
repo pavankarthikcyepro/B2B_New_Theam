@@ -153,8 +153,8 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-      getCurrentLocation();
-      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
+      // getCurrentLocation();
+      // setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -364,13 +364,14 @@ const HomeScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-    getMenuListFromServer();
-    getCustomerType();
-    checkLoginUserAndEnableReportButton();
+
     // getLoginEmployeeDetailsFromAsyn();
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
+      getMenuListFromServer();
+      getCustomerType();
+      checkLoginUserAndEnableReportButton();
       getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
     });
 
@@ -1177,6 +1178,7 @@ const HomeScreen = ({ route, navigation }) => {
       />
     );
   };
+
   function navigateToDropLostCancel(params) {
     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
   }
@@ -1746,7 +1748,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   rankHeadingText: {
     fontSize: 10,
