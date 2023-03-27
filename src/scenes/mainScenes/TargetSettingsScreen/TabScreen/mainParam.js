@@ -296,7 +296,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   empName: json1?.data[0]?.empName || input.empName,
                 };
 
-                setFilterParameters(newArr);
+                setFilterParameters([newArr[0]]);
               }
             })
             .catch();
