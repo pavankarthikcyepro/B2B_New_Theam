@@ -426,7 +426,26 @@ const LeadsScreen = ({ route, navigation }) => {
       
 
     }
-   
+    
+    // work in progress crm redirections 
+    // if (route?.params?.screenName === "ParametersScreen") {
+      
+
+    //   let payload = {
+    //     "loginEmpId": 952,
+    //     "startDate": "2023-03-01",
+    //     "endDate": "2023-03-31",
+    //     "orgId": "18",
+    //     "branchList": [643, 644, 645, 646, 647],
+    //     "stageName": "Enquiry",
+    //     "selectedEmpId": [915],
+    //     "limit": 1000,
+    //     "offset": 0
+    //   }
+      
+
+
+    // }
 
   }, [route.params]);
 
