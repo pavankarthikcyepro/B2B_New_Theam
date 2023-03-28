@@ -40,7 +40,7 @@ import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 
-import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, updateFilterLevelSelectedData, updateLiveLeadObjectData, } from "../../../redux/homeReducer"
+import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, updateFilterLevelSelectedData, updateLiveLeadObjectData, } from "../../../redux/liveLeadsReducer"
 import { useIsFocused } from "@react-navigation/native";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { Colors } from "../../../styles";
@@ -71,7 +71,7 @@ const AcitivityLoader = () => {
     "Select Designation","Select Employee"
 ]
 const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
-  const selector = useSelector((state) => state.homeReducer);
+  const selector = useSelector((state) => state.liveLeadsReducer);
   const dispatch = useDispatch();
   // const targetSelector = useSelector((state) => state.liveLeadsReducer);
   const [totalDataObj, setTotalDataObj] = useState([]);

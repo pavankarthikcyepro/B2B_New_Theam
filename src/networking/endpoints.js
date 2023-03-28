@@ -489,6 +489,13 @@ const URL = {
   GET_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionist/allByDateNew";
   },
+  GET_LIVE_LEAD_LIST_RECEPTINOST: () => {
+    return sales_url + "/lead/receptionistLiveLeads/allByDateNew";
+  },
+
+  GET_LIVE_LEAD_LIST_RECEPTINOST_MANAGER: () => {
+    return sales_url + "/lead/receptionistManagerLiveLeads/allByDateNew";
+  },
   GET_LEAD_LIST_CRM: () => {
     return sales_url + "/lead/receptionistManager/allByDateNew";
   },

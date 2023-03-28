@@ -1161,7 +1161,7 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
       <LiveLeadsStack.Screen
         name={"CRM_LIVE_FILTERS"}
         component={CRMLiveleadsFilterscreen}
-        options={{ title: "CRM Filters" }}
+        options={{ title: "Filters" }}
       />
 
       <LiveLeadsStack.Screen

@@ -974,95 +974,120 @@ const ParametersScreen = ({ route }) => {
     return paramName;
   }
 
-  function navigateToEMS(params = "", screenName = "", selectedEmpId = [], isIgnore = false, parentId = "", istotalClick = false) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      if (selector.saveCRMfilterObj?.selectedempId) {
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = [], isIgnore = false, parentId = "", isCRMOwnDATA = false,isgetCRMTotalData= false) {
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+   
+    // receptionist filter applied 
+    if (selector.saveLiveleadObject?.levelSelected) {
+      setTimeout(() => {
+       
+        if (params === "Contact") {
+          navigation.navigate("PRE_ENQUIRY", {
+            screenName: "ParametersScreen",
             params: params,
-            moduleType: "",
+            moduleType: "live-leadsV2",
             employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-            ignoreSelectedId: isIgnore
+            selectedEmpId: selectedEmpId,
+            startDate: selector.saveLiveleadObject.startDate,
+            endDate: selector.saveLiveleadObject.endDate,
+            dealerCodes: selector.saveLiveleadObject.levelSelected,
+            ignoreSelectedId: isIgnore,
+            parentId: parentId,
           });
-        }, 1000);
-      }
-      else if (isIgnore) {
-        if (parentId) {
-          if (istotalClick) {
-            setTimeout(() => {
-              navigation.navigate("LEADS", {
-                screenName: "TargetScreenCRM",
-                params: params,
-                moduleType: "",
-                employeeDetail: "",
-                selectedEmpId: selectedEmpId,
-                startDate: "",
-                endDate: "",
-                dealerCodes: [],
-                ignoreSelectedId: isIgnore,
-                parentId: parentId,
-                istotalClick: true
-              });
-            }, 1000);
-          }
-          else {
-
-            setTimeout(() => {
-              navigation.navigate("LEADS", {
-                screenName: "TargetScreenCRM",
-                params: params,
-                moduleType: "",
-                employeeDetail: "",
-                selectedEmpId: selectedEmpId,
-                startDate: "",
-                endDate: "",
-                dealerCodes: [],
-                ignoreSelectedId: isIgnore,
-                parentId: parentId,
-                istotalClick: false
-              });
-            }, 1000);
-          }
-
         } else {
-          setTimeout(() => {
-            navigation.navigate("LEADS", {
-              screenName: "Home",
-              params: params,
-              moduleType: "",
-              employeeDetail: "",
-              selectedEmpId: selectedEmpId,
-              startDate: "",
-              endDate: "",
-              dealerCodes: [],
-              ignoreSelectedId: isIgnore
-            });
-          }, 1000);
+          navigation.navigate("LEADS", {
+            screenName: "ParametersScreen",
+            params: params,
+            moduleType: "live-leadsV2",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: selector.saveLiveleadObject.startDate,
+            endDate: selector.saveLiveleadObject.endDate,
+            dealerCodes: selector.saveLiveleadObject.levelSelected,
+            ignoreSelectedId: isIgnore,
+            parentId: parentId,
+          });
         }
 
 
-      }
-      else {
-        navigation.navigate("LEADS", {
-          screenName: "TARGETSCREEN1",
-          params: params,
-          moduleType: "",
-          employeeDetail: "",
-          selectedEmpId: selectedEmpId,
-          startDate: selector.receptionistFilterIds.startDate,
-          endDate: selector.receptionistFilterIds.endDate,
-          dealerCodes: selector.receptionistFilterIds.dealerCodes,
-          ignoreSelectedId: false
-        });
-      }
-
-    }, 1000);
+      }, 1000);
+    } else if (selector.saveLiveleadObjectCRM.selectedempId) {
+     
+      setTimeout(() => {
+        // crm filter applied case
+        if (params === "Contact") {
+          navigation.navigate("PRE_ENQUIRY", {
+            screenName: "ParametersScreen",
+            params: params,
+            moduleType: "live-leadsV2",
+            employeeDetail: "",
+            selectedEmpId: [],
+            startDate: selector.saveLiveleadObjectCRM.startDate,
+            endDate: selector.saveLiveleadObjectCRM.endDate,
+            dealerCodes: selector.saveLiveleadObjectCRM.levelSelected,
+            ignoreSelectedId: isIgnore,
+            parentId: selector.saveLiveleadObjectCRM.selectedempId[0],
+            isCRMOwnDATA: false
+          });
+        } else {
+          navigation.navigate("LEADS", {
+            screenName: "ParametersScreen",
+            params: params,
+            moduleType: "live-leadsV2",
+            employeeDetail: "",
+            selectedEmpId: [],
+            startDate: selector.saveLiveleadObjectCRM.startDate,
+            endDate: selector.saveLiveleadObjectCRM.endDate,
+            dealerCodes: selector.saveLiveleadObjectCRM.levelSelected,
+            ignoreSelectedId: isIgnore,
+            parentId: selector.saveLiveleadObjectCRM.selectedempId[0],
+            isCRMOwnDATA: false
+          });
+        }
+      }, 1000);
+     
+    } else {
+      
+      // tree structure redirections also here
+      setTimeout(() => {
+        // receptionist filter not applied 
+        if (params === "Contact") {
+          navigation.navigate("PRE_ENQUIRY", {
+            screenName: "ParametersScreen",
+            params: params,
+            moduleType: "live-leadsV2",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: "",
+            endDate: "",
+            dealerCodes: [],
+            parentId: parentId,
+            isCRMOwnDATA: isCRMOwnDATA,
+            isgetCRMTotalData : isgetCRMTotalData
+            // ignoreSelectedId: isIgnore
+          });
+        } 
+        else {
+          navigation.navigate("LEADS", {
+            screenName: "ParametersScreen",
+            params: params,
+            moduleType: "live-leadsV2",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: "",
+            endDate: "",
+            dealerCodes: [],
+            parentId: parentId,
+            isCRMOwnDATA: isCRMOwnDATA,
+            isgetCRMTotalData: isgetCRMTotalData
+            // ignoreSelectedId: isIgnore
+          });
+        }
+       
+      }, 1000);
+    }
+     
+    
   }
 
 
@@ -1122,6 +1147,92 @@ const ParametersScreen = ({ route }) => {
           item?.achievment && item?.achievment > 0
             ? navigateToEmsScreen(item)
             : null
+        }
+        style={[
+          styles.paramCard,
+          {
+            borderColor: color[index % color.length],
+          },
+        ]}
+      >
+        <View style={styles.insightParamsContainer}>
+          <Text style={styles.insightParamsLabel}>
+            {convertParamNameLabels(item?.paramName)}
+          </Text>
+          <Text
+            style={[
+              styles.achievementCountView,
+              {
+                textDecorationLine:
+                  item?.achievment && item?.achievment > 0
+                    ? "underline"
+                    : "none",
+              },
+            ]}
+          >
+            {item?.achievment && item?.achievment > 0 ? item?.achievment : 0}
+          </Text>
+          <View></View>
+        </View>
+      </Card>
+      // <View
+      //     style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8, marginHorizontal: 8, alignItems: 'center'}}>
+      //     <Text
+      //         style={{width: '40%'}}>{convertParamNameLabels(item?.paramName)}</Text>
+      //     <Text style={{ minWidth: 45,
+      //         height: 25,
+      //         borderColor: color[index % color.length],
+      //         borderWidth: 1,
+      //         borderRadius: 8,
+      //         justifyContent: "center",
+      //         alignItems: "center",
+      //         textAlign: 'center',
+      //         paddingTop: 4}} onPress={() => navigateToEmsScreen(item)}>{item?.achievment}</Text>
+      //     <View></View>
+      // </View>
+    );
+  };
+
+  const renderSelfInsightsViewRecepToCRM = (item, index) => {
+    return (
+      <Card
+        onPress={() =>{
+        
+          if (item?.achievment && item?.achievment > 0){
+
+            if(crmRole.includes(userData.hrmsRole)){
+              if (index === 0) {
+                navigateToEMS("Contact", "", [], false, userData.empId,true);
+
+              } else if (index === 1) {
+                navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+              } else if (index === 2) {
+                navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+              } else if (index === 3) {
+                navigateToEMS("Invoice", "", [], false, userData.empId, true);
+              }
+            }else{
+              if (index === 0) {
+                navigateToEMS("Contact", "", [], false, userData.empId, false);
+
+              } else if (index === 1) {
+                navigateToEMS("ENQUIRY", "", [], false, userData.empId, false);
+              } else if (index === 2) {
+                navigateToEMS("BOOKING", "", [], false, userData.empId, false);
+              } else if (index === 3) {
+                navigateToEMS("Invoice", "", [], false, userData.empId, false);
+              }
+            }
+
+
+            
+          }
+          
+          // item?.achievment && item?.achievment > 0
+          //   ? navigateToEMS("","","","","","",item)
+          //   : null
+        }
+          
         }
         style={[
           styles.paramCard,
@@ -1284,24 +1395,36 @@ const ParametersScreen = ({ route }) => {
                         isViewCREExpanded ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData.enquirysCount: 0 || 0,
                         isViewCREExpanded ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData.bookingsCount: 0 || 0,
                         isViewCREExpanded ? item.retailCount : creFirstLevelSelfData ? creFirstLevelSelfData.RetailCount : 0 || 0,
-                      ].map((e, indexss) => {
+                      ].map((e, index) => {
                         return (
                           <Pressable onPress={() => {
 
-                            // todo redirections logic filter UI 
-                            // if (e > 0) {
-                            //   if (indexss === 0) {
+                            
+                            if (e > 0) {
+                              if (isViewCREExpanded) {
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [], false, item.emp_id, false);
 
-                            //     navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                            //   } else if (indexss === 1) {
-                            //     navigateToEMS("BOOKING", "", [item.emp_id], true);
-                            //   } else if (indexss === 2) {
-                            //     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                            //   } else if (indexss === 3) {
-                            //     // todo navigate to lost 
-                            //     navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
-                            //   }
-                            // }
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false);
+                                }
+                              } else {
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [], false, item.emp_id, false, false);
+
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false, false);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false, false);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false, false);
+                                }
+                              }
+                            }
 
                           }}>
                             <View
@@ -1454,24 +1577,24 @@ const ParametersScreen = ({ route }) => {
                         item.enquiryCount || 0,
                         item.bookingCount || 0,
                         item.retailCount || 0,
-                      ].map((e, indexss) => {
+                      ].map((e, index) => {
                         return (
                           <Pressable onPress={() => {
 
-                            // todo redirections logic filter UI 
-                            // if (e > 0) {
-                            //   if (indexss === 0) {
+                           
+                            if (e > 0) {
+                              if (index === 0) {
+                                navigateToEMS("Contact", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
 
-                            //     navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                            //   } else if (indexss === 1) {
-                            //     navigateToEMS("BOOKING", "", [item.emp_id], true);
-                            //   } else if (indexss === 2) {
-                            //     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                            //   } else if (indexss === 3) {
-                            //     // todo navigate to lost 
-                            //     navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
-                            //   }
-                            // }
+                              } else if (index === 1) {
+                                navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
+                              } else if (index === 2) {
+                                navigateToEMS("BOOKING", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
+                              } else if (index === 3) {
+                                navigateToEMS("Invoice", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
+                              }
+
+                            }
 
                           }}>
                             <View
@@ -1647,22 +1770,35 @@ const ParametersScreen = ({ route }) => {
                         isViewExpanded ? item.bookingCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalBookingCount : 0|| 0,
                         isViewExpanded ? item.retailCount :crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalRetailCount : 0 || 0,
                       ].
-                      map((e, indexss) => {
+                        map((e, index) => {
                         return (
                           <Pressable onPress={() => {
 
-                            // todo redirections logic filter UI 
+                            // todo redirections 
                             if (e > 0) {
-                              if (indexss === 0) {
 
-                                navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                              } else if (indexss === 1) {
-                                navigateToEMS("BOOKING", "", [item.emp_id], true);
-                              } else if (indexss === 2) {
-                                navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                              } else if (indexss === 3) {
-                                // todo navigate to lost 
-                                navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
+                              if (isViewExpanded) {
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [], false, item.emp_id, false);
+
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false);
+                                }
+                              } else {
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [], false, item.emp_id, true,true);
+
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, true, true);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, true, true);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [], false, item.emp_id, true, true);
+                                }
                               }
                             }
 
@@ -1836,24 +1972,53 @@ const ParametersScreen = ({ route }) => {
                         isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].enquiryCount : item.enquiryCount   || 0,
                         isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].bookingCount : item.bookingCount || 0,
                         isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].retailCount  : item.retailCount || 0,
-                      ].map((e, indexss) => {
+                      ].map((e, index) => {
                         return (
                           <Pressable onPress={() => {
 
-                            // todo redirections logic filter UI 
-                            // if (e > 0) {
-                            //   if (indexss === 0) {
+                            
+                            if (e > 0) {
+                              if (isSecondLevelExpanded){
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [item.emp_id], false, item.emp_id, false);
 
-                            //     navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                            //   } else if (indexss === 1) {
-                            //     navigateToEMS("BOOKING", "", [item.emp_id], true);
-                            //   } else if (indexss === 2) {
-                            //     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                            //   } else if (indexss === 3) {
-                            //     // todo navigate to lost 
-                            //     navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
-                            //   }
-                            // }
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], false, item.emp_id, false);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], false, item.emp_id, false);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [item.emp_id], false, item.emp_id, false);
+                                }
+                              }else{
+                               
+                                if (item.roleName == "Field DSE"){
+                                  if (index === 0) {
+                                    navigateToEMS("Contact", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+
+                                  } else if (index === 1) {
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+                                  } else if (index === 2) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+                                  } else if (index === 3) {
+                                    navigateToEMS("Invoice", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+                                  }
+
+                                }else{
+                                  if (index === 0) {
+                                    navigateToEMS("Contact", "", [], false, item.emp_id, false);
+
+                                  } else if (index === 1) {
+                                    navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
+                                  } else if (index === 2) {
+                                    navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
+                                  } else if (index === 3) {
+                                    navigateToEMS("Invoice", "", [], false, item.emp_id, false);
+                                  }
+                                }
+                               
+                              }
+                             
+                            }
 
                           }}>
                             <View
@@ -2024,25 +2189,23 @@ const ParametersScreen = ({ route }) => {
                           item.enquiryCount || 0,
                           item.bookingCount || 0,
                           item.retailCount || 0,
-                        ].map((e, indexss) => {
+                        ].map((e, index) => {
                           return (
                             <Pressable onPress={() => {
 
-                              // todo redirections logic filter UI 
-                              // if (e > 0) {
-                              //   if (indexss === 0) {
+                              if (e > 0) {
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
 
-                              //     navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                              //   } else if (indexss === 1) {
-                              //     navigateToEMS("BOOKING", "", [item.emp_id], true);
-                              //   } else if (indexss === 2) {
-                              //     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                              //   } else if (indexss === 3) {
-                              //     // todo navigate to lost 
-                              //     navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
-                              //   }
-                              // }
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
+                                }
 
+                              }
                             }}>
                               <View
                                 style={{
@@ -2319,24 +2482,23 @@ const ParametersScreen = ({ route }) => {
                           selector.receptionist_self_data?.bookingsCount || 0,
                           selector.receptionist_self_data?.RetailCount || 0,
                         ].
-                        map((e, indexss) => {
+                          map((e, index) => {
                           return (
                             <Pressable onPress={() => {
 
                               // todo redirections logic filter UI 
-                              // if (e > 0) {
-                              //   if (indexss === 0) {
+                              if (e > 0) {
+                                if (index === 0) {
+                                  navigateToEMS("Contact", "", [], false, userData.empId, true);
 
-                              //     navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                              //   } else if (indexss === 1) {
-                              //     navigateToEMS("BOOKING", "", [item.emp_id], true);
-                              //   } else if (indexss === 2) {
-                              //     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                              //   } else if (indexss === 3) {
-                              //     // todo navigate to lost 
-                              //     navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
-                              //   }
-                              // }
+                                } else if (index === 1) {
+                                  navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                } else if (index === 2) {
+                                  navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                } else if (index === 3) {
+                                  navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                }
+                              }
 
                             }}>
                               <View
@@ -5556,7 +5718,7 @@ const ParametersScreen = ({ route }) => {
                         data={selfInsightsData}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item, index }) =>
-                          renderSelfInsightsView(item, index)
+                          renderSelfInsightsViewRecepToCRM(item, index)
                         }
                       />
                     )}
@@ -5642,7 +5804,7 @@ const ParametersScreen = ({ route }) => {
                         data={selfInsightsData}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item, index }) =>
-                          renderSelfInsightsView(item, index)
+                          renderSelfInsightsViewRecepToCRM(item, index)
                         }
                       />
                     )}

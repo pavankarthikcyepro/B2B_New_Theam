@@ -28,6 +28,8 @@ import {
   getEnquiryList,
   getLeadsListCRM,
   getLeadsListReceptionist,
+  getLiveleadsReceptinoist,
+  getLiveleadsReceptinoistManager,
   getMoreEnquiryList,
   updateTheCount,
 } from "../../../redux/enquiryReducer";
@@ -400,7 +402,8 @@ const LeadsScreen = ({ route, navigation }) => {
           "stageName": route?.params?.params,
           // "selectedEmpId": route?.params?.selectedEmpId,
           "limit": 1000,
-          "offset": 0
+          "offset": 0,
+          "self": route.params.self
         }
         setTimeout(() => {
           dispatch(getLeadsListCRM(payloadReceptionist))
@@ -428,24 +431,69 @@ const LeadsScreen = ({ route, navigation }) => {
     }
     
     // work in progress crm redirections 
-    // if (route?.params?.screenName === "ParametersScreen") {
+    if (route?.params?.screenName === "ParametersScreen") {
+      const liveLeadsStartDate =
+        route?.params?.moduleType === "live-leadsV2"
+          ? "2021-01-01"
+          : lastMonthFirstDate;
+      const liveLeadsEndDate =
+        route?.params?.moduleType === "live-leadsV2"
+          ? moment().format(dateFormat)
+          : currentDate;
       
-
-    //   let payload = {
-    //     "loginEmpId": 952,
-    //     "startDate": "2023-03-01",
-    //     "endDate": "2023-03-31",
-    //     "orgId": "18",
-    //     "branchList": [643, 644, 645, 646, 647],
-    //     "stageName": "Enquiry",
-    //     "selectedEmpId": [915],
-    //     "limit": 1000,
-    //     "offset": 0
-    //   }
-      
+      setFromDateState(liveLeadsStartDate);
+      setToDateState(liveLeadsEndDate);
 
 
-    // }
+      if (route.params.isCRMOwnDATA) {
+        if (route.params.isgetCRMTotalData) {
+          let payload = {
+            "loggedInEmpId": route?.params?.parentId,
+            "orgId": userData.orgId,
+            "stageName": route?.params?.params,
+            "limit": 1000,
+            "offset": 0,
+            "self": route.params.isgetCRMTotalData
+          }
+
+          setTimeout(() => {
+            dispatch(getLiveleadsReceptinoistManager(payload))
+          }, 2000);
+        } else {
+          let payload = {
+            "loggedInEmpId": route?.params?.parentId,
+            "orgId": userData.orgId,
+            "stageName": route?.params?.params,
+            "limit": 1000,
+            "offset": 0,
+            "self": route.params.isgetCRMTotalData
+          }
+
+          setTimeout(() => {
+            dispatch(getLiveleadsReceptinoistManager(payload))
+          }, 2000);
+        }
+
+      } else {
+
+      let payload = {
+        "loginEmpId": route?.params?.parentId,
+        // "startDate": liveLeadsStartDate,
+        // "endDate": liveLeadsEndDate,
+        "orgId": userData.orgId,
+        "branchList": route.params.dealerCodes,
+        "stageName": route?.params?.params,
+        "selectedEmpId": route?.params?.selectedEmpId,
+        "limit": 1000,
+        "offset": 0
+      }
+      setTimeout(() => {
+        dispatch(getLiveleadsReceptinoist(payload))
+      }, 2000);
+    }
+
+
+    }
 
   }, [route.params]);
 

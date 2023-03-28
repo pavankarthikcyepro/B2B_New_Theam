@@ -86,7 +86,7 @@ const RecepSourceModel = ({ route, navigation }) => {
     type,
     moduleType,
     role,
-    branchList, empList
+    branchList, empList, self
   } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -160,8 +160,17 @@ const RecepSourceModel = ({ route, navigation }) => {
           dispatch(getReceptionistSource(newPayload));
           dispatch(getReceptionistModel(newPayload));
         } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
-          dispatch(getReceptionistManagerSource(newPayload));
-          dispatch(getReceptionistManagerModel(newPayload));
+          let newPayload3 = {
+            orgId: orgId,
+            loggedInEmpId: loggedInEmpId,
+            "startDate": selector.receptionistFilterIds.startDate,
+            "endDate": selector.receptionistFilterIds.endDate,
+            "dealerCodes": selector.receptionistFilterIds.dealerCodes,
+            "empList": empList ? empList : null,
+            "self": self
+          };
+          dispatch(getReceptionistManagerSource(newPayload3));
+          dispatch(getReceptionistManagerModel(newPayload3));
         } else if (selector.saveCRMfilterObj?.selectedempId) {
           let newPayload2 = {
             orgId: orgId,

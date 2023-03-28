@@ -430,6 +430,22 @@ export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS/getManagerLi
     return json;
 })
 
+export const getCRMEmployeesDropDownData = createAsyncThunk(
+    "HOME/getCRMEmployeesDropDownData",
+    async (payload: any, { rejectWithValue }) => {
+        const response = await client.post(
+            URL.GET_CRM_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId),
+            payload.selectedIds
+        );
+        const json = await response.json();
+
+        if (!response.ok) {
+            return rejectWithValue(json);
+        }
+        return json;
+    }
+);
+
 
 const AVAILABLE_SCREENS = [
     {
@@ -495,7 +511,8 @@ export const liveLeadsSlice = createSlice({
         saveLiveleadObject:{},
         saveLiveleadObjectCRM: {},
         receptionist_self_data:[],
-        crm_response_data: []
+        crm_response_data: [],
+        crm_employees_drop_down_data: {},
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -579,7 +596,8 @@ export const liveLeadsSlice = createSlice({
             state.self_target_parameters_data =empData
             state.insights_target_parameters_data =empData
             state.receptionist_self_data = [],
-            state.crm_response_data = []
+            state.crm_response_data = [],
+                state.crm_employees_drop_down_data = {}
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -1084,6 +1102,19 @@ export const liveLeadsSlice = createSlice({
             state.isLoading = false;
             state.crm_response_data = [];
         })
+
+            // Get  CRM Employees Drop Down Data
+            .addCase(getCRMEmployeesDropDownData.pending, (state, action) => {
+                state.crm_employees_drop_down_data = {};
+            })
+            .addCase(getCRMEmployeesDropDownData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.crm_employees_drop_down_data = action.payload;
+                }
+            })
+            .addCase(getCRMEmployeesDropDownData.rejected, (state, action) => {
+                state.crm_employees_drop_down_data = {};
+            })
     }
 });
 
