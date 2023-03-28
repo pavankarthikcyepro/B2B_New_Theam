@@ -1002,22 +1002,46 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_REG_DATE":
           state.minDate = null;
-          state.maxDate = new Date();
+          state.maxDate = state.r_registration_validity_date
+            ? new Date(
+                moment(state.r_registration_validity_date, "DD/MM/YYYY").format(
+                  "MM/DD/YYYY"
+                )
+              )
+            : new Date();
           break;
         case "R_REG_VALIDITY_DATE":
-          state.minDate = null;
+          state.minDate = state.r_registration_date
+            ? new Date(
+                moment(state.r_registration_date, "DD/MM/YYYY").format(
+                  "MM/DD/YYYY"
+                )
+              )
+            : new Date();
           state.maxDate = null;
           break;
         case "R_INSURENCE_POLICIY_EXPIRY_DATE":
-          state.minDate = null;
+          state.minDate = new Date();
           state.maxDate = null;
           break;
         case "R_INSURENCE_FROM_DATE":
           state.minDate = null;
-          state.maxDate = null;
+          state.maxDate = state.r_insurence_to_date
+            ? new Date(
+                moment(state.r_insurence_to_date, "DD/MM/YYYY").format(
+                  "MM/DD/YYYY"
+                )
+              )
+            : new Date();
           break;
         case "R_INSURENCE_TO_DATE":
-          state.minDate = null;
+          state.minDate = state.r_insurence_from_date
+            ? new Date(
+                moment(state.r_insurence_from_date, "DD/MM/YYYY").format(
+                  "MM/DD/YYYY"
+                )
+              )
+            : new Date();
           state.maxDate = null;
           break;
         default:
