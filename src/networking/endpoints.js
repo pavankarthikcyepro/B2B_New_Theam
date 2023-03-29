@@ -421,8 +421,10 @@ const URL = {
   LEAD_DROPPED: () => sales_url + "/lead",
 
   DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
-  DROP_ANALYSIS_LIST_REDIRECTIONS: () => sales_url + "/lead-drop/receptionist/leadlist",
-  DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () => sales_url + "/lead-drop/receptionistManager/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS: () =>
+    sales_url + "/lead-drop/receptionist/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () =>
+    sales_url + "/lead-drop/receptionistManager/leadlist",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
@@ -532,6 +534,9 @@ const URL = {
   },
   GET_ATTENDANCE_REPORT: () => {
     return sales_url + "/reports/attendance_report";
+  },
+  GET_ATTENDANCE_FILTER_REPORT: () => {
+    return sales_url + "/reports/attendanceFilter";
   },
   GET_DOWNLOAD_URL: (file) => {
     return sales_url + `/reports/downloadFile/${file}`;

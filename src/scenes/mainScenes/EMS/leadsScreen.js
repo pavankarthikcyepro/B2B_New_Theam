@@ -1374,6 +1374,8 @@ const LeadsScreen = ({ route, navigation }) => {
           <MyTaskNewItem
             IsVip={item.isVip === "Y" ? true : false}
             tdflage={item?.tdflage ? item.tdflage : ""}
+            hvflage={item?.hvflage ? item.hvflage : ""}
+            showTdHvHighLight={true}
             from={item.leadStage}
             name={
               getFirstLetterUpperCase(item.firstName) +
@@ -1468,16 +1470,17 @@ const LeadsScreen = ({ route, navigation }) => {
     if (data.length > 0) {
       if (isVip) {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName && i.isVip === "Y"
-          // &&
-          // userData.empName === i.salesConsultant
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            userData.empName !== i.salesConsultant
         );
         return newData.length;
       } else {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName
-          // &&
-          // userData.empName === i.salesConsultant
+          (i) => i.createdBy === userData.empName 
+          &&
+          userData.empName !== i.salesConsultant
         );
         return newData.length;
       }
@@ -1509,14 +1512,16 @@ const LeadsScreen = ({ route, navigation }) => {
       if (isVip) {
         let newData = data.filter(
           (i) => i.createdBy === userData.empName && i.isVip === "Y"
-          // &&
-          // userData.empName === i.salesConsultant
+          &&
+          userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName
+          (i) =>
+            i.createdBy === userData.empName &&
+            userData.empName !== i.salesConsultant
           // &&
           // userData.empName === i.salesConsultant
         );

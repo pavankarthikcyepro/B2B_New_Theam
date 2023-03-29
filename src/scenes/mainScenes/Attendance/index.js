@@ -765,9 +765,12 @@ const AttendanceScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId,
           fromDate: selectedFromDate,
           toDate: selectedToDate,
+          userId: jsonObj.empId,
+          locIds: jsonObj.empId,
+          dealerCodes: jsonObj.branchId,
         };
         const response = await client.post(
-          URL.GET_ATTENDANCE_REPORT(),
+          URL.GET_ATTENDANCE_FILTER_REPORT(),
           payload
         );
         const json = await response.json();
