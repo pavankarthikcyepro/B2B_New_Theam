@@ -61,7 +61,7 @@ const WelcomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    checkAppUpdate();
+    // checkAppUpdate();
   }, []);
 
   const selector = useSelector((state) => state.homeReducer);
