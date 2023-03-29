@@ -373,7 +373,7 @@ PODS:
     - React-Core
   - RNReanimated (1.13.4):
     - React-Core
-  - RNScreens (3.20.0):
+  - RNScreens (3.19.0):
     - React-Core
     - React-RCTImage
   - RNSnackbar (2.4.0):
@@ -608,7 +608,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-  FBReactNativeSpec: 31da7dbb2452fbc9427dc5ed832e8d4ebcf45b2f
+  FBReactNativeSpec: f5fe96af935c9bdf5dab61ad944e910c02c3a7fd
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -669,7 +669,7 @@ SPEC CHECKSUMS:
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
-  RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
+  RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
   RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
@@ -679,4 +679,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: abda061a32d6dc466d07876a719f798e64b99e17
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.11.3
