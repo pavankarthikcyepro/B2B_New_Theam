@@ -223,8 +223,23 @@ const customerInfoReducer = createSlice({
         case "SUB_SERVICE_TYPE":
           state.subServiceType = value;
           break;
+        case "SERVICE_FEEDBACK":
+          state.serviceFeedback = value;
+          break;
         case "COMPLAINT_STATUS":
           state.complaintStatus = value;
+          break;
+        case "OEM_PERIOD":
+          state.oemPeriod = value;
+          break;
+        case "EW_NAME":
+          state.ewName = value;
+          break;
+        case "AMC_NAME":
+          state.amcName = value;
+          break;
+        case "FASTAG":
+          state.fastag = value;
           break;
       }
     },
@@ -274,7 +289,7 @@ const customerInfoReducer = createSlice({
           break;
         case "ANNIVERSARY_DATE":
           state.minDate = null;
-          state.maxDate = new Date();
+          state.maxDate = null;
           break;
         case "SALE_DATE":
           state.minDate = null;
@@ -286,34 +301,72 @@ const customerInfoReducer = createSlice({
           break;
         case "INSURANCE_START_DATE":
           state.minDate = null;
-          state.maxDate = new Date();
+          state.maxDate = state.insuranceExpiryDate
+            ? new Date(
+                moment(state.insuranceExpiryDate, "DD/MM/YYYY").format(
+                  "MM/DD/YYYY"
+                )
+              )
+            : new Date();
           break;
         case "INSURANCE_EXPIRY_DATE":
-          state.minDate = new Date();
+          state.minDate = state.insuranceStartDate
+            ? new Date(
+                moment(state.insuranceStartDate, "DD/MM/YYYY").format(
+                  "MM/DD/YYYY"
+                )
+              )
+            : new Date();
           state.maxDate = null;
           break;
         case "OEM_START_DATE":
           state.minDate = null;
-          state.maxDate = new Date();
+          state.maxDate = state.oemExpiryDate
+            ? new Date(
+                moment(state.oemExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+              )
+            : new Date();
           break;
         case "OEM_EXPIRY_DATE":
-          state.minDate = new Date();
+           state.minDate = state.oemStartDate
+             ? new Date(
+                 moment(state.oemStartDate, "DD/MM/YYYY").format(
+                   "MM/DD/YYYY"
+                 )
+               )
+             : new Date();
           state.maxDate = null;
           break;
         case "EW_START_DATE":
           state.minDate = null;
-          state.maxDate = new Date();
+          state.maxDate = state.ewExpiryDate
+            ? new Date(
+                moment(state.ewExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+              )
+            : new Date();
           break;
         case "EW_EXPIRY_DATE":
-          state.minDate = new Date();
+          state.minDate = state.ewStartDate
+            ? new Date(
+                moment(state.ewStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+              )
+            : new Date();
           state.maxDate = null;
           break;
         case "MCP_START_DATE":
           state.minDate = null;
-          state.maxDate = new Date();
+          state.maxDate = state.mcpExpiryDate
+            ? new Date(
+                moment(state.mcpExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+              )
+            : new Date();
           break;
         case "MCP_EXPIRY_DATE":
-          state.minDate = new Date();
+          state.minDate = state.mcpStartDate
+            ? new Date(
+                moment(state.mcpStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+              )
+            : new Date();
           state.maxDate = null;
           break;
         default:

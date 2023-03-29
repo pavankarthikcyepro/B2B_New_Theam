@@ -12,7 +12,7 @@ import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
 import { PincodeDetailsNew } from '../../../utils/helperFunctions';
 import { Dropdown } from 'react-native-element-dropdown';
-import { COMPLAINT_STATUS, MONTH } from '../../../jsonData/addCustomerScreenJsonData';
+import { COMPLAINT_STATUS, EW_NAME, FASTAG, LAST_SERVICE_FEEDBACK, MONTH, OEM_PERIOD } from '../../../jsonData/addCustomerScreenJsonData';
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -125,15 +125,29 @@ const AddCustomerInfo = ({ navigation, route }) => {
       case "MAKING_MONTH":
         setDataForDropDown([...MONTH]);
         break;
-      case "COMPLAINT_STATUS":
-        setDataForDropDown([...COMPLAINT_STATUS]);
-        break;
       case "SERVICE_TYPE":
         setDataForDropDown([...selector.serviceTypeResponse]);
         break;
       case "SUB_SERVICE_TYPE":
         setDataForDropDown([...selector.subServiceTypeResponse]);
         break;
+      case "SERVICE_FEEDBACK":
+        setDataForDropDown([...LAST_SERVICE_FEEDBACK]);
+        break;
+      case "COMPLAINT_STATUS":
+        setDataForDropDown([...COMPLAINT_STATUS]);
+        break;
+      case "OEM_PERIOD":
+        setDataForDropDown([...OEM_PERIOD]);
+        break;
+      case "EW_NAME":
+        setDataForDropDown([...EW_NAME]);
+        break;
+      case "FASTAG":
+        setDataForDropDown([...FASTAG]);
+        break;
+      default:
+        setDataForDropDown([]);
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -1132,7 +1146,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 label={"EW Name"}
                 value={selector.ewName}
                 onPress={() =>
-                  showDropDownModelMethod("OEM_PERIOD", "Select EW Name")
+                  showDropDownModelMethod("EW_NAME", "Select EW Name")
                 }
               />
               <Text style={GlobalStyle.underline} />

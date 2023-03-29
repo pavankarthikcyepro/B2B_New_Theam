@@ -17,3 +17,28 @@ export const COMPLAINT_STATUS = [
   { id: "1", name: "Open" },
   { id: "2", name: "Close" },
 ];
+
+export const LAST_SERVICE_FEEDBACK = [
+  { id: "1", name: "Good" },
+  { id: "2", name: "Bad" },
+  { id: "3", name: "Average" },
+];
+
+export const OEM_PERIOD = [
+  { id: "1", name: "1-Year" },
+  { id: "2", name: "2-Years" },
+  { id: "3", name: "3-Years" },
+  { id: "4", name: "4-Years" },
+  { id: "5", name: "5-Years" },
+];
+
+export const EW_NAME = [
+  { id: "1", name: "Emp1" },
+  { id: "2", name: "Emp2" },
+  { id: "3", name: "Emp3" },
+];
+
+export const FASTAG = [
+  { id: "1", name: "Available" },
+  { id: "2", name: "Not Available" },
+];
