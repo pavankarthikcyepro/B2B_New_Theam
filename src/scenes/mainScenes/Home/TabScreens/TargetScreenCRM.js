@@ -135,9 +135,11 @@ const TargetScreenCRM = ({ route }) => {
   const [slideRight, setSlideRight] = useState();
 
   const [isViewCREExpanded, setIsViewCreExpanded] = useState(false);
+  const [creIndex, setcreIndex] = useState(false);
   const [creFirstLevelSelfData, setCreFirstLevelSelfData] = useState([]);
   const [creFirstLevelData, setCreFirstLevelData] = useState([]);
   const [creSecondLevelData, setCreSecondLevelData] = useState([]);
+  const [storeCREFirstLevelLocal, setStoreCREFirstLevelLocal] = useState([]);
 
   const [secondLevelCRMdata, setSecondLevelCRMdata] = useState([]);
   const [thirdLevelCRMdata, setThirdLevelCRMdata] = useState([]);
@@ -672,21 +674,37 @@ const TargetScreenCRM = ({ route }) => {
         setSecondLevelCRMdata([...otherUserData])
       }
 
-      let firstLevelDataLevel2 = selector.receptionistData.fullResponse.CRE.map(item => {
-        
-        setCreFirstLevelSelfData(item);
-        let firstLevel = item.salesconsultant.filter(item2 => item2.emp_id === item.emp_id)
-        let salesPeopleUnderCre = item.salesconsultant.filter(item2 => item2.emp_id !== item.emp_id)
+      let tempArr = [];
+      let tempArrSelf = selector.receptionistData.fullResponse.CRE?.map((item => item))
 
-        // let consultantForCRM = item.data.filter(item2 => item2.emp_id !== userData.empId)
-        if (salesPeopleUnderCre.length > 0) {
-          setCreSecondLevelData(salesPeopleUnderCre)
-        }
+      let firstLevelDataLevel2 = selector.receptionistData.fullResponse.CRE?.map((item, index) => {
+        let firstLevel = item.salesconsultant.filter(item2 => item2.emp_id === item.emp_id)
+
         if (firstLevel.length > 0) {
-          setCreFirstLevelData(firstLevel)
+          // tempArr.push(firstLevel);
+          Array.prototype.push.apply(tempArr, firstLevel);
+
         }
-        
       })
+      
+      setCreFirstLevelData(tempArr)
+      setCreFirstLevelSelfData(tempArrSelf);
+
+      // let firstLevelDataLevel2 = selector.receptionistData.fullResponse.CRE.map(item => {
+        
+      //   setCreFirstLevelSelfData(item);
+      //   let firstLevel = item.salesconsultant.filter(item2 => item2.emp_id === item.emp_id)
+      //   let salesPeopleUnderCre = item.salesconsultant.filter(item2 => item2.emp_id !== item.emp_id)
+
+      //   // let consultantForCRM = item.data.filter(item2 => item2.emp_id !== userData.empId)
+      //   if (salesPeopleUnderCre.length > 0) {
+      //     setCreSecondLevelData(salesPeopleUnderCre)
+      //   }
+      //   if (firstLevel.length > 0) {
+      //     setCreFirstLevelData(firstLevel)
+      //   }
+        
+      // })
      
       
     }
@@ -1089,7 +1107,7 @@ const TargetScreenCRM = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params = "", screenName = "", selectedEmpId = [],isIgnore = false,parentId = "",istotalClick= false) {
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = [],isIgnore = false,parentId = "",istotalClick= false,isSelf) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       if (selector.saveCRMfilterObj?.selectedempId) {
@@ -1124,7 +1142,7 @@ const TargetScreenCRM = ({ route }) => {
                 ignoreSelectedId: isIgnore,
                 parentId: parentId,
                 istotalClick: true,
-                self:true
+                self:isSelf
               });
             }, 1000);
           }
@@ -1192,7 +1210,7 @@ const TargetScreenCRM = ({ route }) => {
 
   }
 
-  function navigateToDropAnalysis(params,isfromTree= false,parentId = "") {
+  function navigateToDropAnalysis(params,isfromTree= false,parentId = "",isSelf=false) {
     
     if (selector.saveCRMfilterObj.selectedempId){
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
@@ -1204,12 +1222,12 @@ const TargetScreenCRM = ({ route }) => {
       if(isfromTree){
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: [], isFilterApplied: true, parentId: parentId },
+          params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf },
         });
       }else{
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: [], isFilterApplied: false },
+          params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: [], isFilterApplied: false, isSelf: isSelf },
         });
       }
     
@@ -1254,9 +1272,9 @@ const TargetScreenCRM = ({ route }) => {
                     item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true) :
                       item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
               }else{
-                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true, userData.empId,true) :
-                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true, userData.empId, true) :
-                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true, userData.empId, true) :
+                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true, userData.empId,true,false) :
+                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true, userData.empId, true, false) :
+                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true, userData.empId, true, false) :
                       item.id === 3 ? navigateToDropAnalysis(userData.empId) : null
               }
               
@@ -1479,26 +1497,43 @@ const TargetScreenCRM = ({ route }) => {
       </View>)
   }
 
+  const formatCRrSecondLeveleData = (item, index) => {
 
+    setcreIndex(index)
+
+    if (index === creIndex) {
+
+      setIsViewCreExpanded(!isViewCREExpanded)
+    } else {
+
+      setIsViewCreExpanded(true)
+    }
+
+    setStoreCREFirstLevelLocal(item);
+
+    let salesPeopleUnderCre = creFirstLevelSelfData[index].salesconsultant.filter(item2 => item2.emp_id !== item.emp_id)
+    setCreSecondLevelData(salesPeopleUnderCre)
+    
+
+
+  }
 
   const renderCREFirstLevel = () => {
     // todo manthan
-    console.log("manthan ddddd ssss ", creFirstLevelData);
     return (
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
         {creFirstLevelData.length > 0 &&
           creFirstLevelData.map((item, index) => {
-            console.log("manthan ddddd ssss 22",item);
-            
+           
               return (
                 <View key={`${item.emp_name} ${index}`}
                   style={{
-                    borderColor: isViewCREExpanded ? Colors.BLUE : "",
-                    borderWidth: isViewCREExpanded ? 1 : 0,
+                    borderColor: isViewCREExpanded && index === creIndex ? Colors.BLUE : "",
+                    borderWidth: isViewCREExpanded && index === creIndex ? 1 : 0,
                     borderRadius: 10,
-                    margin: isViewCREExpanded ? 10 : 0
+                    margin: isViewCREExpanded && index === creIndex ? 10 : 0
                   }}>
                   <View
                     style={{
@@ -1561,13 +1596,13 @@ const TargetScreenCRM = ({ route }) => {
                       <SourceModelView
                         onClick={() => {
 
-                          if (isViewExpanded) {
-
+                          if (isViewCREExpanded) {
+                           
                             // handleSourceModalNavigation()
-                            handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd")
+                            handleSourceModalNavigation(item, item?.emp_id, [item.emp_id])
                           } else {
 
-                            handleSourceModalNavigation(item, "", [], "CRM")
+                            handleSourceModalNavigation(item)
                           }
 
                           // navigation.navigate(
@@ -1620,9 +1655,7 @@ const TargetScreenCRM = ({ route }) => {
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
-
-                            setIsViewCreExpanded(!isViewCREExpanded)
-                            // formateFirstLevelData(item)
+                            formatCRrSecondLeveleData(item, index);
                           }}
                           roleName={item.roleName}
                           stopLocation={true}
@@ -1642,49 +1675,107 @@ const TargetScreenCRM = ({ route }) => {
                           isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
                           isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
                         ] */}
-
-                          {[
+                          
+                          {/* {[
                             isViewCREExpanded ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData.enquiryCount : 0 || 0,
                             isViewCREExpanded ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData.bookingCount : 0 || 0,
                             isViewCREExpanded ? item.retailCount : creFirstLevelSelfData ? creFirstLevelSelfData.retailCount : 0 || 0,
                             isViewCREExpanded ? item.droppedCount : creFirstLevelSelfData ? creFirstLevelSelfData.droppedCount : 0 || 0,
-                          ].map((e, indexss) => {
+                          ]. */}
+                          {[
+                            isViewCREExpanded && index === creIndex ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].enquiryCount : 0 || 0,
+                            isViewCREExpanded && index === creIndex ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].bookingCount : 0 || 0,
+                            isViewCREExpanded && index === creIndex ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].retailCount : 0 || 0,
+                            isViewCREExpanded && index === creIndex ? item.droppedCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].droppedCount : 0 || 0,
+                          ].
+                          map((e, indexss) => {
                             return (
                               <Pressable onPress={() => {
 
                                 // todo redirections logic  first level
+                                
                                 if (e > 0) {
+                                
 
+                                if (isViewCREExpanded) {
 
-
-
-                                  if (!isViewExpanded) {
                                     if (indexss === 0) {
 
-                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, userData.empId, true);
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, creFirstLevelSelfData[index].emp_id, false);
                                     } else if (indexss === 1) {
-                                      navigateToEMS("BOOKING", "", [item.emp_id], true, userData.empId, true);
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true, creFirstLevelSelfData[index].emp_id, false);
                                     } else if (indexss === 2) {
-                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId, true);
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, creFirstLevelSelfData[index].emp_id, false);
                                     } else if (indexss === 3) {
                                       // todo navigate to lost 
-                                      navigateToDropAnalysis(item.emp_id)
+                                      navigateToDropAnalysis(item.emp_id, true, item.emp_id)
                                     }
                                   }
                                   else {
-                                    if (indexss === 0) {
 
-                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                    // if (item.roleName.toLowerCase() === "field dse") {
+                                    //   if (e > 0) {
+                                    //     if (indexss === 0) {
+
+                                    //       navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                    //     } else if (indexss === 1) {
+                                    //       navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                    //     } else if (indexss === 2) {
+                                    //       navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                    //     } else if (indexss === 3) {
+                                    //       // todo navigate to lost
+                                    //       navigateToDropAnalysis(storeFirstLevelLocal.emp_id, true, item.emp_id)
+                                    //     }
+                                    //   }
+
+                                    //   return;
+                                    // }
+
+                                    if (indexss === 0) {
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true,);
+                                      // navigateToEMS("ENQUIRY", "", [item.emp_id] );
                                     } else if (indexss === 1) {
-                                      navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true);
                                     } else if (indexss === 2) {
-                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
                                     } else if (indexss === 3) {
                                       // todo navigate to lost 
                                       navigateToDropAnalysis(item.emp_id, true)
                                     }
+
+
                                   }
                                 }
+
+
+
+                                // if (!isViewCREExpanded) {
+                                //     if (indexss === 0) {
+
+                                //       navigateToEMS("ENQUIRY", "", [item.emp_id], true, userData.empId, true);
+                                //     } else if (indexss === 1) {
+                                //       navigateToEMS("BOOKING", "", [item.emp_id], true, userData.empId, true);
+                                //     } else if (indexss === 2) {
+                                //       navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId, true);
+                                //     } else if (indexss === 3) {
+                                //       // todo navigate to lost 
+                                //       navigateToDropAnalysis(item.emp_id)
+                                //     }
+                                //   }
+                                //   else {
+                                //     if (indexss === 0) {
+
+                                //       navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                //     } else if (indexss === 1) {
+                                //       navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                //     } else if (indexss === 2) {
+                                //       navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
+                                //     } else if (indexss === 3) {
+                                //       // todo navigate to lost 
+                                //       navigateToDropAnalysis(item.emp_id, true)
+                                //     }
+                                //   }
+                                // // }
 
                               }}>
                                 <View
@@ -1714,7 +1805,7 @@ const TargetScreenCRM = ({ route }) => {
                       {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                     </View>
                   </View>
-                  {isViewCREExpanded && renderCRETreeSaleConsultants()}
+                  {isViewCREExpanded && index === creIndex && renderCRETreeSaleConsultants()}
                 </View>
               );
             
@@ -1769,11 +1860,7 @@ const TargetScreenCRM = ({ route }) => {
                     <View style={{ flexDirection: "row" }}></View>
                     <SourceModelView
                       onClick={() => {
-
-                        handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id, [item.emp_id])
-
-
-
+                        handleSourceModalNavigation(item, storeCREFirstLevelLocal.emp_id, [item.emp_id])
                       }}
                       style={{
                         transform:
@@ -1810,7 +1897,7 @@ const TargetScreenCRM = ({ route }) => {
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
-                          titleClick={async (e) => { console.log("manthan---ff ", item); }}
+                          titleClick={async (e) => {  }}
                           roleName={item.roleName}
                           stopLocation={true}
                         />
@@ -1833,17 +1920,18 @@ const TargetScreenCRM = ({ route }) => {
                               <Pressable onPress={() => {
 
                                 // todo redirections logic  third level 
+                                
                                 if (e > 0) {
                                   if (indexss === 0) {
 
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeCREFirstLevelLocal.emp_id);
                                   } else if (indexss === 1) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                                    navigateToEMS("BOOKING", "", [item.emp_id], true, storeCREFirstLevelLocal.emp_id);
                                   } else if (indexss === 2) {
-                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeSecondLevelLocal.emp_id);
+                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeCREFirstLevelLocal.emp_id);
                                   } else if (indexss === 3) {
                                     // todo navigate to lost 
-                                    navigateToDropAnalysis(storeSecondLevelLocal.emp_id, true, item.emp_id)
+                                    navigateToDropAnalysis(storeCREFirstLevelLocal.emp_id, true, item.emp_id)
                                   }
                                 }
                               }}>
@@ -2073,14 +2161,13 @@ const TargetScreenCRM = ({ route }) => {
                               if (!isViewExpanded){
                                 if (indexss === 0) {
 
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true, userData.empId,true);
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true, userData.empId,true,true);
                                 } else if (indexss === 1) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], true, userData.empId,true);
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true, userData.empId, true, true);
                                 } else if (indexss === 2) {
-                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId,true);
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId, true, true);
                                 } else if (indexss === 3) {
-                                  // todo navigate to lost 
-                                  navigateToDropAnalysis(item.emp_id)
+                                  navigateToDropAnalysis(item.emp_id,false,"",true)
                                 }
                               }
                                 else{
@@ -2092,7 +2179,8 @@ const TargetScreenCRM = ({ route }) => {
                                 } else if (indexss === 2) {
                                   navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
                                 } else if (indexss === 3) {
-                                  // todo navigate to lost 
+                                  // todo navigate to lost
+                                 
                                   navigateToDropAnalysis(item.emp_id,true)
                                 }
                                 }
@@ -2444,7 +2532,7 @@ const TargetScreenCRM = ({ route }) => {
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
-                        titleClick={async (e) => { console.log("manthan---ff ", item); }}
+                        titleClick={async (e) => {  }}
                         roleName={item.roleName}
                         stopLocation={true}
                       />

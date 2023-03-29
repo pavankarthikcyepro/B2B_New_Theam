@@ -62,6 +62,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
 import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM, updateDealerFilterData as updateDealerFilterDataLive } from "../../redux/liveLeadsReducer";
+import { updateFilterSelectedData as updateFilterSelectedDataV3, updateFilterLevelSelectedData as updateFilterLevelSelectedDatav2, updateLiveLeadObjectData as updateLiveLeadObjectDatav2, updateLiveLeadObjectDataCRM as updateLiveLeadObjectDataCRMv2, updateDealerFilterData as updateDealerFilterDataLivev2 } from "../../redux/liveLeadsReducerReceptionist";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -90,6 +91,13 @@ const salesMenu = [
 const receptionTelCallerMenu = [
   ...commonMenu,
   "Live Leads",
+  "Digital Payment",
+  "Geolocation",
+];
+const CRMMenu = [
+  ...commonMenu,
+  "Live Leads",
+  "Live Leads Receptionist",
   "Digital Payment",
   "Geolocation",
 ];
@@ -270,14 +278,20 @@ const SideMenuScreen = ({ navigation }) => {
     let newFilterData = [];
     if (
       jsonObj.hrmsRole == "Reception" ||
-      jsonObj.hrmsRole == "CRM" ||
+      
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)
       );
-    } else if (
+    }
+    else if (jsonObj.hrmsRole == "CRM"){
+      newFilterData = selector.tableData.filter((item) =>
+        CRMMenu.includes(item.title)
+      );
+    }
+    else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
@@ -367,6 +381,20 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateDealerFilterData({}));
         dispatch(updateLiveLeadObjectDataCRM({}))
         dispatch(updateDealerFilterDataLive({}))
+        break;
+      case 170:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist, {
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        });
+        dispatch(updateFilterSelectedDataV3({}))
+        dispatch(updateFilterLevelSelectedDatav2([]));
+        dispatch(updateLiveLeadObjectDatav2({}));
+        // dispatch(updateDealerFilterData({}));
+        dispatch(updateLiveLeadObjectDataCRMv2({}))
+        dispatch(updateDealerFilterDataLivev2({}))
         break;
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);

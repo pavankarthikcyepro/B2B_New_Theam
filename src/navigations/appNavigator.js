@@ -127,6 +127,10 @@ import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilte
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 import CRMLiveleadsFilterscreen from "../scenes/mainScenes/LiveLeads/CRMLiveleadsFilterscreen";
 import RecepSourceModelCRM from "../scenes/mainScenes/LiveLeads/RecepSourceModelCRM";
+import LiveLeadsScreenReceptionist from "../scenes/mainScenes/LiveLeadsReceptionist";
+import LiveLeadsfilterScreen_receptionist from "../scenes/mainScenes/LiveLeadsReceptionist/LiveLeadsfilterScreen_receptionist";
+import CRMLiveleadsFilterscreen_recep from "../scenes/mainScenes/LiveLeadsReceptionist/CRMLiveleadsFilterscreen_recep";
+import RecepSourceModelCRM_Recep from "../scenes/mainScenes/LiveLeadsReceptionist/RecepSourceModelCRM_Recep";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -385,6 +389,7 @@ export const DrawerStackIdentifiers = {
   evtbrlReport: "EVTBRL_REPORT",
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
+  liveLeadsReceptionist: "LIVE_LEADS_RECEPTIONIST",
   dropLostCancel: "DROP_LOST_CANCEL",
   eventDashboard: "EVENT_DASHBOARD",
   attendance: "Attendance",
@@ -1175,6 +1180,55 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
   );
 };
 
+
+const LiveLeadsStackReceptionist = createStackNavigator();
+
+const LiveLeadsStackNavigatorReceptionist = ({ navigation }) => {
+  return (
+    <LiveLeadsStackReceptionist.Navigator
+      initialRouteName={"LIVE_LEADS_RECEPTIONIST"}
+      screenOptions={screeOptionStyle}
+    >
+      <LiveLeadsStackReceptionist.Screen
+        name={"LIVE_LEADS_RECEPTIONIST"}
+        component={LiveLeadsScreenReceptionist}
+        options={{
+          title: "Live Leads Receptionist",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+        initialParams={{
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        }}
+      />
+      <LiveLeadsStackReceptionist.Screen
+        name={"LIVE_LEADS_FILTERS_RECEP"}
+        component={LiveLeadsfilterScreen_receptionist}
+        options={{
+          title: "Live Leads Filters",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+
+      <LiveLeadsStackReceptionist.Screen
+        name={"CRM_LIVE_FILTERS_RECEP"}
+        component={CRMLiveleadsFilterscreen_recep}
+        options={{ title: "Filters" }}
+      />
+
+      <LiveLeadsStackReceptionist.Screen
+        name={"RECEP_SOURCE_MODEL_CRM_RECEP"}
+        component={RecepSourceModelCRM_Recep}
+        options={{
+          title: "Source/Model",
+        }}
+      />
+    </LiveLeadsStackReceptionist.Navigator>
+  );
+};
+
 const ComplainTrackgerStack = createStackNavigator();
 
 const ComplainTrackgerStackNavigator = ({ navigation }) => {
@@ -1383,6 +1437,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.liveLeads}
         component={LiveLeadsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.liveLeadsReceptionist}
+        component={LiveLeadsStackNavigatorReceptionist}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.complaintTracker}

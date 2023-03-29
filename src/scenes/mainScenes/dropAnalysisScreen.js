@@ -219,6 +219,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     "offset": 0,
                     "filterValue": "",
                     "forDropped": false,
+                    "self":route.params.isSelf
                 }
                 dispatch(getDropAnalysisRedirectionsCRM(payload))
             }else{

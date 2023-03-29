@@ -34,6 +34,12 @@ const data = [
     pngIcon: require("../assets/images/Help_Desk-01.png"),
   },
   {
+    title: "Live Leads Receptionist",
+    icon: HOME_LINE_STR,
+    screen: 170,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
+  },
+  {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,

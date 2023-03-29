@@ -1110,7 +1110,8 @@ const HomeScreen = ({ route, navigation }) => {
             dealerCodes: [],
             ignoreSelectedId:false,
             parentId: selectedEmpId[0],
-            istotalClick: true
+            istotalClick: true,
+            self: false
           });
         }, 1000);
       }
