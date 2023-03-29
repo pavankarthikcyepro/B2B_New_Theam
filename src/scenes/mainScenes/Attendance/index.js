@@ -756,6 +756,7 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const downloadReport = async () => {
     try {
+      setLoading(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -773,11 +774,12 @@ const AttendanceScreen = ({ route, navigation }) => {
         );
         const json = await response.json();
         if (json.downloadUrl) {
-          
+          setLoading(false);
           downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
         }
       }
     } catch (error) {
+      setLoading(false);
       alert("Something went wrong");
     }
   };
