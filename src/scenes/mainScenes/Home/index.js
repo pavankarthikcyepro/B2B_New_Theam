@@ -56,6 +56,7 @@ import {
   getReceptionistData,
   updateIsModalVisible,
   getReceptionistManagerData,
+  updateLoader,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -173,10 +174,10 @@ const HomeScreen = ({ route, navigation }) => {
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
         },
-        (error) => {},
+        (error) => { },
         { enableHighAccuracy: true }
       );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -364,14 +365,22 @@ const HomeScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-
+    dispatch(updateLoader(true));
+    Promise.all([
+      getMenuListFromServer(),
+      getCustomerType(),
+      checkLoginUserAndEnableReportButton(),
+    ])
+      .then(() => {
+        dispatch(updateLoader(false));
+      })
+      .catch(() => {
+        dispatch(updateLoader(false));
+      });
     // getLoginEmployeeDetailsFromAsyn();
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
-      getMenuListFromServer();
-      getCustomerType();
-      checkLoginUserAndEnableReportButton();
       getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
     });
 
@@ -499,7 +508,7 @@ const HomeScreen = ({ route, navigation }) => {
             orgId: jsonObj.orgId,
           })
         ),
-      ]).then(() => {});
+      ]).then(() => { });
       if (
         jsonObj?.hrmsRole === "Admin" ||
         jsonObj?.hrmsRole === "Admin Prod" ||
@@ -554,8 +563,8 @@ const HomeScreen = ({ route, navigation }) => {
             : null;
         }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) => {})
-          .catch((y) => {});
+          .then((x) => { })
+          .catch((y) => { });
       }
 
       if (
@@ -642,10 +651,10 @@ const HomeScreen = ({ route, navigation }) => {
           })
         ),
           getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) => {})
-            .catch((y) => {});
+            .then((x) => { })
+            .catch((y) => { });
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) => {});
+        getTargetParametersDataFromServer(payload).catch((y) => { });
       }
     }
   };
@@ -684,10 +693,10 @@ const HomeScreen = ({ route, navigation }) => {
       // dispatch(getVehicleModelTableList(payload)),
       // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
-    ]).then(() => {});
+    ]).then(() => { });
 
     getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => {});
+    getTargetParametersDataFromServer(payload).catch((y) => { });
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -700,7 +709,7 @@ const HomeScreen = ({ route, navigation }) => {
       dispatch(getTaskTableList(payload)),
       dispatch(getSalesData(payload)),
       dispatch(getSalesComparisonData(payload)),
-    ]).then(() => {});
+    ]).then(() => { });
   };
 
   const getTargetParametersDataFromServer = async (payload) => {
@@ -739,8 +748,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpDataInsights(payload1)
       ),
     ])
-      .then(() => {})
-      .catch((y) => {});
+      .then(() => { })
+      .catch((y) => { });
   };
 
   const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -800,8 +809,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpData(payload1)
       ),
     ])
-      .then(() => {})
-      .catch((y) => {});
+      .then(() => { })
+      .catch((y) => { });
   };
 
   useEffect(() => {
@@ -1095,7 +1104,7 @@ const HomeScreen = ({ route, navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <>
               <Button
@@ -1626,8 +1635,8 @@ const HomeScreen = ({ route, navigation }) => {
             {(selector.target_parameters_data.length > 0 ||
               (isTeamPresent &&
                 selector.all_target_parameters_data.length > 0)) && (
-              <DashboardTopTabNavigatorNew />
-            )}
+                <DashboardTopTabNavigatorNew />
+              )}
           </View>
         </View>
       </ScrollView>
