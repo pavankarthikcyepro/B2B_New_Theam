@@ -524,8 +524,8 @@ const URL = {
   GET_ATTENDANCE_REPORT: () => {
     return sales_url + "/reports/attendance_report";
   },
-  GET_ATTENDANCE_FILTER_REPORT: () => {
-    return sales_url + "/reports/attendanceFilter";
+  GET_NEW_ATTENDANCE_REPORT: () => {
+    return sales_url + "/reports/attendanceFilterNew";
   },
   GET_DOWNLOAD_URL: (file) => {
     return sales_url + `/reports/downloadFile/${file}`;
