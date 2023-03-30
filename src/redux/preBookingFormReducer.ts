@@ -589,6 +589,7 @@ const prebookingFormSlice = createSlice({
     customer_preferred_date: "",
     occasion: "",
     tentative_delivery_date: "",
+    receiptDate: "",
     delivery_location: "",
     //Price Conformation
     vechicle_registration: false,
@@ -725,6 +726,7 @@ const prebookingFormSlice = createSlice({
       state.customer_preferred_date = "";
       state.occasion = "";
       state.tentative_delivery_date = "";
+      state.receiptDate = "";
       state.delivery_location = "";
       //Price Conformation
       state.vechicle_registration = false;
@@ -899,6 +901,10 @@ const prebookingFormSlice = createSlice({
           state.minDate = new Date();
           state.maxDate = null;
           break;
+        case "RECEIPT_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
         default:
           state.minDate = null;
           state.maxDate = null;
@@ -927,7 +933,9 @@ const prebookingFormSlice = createSlice({
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
-
+          break;
+        case "RECEIPT_DATE":
+          state.receiptDate = selectedDate;
           break;
         case "TRANSACTION_DATE":
           state.transaction_date = selectedDate;
@@ -1316,6 +1324,11 @@ const prebookingFormSlice = createSlice({
         tentativeDeliveryDate,
         "DD/MM/YYYY"
       );
+      const receiptDate = dmsLeadDto.receiptDate ? dmsLeadDto.receiptDate : "";
+      state.receiptDate = convertTimeStampToDateString(
+        receiptDate,
+        "DD/MM/YYYY"
+      );
 
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
@@ -1502,6 +1515,12 @@ const prebookingFormSlice = createSlice({
           } else if (item.documentType === "gstNumber") {
             if (item.documentNumber && item.documentNumber != "") {
               state.gstin_number = item.documentNumber;
+            }
+          } else if (item.documentType === "receipt") {
+            if (item.receiptDate) {
+              state.receiptDate = convertTimeStampToDateString(
+                item.receiptDate, "DD/MM/YYYY"
+              );
             }
           }
         });
