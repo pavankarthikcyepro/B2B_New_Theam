@@ -756,6 +756,7 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const downloadReport = async () => {
     try {
+      setLoading(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -766,19 +767,19 @@ const AttendanceScreen = ({ route, navigation }) => {
           fromDate: selectedFromDate,
           toDate: selectedToDate,
           userId: jsonObj.empId,
-          locIds: jsonObj.empId,
-          dealerCodes: jsonObj.branchId,
         };
         const response = await client.post(
-          URL.GET_ATTENDANCE_FILTER_REPORT(),
+          URL.GET_NEW_ATTENDANCE_REPORT(),
           payload
         );
         const json = await response.json();
         if (json.downloadUrl) {
+          setLoading(false);
           downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
         }
       }
     } catch (error) {
+      setLoading(false);
       alert("Something went wrong");
     }
   };
