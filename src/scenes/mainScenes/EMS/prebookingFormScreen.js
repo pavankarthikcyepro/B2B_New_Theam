@@ -1283,6 +1283,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           fileName: item.fileName,
           keyName: item.keyName,
           documentNumber: item.documentNumber,
+          receiptDate: item.receiptDate,
         };
         dataObj[item.documentType] = obj;
       });
@@ -2940,6 +2941,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("Please upload receipt doc");
           return;
         }
+        
+        if (uploadedImagesDataObj.hasOwnProperty("receipt") && !uploadedImagesDataObj.receipt.receiptDate) {
+          scrollToPos(12);
+          setOpenAccordian("12");
+          showToast("Please select receipt date");
+          return;
+        }
 
         const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
         let paymentDate = "";
@@ -3450,7 +3458,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       .then((response) => {
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = response;
+          dataObj[response.documentType] = dataObj["receipt"]
+            ? { ...dataObj["receipt"], ...response }
+            : response;
           setUploadedImagesDataObj({ ...dataObj });
           setIsReciptDocUpload(true);
         }
@@ -3869,6 +3879,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //   minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
         onChange={(event, selectedDate) => {
+          if (selector.datePickerKeyId == "RECEIPT_DATE") {
+            const date = convertDateStringToMilliseconds(selectedDate);
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj["receipt"] = { ...dataObj["receipt"], receiptDate: date };
+
+            console.log("dataObj -> ", dataObj);
+            setUploadedImagesDataObj({ ...dataObj });
+          }
+
           if (Platform.OS === "android") {
             if (!selectedDate) {
               dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
@@ -6891,6 +6910,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <View>
+                    <DateSelectItem
+                      label={"Receipt Date*"}
+                      value={selector.receiptDate}
+                      onPress={() => dispatch(setDatePicker("RECEIPT_DATE"))}
+                    />
+                    <Text style={GlobalStyle.underline} />
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Receipt Doc*"}
