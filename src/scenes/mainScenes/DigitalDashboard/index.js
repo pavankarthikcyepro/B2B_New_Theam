@@ -56,6 +56,7 @@ import {
   getReceptionistData,
   updateIsModalVisible,
   getReceptionistManagerData,
+  get_xrole_SalesManagerDigitalTeam,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -270,31 +271,32 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     //   dispatch(getReceptionistData(payload));
     // } else
     if (true) {
-      let payload = {
-        orgId: userData.orgId,
-        // loggedInEmpId: userData.empId,
-        branchList: userData.branchs.map((a) => a.branchId),
-      };
-      dispatch(getReceptionistManagerData(payload));
+      // let payload = {
+      //   orgId: userData.orgId,
+      //   loggedInEmpId: userData.empId,
+      //   "dashboardType": "digital"
+      // };
+      // dispatch(get_xrole_SalesManagerDigitalTeam(payload))
+      // dispatch(getReceptionistManagerData(payload));
     }
   }, [userData]);
 
   const setTargetData = async () => {
-    let obj = {
-      empData: (await AsyncStore.getData("TARGET_EMP"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_EMP"))
-        : empData,
-      allEmpData: (await AsyncStore.getData("TARGET_EMP_ALL"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_EMP_ALL"))
-        : allData.employeeTargetAchievements,
-      allTargetData: (await AsyncStore.getData("TARGET_ALL"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_ALL"))
-        : allData.overallTargetAchivements,
-      targetData: (await AsyncStore.getData("TARGET_DATA"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_DATA"))
-        : targetData,
-    };
-    dispatch(updateTargetData(obj));
+    // let obj = {
+    //   empData: (await AsyncStore.getData("TARGET_EMP"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_EMP"))
+    //     : empData,
+    //   allEmpData: (await AsyncStore.getData("TARGET_EMP_ALL"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_EMP_ALL"))
+    //     : allData.employeeTargetAchievements,
+    //   allTargetData: (await AsyncStore.getData("TARGET_ALL"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_ALL"))
+    //     : allData.overallTargetAchivements,
+    //   targetData: (await AsyncStore.getData("TARGET_DATA"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_DATA"))
+    //     : targetData,
+    // };
+    // dispatch(updateTargetData(obj));
   };
 
   useEffect(() => {
@@ -366,7 +368,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
     getMenuListFromServer();
-    getCustomerType();
+    // getCustomerType();
     checkLoginUserAndEnableReportButton();
     // getLoginEmployeeDetailsFromAsyn();
     // }
@@ -392,18 +394,24 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
-      navigation.navigate(
-        AppNavigator.HomeStackIdentifiers.receptionistFilter,
+    navigation.navigate(
+        "DIGITAL_DASHBOARD_FILTER",
         {
           isFromLogin: false,
         }
       );
-    } else {
-      navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
-        isFromLogin: false,
-      });
-    }
+    // if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRM") {
+    //   navigation.navigate(
+    //     AppNavigator.HomeStackIdentifiers.receptionistFilter,
+    //     {
+    //       isFromLogin: false,
+    //     }
+    //   );
+    // } else {
+    //   navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
+    //     isFromLogin: false,
+    //   });
+    // }
   };
   const getMenuListFromServer = async () => {
     let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
@@ -462,8 +470,14 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         .subtract(0, "months")
         .endOf("month")
         .format(dateFormat);
-
+    let payloadXrole = {
+        orgId: jsonObj.orgId,
+        loggedInEmpId: jsonObj.empId,
+        "dashboardType": "digital"
+      };
+     
       Promise.all([
+        dispatch(get_xrole_SalesManagerDigitalTeam(payloadXrole)),
         dispatch(getOrganaizationHirarchyList(payload)),
         dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
         dispatch(
@@ -473,33 +487,33 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             parentId: 0,
           })
         ),
-        dispatch(
-          getDealerRanking({
-            payload: {
-              endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
-              startDate: monthFirstDate,
-              levelSelected: null,
-              pageNo: 0,
-              size: 0,
-            },
-            orgId: jsonObj.orgId,
-            branchId: jsonObj.branchId,
-          })
-        ),
-        dispatch(
-          getGroupDealerRanking({
-            payload: {
-              endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
-              startDate: monthFirstDate,
-              levelSelected: null,
-              pageNo: 0,
-              size: 0,
-            },
-            orgId: jsonObj.orgId,
-          })
-        ),
+        // dispatch(
+        //   getDealerRanking({
+        //     payload: {
+        //       endDate: monthLastDate,
+        //       loggedInEmpId: jsonObj.empId,
+        //       startDate: monthFirstDate,
+        //       levelSelected: null,
+        //       pageNo: 0,
+        //       size: 0,
+        //     },
+        //     orgId: jsonObj.orgId,
+        //     branchId: jsonObj.branchId,
+        //   })
+        // ),
+        // dispatch(
+        //   getGroupDealerRanking({
+        //     payload: {
+        //       endDate: monthLastDate,
+        //       loggedInEmpId: jsonObj.empId,
+        //       startDate: monthFirstDate,
+        //       levelSelected: null,
+        //       pageNo: 0,
+        //       size: 0,
+        //     },
+        //     orgId: jsonObj.orgId,
+        //   })
+        // ),
       ]).then(() => {});
       if (
         jsonObj?.hrmsRole === "Admin" ||
@@ -697,11 +711,12 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       pageNo: 0,
       size: 5,
     };
-    Promise.all([
-      dispatch(getTaskTableList(payload)),
-      dispatch(getSalesData(payload)),
-      dispatch(getSalesComparisonData(payload)),
-    ]).then(() => {});
+    // commented not used
+    // Promise.all([
+    //   dispatch(getTaskTableList(payload)),
+    //   dispatch(getSalesData(payload)),
+    //   dispatch(getSalesComparisonData(payload)),
+    // ]).then(() => {});
   };
 
   const getTargetParametersDataFromServer = async (payload) => {
@@ -903,8 +918,8 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         menuClicked={() => navigation.openDrawer()}
         branchClicked={() => moveToSelectBranch()}
         filterClicked={() => moveToFilter()}
-        notification={true}
-        filter={false}
+        notification={false}
+        filter={true}
         navigation={navigation}
       />
       <ScrollView
@@ -926,7 +941,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                   {"Contact"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
@@ -945,7 +960,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                   {"Drop"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
@@ -961,7 +976,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                   {"Enquiry"}
                 </Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistData?.enquirysCount || 0}
                   </Text>
                 </View>
@@ -975,7 +990,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
@@ -988,7 +1003,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               >
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: "blue" }}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>

@@ -131,6 +131,8 @@ import LiveLeadsScreenReceptionist from "../scenes/mainScenes/LiveLeadsReception
 import LiveLeadsfilterScreen_receptionist from "../scenes/mainScenes/LiveLeadsReceptionist/LiveLeadsfilterScreen_receptionist";
 import CRMLiveleadsFilterscreen_recep from "../scenes/mainScenes/LiveLeadsReceptionist/CRMLiveleadsFilterscreen_recep";
 import RecepSourceModelCRM_Recep from "../scenes/mainScenes/LiveLeadsReceptionist/RecepSourceModelCRM_Recep";
+import DigitalDashBoardTargetScreen from "../scenes/mainScenes/DigitalDashboard/targetScreen";
+import DigitalDashboardFilter from "../scenes/mainScenes/DigitalDashboard/DigitalDashboardFilter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -1055,6 +1057,34 @@ const DigitalPaymentStackNavigator = ({ navigation }) => {
   );
 };
 
+
+const DigitalDashboardStack = createStackNavigator();
+
+const DigitalDashboardStackNavigator = ({ navigation }) => {
+  return (
+    <DigitalDashboardStack.Navigator screenOptions={screeOptionStyle}>
+      <DigitalDashboardStack.Screen
+        name={DrawerStackIdentifiers.digitalDashboard}
+        component={DigitalDashBoardScreen}
+        options={{
+          headerShown:false
+          // title: "QR Code",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <DigitalDashboardStack.Screen
+        name={"DIGITAL_DASHBOARD_FILTER"}
+        component={DigitalDashboardFilter}
+        options={{
+          // headerShown: false
+          title: "Filter",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </DigitalDashboardStack.Navigator>
+  );
+};
+
 const MonthlyTargetStack = createStackNavigator();
 
 const MonthlyTargetStackNavigator = ({ navigation }) => {
@@ -1524,7 +1554,7 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.digitalDashboard}
-        component={DigitalDashBoardScreen}
+        component={DigitalDashboardStackNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.reportDownload}

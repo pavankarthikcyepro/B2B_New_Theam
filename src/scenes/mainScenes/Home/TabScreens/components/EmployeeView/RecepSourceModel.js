@@ -121,6 +121,9 @@ const RecepSourceModel = ({ route, navigation }) => {
               if (moduleType === "live-leads") {
                 navigation.navigate(
                   AppNavigator.DrawerStackIdentifiers.liveLeads)
+              } else if (moduleType === "DigitalDashboard"){
+                navigation.navigate(
+                  AppNavigator.DrawerStackIdentifiers.digitalDashboard)
               }
               else {
                 navigation.goBack();

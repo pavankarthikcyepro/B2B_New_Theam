@@ -738,6 +738,21 @@ export const getCRM_ReceptionistManagerData = createAsyncThunk(
   }
 );
 
+export const get_xrole_SalesManagerDigitalTeam = createAsyncThunk(
+  "HOME/get_xrole_SalesManagerDigitalTeam",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistSource = createAsyncThunk(
   "HOME/getReceptionistSource",
   async (payload, { rejectWithValue }) => {
@@ -1625,6 +1640,24 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
+
+
+      .addCase(get_xrole_SalesManagerDigitalTeam.pending, (state) => { })
+      .addCase(get_xrole_SalesManagerDigitalTeam.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistData = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(get_xrole_SalesManagerDigitalTeam.rejected, (state, action) => { })
 
 
       .addCase(getReceptionistSource.pending, (state) => {})
