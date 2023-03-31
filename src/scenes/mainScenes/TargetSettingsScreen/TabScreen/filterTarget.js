@@ -43,6 +43,7 @@ import {
   saveFilterPayload,
   updateDealerFilterData,
   updateFilterSelectedData,
+  updateIsTeam,
 } from "../../../../redux/targetSettingsReducer";
 import { useIsFocused } from "@react-navigation/native";
 
@@ -586,6 +587,7 @@ const FilterTargetScreen = ({ route, navigation }) => {
             toDate: toDate,
           },
         });
+        dispatch(updateIsTeam(true));
       }
 
     // let selectedID = x[x-1];
