@@ -75,14 +75,20 @@ export const RenderSelfInsights = (args) => {
                 param === "Booking" ||
                 param === "INVOICE"
               ) {
-                navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-                setTimeout(() => {
-                  navigation.navigate("LEADS", {
-                    param: param === "INVOICE" ? "Retail" : param,
-                    moduleType: "home",
-                    employeeDetail: "",
-                  });
-                }, 1000);
+                // navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+                //   screen: "EMS",
+                //   params: {
+                //     screen: "LEADS",
+                //   },
+                // });
+                // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+                // setTimeout(() => {
+                //   navigation.navigate("LEADS", {
+                //     param: param === "INVOICE" ? "Retail" : param,
+                //     moduleType: "home",
+                //     employeeDetail: "",
+                //   });
+                // }, 10);
               } else if (param == "Home Visit" || param == "Test Drive") {
                 navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
                   screen: "CLOSED",
