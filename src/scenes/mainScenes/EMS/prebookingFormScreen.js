@@ -5774,6 +5774,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             : Colors.GRAY,
                         },
                       ]}
+                      maxLength={2}
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         setTaxPercent(text);

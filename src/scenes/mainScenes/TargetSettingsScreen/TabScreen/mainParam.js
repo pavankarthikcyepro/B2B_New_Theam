@@ -296,7 +296,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   empName: json1?.data[0]?.empName || input.empName,
                 };
 
-                setFilterParameters(newArr);
+                setFilterParameters([newArr[0]]);
               }
             })
             .catch();
@@ -706,7 +706,21 @@ const MainParamScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(async () => {
-    getInitialParameters();
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const payload2 = {
+        empId: jsonObj.empId,
+        pageNo: 1,
+        size: 500,
+        targetType: selector.targetType,
+        startDate: selector.startDate,
+        endDate: selector.endDate,
+      };
+      getInitialParameters();
+
+      dispatch(getAllTargetMapping(payload2));
+    }
   }, [selector.endDate]);
 
   const getInitialParameters = async () => {
@@ -937,16 +951,19 @@ const MainParamScreen = ({ route, navigation }) => {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
+      let filterData = selector.filterPayload.params;
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let payload = {
           branch: selectedBranch.value,
           // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
           employeeId: selectedUser?.employeeId || selectedUser?.empId,
-          endDate: selector.endDate,
+          endDate: filterData?.toDate ? filterData?.toDate : selector.endDate,
           // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
           retailTarget: retail,
-          startDate: selector.startDate,
+          startDate: filterData?.fromDate
+            ? filterData?.fromDate
+            : selector.startDate,
           // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
           targetType: "MONTHLY",
           // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
@@ -1975,7 +1992,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
   return (
     <>
-      {isCurrentMonth() && (
+      {true && (
         <>
           <View>
             {!editParameters && (
