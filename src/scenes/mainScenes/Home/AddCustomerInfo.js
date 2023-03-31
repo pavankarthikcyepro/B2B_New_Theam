@@ -168,6 +168,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
       case "FASTAG":
         setDataForDropDown([...FASTAG]);
         break;
+      case "AMC_NAME":
+        setDataForDropDown([...EW_TYPE]);
+        break;
       default:
         setDataForDropDown([]);
     }
