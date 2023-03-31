@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AppNavigator } from "../../../../../navigations";
-import {IconButton, ProgressBar} from "react-native-paper";
-import {Colors} from "../../../../../styles";
+import { IconButton, ProgressBar } from "react-native-paper";
+import { Colors } from "../../../../../styles";
 import moment from "moment/moment";
 import TextTicker from "react-native-text-ticker";
 import { achievementPercentage } from "../../../../../utils/helperFunctions";
@@ -28,7 +28,8 @@ export const RenderSelfInsights = (args) => {
     .format(dateFormat);
   const dateDiff =
     (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-    (1000 * 60 * 60 * 24);
+      (1000 * 60 * 60 * 24) +
+    1;
   const { data, type, navigation } = args;
 
   const enq = data && data.find((x) => x && x.paramName === "Enquiry");
