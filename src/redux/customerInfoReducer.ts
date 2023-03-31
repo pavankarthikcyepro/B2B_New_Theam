@@ -68,6 +68,30 @@ export const getSubServiceTypesApi = createAsyncThunk(
   }
 );
 
+export const getComplaintReasonsApi = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/getComplaintReasonsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_COMPLAINT_REASON(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getInsuranceCompanyApi = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/getInsuranceCompanyApi",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_INSURANCE_COMPANY(orgId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const initialState = {
   // Customer Info
   salutation: "",
@@ -115,6 +139,7 @@ const initialState = {
   makingYear: "",
   sellingDealer: "",
   sellingLocation: "",
+  fastag: "",
   // Service Information
   serviceDate: "",
   serviceType: "",
@@ -129,27 +154,33 @@ const initialState = {
   serviceDealerLocation: "",
   serviceFeedback: "",
   complaintReason: "",
+  complaintReasonResponse: [],
   complaintStatus: "",
   // Insurance Information
   insuranceCompany: "",
+  insuranceCompanyResponse: [],
   insuranceStartDate: "",
   insuranceExpiryDate: "",
   insuranceAmount: "",
   insurancePolicyNo: "",
-  // Warranty Information
+  // OEM Warranty Information
   oemPeriod: "",
+  oemWarrantyNo: "",
   oemStartDate: "",
-  oemExpiryDate: "",
-  oemAmountPaid: "",
-  ewName: "",
+  oemEndDate: "",
+  oemWarrantyAmount: "",
+  // EX-Warranty Information
+  ewType: "",
+  ewPolicyNo: "",
   ewStartDate: "",
   ewExpiryDate: "",
   ewAmountPaid: "",
-  mcpStartDate: "",
-  mcpExpiryDate: "",
-  mcpAmountPaid: "",
+  // AMC Information
   amcName: "",
-  fastag: "",
+  amcPolicyNo: "",
+  amcStartDate: "",
+  amcExpiryDate: "",
+  amcAmountPaid: "",
 };
 
 const customerInfoReducer = createSlice({
@@ -226,14 +257,21 @@ const customerInfoReducer = createSlice({
         case "SERVICE_FEEDBACK":
           state.serviceFeedback = value;
           break;
+        case "COMPLAINT_REASON":
+          state.complaintReason = value;
+          break;
         case "COMPLAINT_STATUS":
           state.complaintStatus = value;
+          break;
+        // Insurance Info
+        case "INSURANCE_COMPANY":
+          state.insuranceCompany = value;
           break;
         case "OEM_PERIOD":
           state.oemPeriod = value;
           break;
-        case "EW_NAME":
-          state.ewName = value;
+        case "EW_TYPE":
+          state.ewType = value;
           break;
         case "AMC_NAME":
           state.amcName = value;
@@ -321,20 +359,18 @@ const customerInfoReducer = createSlice({
           break;
         case "OEM_START_DATE":
           state.minDate = null;
-          state.maxDate = state.oemExpiryDate
+          state.maxDate = state.oemEndDate
             ? new Date(
-                moment(state.oemExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.oemEndDate, "DD/MM/YYYY").format("MM/DD/YYYY")
               )
             : new Date();
           break;
-        case "OEM_EXPIRY_DATE":
-           state.minDate = state.oemStartDate
-             ? new Date(
-                 moment(state.oemStartDate, "DD/MM/YYYY").format(
-                   "MM/DD/YYYY"
-                 )
-               )
-             : new Date();
+        case "OEM_END_DATE":
+          state.minDate = state.oemStartDate
+            ? new Date(
+                moment(state.oemStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+              )
+            : new Date();
           state.maxDate = null;
           break;
         case "EW_START_DATE":
@@ -353,18 +389,18 @@ const customerInfoReducer = createSlice({
             : new Date();
           state.maxDate = null;
           break;
-        case "MCP_START_DATE":
+        case "AMC_START_DATE":
           state.minDate = null;
-          state.maxDate = state.mcpExpiryDate
+          state.maxDate = state.amcExpiryDate
             ? new Date(
-                moment(state.mcpExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.amcExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
               )
             : new Date();
           break;
-        case "MCP_EXPIRY_DATE":
-          state.minDate = state.mcpStartDate
+        case "AMC_EXPIRY_DATE":
+          state.minDate = state.amcStartDate
             ? new Date(
-                moment(state.mcpStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.amcStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
               )
             : new Date();
           state.maxDate = null;
@@ -414,8 +450,8 @@ const customerInfoReducer = createSlice({
         case "OEM_START_DATE":
           state.oemStartDate = selectedDate;
           break;
-        case "OEM_EXPIRY_DATE":
-          state.oemExpiryDate = selectedDate;
+        case "OEM_END_DATE":
+          state.oemEndDate = selectedDate;
           break;
         case "EW_START_DATE":
           state.ewStartDate = selectedDate;
@@ -423,11 +459,11 @@ const customerInfoReducer = createSlice({
         case "EW_EXPIRY_DATE":
           state.ewExpiryDate = selectedDate;
           break;
-        case "MCP_START_DATE":
-          state.mcpStartDate = selectedDate;
+        case "AMC_START_DATE":
+          state.amcStartDate = selectedDate;
           break;
-        case "MCP_EXPIRY_DATE":
-          state.mcpExpiryDate = selectedDate;
+        case "AMC_EXPIRY_DATE":
+          state.amcExpiryDate = selectedDate;
           break;
         case "NONE":
           break;
@@ -544,10 +580,44 @@ const customerInfoReducer = createSlice({
           break;
       }
     },
+    setOemWarrantyInfo: (state, action: PayloadAction<PersonalIntroModel>) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "OEM_WARRANTY_NO":
+          state.oemWarrantyNo = text;
+          break;
+        case "OEM_WARRANTY_AMOUNT":
+          state.oemWarrantyAmount = text;
+          break;
+      }
+    },
+    setExWarrantyInfo: (state, action: PayloadAction<PersonalIntroModel>) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "EW_POLICY_NO":
+          state.ewPolicyNo = text;
+          break;
+        case "EW_AMOUNT_PAID":
+          state.ewAmountPaid = text;
+          break;
+      }
+    },
+    setAmcInfo: (state, action: PayloadAction<PersonalIntroModel>) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "AMC_POLICY_NO":
+          state.amcPolicyNo = text;
+          break;
+        case "AMC_AMOUNT_PAID":
+          state.amcAmountPaid = text;
+          break;
+      }
+    },
   },
   extraReducers: (builder) => {
     // Get Customer Types
-    builder.addCase(getCustomerTypesApi.pending, (state, action) => {
+    builder
+      .addCase(getCustomerTypesApi.pending, (state, action) => {
         state.customerTypesResponse = [];
         state.customerTypes = null;
       })
@@ -571,10 +641,13 @@ const customerInfoReducer = createSlice({
         if (action.payload) {
           let sData = action.payload.body;
           let newArr = [];
-          
+
           for (let i = 0; i < sData.length; i++) {
             let data = { ...sData[i], name: sData[i].type };
-            if (sData[i]?.subtypeMap && Object.keys(sData[i].subtypeMap).length > 0) {
+            if (
+              sData[i]?.subtypeMap &&
+              Object.keys(sData[i].subtypeMap).length > 0
+            ) {
               let subSource = [];
               let newSubSource = Object.values(sData[i].subtypeMap);
               for (let j = 0; j < newSubSource.length; j++) {
@@ -607,7 +680,7 @@ const customerInfoReducer = createSlice({
         if (action.payload) {
           let sData = action.payload.body;
           let newArr = [];
-          
+
           for (let i = 0; i < sData.length; i++) {
             let data = { ...sData[i], name: sData[i].categoryName };
             newArr.push(Object.assign({}, data));
@@ -619,8 +692,8 @@ const customerInfoReducer = createSlice({
         state.serviceTypeResponse = [];
         state.subServiceTypeResponse = [];
       });
-   
-      // Get Sub Service Types
+
+    // Get Sub Service Types
     builder
       .addCase(getSubServiceTypesApi.pending, (state, action) => {
         state.subServiceTypeResponse = [];
@@ -629,7 +702,7 @@ const customerInfoReducer = createSlice({
         if (action.payload) {
           let sData = action.payload.body;
           let newArr = [];
-          
+
           for (let i = 0; i < sData.length; i++) {
             let data = { ...sData[i], name: sData[i].serviceName };
             newArr.push(Object.assign({}, data));
@@ -639,6 +712,48 @@ const customerInfoReducer = createSlice({
       })
       .addCase(getSubServiceTypesApi.rejected, (state, action) => {
         state.subServiceTypeResponse = [];
+      });
+
+    // Get Complaint Reason
+    builder
+      .addCase(getComplaintReasonsApi.pending, (state, action) => {
+        state.complaintReasonResponse = [];
+      })
+      .addCase(getComplaintReasonsApi.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload;
+          let newArr = [];
+
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].menu };
+            newArr.push(Object.assign({}, data));
+          }
+          state.complaintReasonResponse = [...newArr];
+        }
+      })
+      .addCase(getComplaintReasonsApi.rejected, (state, action) => {
+        state.complaintReasonResponse = [];
+      });
+    
+    // Get Insurance Company
+    builder
+      .addCase(getInsuranceCompanyApi.pending, (state, action) => {
+        state.insuranceCompanyResponse = [];
+      })
+      .addCase(getInsuranceCompanyApi.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload;
+          let newArr = [];
+
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].companyName };
+            newArr.push(Object.assign({}, data));
+          }
+          state.insuranceCompanyResponse = [...newArr];
+        }
+      })
+      .addCase(getInsuranceCompanyApi.rejected, (state, action) => {
+        state.insuranceCompanyResponse = [];
       });
   },
 });
@@ -654,5 +769,8 @@ export const {
   setVehicleInformation,
   setServiceInfo,
   setInsuranceInfo,
+  setOemWarrantyInfo,
+  setExWarrantyInfo,
+  setAmcInfo,
 } = customerInfoReducer.actions;
 export default customerInfoReducer.reducer;

@@ -285,6 +285,9 @@ const URL = {
   GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
+  GET_COMPLAINT_REASON: () => baseUrl + `dfd/common/dropComplaintSubMenu`,
+  GET_INSURANCE_COMPANY: (orgId) =>
+    sales_url + `/master-data/insurencecompanies/${orgId}`,
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",

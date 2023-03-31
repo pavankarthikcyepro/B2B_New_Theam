@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { Keyboard, Text } from 'react-native';
 import { View, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
-import { IconButton, List } from 'react-native-paper';
+import { Button, IconButton, List } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { DatePickerComponent, DropDownComponant, TextinputComp } from '../../../components';
 import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
-import { clearStateData, getCustomerTypesApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, setCommunicationAddress, setDatePicker, setDropDownData, setInsuranceInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
+import { clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
 import { PincodeDetailsNew } from '../../../utils/helperFunctions';
 import { Dropdown } from 'react-native-element-dropdown';
-import { COMPLAINT_STATUS, EW_NAME, FASTAG, LAST_SERVICE_FEEDBACK, MONTH, OEM_PERIOD } from '../../../jsonData/addCustomerScreenJsonData';
+import {
+  COMPLAINT_STATUS,
+  EW_TYPE,
+  FASTAG,
+  LAST_SERVICE_FEEDBACK,
+  MONTH,
+  OEM_PERIOD,
+} from "../../../jsonData/addCustomerScreenJsonData";
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -60,6 +67,15 @@ const AddCustomerInfo = ({ navigation, route }) => {
       dispatch(getCustomerTypesApi(jsonObj.orgId));
       dispatch(getSourceTypesApi(jsonObj.branchId));
       dispatch(getServiceTypesApi(jsonObj.branchId));
+
+      let complainReasonPayload = {
+        menu: "Factor Type",
+        orgId: jsonObj.orgId,
+        // userId: jsonObj.empId,
+        userId: 912,
+      };
+      dispatch(getComplaintReasonsApi(complainReasonPayload));
+      dispatch(getInsuranceCompanyApi(jsonObj.orgId));
     }
   };
   
@@ -134,14 +150,20 @@ const AddCustomerInfo = ({ navigation, route }) => {
       case "SERVICE_FEEDBACK":
         setDataForDropDown([...LAST_SERVICE_FEEDBACK]);
         break;
+      case "COMPLAINT_REASON":
+        setDataForDropDown([...selector.complaintReasonResponse]);
+        break;
       case "COMPLAINT_STATUS":
         setDataForDropDown([...COMPLAINT_STATUS]);
+        break;
+      case "INSURANCE_COMPANY":
+        setDataForDropDown([...selector.insuranceCompanyResponse]);
         break;
       case "OEM_PERIOD":
         setDataForDropDown([...OEM_PERIOD]);
         break;
-      case "EW_NAME":
-        setDataForDropDown([...EW_NAME]);
+      case "EW_TYPE":
+        setDataForDropDown([...EW_TYPE]);
         break;
       case "FASTAG":
         setDataForDropDown([...FASTAG]);
@@ -749,11 +771,11 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
-                label={"Transmission Type"}
+                label={"Color"}
                 onPress={() =>
                   showDropDownModelMethod(
-                    "TRANSMISSION_TYPE",
-                    "Select Vehicle Transmission Type"
+                    "VEHICLE_COLOR",
+                    "Select Vehicle Color"
                   )
                 }
               />
@@ -769,11 +791,11 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
-                label={"Color"}
+                label={"Transmission Type"}
                 onPress={() =>
                   showDropDownModelMethod(
-                    "VEHICLE_COLOR",
-                    "Select Vehicle Color"
+                    "TRANSMISSION_TYPE",
+                    "Select Vehicle Transmission Type"
                   )
                 }
               />
@@ -812,6 +834,26 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 onPress={() => showDatePickerModelMethod("SALE_DATE")}
               />
               <Text style={GlobalStyle.underline} />
+              <DropDownSelectionItem
+                label={"Making Month"}
+                value={selector.makingMonth}
+                onPress={() =>
+                  showDropDownModelMethod("MAKING_MONTH", "Select Making Month")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.makingYear}
+                maxLength={4}
+                keyboardType="number-pad"
+                label={"Making Year"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setVehicleInformation({ key: "MAKING_YEAR", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
               <TextinputComp
                 value={selector.sellingDealer}
                 label={"Selling Dealer"}
@@ -836,22 +878,10 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
-                label={"Making Month"}
-                value={selector.makingMonth}
+                label={"Fastag"}
+                value={selector.fastag}
                 onPress={() =>
-                  showDropDownModelMethod("MAKING_MONTH", "Select Making Month")
-                }
-              />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
-                value={selector.makingYear}
-                maxLength={4}
-                keyboardType="number-pad"
-                label={"Making Year"}
-                onChangeText={(text) =>
-                  dispatch(
-                    setVehicleInformation({ key: "MAKING_YEAR", text: text })
-                  )
+                  showDropDownModelMethod("FASTAG", "Select Fastag")
                 }
               />
               <Text style={GlobalStyle.underline} />
@@ -951,16 +981,6 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <TextinputComp
-                value={selector.readingAtService}
-                label={"Reading at Service"}
-                onChangeText={(text) =>
-                  dispatch(
-                    setServiceInfo({ key: "READING_AT_SERVICE", text: text })
-                  )
-                }
-              />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
                 value={selector.serviceAdvisor}
                 label={"Service Advisor"}
                 onChangeText={(text) =>
@@ -1029,7 +1049,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
             <View style={styles.space} />
             <List.Accordion
               id={"5"}
-              title={"Insurance"}
+              title={"Insurance Information"}
               titleStyle={{
                 color: openAccordion === "5" ? Colors.BLACK : Colors.BLACK,
                 fontSize: 16,
@@ -1096,7 +1116,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
             <View style={styles.space} />
             <List.Accordion
               id={"6"}
-              title={"Warranty"}
+              title={"OEM Warranty Information"}
               titleStyle={{
                 color: openAccordion === "6" ? Colors.BLACK : Colors.BLACK,
                 fontSize: 16,
@@ -1118,6 +1138,18 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 }
               />
               <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.oemWarrantyNo}
+                label={"OEM Warranty No"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOemWarrantyInfo({ key: "OEM_WARRANTY_NO", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
               <DateSelectItem
                 label={"OEM Start Date"}
                 value={selector.oemStartDate}
@@ -1125,28 +1157,61 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <DateSelectItem
-                label={"OEM Expiry Date"}
-                value={selector.oemExpiryDate}
-                onPress={() => showDatePickerModelMethod("OEM_EXPIRY_DATE")}
+                label={"OEM End Date"}
+                value={selector.oemEndDate}
+                onPress={() => showDatePickerModelMethod("OEM_END_DATE")}
               />
               <Text style={GlobalStyle.underline} />
               <TextinputComp
-                value={selector.oemAmountPaid}
-                label={"OEM Amount Paid"}
+                value={selector.oemWarrantyAmount}
+                label={"OEM Warranty Amount"}
                 maxLength={10}
                 keyboardType={"phone-pad"}
                 onChangeText={(text) =>
                   dispatch(
-                    setInsuranceInfo({ key: "OEM_AMOUNT_PAID", text: text })
+                    setOemWarrantyInfo({
+                      key: "OEM_WARRANTY_AMOUNT",
+                      text: text,
+                    })
                   )
                 }
               />
               <Text style={GlobalStyle.underline} />
+            </List.Accordion>
+            <View style={styles.space} />
+            <List.Accordion
+              id={"7"}
+              title={"EX-Warranty Information"}
+              titleStyle={{
+                color: openAccordion === "7" ? Colors.BLACK : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={[
+                {
+                  backgroundColor:
+                    openAccordion === "7" ? Colors.RED : Colors.WHITE,
+                },
+                styles.accordionBorder,
+              ]}
+            >
               <DropDownSelectionItem
-                label={"EW Name"}
-                value={selector.ewName}
+                label={"EW Type"}
+                value={selector.ewType}
                 onPress={() =>
-                  showDropDownModelMethod("EW_NAME", "Select EW Name")
+                  showDropDownModelMethod("EW_TYPE", "Select EW Type")
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.ewPolicyNo}
+                label={"EW Policy No"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setExWarrantyInfo({ key: "EW_POLICY_NO", text: text })
+                  )
                 }
               />
               <Text style={GlobalStyle.underline} />
@@ -1169,35 +1234,29 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 keyboardType={"phone-pad"}
                 onChangeText={(text) =>
                   dispatch(
-                    setInsuranceInfo({ key: "EW_AMOUNT_PAID", text: text })
+                    setExWarrantyInfo({ key: "EW_AMOUNT_PAID", text: text })
                   )
                 }
               />
               <Text style={GlobalStyle.underline} />
-              <DateSelectItem
-                label={"MCP Start Date"}
-                value={selector.mcpStartDate}
-                onPress={() => showDatePickerModelMethod("MCP_START_DATE")}
-              />
-              <Text style={GlobalStyle.underline} />
-              <DateSelectItem
-                label={"MCP Expiry Date"}
-                value={selector.mcpExpiryDate}
-                onPress={() => showDatePickerModelMethod("MCP_EXPIRY_DATE")}
-              />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
-                value={selector.mcpAmountPaid}
-                label={"MCP Amount Paid"}
-                maxLength={10}
-                keyboardType={"phone-pad"}
-                onChangeText={(text) =>
-                  dispatch(
-                    setInsuranceInfo({ key: "MCP_AMOUNT_PAID", text: text })
-                  )
-                }
-              />
-              <Text style={GlobalStyle.underline} />
+            </List.Accordion>
+            <View style={styles.space} />
+            <List.Accordion
+              id={"8"}
+              title={"AMC Information"}
+              titleStyle={{
+                color: openAccordion === "8" ? Colors.BLACK : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={[
+                {
+                  backgroundColor:
+                    openAccordion === "8" ? Colors.RED : Colors.WHITE,
+                },
+                styles.accordionBorder,
+              ]}
+            >
               <DropDownSelectionItem
                 label={"AMC Name"}
                 value={selector.amcName}
@@ -1206,16 +1265,63 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 }
               />
               <Text style={GlobalStyle.underline} />
-              <DropDownSelectionItem
-                label={"Fastag"}
-                value={selector.fastag}
-                onPress={() =>
-                  showDropDownModelMethod("FASTAG", "Select Fastag")
+              <TextinputComp
+                value={selector.amcPolicyNo}
+                label={"AMC Policy No"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(setAmcInfo({ key: "AMC_POLICY_NO", text: text }))
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"AMC Start Date"}
+                value={selector.amcStartDate}
+                onPress={() => showDatePickerModelMethod("AMC_START_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <DateSelectItem
+                label={"AMC Expiry Date"}
+                value={selector.amcExpiryDate}
+                onPress={() => showDatePickerModelMethod("AMC_EXPIRY_DATE")}
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.amcAmountPaid}
+                label={"AMC Amount Paid"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setInsuranceInfo({ key: "AMC_AMOUNT_PAID", text: text })
+                  )
                 }
               />
               <Text style={GlobalStyle.underline} />
             </List.Accordion>
           </List.AccordionGroup>
+
+          <View style={styles.buttonRow}>
+            <Button
+              mode="contained"
+              style={{ width: "30%" }}
+              color={Colors.GRAY}
+              labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+              onPress={() => navigation.goBack()}
+            >
+              Cancel
+            </Button>
+            <Button
+              mode="contained"
+              style={{ width: "30%" }}
+              color={Colors.PINK}
+              labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+              onPress={() => {}}
+            >
+              Submit
+            </Button>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -1286,6 +1392,12 @@ const styles = StyleSheet.create({
     height: 65,
     paddingLeft: 12,
     backgroundColor: Colors.WHITE,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    marginTop: 15
   },
 });
 

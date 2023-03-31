@@ -30,9 +30,14 @@ export const OEM_PERIOD = [
   { id: "3", name: "3-Years" },
   { id: "4", name: "4-Years" },
   { id: "5", name: "5-Years" },
+  { id: "6", name: "6-Years" },
+  { id: "7", name: "7-Years" },
+  { id: "8", name: "8-Years" },
+  { id: "9", name: "9-Years" },
+  { id: "10", name: "10-Years" },
 ];
 
-export const EW_NAME = [
+export const EW_TYPE = [
   { id: "1", name: "Emp1" },
   { id: "2", name: "Emp2" },
   { id: "3", name: "Emp3" },
