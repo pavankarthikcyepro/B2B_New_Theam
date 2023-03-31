@@ -159,6 +159,8 @@ export const RenderSelfInsights = (args) => {
                 >
                   {type === 0
                     ? item.achievment
+                    : item.paramName === "Accessories"
+                    ? item.achievment
                     : `${achievementPercentage(
                         item.achievment,
                         item.target,
