@@ -75,12 +75,17 @@ export const RenderSelfInsights = (args) => {
                 param === "Booking" ||
                 param === "INVOICE"
               ) {
-                // navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-                //   screen: "EMS",
-                //   params: {
-                //     screen: "LEADS",
-                //   },
-                // });
+                navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+                  screen: "EMS",
+                  params: {
+                    screen: "LEADS",
+                    param: {
+                      param: param === "INVOICE" ? "Retail" : param,
+                      moduleType: "home",
+                      employeeDetail: "",
+                    },
+                  },
+                });
                 // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
                 // setTimeout(() => {
                 //   navigation.navigate("LEADS", {
