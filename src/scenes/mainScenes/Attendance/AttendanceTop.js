@@ -153,14 +153,10 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             setReason(false);
           }
         },
-        (error) => {
-         
-        },
+        (error) => {},
         { enableHighAccuracy: true }
       );
-    } catch (error) {
-     
-    }
+    } catch (error) {}
   };
 
   const getAttendance = async () => {
@@ -178,8 +174,21 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             monthNamesCap[d.getMonth()]
           )
         );
-
+        const startDate = moment(currentMonth, dateFormat)
+          .subtract(0, "months")
+          .startOf("month")
+          .format(dateFormat);
+        const endDate = moment(currentMonth, dateFormat)
+          .subtract(0, "months")
+          .endOf("month")
+          .format(dateFormat);
         const json = await response.json();
+        const response1 = await client.get(
+          URL.GET_HOLIDAYS(jsonObj.orgId, startDate, endDate)
+        );
+        let json1 = await response1.json();
+        const newArr1 = json1.map((v) => ({ ...v, holiday: true }));
+
         const daysInMonth = getDays(new Date().getFullYear(), d.getMonth());
         let newArr = [];
         const date = new Date(d);
@@ -191,9 +200,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
               new Date(e.createdtimestamp).getDate() ==
               new Date(element).getDate()
           );
+          const holiday = newArr1.filter(
+            (e) =>
+              new Date(e.date).getDate() ==
+              new Date(element).getDate()
+          );
           const format = {
             date: element,
             ...attendance[0],
+            ...holiday[0],
           };
           newArr.push(format);
         }
@@ -264,7 +279,7 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           <TouchableOpacity
             onPress={() => {
               // if (item?.isAbsent != 1) {
-              !item?.punchOut && setAttendance(true);
+              !item?.punchOut && !item?.holiday && setAttendance(true);
               // }
             }}
             style={{
@@ -461,13 +476,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           }}
           style={{ flexDirection: "row", alignItems: "center" }}
         >
-          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.RED} />
-          <Text style={{ color: Colors.RED }}>
+          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.GRAY} />
+          <Text style={{ color: Colors.GRAY, fontSize: 15, fontWeight: "600" }}>
             {previousMonth(currentMonth)}
           </Text>
         </TouchableOpacity>
 
-        <Text style={{ color: Colors.RED }}>{selectedMonth(currentMonth)}</Text>
+        <Text style={{ color: Colors.RED, fontSize: 15, fontWeight: "600" }}>
+          {selectedMonth(currentMonth)}
+        </Text>
         {currentMonth.getMonth() !== new Date().getMonth() ? (
           <TouchableOpacity
             onPress={() => {
@@ -477,11 +494,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             }}
             style={{ flexDirection: "row", alignItems: "center" }}
           >
-            <Text style={{ color: Colors.RED }}>{nextMonth(currentMonth)}</Text>
+            <Text
+              style={{ color: Colors.GRAY, fontSize: 15, fontWeight: "600" }}
+            >
+              {nextMonth(currentMonth)}
+            </Text>
             <MaterialIcons
               name="arrow-forward-ios"
               size={20}
-              color={Colors.RED}
+              color={Colors.GRAY}
             />
           </TouchableOpacity>
         ) : (

@@ -50,11 +50,13 @@ const HeaderComp = ({
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      if (isReceptionist(jsonObj.hrmsRole)) {
-        setIsIconShow(false);
-      } else {
-        setIsIconShow(true);
-      }
+      // if (isReceptionist(jsonObj.hrmsRole)) {
+      //   setIsIconShow(false);
+      // } else {
+      //   setIsIconShow(true);
+      // }
+      setIsIconShow(true);
+      
     }
   }, []);
 

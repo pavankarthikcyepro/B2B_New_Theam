@@ -13,7 +13,7 @@ import {
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { getTargetParametersEmpDataInsights } from "../../../redux/homeReducer";
+import { getTargetParametersEmpDataInsights, updateReceptionistFilterids } from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
 import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
@@ -34,10 +34,64 @@ import {
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import { detectIsOrientationLock } from "../../../utils/helperFunctions";
+import { useIsFocused } from "@react-navigation/native";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
+
+let data = {
+  "SELECT DESIGNATION": [
+    {
+      "code": "942",
+      "name": "CRE",
+      "parentId": "1",
+      "order": 1,
+      "designation": "CRE"
+    },
+    {
+      "code": "942",
+      "name": "Receptionist",
+      "parentId": "2",
+      "order": 1,
+      "designation": "Receptionist"
+    },
+    {
+      "code": "942",
+      "name": "Tele caller",
+      "parentId": "3",
+      "order": 1,
+      "designation": "Tele caller"
+    }
+  ],
+  "SELECT EMPLOYEEE": [
+    {
+      "code": "945",
+      "name": "Akash Gupta B S",
+      "parentId": "1",
+      "order": 2,
+      "designation": "CRE"
+    },
+    {
+      "code": "946",
+      "name": "Gladstone Gideon",
+      "parentId": "2",
+      "order": 2,
+      "designation": "Receptionist"
+    },
+    {
+      "code": "947",
+      "name": "Siddharth Shetty",
+      "parentId": "3",
+      "order": 2,
+      "designation": "Tele caller"
+    }
+  ],
+
+}
+
 
 const AcitivityLoader = () => {
   return (
@@ -53,11 +107,12 @@ const AcitivityLoader = () => {
     </View>
   );
 };
-
+const currentDate = moment().add(0, "day").format(dateFormat)
+const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 const ReceptionistFilterScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-
+  const isFocused = useIsFocused();
   const [totalDataObj, setTotalDataObj] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -81,10 +136,33 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
+  const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
+  const [branches, setBranches] = useState([]);
+  useEffect(async () => {
     getAsyncData();
+    try {
+      const branchData = await AsyncStore.getData("BRANCHES_DATA");
+      if (branchData) {
+        const branchesList = JSON.parse(branchData);
+        setBranches([...branchesList]);
+      }
+    } catch (e) {
+      // Alert.alert('Error occurred - Employee total', `${JSON.stringify(e)}`);
+    }
   }, []);
+
+  const getBranchName = (branchId, isFull = false) => {
+    let branchName = "";
+    if (branches.length > 0) {
+      const branch = branches.find((x) => +x.branchId === +branchId);
+      if (branch) {
+        branchName = isFull
+          ? branch.branchName
+          : branch.branchName.split(" - ")[0];
+      }
+    }
+    return branchName;
+  };
 
   const getAsyncData = async (startDate, endDate) => {
     const employeeData = await AsyncStore.getData(
@@ -123,14 +201,15 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     setFromDate(monthFirstDate);
-    setToDate(monthLastDate);
+    setToDate(currentDate);
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
-    if (nameKeyList.length > 0) {
-    //   dropDownItemClicked(4, true);
+    if (nameKeyList.length > 0 && isFocused && selector.receptionistFilterIds?.levelSelected?.length >4) {
+     
+      dropDownItemClicked(4, true);
     }
-  }, [nameKeyList, userData]);
+  }, [nameKeyList, userData,isFocused]);
 
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
@@ -175,15 +254,27 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     if (index === 4) {
       setDropDownData([...newData]);
       if (initalCall) {
-        let updatedMultipleData = [...newData];
-        const obj = { ...updatedMultipleData[0] };
-        if (obj.selected != undefined) {
-          obj.selected = !obj.selected;
-        } else {
-          obj.selected = true;
+        if (initalCall) {
+          let levelIds = selector.receptionistFilterIds?.levelSelected;
+          let updatedMultipleData = [...newData];
+          let nData = updatedMultipleData.map((val) => {
+            return {
+              ...val,
+              selected: levelIds.includes(val.id) ? true : false,
+            };
+          });
+          updatedMultipleData = nData;
+          updateSelectedItems(updatedMultipleData, index, true);
         }
-        updatedMultipleData[0] = obj;
-        updateSelectedItems(updatedMultipleData, index, true);
+        // let updatedMultipleData = [...newData];
+        // const obj = { ...updatedMultipleData[0] };
+        // if (obj.selected != undefined) {
+        //   obj.selected = !obj.selected;
+        // } else {
+        //   obj.selected = true;
+        // }
+        // updatedMultipleData[0] = obj;
+        // updateSelectedItems(updatedMultipleData, index, true);
       } else {
         updateSelectedItemsForEmployeeDropDown(newData, index);
       }
@@ -215,7 +306,6 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
 
   const updateSelectedItems = (data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-
     if (index > 0) {
       let selectedParendIds = [];
       let unselectedParentIds = [];
@@ -226,7 +316,6 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
           unselectedParentIds.push(Number(item.parentId));
         }
       });
-
       let localIndex = index - 1;
 
       for (localIndex; localIndex >= 0; localIndex--) {
@@ -259,7 +348,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         unselectedParentIds = unselectedNewParentIds;
       }
     }
-
+   
     let localIndex2 = index + 1;
     for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
       let key = nameKeyList[localIndex2];
@@ -267,7 +356,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       if (dataArray.length > 0) {
         const newDataArry = dataArray.map((subItem, index) => {
           const obj = { ...subItem };
-          obj.selected = false;
+          obj.selected = true; // make it true for both ways auto fill top and bottom
           return obj;
         });
         const newOBJ = {
@@ -294,6 +383,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   };
 
   const clearBtnClicked = () => {
+    dispatch(updateReceptionistFilterids({}))
     const totalDataObjLocal = { ...totalDataObj };
     let i = 0;
     for (i; i < nameKeyList.length; i++) {
@@ -317,6 +407,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   const submitBtnClicked = () => {
     let i = 0;
     const selectedIds = [];
+    const selectedDealerCodeName = [];
     for (i; i < nameKeyList.length; i++) {
       let key = nameKeyList[i];
       const dataArray = totalDataObj[key].sublevels;
@@ -324,19 +415,26 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         dataArray.forEach((item, index) => {
           if (item.selected != undefined && item.selected == true) {
             selectedIds.push(item.id);
+            if (item.type === "Level5"){
+              selectedDealerCodeName.push(item.name)
+              
+            }
+            
           }
         });
       }
     }
     if (selectedIds.length > 0) {
-      setIsLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "LEVEL");
-    } else {
-      showToast("Please select any value");
-    }
+      // setIsLoading(true);
+      // setIsEmployeeLoading(true);
+      getDashboadTableDataFromServer(selectedIds, "LEVEL", selectedDealerCodeName,true);
+    } 
+    // else {
+    //   showToast("Please select any value");
+    // }
   };
 
-  const getDashboadTableDataFromServer = (selectedIds, from) => {
+  const getDashboadTableDataFromServer = (selectedIds, from, selectedBranchName = "" ,initialCall = true) => {
     const payload = {
       startDate: fromDate,
       endDate: toDate,
@@ -359,43 +457,89 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
-
-    // Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-    //   .then(() => {
-    //     Promise.all([
-    //     //   dispatch(getLeadSourceTableList(payload)),
-    //     //   dispatch(getVehicleModelTableList(payload)),
-    //     //   dispatch(getEventTableList(payload)),
-    //     //   dispatch(getLostDropChartData(payload)),
-    //     //   dispatch(updateFilterDropDownData(totalDataObj)),
-    //     //   // // Table Data
-    //     //   dispatch(getTaskTableList(payload2)),
-    //     //   dispatch(getSalesData(payload2)),
-    //     //   dispatch(getSalesComparisonData(payload2)),
-    //     //   // // Target Params Data
-    //     //   dispatch(getTargetParametersData(payload2)),
-    //     //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-    //     ])
-    //       .then(() => {})
-    //       .catch(() => {
-    //         setIsLoading(false);
-    //       });
-    //   })
-    //   .catch(() => {
-    //     setIsLoading(false);
-    //   });
-    if (from == "EMPLOYEE") {
-      if (true) {
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget, {
-          params: { from: "Filter" },
+    
+    // uncomment once api for emp for crm ready
+    if (userData.hrmsRole == "CRM" && from !== "EMPLOYEE"){
+      Promise.all([dispatch(getEmployeesDropDownData(payload1))])
+        .then(() => {
+      
+          //     Promise.all([
+          //     //   dispatch(getLeadSourceTableList(payload)),
+          //     //   dispatch(getVehicleModelTableList(payload)),
+          //     //   dispatch(getEventTableList(payload)),
+          //     //   dispatch(getLostDropChartData(payload)),
+          //     //   dispatch(updateFilterDropDownData(totalDataObj)),
+          //     //   // // Table Data
+          //     //   dispatch(getTaskTableList(payload2)),
+          //     //   dispatch(getSalesData(payload2)),
+          //     //   dispatch(getSalesComparisonData(payload2)),
+          //     //   // // Target Params Data
+          //     //   dispatch(getTargetParametersData(payload2)),
+          //     //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+          //     ])
+          // .then(() => {})
+          // .catch(() => {
+          //   setIsLoading(false);
+          // });
+          setIsEmployeeLoading(false);
+        })
+        .catch(() => {
+          setIsEmployeeLoading(false);
+          setIsLoading(false);
         });
-      } else {
-        navigation.goBack();
-      }
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.home, { screen: "Home", params: { from: 'Filter' }, })
-    } else {
-      navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
     }
+    if (from == "EMPLOYEE") {
+      let obj = {
+        startDate: fromDate,
+        endDate: toDate,
+        dealerCodes: selectedBranchName,
+        levelSelected: selectedIds
+      }
+      dispatch(updateReceptionistFilterids(obj))
+      navigation.navigate("Home");
+   
+    } else {
+      // if (!userData.hrmsRole == "CRM") {}
+      // dispatch(updateReceptionistFilterids(selectedBranchName[selectedBranchName.length - 1]))
+      let obj = {
+        startDate: fromDate,
+        endDate: toDate,
+        dealerCodes: selectedBranchName,
+        levelSelected: selectedIds
+      }
+      dispatch(updateReceptionistFilterids(obj))
+      if(userData.hrmsRole == "CRM"){
+
+        return ;
+      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+      }
+      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+     
+      navigation.navigate("Home");
+    }
+  };
+
+  const getDashboadTableDataFromServerForEmp = (selectedIds, from, selectedBranchName = "", initialCall = true) => {
+    const payload = {
+      startDate: fromDate,
+      endDate: toDate,
+      loggedInEmpId: userData.employeeId,
+    };
+    
+  
+    // if (from == "EMPLOYEE") {
+      // let obj = {
+      //   startDate: fromDate,
+      //   endDate: toDate,
+      //   dealerCodes: selectedBranchName,
+      //   levelSelected: selectedIds
+      // }
+      // dispatch(updateReceptionistFilterids(obj))
+      navigation.navigate("Home");
+
+    // } 
+    
+    
   };
 
   useEffect(() => {
@@ -415,7 +559,9 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
             });
           });
         }
+       
         newDataObj[key] = newArray;
+       
       }
       setName(names, newDataObj);
     }
@@ -464,10 +610,12 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       });
     }
     if (selectedIds.length > 0) {
-      getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
-    } else {
-      showToast("Please select any value");
-    }
+      // getDashboadTableDataFromServer(selectedIds, "EMPLOYEE",false);
+      getDashboadTableDataFromServerForEmp(selectedIds, "EMPLOYEE", false)
+    } 
+    // else {
+    //   showToast("Please select any value");
+    // }
   };
 
   const updateSelectedDate = (date, key) => {
@@ -507,6 +655,8 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
+        minimumDate={new Date(CurrentMonthFirstDate) }
+        maximumDate={new Date(currentDate)}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           if (Platform.OS === "android") {
@@ -591,7 +741,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                           );
                         }
                         if (userData.hrmsRole === "Reception") {
-                          if (item === "Dealer Code") {
+                          // if (item === "Dealer Code") {
                             return (
                               <View>
                                 <DropDownSelectionItem
@@ -602,7 +752,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                                 />
                               </View>
                             );
-                          }
+                          // }
                         } else {
                           return (
                             <View>
@@ -699,7 +849,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                           }}
                         />
                       </View>
-                      <View style={styles.submitBtnBckVw}>
+                      {!isEmployeeLoading ? (<View style={styles.submitBtnBckVw}>
                         <Button
                           labelStyle={{
                             color: Colors.RED,
@@ -723,7 +873,10 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                         >
                           Submit
                         </Button>
-                      </View>
+                      </View>) : (
+                        <AcitivityLoader />
+                      ) }
+                    
                     </View>
                   )}
                 </View>

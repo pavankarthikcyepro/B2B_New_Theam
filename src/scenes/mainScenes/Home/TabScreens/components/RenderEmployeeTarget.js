@@ -77,7 +77,11 @@ export const RenderEmployeeTarget = (parameter) => {
         employeeDetail: employeeDetail,
       });
     } else if (isDropped) {
-      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+      // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+        screen: "DROP_ANALYSIS",
+        params: { emp_id: "", fromScreen: "" },
+      });
     } else if (param === "Test Drive" || param === "Home Visit") {
       navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
       setTimeout(() => {

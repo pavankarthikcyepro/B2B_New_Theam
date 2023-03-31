@@ -707,6 +707,46 @@ const AttendanceScreen = ({ route, navigation }) => {
           //   }
           // }
           setMarker(obj);
+        } else {
+          let newArray = [];
+          let dateArray = [];
+          let weekArray = [];
+          if (json1.length > 0) {
+            for (let i = 0; i <= json1.length - 1; i++) {
+              let format = {
+                customStyles: {
+                  container: {
+                    backgroundColor: Colors.DARK_GRAY,
+                  },
+                  text: {
+                    color: Colors.WHITE,
+                    fontWeight: "bold",
+                  },
+                },
+              };
+              let date = new Date(json1[i].date);
+              let formatedDate = moment(date).format(dateFormat);
+              selectedDates.push(formatedDate);
+              dateArray.push(formatedDate);
+              newArray.push(format);
+            }
+          }
+          var obj = {};
+          for (let i = 0; i < newArray.length; i++) {
+            const element = newArray[i];
+            obj[dateArray[i]] = element;
+          }
+          for (let i = 1; i <= 31; i++) {
+            const date = new Date(
+              new Date(start).getFullYear(),
+              new Date(start).getMonth(),
+              i
+            );
+            if (date.getDay() === 0 || date.getDay() === 6) {
+              selectedDates.push(moment(date).format(dateFormat));
+            }
+          }
+          setMarker(obj);
         }
       }
     } catch (error) {
@@ -716,6 +756,7 @@ const AttendanceScreen = ({ route, navigation }) => {
 
   const downloadReport = async () => {
     try {
+      setLoading(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -725,17 +766,20 @@ const AttendanceScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId,
           fromDate: selectedFromDate,
           toDate: selectedToDate,
+          userId: jsonObj.empId,
         };
         const response = await client.post(
-          URL.GET_ATTENDANCE_REPORT(),
+          URL.GET_NEW_ATTENDANCE_REPORT(),
           payload
         );
         const json = await response.json();
         if (json.downloadUrl) {
+          setLoading(false);
           downloadInLocal(URL.GET_DOWNLOAD_URL(json.downloadUrl));
         }
       }
     } catch (error) {
+      setLoading(false);
       alert("Something went wrong");
     }
   };
@@ -956,7 +1000,6 @@ const AttendanceScreen = ({ route, navigation }) => {
                 setToDateState(endDate);
               }
               if (!filterStart) {
-                GetCountByMonth(startDate, endDate);
                 let newDate = moment(endDate).month();
                 let newYear = moment(endDate).year();
                 if (
@@ -964,8 +1007,10 @@ const AttendanceScreen = ({ route, navigation }) => {
                   newYear == new Date().getFullYear()
                 ) {
                   getAttendanceByMonth(startDate, currentDate);
+                  GetCountByMonth(startDate, currentDate);
                 } else {
                   getAttendanceByMonth(startDate, endDate);
+                  GetCountByMonth(startDate, endDate);
                 }
                 // setCurrentMonth(new Date(month.dateString));
               }

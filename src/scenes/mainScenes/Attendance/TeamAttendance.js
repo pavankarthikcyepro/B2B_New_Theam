@@ -88,7 +88,7 @@ const TeamAttendanceScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const response = await client.get(
-          URL.ORG_HIRARCHY(jsonObj.orgId, jsonObj.branchId)
+          URL.ORG_HIRARCHY(jsonObj.orgId, jsonObj.empId)
         );
         const json = await response.json();
         setDropdownList(json);

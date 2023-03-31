@@ -408,6 +408,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
   const [receiptDocModel, setReceiptDocModel] = useState(false);
+  const [isVip, setIsVip] = useState(null);
 
   // Edit buttons shows
   useEffect(() => {
@@ -418,7 +419,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ) {
       const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
       let isEditFlag = false;
-
+      setIsVip(
+        selector.pre_booking_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
       if (
         uploadedImagesDataObj.receipt &&
         uploadedImagesDataObj.receipt.fileName
@@ -1278,6 +1283,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           fileName: item.fileName,
           keyName: item.keyName,
           documentNumber: item.documentNumber,
+          receiptDate: item.receiptDate,
         };
         dataObj[item.documentType] = obj;
       });
@@ -1564,7 +1570,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Buyer_Type_Data]);
         break;
       case "CUSTOMER_TYPE":
-          if (selector.customer_types_data?.length === 0) {
+        if (selector.customer_types_data?.length === 0) {
           showToast("No Customer Types found");
           return;
         }
@@ -2935,6 +2941,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("Please upload receipt doc");
           return;
         }
+        
+        if (uploadedImagesDataObj.hasOwnProperty("receipt") && !uploadedImagesDataObj.receipt.receiptDate) {
+          scrollToPos(12);
+          setOpenAccordian("12");
+          showToast("Please select receipt date");
+          return;
+        }
 
         const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
         let paymentDate = "";
@@ -3445,7 +3458,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       .then((response) => {
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = response;
+          dataObj[response.documentType] = dataObj["receipt"]
+            ? { ...dataObj["receipt"], ...response }
+            : response;
           setUploadedImagesDataObj({ ...dataObj });
           setIsReciptDocUpload(true);
         }
@@ -3864,6 +3879,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //   minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
         onChange={(event, selectedDate) => {
+          if (selector.datePickerKeyId == "RECEIPT_DATE") {
+            const date = convertDateStringToMilliseconds(selectedDate);
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj["receipt"] = { ...dataObj["receipt"], receiptDate: date };
+
+            console.log("dataObj -> ", dataObj);
+            setUploadedImagesDataObj({ ...dataObj });
+          }
+
           if (Platform.OS === "android") {
             if (!selectedDate) {
               dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
@@ -4118,6 +4142,48 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     },
                   ]}
                 ></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    disabled={!isInputsEditable()}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    disabled={!isInputsEditable()}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={[GlobalStyle.underline]}></Text>
                 {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
                     <DateSelectItem
@@ -5708,6 +5774,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             : Colors.GRAY,
                         },
                       ]}
+                      maxLength={2}
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         setTaxPercent(text);
@@ -6844,6 +6911,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <View>
+                    <DateSelectItem
+                      label={"Receipt Date*"}
+                      value={selector.receiptDate}
+                      onPress={() => dispatch(setDatePicker("RECEIPT_DATE"))}
+                    />
+                    <Text style={GlobalStyle.underline} />
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Receipt Doc*"}
@@ -7655,7 +7728,7 @@ const styles = StyleSheet.create({
   },
   chooseTitleText: {
     marginTop: 15,
-    alignSelf: "center"
+    alignSelf: "center",
   },
   photoOptionBtn: {
     borderRadius: 5,
