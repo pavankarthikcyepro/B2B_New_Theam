@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 import { ButtonComp } from '../../../components';
+import { clearSearchResult } from '../../../redux/searchCustomerReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 
 const IconComp = ({ iconName, onPress, opacity = 1 }) => {
@@ -15,7 +17,19 @@ const IconComp = ({ iconName, onPress, opacity = 1 }) => {
 };
 
 const SearchCustomerResult = ({ navigation, route }) => {
+  const dispatch = useDispatch();
+  const selector = useSelector((state) => state.searchCustomerReducer);
   const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    setResults(selector.searchResult);
+  }, [selector.searchResult]);
+  
+  useEffect(() => {
+    return () => {
+      dispatch(clearSearchResult());
+    };
+  }, []);
 
   const noData = () => {
     return (
@@ -36,15 +50,18 @@ const SearchCustomerResult = ({ navigation, route }) => {
     return (
       <View style={styles.itemContainer}>
         <View>
-          <Text style={styles.detailText}>Naveen Reddy</Text>
-          <Text style={styles.detailText}>VIN675677D78</Text>
-          <Text style={styles.detailText}>Grand i10 Nios</Text>
-          <Text style={styles.detailText}>8745874858</Text>
+          <Text style={styles.detailText}>
+            {item.firstName}
+            {item.lastName}
+          </Text>
+          <Text style={styles.detailText}>{item.vin}</Text>
+          <Text style={styles.detailText}>{item.model}</Text>
+          <Text style={styles.detailText}>{item.contactNumber}</Text>
           <Text style={styles.detailHighLightText}>1st free Service</Text>
         </View>
         <View style={styles.optionContainer}>
           <View style={styles.idContainer}>
-            <Text style={styles.idText}>T76SF77878</Text>
+            <Text style={styles.idText}>{item.chassisNumber}</Text>
           </View>
           <View style={styles.iconOptionRow}>
             <IconComp

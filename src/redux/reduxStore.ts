@@ -36,6 +36,7 @@ import settingReducer from "./settingReducer";
 import complaintTrackerReducer from "./complaintTrackerReducer";
 import digitalPaymentReducer from "./digitalPaymentReducer";
 import customerInfoReducer from "./customerInfoReducer";
+import searchCustomerReducer from "./searchCustomerReducer";
 
 
 const reducer = combineReducers({
@@ -74,6 +75,7 @@ const reducer = combineReducers({
   complaintTrackerReducer,
   digitalPaymentReducer,
   customerInfoReducer,
+  searchCustomerReducer,
 });
 
 const createDebugger = require("redux-flipper").default;

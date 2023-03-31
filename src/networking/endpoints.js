@@ -267,6 +267,12 @@ const URL = {
       `vehicle-services/api/tenant/1/master-data/lead-source/all-by-hierarchy`
     );
   },
+  GET_SEARCH_CUSTOMER: (tenantId, vehicleRegNo) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/customer/search?page=0&size=10&vehicleRegNumber=${vehicleRegNo}`
+    );
+  },
   GET_SERVICE_TYPE: (tenantId) => {
     return baseUrl + `vehicle-services/api/tenant/1/service-categories`;
   },
