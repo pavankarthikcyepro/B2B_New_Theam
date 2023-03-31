@@ -465,7 +465,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   useEffect(() => {
 
 
-    if (selector.receptionistData?.fullResponse && _.isEmpty(selector.saveCRMfilterObj.selectedempId)) {
+    if (!_.isEmpty(selector.receptionistData?.fullResponse)  && _.isEmpty(selector.saveCRMfilterObj.selectedempId)) {
       let tempArrCRMFIRst = []
       let tempArrCRMFirsttotal = [];
       let tempArrCRMSecond = [];
@@ -901,6 +901,33 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     });
   }
 
+  function navigateToDropAnalysis(params, isfromTree = false, parentId = "", isSelf = false,xrole =false) {
+
+    if (selector.saveCRMfilterObj.selectedempId) {
+      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+        screen: "DROP_ANALYSIS",
+        params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole },
+      });
+    } else {
+
+      if (isfromTree) {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole },
+        });
+      } else {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole },
+        });
+      }
+
+    }
+
+
+
+  }
+
   const renderItem = (item, index) => {
 
     return (
@@ -938,7 +965,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                 item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true, userData.empId, true, false) :
                   item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true, userData.empId, true, false) :
                     item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true, userData.empId, true, false) :
-                      item.id === 3 ? navigateToDropAnalysis(userData.empId) : null
+                      item.id === 3 ? navigateToDropAnalysis(userData.empId,false,"",false,true) : null
               }
 
             }
@@ -1141,6 +1168,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     } else if (indexss === 2) {
                                       navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId, true, true);
                                     } else if (indexss === 3) {
+                                     
                                       navigateToDropAnalysis(item.emp_id, false, "", true)
                                     }
                                   }
@@ -1155,7 +1183,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     } else if (indexss === 3) {
                                       // todo navigate to lost
 
-                                      navigateToDropAnalysis(item.emp_id, true)
+                                      navigateToDropAnalysis(item.emp_id, true,item.emp_id)
                                     }
                                   }
                                 }
@@ -2107,7 +2135,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     switch (item.roleName.toLowerCase()) {
       case "tele caller":
         navigation.navigate(
-          "RECEP_SOURCE_MODEL",
+          "RECEP_SOURCE_MODEL_DEGITAL",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2126,7 +2154,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         break;
       case "cre":
         navigation.navigate(
-          "RECEP_SOURCE_MODEL",
+          "RECEP_SOURCE_MODEL_DEGITAL",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2146,7 +2174,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       case "field dse":
 
         navigation.navigate(
-          "RECEP_SOURCE_MODEL",
+          "RECEP_SOURCE_MODEL_DEGITAL",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2181,7 +2209,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       case "crm":
 
         navigation.navigate(
-          "RECEP_SOURCE_MODEL",
+          "RECEP_SOURCE_MODEL_DEGITAL",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2537,12 +2565,12 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           <SourceModelView
                             style={{ alignSelf: "flex-end" }}
                             onClick={() => {
-                              navigation.navigate("RECEP_SOURCE_MODEL", {
+                              navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
                                 empId: userData.empId,
                                 headerTitle: "Source/Model",
                                 loggedInEmpId: userData.empId,
                                 orgId: userData.orgId,
-                                role: userData.hrmsRole,
+                                role: "xrole",
                                 moduleType: "DigitalDashboard",
                               });
                             }}

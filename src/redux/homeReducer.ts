@@ -790,6 +790,33 @@ export const getReceptionistModelLive = createAsyncThunk(
   }
 );
 
+// xrole model
+export const getXroleModel = createAsyncThunk(
+  "HOME/getXroleModel",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.XROLE_MODEL_LIVE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+// xrole source
+export const getXroleSource = createAsyncThunk(
+  "HOME/getXroleSource",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.XROLE_SOURCE_LIVE(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 
 // live crm 
 export const getCRMSourceLive = createAsyncThunk(
@@ -1675,6 +1702,14 @@ export const homeSlice = createSlice({
       })
       .addCase(getReceptionistSourceLive.rejected, (state, action) => { })
 
+      // xrole source
+      .addCase(getXroleSource.pending, (state) => { })
+      .addCase(getXroleSource.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistSource = dataObj;
+      })
+      .addCase(getXroleSource.rejected, (state, action) => { })
+
 
       .addCase(getReceptionistManagerSource.pending, (state) => {})
       .addCase(getReceptionistManagerSource.fulfilled, (state, action) => {
@@ -1696,6 +1731,15 @@ export const homeSlice = createSlice({
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModelLive.rejected, (state, action) => { })
+
+      // xrole model
+      .addCase(getXroleModel.pending, (state) => { })
+      .addCase(getXroleModel.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getXroleModel.rejected, (state, action) => { })
+
 
       // live crm
       .addCase(getCRMModelLive.pending, (state) => { })

@@ -2154,10 +2154,7 @@ const TargetScreenCRM = ({ route }) => {
                           
                               // todo redirections logic  first level
                               if (e > 0) {
-
                                 
-
-
                               if (!isViewExpanded){
                                 if (indexss === 0) {
 
@@ -2181,7 +2178,7 @@ const TargetScreenCRM = ({ route }) => {
                                 } else if (indexss === 3) {
                                   // todo navigate to lost
                                  
-                                  navigateToDropAnalysis(item.emp_id,true)
+                                  navigateToDropAnalysis(item.emp_id,true,item.emp_id)
                                 }
                                 }
                               }

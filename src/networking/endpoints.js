@@ -426,6 +426,9 @@ const URL = {
   DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () =>
     sales_url + "/lead-drop/receptionistManager/leadlist",
 
+  DROP_ANALYSIS_LIST_REDIRECTIONS_XROLE: () =>
+    sales_url + "/lead-drop/XRoleManager/leadlist",
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },
@@ -871,6 +874,13 @@ const URL = {
   },
   RECEPTIONIST_MODEL_LIVE: () => {
     return dashboard + "/liveLeads/model";
+  },
+
+  XROLE_MODEL_LIVE: () => {
+    return dashboard + "/xrole/model";
+  },
+  XROLE_SOURCE_LIVE: () => {
+    return dashboard + "/xrole/source";
   },
 
   CRM_SOURCE_LIVE: () => {

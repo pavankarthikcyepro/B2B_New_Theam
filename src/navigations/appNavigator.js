@@ -133,6 +133,7 @@ import CRMLiveleadsFilterscreen_recep from "../scenes/mainScenes/LiveLeadsRecept
 import RecepSourceModelCRM_Recep from "../scenes/mainScenes/LiveLeadsReceptionist/RecepSourceModelCRM_Recep";
 import DigitalDashBoardTargetScreen from "../scenes/mainScenes/DigitalDashboard/targetScreen";
 import DigitalDashboardFilter from "../scenes/mainScenes/DigitalDashboard/DigitalDashboardFilter";
+import DigitalRecepSourceModel from "../scenes/mainScenes/DigitalDashboard/DigitalRecepSourceModel";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -1079,6 +1080,13 @@ const DigitalDashboardStackNavigator = ({ navigation }) => {
           // headerShown: false
           title: "Filter",
           // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <DigitalDashboardStack.Screen
+        name={"RECEP_SOURCE_MODEL_DEGITAL"}
+        component={DigitalRecepSourceModel}
+        options={{
+          title: "Source/Model",
         }}
       />
     </DigitalDashboardStack.Navigator>
