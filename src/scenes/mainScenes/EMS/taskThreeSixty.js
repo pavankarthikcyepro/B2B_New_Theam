@@ -403,7 +403,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                         height: 25,
                                         width: 15,
                                       }}
-                                      source={require("../../../assets/images/location-pin.png")}
+                                      source={require("../../../assets/images/local2.png")}
                                       tintColor={Colors.PINK}
                                     />
                                   </TouchableOpacity>
@@ -614,7 +614,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                       height: 25,
                                       width: 15,
                                     }}
-                                    source={require("../../../assets/images/location-pin.png")}
+                                    source={require("../../../assets/images/local2.png")}
                                     tintColor={Colors.PINK}
                                   />
                                 </TouchableOpacity>

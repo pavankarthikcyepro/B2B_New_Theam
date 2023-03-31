@@ -2628,7 +2628,11 @@ export const ProformaComp = ({
                 key={"PROFORMA_LIST"}
                 data={proformaDataForDropdown}
                 ListEmptyComponent={() => {
-                  return (<View style={{ alignItems: 'center', marginVertical: 20 }}><Text>{"Data Not Available"}</Text></View>)
+                  return (
+                    <View style={{ alignItems: "center", marginVertical: 20 }}>
+                      <Text>{"Data Not Available"}</Text>
+                    </View>
+                  );
                 }}
                 keyExtractor={(item, index) => index.toString()}
                 style={
@@ -2747,13 +2751,16 @@ export const ProformaComp = ({
 
         {isnewProformaClicked ? (
           <>
-            <Text style={{
-              color: Colors.BLACK,
-              fontSize: 16,
-              fontWeight: "700",
-              marginVertical: 10
-
-            }}>New Proforma Invoice</Text>
+            <Text
+              style={{
+                color: Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "700",
+                marginVertical: 10,
+              }}
+            >
+              New Proforma Invoice
+            </Text>
             <DropDownSelectionItem
               label={"Vehicle"}
               value={carModel}
@@ -2802,7 +2809,6 @@ export const ProformaComp = ({
       <View>
         {selectedProfroma != "" || carModel != "" ? (
           <>
- 
             <View
               style={{
                 backgroundColor: Colors.WHITE,
@@ -2822,7 +2828,9 @@ export const ProformaComp = ({
                     textAlign: "center",
                     fontWeight: "700",
                   }}
-                >PROFORMA INVOICE</Text>
+                >
+                  PROFORMA INVOICE
+                </Text>
               </View>
 
               <View
@@ -3042,6 +3050,7 @@ export const ProformaComp = ({
                       },
                     ]}
                     // disabled= {isDownLoadVisible ? true :false}
+                    maxLength={2}
                     disabled={!isInputsEditable()}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
@@ -3094,9 +3103,10 @@ export const ProformaComp = ({
                 <Text style={styles.shadowText}>
                   {rupeeSymbol +
                     " " +
-                    `${selectedRegistrationCharges?.cost
-                      ? selectedRegistrationCharges?.cost
-                      : "0.00"
+                    `${
+                      selectedRegistrationCharges?.cost
+                        ? selectedRegistrationCharges?.cost
+                        : "0.00"
                     }`}
                 </Text>
               </View>
@@ -3133,7 +3143,9 @@ export const ProformaComp = ({
                     label={"Add-on Insurance:"}
                     value={
                       selector.insurance_type !== ""
-                        ? selector.add_on_insurance ? selector.add_on_insurance : selectedAddoninsurance
+                        ? selector.add_on_insurance
+                          ? selector.add_on_insurance
+                          : selectedAddoninsurance
                         : ""
                     }
                     disabled={!selector.insurance_type || !isInputsEditable()}
