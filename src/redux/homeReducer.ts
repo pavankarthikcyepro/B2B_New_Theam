@@ -956,7 +956,7 @@ export const homeSlice = createSlice({
       contactsCount: 0,
       enquirysCount: 0,
       totalLostCount: 0,
-      fullResponse:"",
+      fullResponse:{},
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -1091,7 +1091,7 @@ export const homeSlice = createSlice({
         contactsCount: 0,
         enquirysCount: 0,
         totalLostCount: 0,
-        fullResponse:""
+        fullResponse:{}
       };
       state.filterIds = {
         startDate: "",

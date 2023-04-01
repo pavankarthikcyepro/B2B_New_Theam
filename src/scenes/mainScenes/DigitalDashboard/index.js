@@ -866,15 +866,63 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     setShowDropDownModel(true);
   };
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 100);
+ function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
+    navigation.navigate(
+      screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
+    );
+    if (!screenName) {
+      if (selector.saveCRMfilterObj?.selectedempId){
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "Home",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+            startDate: selector.saveCRMfilterObj.startDate,
+            endDate: selector.saveCRMfilterObj.endDate,
+            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+            ignoreSelectedId : true
+          });
+        }, 1000);
+      } else if (userData.hrmsRole === "CRM"){
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "TargetScreenCRM",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: "",
+            endDate: "",
+            dealerCodes: [],
+            ignoreSelectedId:false,
+            parentId: selectedEmpId[0],
+            istotalClick: true,
+            self: false
+          });
+        }, 1000);
+      }
+      else{
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "DigitalHome",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selectedEmpId,
+            startDate: selector.receptionistFilterIds.startDate,
+            endDate: selector.receptionistFilterIds.endDate,
+            dealerCodes: selector.receptionistFilterIds.dealerCodes,
+            ignoreSelectedId: true,
+            istotalClick: false,
+            self: false,
+            parentId: selectedEmpId[0],
+          });
+        }, 1000);
+      }
+      
+    }
   }
 
   function navigateToDropLostCancel(params) {
@@ -883,6 +931,30 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       screen: "DROP_ANALYSIS",
       params: { emp_id: "", fromScreen: "" },
     });
+  }
+  function navigateToDropAnalysis(params, isfromTree = false, parentId = "", isSelf = false, xrole = false) {
+
+    if (selector.saveCRMfilterObj.selectedempId) {
+      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+        screen: "DROP_ANALYSIS",
+        params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole, isForDropped: false },
+      });
+    } else {
+
+      if (isfromTree) {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false },
+        });
+      } else {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: true },
+        });
+      }
+
+    }
+
   }
   
   function navigateToContact(params) {
@@ -949,7 +1021,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.totalDroppedCount > 0 &&
-                    navigateToEMS();
+                    navigateToDropAnalysis(userData.empId,false,"",false,true)
                 }}
                 style={styles.view8}
               >
@@ -968,7 +1040,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.enquirysCount > 0 &&
-                    navigateToEMS();
+                    navigateToEMS("ENQUIRY", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -984,7 +1056,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.bookingsCount > 0 &&
-                    navigateToEMS();
+                    navigateToEMS("BOOKING", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -997,7 +1069,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.RetailCount > 0 && navigateToEMS();
+                  selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >

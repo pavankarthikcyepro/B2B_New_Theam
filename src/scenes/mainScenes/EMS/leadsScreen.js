@@ -28,6 +28,7 @@ import {
   getEnquiryList,
   getLeadsListCRM,
   getLeadsListReceptionist,
+  getLeadsListXrole,
   getLiveleadsReceptinoist,
   getLiveleadsReceptinoistManager,
   getMoreEnquiryList,
@@ -429,8 +430,31 @@ const LeadsScreen = ({ route, navigation }) => {
       
 
     }
+
+    if (route?.params?.screenName === "DigitalHome") {
+      //  todo call new api here 
+
+      // setSearchedData([])
+
+     
+        let payload = {
+          "orgId": userData.orgId,
+          "loggedInEmpId": route?.params?.parentId,
+          "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate, 
+          "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+          "limit": 1000,
+          "offset": 0,
+          "stageName": route?.params?.params,
+          "dashboardType": "digital"
+        }
+        setTimeout(() => {
+          dispatch(getLeadsListXrole(payload));
+        }, 2000);
+       
+
+    }
     
-    // work in progress crm redirections 
+    
     if (route?.params?.screenName === "ParametersScreen") {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leadsV2"

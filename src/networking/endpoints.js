@@ -494,6 +494,9 @@ const URL = {
   GET_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionist/allByDateNew";
   },
+  GET_LEAD_LIST_XROLE: () => {
+    return sales_url + "/lead/XRoleManager/allByDateNew";
+  },
   GET_LIVE_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionistLiveLeads/allByDateNew";
   },

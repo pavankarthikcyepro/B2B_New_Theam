@@ -465,7 +465,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   useEffect(() => {
 
 
-    if (!_.isEmpty(selector.receptionistData?.fullResponse)  && _.isEmpty(selector.saveCRMfilterObj.selectedempId)) {
+    if (!_.isEmpty(selector.receptionistData?.fullResponse) && _.isEmpty(selector.saveCRMfilterObj.selectedempId) && selector.receptionistData?.fullResponse !== undefined) {
       let tempArrCRMFIRst = []
       let tempArrCRMFirsttotal = [];
       let tempArrCRMSecond = [];
@@ -882,14 +882,98 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params) {
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = [], isIgnore = false, parentId = "", istotalClick = false, isSelf) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
+      if (selector.saveCRMfilterObj?.selectedempId) {
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "Home",
+            params: params,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+            startDate: selector.saveCRMfilterObj.startDate,
+            endDate: selector.saveCRMfilterObj.endDate,
+            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+            ignoreSelectedId: isIgnore
+          });
+        }, 1000);
+      }
+      else if (isIgnore) {
+        if (parentId) {
+          if (istotalClick) {
+            setTimeout(() => {
+              navigation.navigate("LEADS", {
+                screenName: "TargetScreenCRM",
+                params: params,
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: selectedEmpId,
+                startDate: "",
+                endDate: "",
+                dealerCodes: [],
+                ignoreSelectedId: isIgnore,
+                parentId: parentId,
+                istotalClick: true,
+                self: isSelf
+              });
+            }, 1000);
+          }
+          else {
+
+            setTimeout(() => {
+              navigation.navigate("LEADS", {
+                screenName: "TargetScreenCRM",
+                params: params,
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: selectedEmpId,
+                startDate: "",
+                endDate: "",
+                dealerCodes: [],
+                ignoreSelectedId: isIgnore,
+                parentId: parentId,
+                istotalClick: false
+              });
+            }, 1000);
+          }
+
+        } else {
+          setTimeout(() => {
+            navigation.navigate("LEADS", {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: "",
+              endDate: "",
+              dealerCodes: [],
+              ignoreSelectedId: isIgnore
+            });
+          }, 1000);
+        }
+
+
+      }
+      else {
+        navigation.navigate("LEADS", {
+          screenName: "DigitalHome",
+          params: params,
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: selectedEmpId,
+          startDate: selector.receptionistFilterIds.startDate,
+          endDate: selector.receptionistFilterIds.endDate,
+          dealerCodes: selector.receptionistFilterIds.dealerCodes,
+          ignoreSelectedId: true,
+          istotalClick: false,
+          self: false,
+          parentId: selectedEmpId[0],
+        });
+      }
+
     }, 1000);
   }
 
@@ -906,19 +990,19 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     if (selector.saveCRMfilterObj.selectedempId) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",
-        params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole },
+        params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole, isForDropped: false },
       });
     } else {
 
       if (isfromTree) {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole },
+          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false },
         });
       } else {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole },
+          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: false },
         });
       }
 
@@ -962,9 +1046,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true) :
                       item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
               } else {
-                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true, userData.empId, true, false) :
-                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true, userData.empId, true, false) :
-                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true, userData.empId, true, false) :
+                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], false, userData.empId, true, false) :
+                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], false, userData.empId, true, false) :
+                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], false, userData.empId, true, false) :
                       item.id === 3 ? navigateToDropAnalysis(userData.empId,false,"",false,true) : null
               }
 
@@ -1156,17 +1240,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                 // todo redirections logic  first level
                                 if (e > 0) {
 
-
-
-
                                   if (!isViewExpanded) {
                                     if (indexss === 0) {
 
-                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, userData.empId, true, true);
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, item.emp_id, true, true);
                                     } else if (indexss === 1) {
-                                      navigateToEMS("BOOKING", "", [item.emp_id], true, userData.empId, true, true);
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true, item.emp_id, true, true);
                                     } else if (indexss === 2) {
-                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, userData.empId, true, true);
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, item.emp_id, true, true);
                                     } else if (indexss === 3) {
                                      
                                       navigateToDropAnalysis(item.emp_id, false, "", true)

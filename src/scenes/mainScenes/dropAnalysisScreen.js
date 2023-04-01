@@ -249,7 +249,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     "limit": 1000,
                     "offset": 0,
                     "filterValue": "",
-                    "forDropped": false,
+                    "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
                     "self": route.params.isSelf
                 }
                 dispatch(getDropAnalysisRedirectionsXrole(payload))
