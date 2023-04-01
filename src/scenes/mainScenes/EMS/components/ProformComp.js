@@ -239,6 +239,7 @@ export const ProformaComp = ({
   });
   const [carColorsData, setCarColorsData] = useState([]);
   const [isDownLoadVisible, setisDownLoadVisible] = useState(false);
+  const [isThingsnotEditable, setIsThingsNotEditable] = useState(false);
   const [termNconditionData, settermsNConditionData] = useState([]);
   const [addNewInput, setAddNewInput] = useState([]);
   const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
@@ -655,14 +656,17 @@ export const ProformaComp = ({
         setshowSaveBtn(false);
         setshowSendForApprovBtn(false);
         setShowApproveRejectBtn(true);
+        setIsThingsNotEditable(true) // added for after clicked send for approval disabled form
         break;
       case "APPROVED":
         setisDownLoadVisible(true)
+        setIsThingsNotEditable(true) // added for after clicked approved disabled form
         setselectedProformaID(response.id)
         setShowApproveRejectBtn(false)
         setProformaNo(response.performaUUID)
         break;
       case "REJECTED":
+        setIsThingsNotEditable(false); // added for after clicked reject to manage editables
         setshowSaveBtn(true)
         setselectedProformaID(response.id)
         setShowApproveRejectBtn(false);
@@ -783,6 +787,7 @@ export const ProformaComp = ({
     setProformaNo("");
     setSelectedDate(moment().format("DD-MMM-YYYY"));
     setisDownLoadVisible(false);
+    setIsThingsNotEditable(false);
     setSelectedPaidAccessoriesList([])
 
   }
@@ -1022,7 +1027,7 @@ export const ProformaComp = ({
           },
           (error, event) => {
             if (error) {
-              AlertIOS.alert(
+              Alert.alert(
                 "Error",
                 "Could not send mail. Please send a mail to support@example.com"
               );
@@ -2054,9 +2059,11 @@ export const ProformaComp = ({
           setShowApproveRejectBtn(true);
           setshowSendForApprovBtn(false);
           setshowSaveBtn(false);
+          setIsThingsNotEditable(true)
         }
         if (newSelectedProforma[0].performa_status === "APPROVED" || newSelectedProforma[0].performa_status === "APPROVE") {
           setisDownLoadVisible(true);
+          setIsThingsNotEditable(true)
 
         } else {
           // setisDownLoadVisible(false);
@@ -2068,6 +2075,7 @@ export const ProformaComp = ({
 
         if (newSelectedProforma[0].performa_status === "REJECT" || newSelectedProforma[0].performa_status === "REJECTED") {
           setisDownLoadVisible(false);
+          setIsThingsNotEditable(false)
           setshowSendForApprovBtn(true);
           setshowSaveBtn(true);
         } else {
@@ -2264,7 +2272,7 @@ export const ProformaComp = ({
 
   const isInputsEditable = () => {
     let isInputEditFlag = true;
-    if (isDownLoadVisible) {
+    if (isThingsnotEditable) {
       isInputEditFlag = false
     } else {
       isInputEditFlag = true
@@ -2768,6 +2776,7 @@ export const ProformaComp = ({
               clearOption={true}
               clearKey={"MODEL"}
               onClear={onDropDownClear}
+              disabled={!isInputsEditable()}
             />
 
             <DropDownSelectionItem
@@ -2784,6 +2793,7 @@ export const ProformaComp = ({
               clearOption={true}
               clearKey={"VARIENT"}
               onClear={onDropDownClear}
+              disabled={!isInputsEditable()}
             />
 
             <DropDownSelectionItem
@@ -2800,6 +2810,7 @@ export const ProformaComp = ({
               clearOption={true}
               clearKey={"COLOR"}
               onClear={onDropDownClear}
+              disabled={!isInputsEditable()}
             />
           </>
         ) : null}
