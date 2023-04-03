@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DatePickerComponent, DropDownComponant, TextinputComp } from '../../../components';
 import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
-import { clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
+import { clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
@@ -76,6 +76,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
       };
       dispatch(getComplaintReasonsApi(complainReasonPayload));
       dispatch(getInsuranceCompanyApi(jsonObj.orgId));
+      dispatch(getVehicleInfo(jsonObj.orgId));
     }
   };
   
@@ -137,6 +138,15 @@ const AddCustomerInfo = ({ navigation, route }) => {
           setDataForDropDown([]);
           break;
         }
+        break;
+      case "VEHICLE_MODEL":
+        setDataForDropDown([...selector.vehicleModelList]);
+        break;
+      case "VEHICLE_VARIANT":
+        setDataForDropDown([...selector.vehicleVariantList]);
+        break;
+      case "VEHICLE_COLOR":
+        setDataForDropDown([...selector.vehicleColorList]);
         break;
       case "MAKING_MONTH":
         setDataForDropDown([...MONTH]);
@@ -221,6 +231,74 @@ const AddCustomerInfo = ({ navigation, route }) => {
     dispatch(setDatePicker(key));
   };
 
+  const submitClick = () => {
+    let payload = {
+      // SERVICE
+      kmReadingAtService: selector.readingAtService,
+      // information: "", (not in UI)
+      serviceAmount: selector.serviceAmount,
+      serviceCenter: selector.serviceCenter,
+      // serviceDate: selector.serviceDate, (need formate)
+      serviceManager: selector.serviceAdvisor,
+      dealerName: selector.serviceDealerName,
+      dealerLocation: selector.serviceDealerLocation,
+      lastServiceFeedback: selector.serviceFeedback,
+      reasonForComplaint: selector.complaintReason,
+      complaintStatus: selector.complaintStatus,
+      serviceType: selector.serviceType,
+      // subServiceType: selector.subServiceType, (available in ui, need to add in api)
+
+      // VEHICLE DETAILS
+      vehicleDetails: {
+        vehicleRegNumber: selector.vehicleRegNo,
+        vin: selector.vin,
+        engineNumber: selector.engineNumber,
+        // chassisNumber: "", (not in UI)
+        vehicleModel: selector.vehicleModel,
+        variant: selector.vehicleVariant,
+        color: selector.vehicleColor,
+        fuelType: selector.vehicleFuelType,
+        purchaseDate: selector.saleDate,
+        sellingLocation: selector.sellingLocation,
+        sellingDealer: selector.sellingDealer,
+        vehicleMakeYear: selector.makingYear,
+        transmisionType: selector.vehicleTransmissionType,
+        // vehicleMake: "", (Listing remaining from api or static)
+      },
+
+      // CUSTOMER DETAILS
+      customer: {
+        firstName: selector.firstName,
+        lastName: selector.lastName,
+        leadSource: selector.subSourceType,
+        parentLeadSource: selector.sourceType,
+        contactNumber: selector.mobile,
+        alternateContactNumber: selector.alterMobile,
+        email: selector.email,
+        addresses: [
+          {
+            address: "",
+            pin: selector.pincode,
+            state: selector.state,
+            city: selector.city,
+            area: "",
+            district: selector.district,
+            longitude: 0,
+            latitude: 0,
+            label: "HOME",
+            addressLabelIfOther: "",
+          },
+        ],
+        gender: selector.gender,
+        customerType: selector.customerTypes,
+        occupation: selector.occupation,
+        // refered_by: "", (not in UI)
+        dateOfBirth: selector.dateOfBirth,
+        // dateOfArrival: "", (not in UI)
+      },
+    };
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -236,6 +314,37 @@ const AddCustomerInfo = ({ navigation, route }) => {
               catId: item.id,
             };
             dispatch(getSubServiceTypesApi(payload));
+          } else if (dropDownKey == "VEHICLE_MODEL") {
+            dispatch(
+              setVehicleInformation({
+                key: "VEHICLE_VARIANT_LIST",
+                text: item.varients,
+              })
+            );
+          } else if (dropDownKey == "VEHICLE_VARIANT") {
+            let colors = [];
+            for (let i = 0; i < item.vehicleImages.length; i++) {
+              let data = {
+                ...item.vehicleImages[i],
+                name: item.vehicleImages[i].color,
+              };
+              colors.push(Object.assign({}, data));
+            }
+            dispatch(
+              setVehicleInformation({ key: "VEHICLE_COLOR_LIST", text: colors })
+            );
+            dispatch(
+              setVehicleInformation({
+                key: "VEHICLE_FUEL_TYPE",
+                text: item.fuelType,
+              })
+            );
+            dispatch(
+              setVehicleInformation({
+                key: "VEHICLE_TRANSMISSION_TYPE",
+                text: item.transmission_type,
+              })
+            );
           }
           dispatch(
             setDropDownData({
@@ -755,6 +864,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
                 label={"Model"}
+                value={selector.vehicleModel}
                 onPress={() =>
                   showDropDownModelMethod(
                     "VEHICLE_MODEL",
@@ -765,6 +875,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
                 label={"Variant"}
+                value={selector.vehicleVariant}
                 onPress={() =>
                   showDropDownModelMethod(
                     "VEHICLE_VARIANT",
@@ -775,6 +886,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
                 label={"Color"}
+                value={selector.vehicleColor}
                 onPress={() =>
                   showDropDownModelMethod(
                     "VEHICLE_COLOR",
@@ -783,24 +895,16 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 }
               />
               <Text style={GlobalStyle.underline} />
-              <DropDownSelectionItem
+              <TextinputComp
+                value={selector.vehicleFuelType}
                 label={"Fuel Type"}
-                onPress={() =>
-                  showDropDownModelMethod(
-                    "FUEL_TYPE",
-                    "Select Vehicle Fuel Type"
-                  )
-                }
+                editable={false}
               />
               <Text style={GlobalStyle.underline} />
-              <DropDownSelectionItem
+              <TextinputComp
+                value={selector.vehicleTransmissionType}
                 label={"Transmission Type"}
-                onPress={() =>
-                  showDropDownModelMethod(
-                    "TRANSMISSION_TYPE",
-                    "Select Vehicle Transmission Type"
-                  )
-                }
+                editable={false}
               />
               <Text style={GlobalStyle.underline} />
               <TextinputComp
@@ -1320,7 +1424,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               style={{ width: "30%" }}
               color={Colors.PINK}
               labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-              onPress={() => {}}
+              onPress={() => submitClick()}
             >
               Submit
             </Button>

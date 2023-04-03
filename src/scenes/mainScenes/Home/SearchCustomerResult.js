@@ -57,11 +57,13 @@ const SearchCustomerResult = ({ navigation, route }) => {
           <Text style={styles.detailText}>{item.vin}</Text>
           <Text style={styles.detailText}>{item.model}</Text>
           <Text style={styles.detailText}>{item.contactNumber}</Text>
-          <Text style={styles.detailHighLightText}>1st free Service</Text>
+          <Text style={styles.detailHighLightText}>
+            {item.subServiceType ?? item.serviceType}
+          </Text>
         </View>
         <View style={styles.optionContainer}>
           <View style={styles.idContainer}>
-            <Text style={styles.idText}>{item.chassisNumber}</Text>
+            <Text style={styles.idText}>{item.vehicleRegNumber}</Text>
           </View>
           <View style={styles.iconOptionRow}>
             <IconComp
@@ -74,7 +76,7 @@ const SearchCustomerResult = ({ navigation, route }) => {
             <IconComp iconName={"whatsapp"} onPress={() => {}} />
           </View>
           <Text style={styles.detailText}>Gachhibowli Workshop</Text>
-          <Text style={styles.detailHighLightText}>Due date: 12-12-2023</Text>
+          <Text style={styles.detailHighLightText}>Due date: {item.dueDate}</Text>
         </View>
       </View>
     );

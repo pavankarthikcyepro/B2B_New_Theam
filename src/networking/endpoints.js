@@ -282,6 +282,9 @@ const URL = {
       `vehicle-services/api/tenant/1/master-data/service-category/${catId}/service-types`
     );
   },
+  GET_VEHICLE_INFO: (orgId) => {
+    return vehicleInfoService_url + `/api/vehicle_details?organizationId=${orgId}`;
+  },
   GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },

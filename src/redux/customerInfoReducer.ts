@@ -68,6 +68,18 @@ export const getSubServiceTypesApi = createAsyncThunk(
   }
 );
 
+export const getVehicleInfo = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/getVehicleInfo",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_VEHICLE_INFO(orgId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getComplaintReasonsApi = createAsyncThunk(
   "CUSTOMER_INFO_SLICE/getComplaintReasonsApi",
   async (payload, { rejectWithValue }) => {
@@ -93,8 +105,12 @@ export const getInsuranceCompanyApi = createAsyncThunk(
 );
 
 const initialState = {
+  isLoading: false,
   // Customer Info
   salutation: "",
+  firstName: "",
+  lastName: "",
+  gender: "",
   gender_types_data: [],
   relation_types_data: [],
   relation: "",
@@ -104,6 +120,7 @@ const initialState = {
   occupation: "",
   datePickerKeyId: "",
   showDatepicker: false,
+  dateOfBirth: "",
   age: "",
   anniversaryDate: "",
   sourceType: "",
@@ -127,10 +144,13 @@ const initialState = {
   vehicleRegNo: "",
   vehicleMaker: "",
   vehicleModel: "",
+  vehicleModelList: [],
   vehicleVariant: "",
+  vehicleVariantList: [],
   vehicleTransmissionType: "",
   vehicleFuelType: "",
   vehicleColor: "",
+  vehicleColorList: "",
   vin: "",
   engineNumber: "",
   kmReading: "",
@@ -230,18 +250,23 @@ const customerInfoReducer = createSlice({
           break;
         case "VEHICLE_MODEL":
           state.vehicleModel = value;
+          state.vehicleVariant = "";
+          state.vehicleTransmissionType = "";
+          state.vehicleFuelType = "";
+          state.vehicleColor = "";
           break;
         case "VEHICLE_VARIANT":
           state.vehicleVariant = value;
+          state.vehicleColor = "";
+          break;
+        case "VEHICLE_COLOR":
+          state.vehicleColor = value;
           break;
         case "VEHICLE_TRANSMISSION_TYPE":
           state.vehicleTransmissionType = value;
           break;
         case "VEHICLE_FUEL_TYPE":
           state.vehicleFuelType = value;
-          break;
-        case "VEHICLE_COLOR":
-          state.vehicleColor = value;
           break;
         case "MAKING_MONTH":
           state.makingMonth = value;
@@ -526,6 +551,18 @@ const customerInfoReducer = createSlice({
         case "VEHICLE_REG_NO":
           state.vehicleRegNo = text;
           break;
+        case "VEHICLE_VARIANT_LIST":
+          state.vehicleVariantList = text;
+          break;
+        case "VEHICLE_COLOR_LIST":
+          state.vehicleColorList = text;
+          break;
+        case "VEHICLE_FUEL_TYPE":
+          state.vehicleFuelType = text;
+          break;
+        case "VEHICLE_TRANSMISSION_TYPE":
+          state.vehicleTransmissionType = text;
+          break;
         case "VIN":
           state.vin = text;
           break;
@@ -754,6 +791,27 @@ const customerInfoReducer = createSlice({
       })
       .addCase(getInsuranceCompanyApi.rejected, (state, action) => {
         state.insuranceCompanyResponse = [];
+      });
+    
+    // Get Vehicle Info
+    builder
+      .addCase(getVehicleInfo.pending, (state, action) => {
+
+      })
+      .addCase(getVehicleInfo.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload;
+          let newArr = [];
+
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].model };
+            newArr.push(Object.assign({}, data));
+          }
+          state.vehicleModelList = [...newArr];
+        }
+      })
+      .addCase(getVehicleInfo.rejected, (state, action) => {
+
       });
   },
 });
