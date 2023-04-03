@@ -374,6 +374,23 @@ export const getCRMEmployeesDropDownData = createAsyncThunk(
     return json;
   }
 );
+
+export const getReceptionistEmployeesDropDownData = createAsyncThunk(
+  "HOME/getReceptionistEmployeesDropDownData",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_CRM_EMPLOYEES_DROP_DOWN_DATA_RECEP(payload.orgId, payload.empId),
+      payload.selectedIds
+    );
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getSalesData = createAsyncThunk(
   "HOME/getSalesData",
   async (payload: any, { rejectWithValue }) => {
@@ -752,6 +769,20 @@ export const get_xrole_SalesManagerDigitalTeam = createAsyncThunk(
     return json;
   }
 );
+export const get_xrole_SalesManagerReceptinistTeam = createAsyncThunk(
+  "HOME/get_xrole_SalesManagerReceptinistTeam",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 export const getReceptionistSource = createAsyncThunk(
   "HOME/getReceptionistSource",
@@ -958,6 +989,17 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse:{},
     },
+    receptionistDataV2: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
     receptionistModel: [],
     receptionistSource: [],
     selectedIDS: [],
@@ -1038,6 +1080,19 @@ export const homeSlice = createSlice({
     updateLiveLeadObjectData: (state, action) => {
       state.saveCRMfilterObj = action.payload;
     },
+    updatereceptionistDataObjectData: (state, action) => {
+      state.receptionistData = {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {}
+      };
+    },
     clearState: (state, action) => {
       state.serchtext = "";
       state.employeeId = "";
@@ -1104,6 +1159,17 @@ export const homeSlice = createSlice({
       state.leaderShipFIlterId = [];
       state.receptionistFilterIds = [];
       state.crm_employees_drop_down_data = {}
+      state.receptionistDataV2 = {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {}
+      };
       // state.dealerFilter= { }
     },
   },
@@ -1366,6 +1432,21 @@ export const homeSlice = createSlice({
       .addCase(getCRMEmployeesDropDownData.rejected, (state, action) => {
         state.crm_employees_drop_down_data = {};
       })
+
+       // Get  Receptionist Employees Drop Down Data
+      .addCase(getReceptionistEmployeesDropDownData.pending, (state, action) => {
+        state.crm_employees_drop_down_data = {};
+      })
+      .addCase(getReceptionistEmployeesDropDownData.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.crm_employees_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getReceptionistEmployeesDropDownData.rejected, (state, action) => {
+        state.crm_employees_drop_down_data = {};
+      })
+
+
       // Get Sales Data
       .addCase(getSalesData.pending, (state, action) => {
         state.sales_data = {};
@@ -1687,6 +1768,24 @@ export const homeSlice = createSlice({
       .addCase(get_xrole_SalesManagerDigitalTeam.rejected, (state, action) => { })
 
 
+      .addCase(get_xrole_SalesManagerReceptinistTeam.pending, (state) => { })
+      .addCase(get_xrole_SalesManagerReceptinistTeam.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistDataV2 = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(get_xrole_SalesManagerReceptinistTeam.rejected, (state, action) => { })
+
+
       .addCase(getReceptionistSource.pending, (state) => {})
       .addCase(getReceptionistSource.fulfilled, (state, action) => {
         const dataObj = action.payload;
@@ -1807,6 +1906,6 @@ export const {
   updateTargetData,
   updateFilterIds,
   updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
-  updateFilterSelectedData,updateLiveLeadObjectData
+  updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData
 } = homeSlice.actions;
 export default homeSlice.reducer;

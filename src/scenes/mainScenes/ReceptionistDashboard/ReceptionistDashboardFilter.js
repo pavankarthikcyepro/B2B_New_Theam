@@ -35,6 +35,7 @@ import {
   getSalesData,
   getSalesComparisonData,
   getCRMEmployeesDropDownData,
+  getReceptionistEmployeesDropDownData,
 } from "../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
@@ -69,7 +70,7 @@ const AcitivityLoader = () => {
  const data = [
     "Select Designation","Select Employee"
 ]
-const CRMFilterscreen = ({ route, navigation }) => {
+const ReceptionistDashboardFilter = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   // const targetSelector = useSelector((state) => state.liveLeadsReducer);
@@ -340,47 +341,20 @@ const CRMFilterscreen = ({ route, navigation }) => {
     }
 
     let localIndex2 = index + 1;
-    let selectedParendIds = [];
-    let unselectedParentIds = [];
-    selectedParendIds.push(Number(data.id));
-    console.log("manthan ---> Number(data.parentId ", Number(data.id));
     for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
-        let selectedNewParentIds = [];
-        let unselectedNewParentIds = [];
-
       let key = nameKeyList[localIndex2];
       const dataArray = totalDataObjLocal[key].sublevels;
-      console.log("manthan ---> ", key);
       if (dataArray.length > 0) {
         const newDataArry = dataArray.map((subItem, index) => {
-        
-          //    const obj = { ...subItem };
-          // obj.selected = false;
-          // return obj;
           const obj = { ...subItem };
-          if (selectedParendIds.includes(Number(obj.parentId))) {
-            console.log("manthan ---> Number(data.parentId ", Number(obj.id));
-            obj.selected = true;
-            selectedNewParentIds.push(Number(obj.id));
-          }
-          //  else if (unselectedParentIds.includes(Number(obj.id))) {
-          //   if (obj.selected == undefined) {
-          //     obj.selected = false;
-          //   }
-          //   unselectedNewParentIds.push(Number(obj.parentId));
-          // }
+          obj.selected = false;
           return obj;
-          // const obj = { ...subItem };
-          // obj.selected = true;
-          // return obj;
         });
         const newOBJ = {
           sublevels: newDataArry,
         };
         totalDataObjLocal[key] = newOBJ;
       }
-      selectedParendIds = selectedNewParentIds;
-      unselectedParentIds = unselectedNewParentIds;
     }
 
     let key = nameKeyList[index];
@@ -556,7 +530,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
     if (!selector.isDSE){
-      Promise.all([dispatch(getCRMEmployeesDropDownData(payload1))])
+      Promise.all([dispatch(getReceptionistEmployeesDropDownData(payload1))])
         .then(() => {
           // Promise.all([
           // //   dispatch(getLeadSourceTableList(payload)),
@@ -745,7 +719,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
         }
         dispatch(updateLiveLeadObjectData(tempPayload))
         dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard, {
           screen: "Home",
           params: { from: "Filter" },
         });
@@ -1067,7 +1041,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
   );
 };
 
-export default CRMFilterscreen;
+export default ReceptionistDashboardFilter;
 
 const styles = StyleSheet.create({
   container: {

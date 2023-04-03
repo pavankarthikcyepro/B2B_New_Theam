@@ -285,7 +285,7 @@ const ParametersScreen = ({ route }) => {
 
       let firstLevelDataLevel2 = selector.crm_response_data.CRE?.map((item, index) => {
 
-        let firstLevel = item.data.consultantList.filter(item2 => item2.emp_id === item.emp_id)
+        let firstLevel = item.data.consultantList?.filter(item2 => item2.emp_id === item.emp_id)
 
 
 

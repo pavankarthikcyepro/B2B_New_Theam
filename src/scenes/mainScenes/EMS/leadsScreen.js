@@ -453,6 +453,29 @@ const LeadsScreen = ({ route, navigation }) => {
        
 
     }
+
+    if (route?.params?.screenName === "ReceptionistHome") {
+      //  todo call new api here 
+
+      // setSearchedData([])
+
+
+      let payload = {
+        "orgId": userData.orgId,
+        "loggedInEmpId": route?.params?.parentId,
+        "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+        "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+        "limit": 1000,
+        "offset": 0,
+        "stageName": route?.params?.params,
+        "dashboardType": "reception"
+      }
+      setTimeout(() => {
+        dispatch(getLeadsListXrole(payload));
+      }, 2000);
+
+
+    }
     
     
     if (route?.params?.screenName === "ParametersScreen") {

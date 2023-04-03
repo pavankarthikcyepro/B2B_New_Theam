@@ -52,6 +52,12 @@ const data = [
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
+    title: "Receptionist Dashboard",
+    icon: DIGITAL_DASHBOARD,
+    screen: 171,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
     title: "Event Dashboard",
     icon: EVENT_DASHBOARD,
     screen: 119,

@@ -285,6 +285,54 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                 }
             }
         }
+        else if (from === "targetScreenReceptionist") {
+
+            if (route.params.xrole) {
+                payload = {
+                    "loggedInEmpId": selectedEmpIds,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "orgId": jsonObj.orgId,
+                    "limit": 1000,
+                    "offset": 0,
+                    "filterValue": "",
+                    "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                    "self": route.params.isSelf,
+                    "dashboardType": "reception"
+                }
+                dispatch(getDropAnalysisRedirectionsXrole(payload))
+            } else {
+                console.log("manthan dhdhdh ", route.params.isFilterApplied);
+                if (!route.params.isFilterApplied) {
+                    payload = {
+                        "loggedInEmpId": selectedEmpIds,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "forDropped": false,
+                        "self": route.params.isSelf
+                    }
+                    dispatch(getDropAnalysisRedirectionsCRM(payload))
+                } else {
+                    payload = {
+                        "loginEmpId": selectedEmpIds,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "selectedEmpId": route.params.parentId ? [route.params.parentId] : [],
+                        "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                        "forDropped": false,
+                    }
+                    dispatch(getDropAnalysisRedirections(payload))
+                }
+            }
+        }
         
         // const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
        
@@ -512,6 +560,10 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             setLeadsSubMenuFilterDropDownText("All");
         } else if (route.params.fromScreen == "targetScreenDigital" && route?.params?.emp_id){
             getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreenDigital", route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
+        } else if (route.params.fromScreen == "targetScreenReceptionist" && route?.params?.emp_id) {
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreenReceptionist", route?.params?.dealercodes)
             setLeadsFilterDropDownText("Enquiry")
             setLeadsSubMenuFilterDropDownText("All");
         }

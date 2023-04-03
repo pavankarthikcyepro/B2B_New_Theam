@@ -26,6 +26,7 @@ import {
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
   updateEmployeeDataBasedOnDelegate,
+  updatereceptionistDataObjectData,
 } from "../../../redux/homeReducer";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../navigations";
@@ -70,7 +71,7 @@ const data = [
 
 ]
 const receptionistRole = ["Reception", "CRM"];
-const DigitalDashBoardTargetScreen = ({ route }) => {
+const ReceptionistDashBoardTargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -465,12 +466,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   useEffect(() => {
 
 
-    if (!_.isEmpty(selector.receptionistData?.fullResponse) && _.isEmpty(selector.saveCRMfilterObj.selectedempId) && selector.receptionistData?.fullResponse !== undefined) {
+    if (!_.isEmpty(selector.receptionistDataV2?.fullResponse) && _.isEmpty(selector.saveCRMfilterObj.selectedempId) && selector.receptionistDataV2?.fullResponse !== undefined) {
       let tempArrCRMFIRst = []
       let tempArrCRMFirsttotal = [];
       let tempArrCRMSecond = [];
       let tempArrCRMFirstOwn = [];
-      let firstLevelData = selector.receptionistData?.fullResponse?.CRM.map(item => {
+      console.log("manthan selector.receptionistDataV2--> ", JSON.stringify(selector.receptionistDataV2));
+      let firstLevelData = selector.receptionistDataV2?.fullResponse?.CRM?.map(item => {
        
           
           Array.prototype.push.apply(tempArrCRMFirsttotal, [item.data]);
@@ -501,9 +503,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
      
 
       let tempArr = [];
-      let tempArrSelf = selector.receptionistData.fullResponse.CRE?.map((item => item))
+      let tempArrSelf = selector.receptionistDataV2.fullResponse.CRE?.map((item => item))
 
-      let firstLevelDataLevel2 = selector.receptionistData.fullResponse.CRE?.map((item, index) => {
+      let firstLevelDataLevel2 = selector.receptionistDataV2.fullResponse.CRE?.map((item, index) => {
         let firstLevel = item.data.consultantList?.filter(item2 => item2.emp_id === item.emp_id)
 
         if (firstLevel.length > 0) {
@@ -516,7 +518,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       setCreFirstLevelData(tempArr)
       setCreFirstLevelSelfData(tempArrSelf);
 
-      // let firstLevelDataLevel2 = selector.receptionistData.fullResponse.CRE.map(item => {
+      // let firstLevelDataLevel2 = selector.receptionistDataV2.fullResponse.CRE.map(item => {
 
       //   setCreFirstLevelSelfData(item);
       //   let firstLevel = item.salesconsultant.filter(item2 => item2.emp_id === item.emp_id)
@@ -535,40 +537,17 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
     }
 
-    if (selector.receptionistData) {
-      let totalKey1 = selector?.receptionistData?.enquirysCount;
-      let totalKey2 = selector?.receptionistData?.bookingsCount;
-      let totalKey3 = selector?.receptionistData?.RetailCount;
-      let totalKey4 = selector?.receptionistData?.totalLostCount;
+    if (selector.receptionistDataV2) {
+      let totalKey1 = selector?.receptionistDataV2?.enquirysCount;
+      let totalKey2 = selector?.receptionistDataV2?.bookingsCount;
+      let totalKey3 = selector?.receptionistDataV2?.RetailCount;
+      let totalKey4 = selector?.receptionistDataV2?.totalLostCount;
 
       let total = [totalKey1, totalKey2, totalKey3, totalKey4];
       setTotalofTeam(total);
     }
 
-  }, [selector.receptionistData])
-
-
-  useEffect(() => {
-    
-    if (selector.saveCRMfilterObj?.selectedempId){
-
-    }
-  
-    
-  }, [selector.saveCRMfilterObj])
-  
-  const DigitalFilterApplied = () => {
-    let payload = {
-      orgId: userData.orgId,
-      loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-      "startDate": selector.saveCRMfilterObj.startDate,
-      "endDate": selector.saveCRMfilterObj.endDate,
-      "dealerCodes": selector.saveCRMfilterObj.dealerCodes,
-          "dashboardType": "digital"
-    };
-    dispatch(getReceptionistData(payload));
-  }
-
+  }, [selector.receptionistDataV2])
   useEffect(() => {
     setTogglePercentage(0);
     setIsTeam(selector.isTeam);
@@ -677,6 +656,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       setisShowSalesConsultant(false);
       setIsViewExpanded(false);
       setIsViewCreExpanded(false);
+      dispatch(updatereceptionistDataObjectData({}))
     });
     setSlideRight(0);
   }, [navigation, selector.isTeam]);
@@ -982,7 +962,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       }
       else {
         navigation.navigate("LEADS", {
-          screenName: "DigitalHome",
+          screenName: "ReceptionistHome",
           params: params,
           moduleType: "",
           employeeDetail: "",
@@ -1013,19 +993,19 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     if (selector.saveCRMfilterObj.selectedempId) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",
-        params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole, isForDropped: false },
+        params: { emp_id: params, fromScreen: "targetScreenReceptionist", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole, isForDropped: false },
       });
     } else {
 
       if (isfromTree) {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false },
+          params: { emp_id: params, fromScreen: "targetScreenReceptionist", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false },
         });
       } else {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: false },
+          params: { emp_id: params, fromScreen: "targetScreenReceptionist", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: false },
         });
       }
 
@@ -1064,267 +1044,27 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
             {
               // todo add logic for redirections filer applied
               if (selector.saveCRMfilterObj.selectedempId) {
-                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true) :
+                item.id === 0 ? selector.receptionistDataV2.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true) :
                   item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true) :
-                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true) :
+                    item.id === 2 ? selector.receptionistDataV2.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true) :
                       item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
               } else {
-                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], false, userData.empId, true, false) :
+                item.id === 0 ? selector.receptionistDataV2.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], false, userData.empId, true, false) :
                   item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], false, userData.empId, true, false) :
-                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], false, userData.empId, true, false) :
+                    item.id === 2 ? selector.receptionistDataV2.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], false, userData.empId, true, false) :
                       item.id === 3 ? navigateToDropAnalysis(userData.empId,false,"",false,true) : null
               }
 
             }
           }}>
-            {item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> :
-              item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> :
-                item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> :
-                  item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> :
+            {item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistDataV2.enquirysCount} </Text> :
+              item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistDataV2.bookingsCount} </Text> :
+                item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistDataV2.RetailCount} </Text> :
+                  item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistDataV2.totalLostCount} </Text> :
                     <Text style={styles.txt10}>0</Text>}
 
           </TouchableOpacity>
         </View>
-      </View>)
-  }
-  const renderCRMTreeFilterApplied = () => {
-
-
-    return (
-      <View
-      // style={{ height: selector.isMD ? "81%" : "80%" }}
-      >
-        {CRM_filterParameters?.length > 0 &&
-          CRM_filterParameters?.map((item, index) => {
-
-            // if (item.emp_id === userData.empId) {
-            return (
-              <View key={`${item.emp_name} ${index}`}
-                style={{
-                  borderColor: isViewExpanded && indexLocalFirstLevel === index ? Colors.PINK : "",
-                  borderWidth: isViewExpanded && indexLocalFirstLevel === index ? 1 : 0,
-                  borderRadius: 10,
-                  margin: isViewExpanded && indexLocalFirstLevel === index ? 10 : 0
-                }}>
-                <View
-                  style={{
-                    paddingHorizontal: 8,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 12,
-                    width: Dimensions.get("screen").width - 28,
-
-
-                  }}
-                >
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontWeight: "600",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {item.emp_name}
-                      {"  "}
-                      {"-   " + item?.roleName}
-                    </Text>
-                  </View>
-                  <View style={{ flexDirection: "row" }}></View>
-                  <View style={{ flexDirection: "row" }}>
-                    {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
-                      <Animated.View
-                        style={{
-                          transform: [
-                            { translateX: translation },
-                          ],
-                        }}
-                      >
-                        <View
-                          style={{
-                            backgroundColor: "lightgrey",
-                            flexDirection: "row",
-                            paddingHorizontal: 7,
-                            borderRadius: 10,
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginBottom: 5,
-                            alignSelf: "flex-start",
-                            marginLeft: 7,
-                            // transform: [{ translateX: translation }],
-                          }}
-                        >
-                          <MaterialIcons
-                            name="person"
-                            size={15}
-                            color={Colors.BLACK}
-                          />
-                          <Text>{selector.receptionistData?.fullResponse?.CRM[index].data.childUserCount}</Text>
-                        </View>
-                      </Animated.View>
-                    )}
-                    <SourceModelView
-                      onClick={() => {
-
-                        if (isViewExpanded) {
-
-                          // handleSourceModalNavigation()
-                          handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd")
-                        } else {
-
-                          handleSourceModalNavigation(item, "", [], "CRM", true)
-                        }
-
-                        // navigation.navigate(
-                        //   "RECEP_SOURCE_MODEL",
-                        //   {
-                        //     empId: item?.emp_id,
-                        //     headerTitle: item?.emp_name,
-                        //     loggedInEmpId: item.emp_id,
-                        //     type: "TEAM",
-                        //     moduleType: "home",
-                        //     headerTitle: "Source/Model",
-                        //     orgId: userData.orgId,
-                        //     role: userData.hrmsRole,
-                        //     branchList: userData.branchs.map(
-                        //       (a) => a.branchId
-                        //     ),
-                        //   }
-                        // );
-                      }}
-                      style={{
-                        transform: [
-                          { translateX: translation },
-                        ],
-                      }}
-                    />
-                  </View>
-                </View>
-
-                {/*Source/Model View END */}
-                <View
-                  style={[
-                    { flexDirection: "row" },
-                    item.isOpenInner && {
-                      borderRadius: 10,
-                      borderWidth: 2,
-                      borderColor: "#C62159",
-                      marginHorizontal: 6,
-                      overflow: "hidden",
-                    },
-                  ]}
-                >
-                  {/*RIGHT SIDE VIEW*/}
-                  <View style={[styles.view6]}>
-                    <View style={styles.view7}>
-                      <RenderLevel1NameViewCRM
-                        level={0}
-                        item={item}
-                        branchName={item.branch}
-                        color={"#C62159"}
-                        receptionManager={true}
-                        navigation={navigation}
-                        titleClick={async (e) => {
-
-
-                          formateFirstLevelData(item, index)
-                        }}
-                        roleName={item.roleName}
-                        stopLocation={true}
-                      />
-                      <View
-                        style={{
-                          flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
-                          alignItems: "center",
-                          flexDirection: "row",
-                        }}
-                      >
-                        {/* {[
-                            isViewExpanded ? item.contactCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalEnquiryCount : 0 || 0,
-                        isViewExpanded ? item.enquiryCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalBookingCount : 0 || 0,
-                        isViewExpanded ? item.bookingCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalRetailCount : 0 || 0,
-                        isViewExpanded ? item.retailCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalLostCount : 0 || 0,
-                        ] */}
-
-                        {[
-                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].enquiryCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalEnquiryCount : 0 || 0,
-                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].bookingCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalBookingCount : 0 || 0,
-                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].retailCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalRetailCount : 0 || 0,
-                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].droppedCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalLostCount : 0 || 0,
-                        ].map((e, indexss) => {
-                          return (
-                            <Pressable onPress={() => {
-
-                              // todo redirections logic  first level
-                              if (e > 0) {
-
-                                if (!isViewExpanded) {
-                                  if (indexss === 0) {
-
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, item.emp_id, true, true);
-                                  } else if (indexss === 1) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], true, item.emp_id, true, true);
-                                  } else if (indexss === 2) {
-                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, item.emp_id, true, true);
-                                  } else if (indexss === 3) {
-
-                                    navigateToDropAnalysis(item.emp_id, false, "", true)
-                                  }
-                                }
-                                else {
-                                  if (indexss === 0) {
-
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
-                                  } else if (indexss === 1) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
-                                  } else if (indexss === 2) {
-                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
-                                  } else if (indexss === 3) {
-                                    // todo navigate to lost
-
-                                    navigateToDropAnalysis(item.emp_id, true, item.emp_id)
-                                  }
-                                }
-                              }
-
-                            }}>
-                              <View
-                                style={{
-                                  width: 55,
-                                  height: 30,
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontSize: 16,
-                                    fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
-                                    // marginLeft: 50,
-                                  }}
-                                >
-                                  {e || 0}
-                                </Text>
-                              </View>
-                            </Pressable>
-                          );
-                        })}
-                      </View>
-                    </View>
-                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                  </View>
-                </View>
-                {isViewExpanded && indexLocalFirstLevel === index && renderCRMTreeChild()}
-              </View>
-            );
-            // }
-
-          })}
-       
       </View>)
   }
 
@@ -1339,7 +1079,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         {crmFirstLevelData?.length > 0 &&
           crmFirstLevelData?.map((item, index) => {
             
-            // if (item.emp_id === userData.empId) {
+            if (selector.receptionistDataV2?.fullResponse?.CRM.length >0) {
               return (
                 <View key={`${item.emp_name} ${index}`}
                   style={{
@@ -1375,7 +1115,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     </View>
                     <View style={{ flexDirection: "row" }}></View>
                     <View style={{ flexDirection: "row" }}>
-                      {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                      {selector.receptionistDataV2?.fullResponse?.childUserCount > 0 && (
                         <Animated.View
                           style={{
                             transform: [
@@ -1402,7 +1142,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                               size={15}
                               color={Colors.BLACK}
                             />
-                            <Text>{selector.receptionistData?.fullResponse?.CRM[index].data.childUserCount}</Text>
+                            <Text>{selector.receptionistDataV2?.fullResponse?.CRM[index].data.childUserCount}</Text>
                           </View>
                         </Animated.View>
                       )}
@@ -1563,7 +1303,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                   {isViewExpanded && indexLocalFirstLevel === index && renderCRMTreeChild()}
                 </View>
               );
-            // }
+            }
 
           })}
         {renderCREFirstLevel()}
@@ -1598,8 +1338,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {creFirstLevelData.length > 0 &&
-          creFirstLevelData.map((item, index) => {
+        {creFirstLevelData?.length > 0 &&
+          creFirstLevelData?.map((item, index) => {
 
             return (
               <View key={`${item.emp_name} ${index}`}
@@ -1636,7 +1376,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                   </View>
                   <View style={{ flexDirection: "row" }}></View>
                   <View style={{ flexDirection: "row" }}>
-                    {/* {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                    {/* {selector.receptionistDataV2?.fullResponse?.childUserCount > 0 && (
                         <Animated.View
                           style={{
                             transform: [
@@ -1663,7 +1403,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                               size={15}
                               color={Colors.BLACK}
                             />
-                            <Text>{selector.receptionistData?.fullResponse?.childUserCount}</Text>
+                            <Text>{selector.receptionistDataV2?.fullResponse?.childUserCount}</Text>
                           </View>
                         </Animated.View>
                       )} */}
@@ -1744,10 +1484,10 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         }}
                       >
                         {/* {[
-                          isViewExpanded ? item.enquiryCount :  selector.receptionistData.enquirysCount || 0,
-                          isViewExpanded ? item.bookingCount :  selector.receptionistData.bookingsCount || 0,
-                          isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
-                          isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
+                          isViewExpanded ? item.enquiryCount :  selector.receptionistDataV2.enquirysCount || 0,
+                          isViewExpanded ? item.bookingCount :  selector.receptionistDataV2.bookingsCount || 0,
+                          isViewExpanded ? item.retailCount  :  selector.receptionistDataV2.RetailCount || 0,
+                          isViewExpanded ? item.droppedCount :  selector.receptionistDataV2.totalLostCount || 0,
                         ] */}
 
                         {/* {[
@@ -2058,7 +1798,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
     let tempArr = [];
     let tempInside= [];
-    let firstLevelData = selector.receptionistData?.fullResponse.CRM.map(item => {
+    let firstLevelData = selector.receptionistDataV2?.fullResponse.CRM.map(item => {
       if(item.emp_id === data.emp_id){
             let temp = item.data.manager.filter(item2 => item2.emp_id !== data.emp_id)
         let temp2 = item.data.manager.filter(item3 =>{
@@ -2479,13 +2219,32 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     switch (item.roleName.toLowerCase()) {
       case "tele caller":
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_DEGITAL",
+          "RECEP_SOURCE_MODEL_RECEPTIONIST",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
             loggedInEmpId: parentId ? parentId : item.emp_id,
             type: "TEAM",
-            moduleType: "DigitalDashboard",
+            moduleType: "ReceptionistDashboard",
+            headerTitle: "Source/Model",
+            orgId: userData.orgId,
+            role: item.roleName,
+            branchList: userData.branchs.map(
+              (a) => a.branchId
+            ),
+            empList: empList
+          }
+        );
+        break;
+      case "reception":
+        navigation.navigate(
+          "RECEP_SOURCE_MODEL_RECEPTIONIST",
+          {
+            empId: parentId ? parentId : item?.emp_id,
+            headerTitle: item?.emp_name,
+            loggedInEmpId: parentId ? parentId : item.emp_id,
+            type: "TEAM",
+            moduleType: "ReceptionistDashboard",
             headerTitle: "Source/Model",
             orgId: userData.orgId,
             role: item.roleName,
@@ -2498,13 +2257,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         break;
       case "cre":
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_DEGITAL",
+          "RECEP_SOURCE_MODEL_RECEPTIONIST",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
             loggedInEmpId: parentId ? parentId : item.emp_id,
             type: "TEAM",
-            moduleType: "DigitalDashboard",
+            moduleType: "ReceptionistDashboard",
             headerTitle: "Source/Model",
             orgId: userData.orgId,
             role: item.roleName,
@@ -2518,13 +2277,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       case "field dse":
 
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_DEGITAL",
+          "RECEP_SOURCE_MODEL_RECEPTIONIST",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
             loggedInEmpId: parentId ? parentId : item.emp_id,
             type: "TEAM",
-            moduleType: "DigitalDashboard",
+            moduleType: "ReceptionistDashboard",
             headerTitle: "Source/Model",
             orgId: userData.orgId,
             role: item.roleName,
@@ -2553,13 +2312,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       case "crm":
 
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_DEGITAL",
+          "RECEP_SOURCE_MODEL_RECEPTIONIST",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
             loggedInEmpId: parentId ? parentId : item.emp_id,
             type: "TEAM",
-            moduleType: "DigitalDashboard",
+            moduleType: "ReceptionistDashboard",
             headerTitle: "Source/Model",
             orgId: userData.orgId,
             role: role === "CRM" ? "CRM" : "CRM_INd",
@@ -2762,8 +2521,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
 
                         renderCRMTree()
-                        : renderCRMTreeFilterApplied() }
-                       
+                      : null}
+                        {/* // : renderCRMTreeFilterApplied()}  */}
                     {/* Grand Total Section */}
                     {totalOfTeam && (
                       <View
@@ -2909,13 +2668,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           <SourceModelView
                             style={{ alignSelf: "flex-end" }}
                             onClick={() => {
-                              navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
+                              navigation.navigate("RECEP_SOURCE_MODEL_RECEPTIONIST", {
                                 empId: userData.empId,
                                 headerTitle: "Source/Model",
                                 loggedInEmpId: userData.empId,
                                 orgId: userData.orgId,
                                 role: "xrole",
-                                moduleType: "DigitalDashboard",
+                                moduleType: "ReceptionistDashboard",
                               });
                             }}
                           />
@@ -3003,7 +2762,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                             </View>
                           </View>
                           <FlatList
-                            data={selector.receptionistData.consultantList}
+                            data={selector.receptionistDataV2.consultantList}
                             style={{ marginTop: 10 }}
                             nestedScrollEnabled
                             renderItem={({ item }) => {
@@ -3155,21 +2914,21 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                               <View style={styles.view20}>
                                 <Text
                                   onPress={() => {
-                                    selector.receptionistData
+                                    selector.receptionistDataV2
                                       .totalAllocatedCount > 0 &&
                                       navigateToEMS();
                                   }}
                                   style={{
                                     padding: 2,
                                     textDecorationLine:
-                                      selector.receptionistData
+                                      selector.receptionistDataV2
                                         .totalAllocatedCount > 0
                                         ? "underline"
                                         : "none",
                                   }}
                                 >
                                   {
-                                    selector.receptionistData
+                                    selector.receptionistDataV2
                                       .totalAllocatedCount
                                   }
                                 </Text>
@@ -3182,30 +2941,30 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   style={{
                                     padding: 2,
                                     textDecorationLine:
-                                      selector.receptionistData.bookingsCount >
+                                      selector.receptionistDataV2.bookingsCount >
                                       0
                                         ? "underline"
                                         : "none",
                                   }}
                                 >
-                                  {selector.receptionistData.bookingsCount}
+                                  {selector.receptionistDataV2.bookingsCount}
                                 </Text>
                               </View>
                               <View style={styles.view20}>
                                 <Text
                                   onPress={() => {
-                                    selector.receptionistData.RetailCount > 0 &&
+                                    selector.receptionistDataV2.RetailCount > 0 &&
                                       navigateToEMS();
                                   }}
                                   style={{
                                     padding: 2,
                                     textDecorationLine:
-                                      selector.receptionistData.RetailCount > 0
+                                      selector.receptionistDataV2.RetailCount > 0
                                         ? "underline"
                                         : "none",
                                   }}
                                 >
-                                  {selector.receptionistData.RetailCount}
+                                  {selector.receptionistDataV2.RetailCount}
                                 </Text>
                               </View>
                               <View style={styles.view20}>
@@ -3216,13 +2975,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   style={{
                                     padding: 2,
                                     textDecorationLine:
-                                      selector.receptionistData.totalLostCount >
+                                      selector.receptionistDataV2.totalLostCount >
                                       0
                                         ? "underline"
                                         : "none",
                                   }}
                                 >
-                                  {selector.receptionistData.totalLostCount}
+                                  {selector.receptionistDataV2.totalLostCount}
                                 </Text>
                               </View>
                             </View>
@@ -3230,20 +2989,20 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           <View style={styles.view21}>
                             <View style={{ ...styles.statWrap, width: "33%" }}>
                               <Text style={styles.txt5}>E2B</Text>
-                              {selector.receptionistData.bookingsCount !==
+                              {selector.receptionistDataV2.bookingsCount !==
                                 null &&
-                              selector.receptionistData.enquirysCount !==
+                              selector.receptionistDataV2.enquirysCount !==
                                 null ? (
                                 <Text
                                   style={{
                                     color:
                                       Math.floor(
                                         (parseInt(
-                                          selector.receptionistData
+                                          selector.receptionistDataV2
                                             .bookingsCount
                                         ) /
                                           parseInt(
-                                            selector.receptionistData
+                                            selector.receptionistDataV2
                                               .enquirysCount
                                           )) *
                                           100
@@ -3255,19 +3014,19 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   }}
                                 >
                                   {parseInt(
-                                    selector.receptionistData.bookingsCount
+                                    selector.receptionistDataV2.bookingsCount
                                   ) === 0 ||
                                   parseInt(
-                                    selector.receptionistData.enquirysCount
+                                    selector.receptionistDataV2.enquirysCount
                                   ) === 0
                                     ? 0
                                     : Math.round(
                                         (parseInt(
-                                          selector.receptionistData
+                                          selector.receptionistDataV2
                                             .bookingsCount
                                         ) /
                                           parseInt(
-                                            selector.receptionistData
+                                            selector.receptionistDataV2
                                               .enquirysCount
                                           )) *
                                           100
@@ -3287,18 +3046,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                             </View>
                             <View style={{ ...styles.statWrap, width: "33%" }}>
                               <Text style={styles.txt6}>B2R</Text>
-                              {selector.receptionistData.bookingsCount !==
+                              {selector.receptionistDataV2.bookingsCount !==
                                 null &&
-                              selector.receptionistData.RetailCount !== null ? (
+                              selector.receptionistDataV2.RetailCount !== null ? (
                                 <Text
                                   style={{
                                     color:
                                       Math.floor(
                                         (parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistDataV2.RetailCount
                                         ) /
                                           parseInt(
-                                            selector.receptionistData
+                                            selector.receptionistDataV2
                                               .bookingsCount
                                           )) *
                                           100
@@ -3310,18 +3069,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   }}
                                 >
                                   {parseInt(
-                                    selector.receptionistData.RetailCount
+                                    selector.receptionistDataV2.RetailCount
                                   ) === 0 ||
                                   parseInt(
-                                    selector.receptionistData.bookingsCount
+                                    selector.receptionistDataV2.bookingsCount
                                   ) === 0
                                     ? 0
                                     : Math.round(
                                         (parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistDataV2.RetailCount
                                         ) /
                                           parseInt(
-                                            selector.receptionistData
+                                            selector.receptionistDataV2
                                               .bookingsCount
                                           )) *
                                           100
@@ -3341,18 +3100,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                             </View>
                             <View style={{ ...styles.statWrap, width: "33%" }}>
                               <Text style={styles.txt6}>E2R</Text>
-                              {selector.receptionistData.enquirysCount !==
+                              {selector.receptionistDataV2.enquirysCount !==
                                 null &&
-                              selector.receptionistData.RetailCount !== null ? (
+                              selector.receptionistDataV2.RetailCount !== null ? (
                                 <Text
                                   style={{
                                     color:
                                       Math.floor(
                                         (parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistDataV2.RetailCount
                                         ) /
                                           parseInt(
-                                            selector.receptionistData
+                                            selector.receptionistDataV2
                                               .enquirysCount
                                           )) *
                                           100
@@ -3364,18 +3123,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   }}
                                 >
                                   {parseInt(
-                                    selector.receptionistData.RetailCount
+                                    selector.receptionistDataV2.RetailCount
                                   ) === 0 ||
                                   parseInt(
-                                    selector.receptionistData.enquirysCount
+                                    selector.receptionistDataV2.enquirysCount
                                   ) === 0
                                     ? 0
                                     : Math.round(
                                         (parseInt(
-                                          selector.receptionistData.RetailCount
+                                          selector.receptionistDataV2.RetailCount
                                         ) /
                                           parseInt(
-                                            selector.receptionistData
+                                            selector.receptionistDataV2
                                               .enquirysCount
                                           )) *
                                           100
@@ -3412,7 +3171,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   );
 };
 
-export default DigitalDashBoardTargetScreen;
+export default ReceptionistDashBoardTargetScreen;
 
 export const SourceModelView = ({ style = null, onClick }) => {
   return (

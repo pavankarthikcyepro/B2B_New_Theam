@@ -50,7 +50,7 @@ import {
   GROUP_STR,
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
-import { clearState } from "../../redux/homeReducer";
+import { clearState, updatereceptionistDataObjectData } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
@@ -107,6 +107,7 @@ const managerMenu = [
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
+  "Receptionist Dashboard",
   "Target Planning",
   "Task Transfer",
   "Geolocation",
@@ -118,6 +119,7 @@ const mdMenu = [
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
+  "Receptionist Dashboard",
   "Target Planning",
   "Task Transfer",
   "Complaint Tracker"
@@ -396,6 +398,9 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateLiveLeadObjectDataCRMv2({}))
         dispatch(updateDealerFilterDataLivev2({}))
         break;
+      case 171:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard);
+        break;
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
         break;
@@ -457,6 +462,7 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterLevelSelectedData({}));
     dispatch(updateLiveLeadObjectData({}));
     dispatch(updateDealerFilterData({}));
+    dispatch(updatereceptionistDataObjectData({}))
     signOut();
   };
 

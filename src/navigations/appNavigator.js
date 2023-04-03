@@ -134,6 +134,9 @@ import RecepSourceModelCRM_Recep from "../scenes/mainScenes/LiveLeadsReceptionis
 import DigitalDashBoardTargetScreen from "../scenes/mainScenes/DigitalDashboard/targetScreen";
 import DigitalDashboardFilter from "../scenes/mainScenes/DigitalDashboard/DigitalDashboardFilter";
 import DigitalRecepSourceModel from "../scenes/mainScenes/DigitalDashboard/DigitalRecepSourceModel";
+import ReceptionistDashboardScreen from "../scenes/mainScenes/ReceptionistDashboard";
+import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashbordSourceModel";
+import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -399,7 +402,8 @@ export const DrawerStackIdentifiers = {
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
   reportDownload:"REPORT_DOWNLOAD",
-  complaintTracker:"COMPLAINT_TRACKER"
+  complaintTracker:"COMPLAINT_TRACKER",
+  receptionistDashboard: "RECEPTIONIST_DASHBOARD",
 };
 
 export const TabStackIdentifiers = {
@@ -1093,6 +1097,40 @@ const DigitalDashboardStackNavigator = ({ navigation }) => {
   );
 };
 
+const ReceptionistDashboardStack = createStackNavigator();
+
+const ReceptionistDashboardNavigator = ({ navigation }) => {
+  return (
+    <ReceptionistDashboardStack.Navigator screenOptions={screeOptionStyle}>
+      <ReceptionistDashboardStack.Screen
+        name={DrawerStackIdentifiers.receptionistDashboard}
+        component={ReceptionistDashboardScreen}
+        options={{
+          headerShown: false
+          // title: "QR Code",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ReceptionistDashboardStack.Screen
+        name={"RECEPTIONIST_DASHBOARD_FILTER"}
+        component={ReceptionistDashboardFilter}
+        options={{
+          // headerShown: false
+          title: "Filter",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ReceptionistDashboardStack.Screen
+        name={"RECEP_SOURCE_MODEL_RECEPTIONIST"}
+        component={ReceptionistDashbordSourceModel}
+        options={{
+          title: "Source/Model",
+        }}
+      />
+    </ReceptionistDashboardStack.Navigator>
+  );
+};
+
 const MonthlyTargetStack = createStackNavigator();
 
 const MonthlyTargetStackNavigator = ({ navigation }) => {
@@ -1563,6 +1601,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.digitalDashboard}
         component={DigitalDashboardStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.receptionistDashboard}
+        component={ReceptionistDashboardNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.reportDownload}

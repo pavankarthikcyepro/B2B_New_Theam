@@ -150,6 +150,7 @@ const TargetScreenCRM = ({ route }) => {
   const [indexLocal, setIndexLocal] = useState(-1);
   const [storeSecondLevelLocal, setstoreSecondLevelLocal] = useState([]);
   const [storeFirstLevelLocal, setStoreFirstLevelLocal] = useState([]);
+  const [filterExapand, setfilterExapand] =useState(false);
 
   const [userData, setUserData] = useState({
     empId: 0,
@@ -678,9 +679,9 @@ const TargetScreenCRM = ({ route }) => {
       let tempArrSelf = selector.receptionistData.fullResponse.CRE?.map((item => item))
 
       let firstLevelDataLevel2 = selector.receptionistData.fullResponse.CRE?.map((item, index) => {
-        let firstLevel = item.salesconsultant.filter(item2 => item2.emp_id === item.emp_id)
+        let firstLevel = item.salesconsultant?.filter(item2 => item2.emp_id === item.emp_id)
 
-        if (firstLevel.length > 0) {
+        if (firstLevel?.length > 0) {
           // tempArr.push(firstLevel);
           Array.prototype.push.apply(tempArr, firstLevel);
 
@@ -1298,17 +1299,223 @@ const TargetScreenCRM = ({ route }) => {
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {selector.receptionistData.consultantList.length > 0 &&
-          selector.receptionistData.consultantList.map((item, index) => {
+        {selector.receptionistData.consultantList?.length > 0 &&
+          selector.receptionistData.consultantList?.map((item, index) => {
 
             if (item.emp_id === selector.saveCRMfilterObj.selectedempId[0]) {
               return (
                 <View key={`${item.emp_name} ${index}`}
                   style={{
-                    borderColor: isViewExpanded ? Colors.PINK : "",
-                    borderWidth: isViewExpanded ? 1 : 0,
+                    borderColor: filterExapand ? Colors.PINK : "",
+                    borderWidth: filterExapand ? 1 : 0,
                     borderRadius: 10,
-                    margin: isViewExpanded ? 10 : 0
+                    margin: filterExapand ? 10 : 0
+                  }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      width: Dimensions.get("screen").width - 28,
+
+
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {item.emp_name}
+                        {"  "}
+                        {"-   " + item?.roleName}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}></View>
+                    <View style={{ flexDirection: "row" }}>
+                      {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                        <Animated.View
+                          style={{
+                            transform: [
+                              { translateX: translation },
+                            ],
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                              alignSelf: "flex-start",
+                              marginLeft: 7,
+                              // transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>{selector.receptionistData?.fullResponse?.childUserCount}</Text>
+                          </View>
+                        </Animated.View>
+                      )}
+                      <SourceModelView
+                        onClick={() => {
+                          navigation.navigate(
+                            "RECEP_SOURCE_MODEL",
+                            {
+                              empId: item?.emp_id,
+                              headerTitle: item?.emp_name,
+                              loggedInEmpId: item.emp_id,
+                              type: "TEAM",
+                              moduleType: "home",
+                              headerTitle: "Source/Model",
+                              orgId: userData.orgId,
+                              role: userData.hrmsRole,
+                              branchList: userData.branchs.map(
+                                (a) => a.branchId
+                              ),
+                            }
+                          );
+                        }}
+                        style={{
+                          transform: [
+                            { translateX: translation },
+                          ],
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                  {/*Source/Model View END */}
+                  <View
+                    style={[
+                      { flexDirection: "row" },
+                      item.isOpenInner && {
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: "#C62159",
+                        marginHorizontal: 6,
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
+                    {/*RIGHT SIDE VIEW*/}
+                    <View style={[styles.view6]}>
+                      <View style={styles.view7}>
+                        <RenderLevel1NameViewCRM
+                          level={0}
+                          item={item}
+                          branchName={item.branch}
+                          color={"#C62159"}
+                          receptionManager={true}
+                          navigation={navigation}
+                          titleClick={async (e) => {
+                            setfilterExapand(!filterExapand)
+                            // setIsViewExpanded(!isViewExpanded)
+
+                          }}
+                          roleName={item.roleName}
+                          stopLocation={true}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            backgroundColor:
+                              "rgba(223,228,231,0.67)",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {[
+                            filterExapand ? item.enquiryCount : selector.receptionistData.enquirysCount || 0,
+                            filterExapand ? item.bookingCount : selector.receptionistData.bookingsCount || 0,
+                            filterExapand ? item.retailCount : selector.receptionistData.RetailCount || 0,
+                            filterExapand ? item.droppedCount : selector.receptionistData.totalLostCount || 0,
+                          ].map((e, indexss) => {
+                            return (
+                              <Pressable onPress={() => {
+
+                                // todo redirections logic filter UI 
+                                if (e > 0) {
+                                if (indexss === 0) {
+
+                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                                } else if (indexss === 1) {
+                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                } else if (indexss === 2) {
+                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                } else if (indexss === 3) {
+                                  // todo navigate to lost 
+                                  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0],true)
+                                }
+                              }
+
+                              }}>
+                                <View
+                                  style={{
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine: e > 0 ? "underline" : "none"
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </View>
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                    </View>
+                  </View>
+                  {filterExapand && renderCRMTreeFilterAppliedLevel2()}
+                </View>
+              );
+            }
+            
+          })}
+       
+      </View>)
+  }
+
+  const renderCRMTreeFilterAppliedLevel2 = () => {
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {selector.receptionistData.consultantList?.length > 0 &&
+          selector.receptionistData.consultantList?.map((item, index) => {
+
+            if (item.emp_id !== selector.saveCRMfilterObj.selectedempId[0]) {
+              return (
+                <View key={`${item.emp_name} ${index}`}
+                  style={{
+                    // borderColor: filterExapand ? Colors.PINK : "",
+                    // borderWidth: filterExapand ? 1 : 0,
+                    // borderRadius: 10,
+                    // margin: filterExapand ? 10 : 0
                   }}>
                   <View
                     style={{
@@ -1437,28 +1644,28 @@ const TargetScreenCRM = ({ route }) => {
                           }}
                         >
                           {[
-                            isViewExpanded ? item.enquiryCount : selector.receptionistData.enquirysCount || 0,
-                            isViewExpanded ? item.bookingCount : selector.receptionistData.bookingsCount || 0,
-                            isViewExpanded ? item.retailCount : selector.receptionistData.RetailCount || 0,
-                            isViewExpanded ? item.droppedCount : selector.receptionistData.totalLostCount || 0,
+                            item.enquiryCount || 0,
+                            item.bookingCount || 0,
+                            item.retailCount || 0,
+                            item.droppedCount || 0,
                           ].map((e, indexss) => {
                             return (
                               <Pressable onPress={() => {
 
                                 // todo redirections logic filter UI 
                                 if (e > 0) {
-                                if (indexss === 0) {
+                                  if (indexss === 0) {
 
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                                } else if (indexss === 1) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
-                                } else if (indexss === 2) {
-                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                                } else if (indexss === 3) {
-                                  // todo navigate to lost 
-                                  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0],true)
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                                  } else if (indexss === 1) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                  } else if (indexss === 2) {
+                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                  } else if (indexss === 3) {
+                                    // todo navigate to lost 
+                                    navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
+                                  }
                                 }
-                              }
 
                               }}>
                                 <View
@@ -1988,8 +2195,8 @@ const TargetScreenCRM = ({ route }) => {
     <View
     // style={{ height: selector.isMD ? "81%" : "80%" }}
     >
-      {selector.receptionistData.consultantList.length > 0 &&
-        selector.receptionistData.consultantList.map((item, index) => {
+      {selector.receptionistData.consultantList?.length > 0 &&
+        selector.receptionistData.consultantList?.map((item, index) => {
          
           if (item.emp_id === userData.empId) {
             return (
@@ -4714,7 +4921,7 @@ const TargetScreenCRM = ({ route }) => {
                                         onPress={() => {
                                           if (selector.receptionistData.enquirysCount >0){
                                             let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                            const temp = selector.receptionistData.consultantList?.map((item) => {
                                               empIdArry.push(item.emp_id);
 
                                             })
@@ -4764,7 +4971,7 @@ const TargetScreenCRM = ({ route }) => {
                                         onPress={() => {
                                           if (selector.receptionistData.RetailCount > 0) {
                                             let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                            const temp = selector.receptionistData.consultantList?.map((item) => {
                                               empIdArry.push(item.emp_id);
 
                                             })
@@ -4787,7 +4994,7 @@ const TargetScreenCRM = ({ route }) => {
                                         onPress={() => {
                                           if (selector.receptionistData.totalLostCount > 0) {
                                             let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
+                                            const temp = selector.receptionistData.consultantList?.map((item) => {
                                               empIdArry.push(item.emp_id);
                                             })
                                             navigateToDropLostCancel([...empIdArry]);
