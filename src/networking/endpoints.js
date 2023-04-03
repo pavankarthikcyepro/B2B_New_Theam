@@ -261,6 +261,9 @@ const URL = {
   GET_CUSTOMER_TYPES: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
   },
+  ADD_CUSTOMER: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/customer`;
+  },
   GET_SOURCE_TYPE: (tenantId) => {
     return (
       baseUrl +

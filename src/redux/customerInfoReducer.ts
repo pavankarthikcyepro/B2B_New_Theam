@@ -17,6 +17,19 @@ interface PersonalIntroModel {
   text: string;
 }
 
+export const addCustomer = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/addCustomer",
+  async (payload, { rejectWithValue }) => {
+    const { tenantId, customerData } = payload;
+    const response = await client.get(URL.ADD_CUSTOMER(tenantId), customerData);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getCustomerTypesApi = createAsyncThunk(
   "CUSTOMER_INFO_SLICE/getCustomerTypesApi",
   async (orgId, { rejectWithValue }) => {
@@ -106,6 +119,7 @@ export const getInsuranceCompanyApi = createAsyncThunk(
 
 const initialState = {
   isLoading: false,
+  addCustomerResponseStatus: "false",
   // Customer Info
   salutation: "",
   firstName: "",
@@ -652,6 +666,23 @@ const customerInfoReducer = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // ADD Customer
+    builder
+      .addCase(addCustomer.pending, (state, action) => {
+        state.isLoading = true;
+        state.addCustomerResponseStatus = "pending";
+      })
+      .addCase(addCustomer.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.addCustomerResponseStatus = "success";
+        }
+      })
+      .addCase(addCustomer.rejected, (state, action) => {
+        state.addCustomerResponseStatus = "failed";
+        state.isLoading = false;
+      });
+    
     // Get Customer Types
     builder
       .addCase(getCustomerTypesApi.pending, (state, action) => {

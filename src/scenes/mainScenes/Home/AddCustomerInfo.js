@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DatePickerComponent, DropDownComponant, TextinputComp } from '../../../components';
 import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
-import { clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
+import { addCustomer, clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
 import { Colors, GlobalStyle } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
 import { showToast } from '../../../utils/toast';
@@ -232,7 +232,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
   };
 
   const submitClick = () => {
-    let payload = {
+    return;
+    
+    let customerData = {
       // SERVICE
       kmReadingAtService: selector.readingAtService,
       // information: "", (not in UI)
@@ -297,6 +299,13 @@ const AddCustomerInfo = ({ navigation, route }) => {
         // dateOfArrival: "", (not in UI)
       },
     };
+
+    let payload = {
+      tenantId: userData?.branchId,
+      customerData: customerData,
+    };
+
+    dispatch(addCustomer(payload));
   }
 
   return (
