@@ -60,8 +60,16 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
-import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
-import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData } from "../../redux/liveLeadsReducer";
+import {
+  saveFilterPayload,
+  updateDealerFilterData,
+  updateFilterSelectedData,
+} from "../../redux/targetSettingsReducer";
+import {
+  updateFilterSelectedData as updateFilterSelectedDataV2,
+  updateFilterLevelSelectedData,
+  updateLiveLeadObjectData,
+} from "../../redux/liveLeadsReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -76,8 +84,7 @@ const commonMenu = [
   "Drop Analysis",
   "My Attendance",
   "Download Report",
-  "Complaint Tracker"
-
+  "Complaint Tracker",
 ];
 const salesMenu = [
   ...commonMenu,
@@ -85,7 +92,7 @@ const salesMenu = [
   "Target Planning",
   "Event Dashboard",
   "Geolocation",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 const receptionTelCallerMenu = [
   ...commonMenu,
@@ -102,7 +109,7 @@ const managerMenu = [
   "Target Planning",
   "Task Transfer",
   "Geolocation",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 const mdMenu = [
   ...commonMenu,
@@ -112,7 +119,7 @@ const mdMenu = [
   "Digital Dashboard",
   "Target Planning",
   "Task Transfer",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -347,15 +354,20 @@ const SideMenuScreen = ({ navigation }) => {
         break;
       case 113:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, { emp_id: "", fromScreen: "" });
-        // added empty params to reset & manage APi call in dropanalysis screen 
+        // added empty params to reset & manage APi call in dropanalysis screen
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: "", fromScreen: "", isForDropped: false, isFilterApplied:false },
+          params: {
+            emp_id: "",
+            fromScreen: "",
+            isForDropped: false,
+            isFilterApplied: false,
+          },
         });
-        
+
         break;
       case 114:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads,{
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads, {
           fromScreen: "",
           selectedID: "",
           fromDate: "",
@@ -383,12 +395,14 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
       case 123:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.complaintTracker);
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.complaintTracker
+        );
         break;
       case 112:
         signOutClicked();
         break;
-      
+
       // case 999:
       //   navigation.navigate("Target Settings");
       //   break;
@@ -529,7 +543,7 @@ const SideMenuScreen = ({ navigation }) => {
             setInitialData(newInitial);
             setImageUri(
               saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
             );
           }
           // setDataList(json);
@@ -556,9 +570,9 @@ const SideMenuScreen = ({ navigation }) => {
       const saveProfile = await response.json();
       setImageUri(
         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-        "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
       );
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const deleteProfilePic = async () => {
@@ -644,7 +658,7 @@ const SideMenuScreen = ({ navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => { }}
+            onPress={() => {}}
           >
             <>
               <Button
@@ -757,8 +771,8 @@ const SideMenuScreen = ({ navigation }) => {
               source={{
                 uri: imageUri,
               }}
-            // source={imageUri}
-            //  source={require("../../assets/images/bently.png")}
+              // source={imageUri}
+              //  source={require("../../assets/images/bently.png")}
             />
           </TouchableOpacity>
           <View style={styles.profilDetailes}>
@@ -791,6 +805,10 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
+          if (userData.isAttendance === "N" && item.title === "My Attendance")
+            return;
+          if (userData.isGeolocation === "N" && item.title === "Geolocation")
+            return;
           const isActive = false;
           const textColor = "gray";
           // const isActive = route?.state?.index == index;
