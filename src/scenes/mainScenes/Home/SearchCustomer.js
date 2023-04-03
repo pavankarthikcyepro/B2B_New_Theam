@@ -8,7 +8,7 @@ import {
   View,
   ScrollView,
 } from "react-native";
-import { ButtonComp, DropDownComponant, TextinputComp } from '../../../components';
+import { ButtonComp, DropDownComponant, LoaderComponent, TextinputComp } from '../../../components';
 import { DropDownSelectionItem } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import * as AsyncStore from "../../../asyncStore";
@@ -73,7 +73,6 @@ const SearchCustomer = ({ navigation, route }) => {
       navigation.navigate("SEARCH_CUSTOMER_RESULT");
     }
   }, [selector.searchResultResponseStatus]);
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -171,13 +170,11 @@ const SearchCustomer = ({ navigation, route }) => {
           </View>
 
           <View style={{ marginTop: 15 }}>
-            <ButtonComp
-              title={"Search"}
-              onPress={() => searchClick()}
-            />
+            <ButtonComp title={"Search"} onPress={() => searchClick()} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <LoaderComponent visible={selector.isLoading} />
     </SafeAreaView>
   );
 };
