@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ButtonComp } from '../../../components';
 import { clearSearchResult } from '../../../redux/searchCustomerReducer';
 import { Colors, GlobalStyle } from '../../../styles';
+import { callNumber, sendWhatsApp } from '../../../utils/helperFunctions';
 
 const IconComp = ({ iconName, onPress, opacity = 1 }) => {
   return (
@@ -71,12 +72,20 @@ const SearchCustomerResult = ({ navigation, route }) => {
               onPress={() => {}}
             />
             <View style={{ padding: 5 }} />
-            <IconComp iconName={"phone-outline"} onPress={() => {}} />
+            <IconComp
+              iconName={"phone-outline"}
+              onPress={() => callNumber(item.contactNumber)}
+            />
             <View style={{ padding: 5 }} />
-            <IconComp iconName={"whatsapp"} onPress={() => {}} />
+            <IconComp
+              iconName={"whatsapp"}
+              onPress={() => sendWhatsApp(item.contactNumber)}
+            />
           </View>
           <Text style={styles.detailText}>Gachhibowli Workshop</Text>
-          <Text style={styles.detailHighLightText}>Due date: {item.dueDate}</Text>
+          <Text style={styles.detailHighLightText}>
+            Due date: {item.dueDate}
+          </Text>
         </View>
       </View>
     );
