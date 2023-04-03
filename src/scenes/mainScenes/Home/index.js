@@ -108,7 +108,7 @@ const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM", "Tele Caller","CRE"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
@@ -210,57 +210,59 @@ const HomeScreen = ({ route, navigation }) => {
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
-          dispatch(getNotificationList(jsonObj.empId));
-          var d = new Date();
-          const response = await client.get(
-            URL.GET_ATTENDANCE_EMPID(
-              jsonObj.empId,
-              jsonObj.orgId,
-              monthNamesCap[d.getMonth()]
-            )
-          );
-          const json = await response.json();
-          const response1 = await client.get(
-            URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
-          );
-          const json1 = await response1.json();
-          if (json1?.length>0) {
-            return
-          }
-          if (json.length != 0) {
-            let date = new Date(json[json.length - 1].createdtimestamp);
-            // let dist = getDistanceBetweenTwoPoints(
-            //   officeLocation.latitude,
-            //   officeLocation.longitude,
-            //   initialPosition?.latitude,
-            //   initialPosition?.longitude
-            // );
-            // if (dist > officeRadius) {
-            //   setReason(true); ///true for reason
-            // } else {
-            //   setReason(false);
-            // }
-            if (date.getDate() != new Date().getDate()) {
-              setAttendance(true);
-              // if (startDate <= now && now <= startBetween) {
-              //   setAttendance(true);
-              // } else {
-              //   setAttendance(false);
-              // }
-            } else {
-              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-              //   setAttendance(true);
-              // } else {
-              //   setAttendance(false);
-              // }
+          if (jsonObj.isAttendance === "Y") {
+            dispatch(getNotificationList(jsonObj.empId));
+            var d = new Date();
+            const response = await client.get(
+              URL.GET_ATTENDANCE_EMPID(
+                jsonObj.empId,
+                jsonObj.orgId,
+                monthNamesCap[d.getMonth()]
+              )
+            );
+            const json = await response.json();
+            const response1 = await client.get(
+              URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
+            );
+            const json1 = await response1.json();
+            if (json1?.length > 0) {
+              return;
             }
-          } else {
-            setAttendance(true);
-            //  if (startDate <= now && now <= startBetween) {
-            //    setAttendance(true);
-            //  } else {
-            //    setAttendance(false);
-            //  }
+            if (json.length != 0) {
+              let date = new Date(json[json.length - 1].createdtimestamp);
+              // let dist = getDistanceBetweenTwoPoints(
+              //   officeLocation.latitude,
+              //   officeLocation.longitude,
+              //   initialPosition?.latitude,
+              //   initialPosition?.longitude
+              // );
+              // if (dist > officeRadius) {
+              //   setReason(true); ///true for reason
+              // } else {
+              //   setReason(false);
+              // }
+              if (date.getDate() != new Date().getDate()) {
+                setAttendance(true);
+                // if (startDate <= now && now <= startBetween) {
+                //   setAttendance(true);
+                // } else {
+                //   setAttendance(false);
+                // }
+              } else {
+                // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+                //   setAttendance(true);
+                // } else {
+                //   setAttendance(false);
+                // }
+              }
+            } else {
+              setAttendance(true);
+              //  if (startDate <= now && now <= startBetween) {
+              //    setAttendance(true);
+              //  } else {
+              //    setAttendance(false);
+              //  }
+            }
           }
         }
       }
@@ -273,23 +275,27 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(async () => {
     if (
       userData.hrmsRole === "Reception" ||
-      userData.hrmsRole === "Tele Caller" || userData.hrmsRole === "CRE"
+      userData.hrmsRole === "Tele Caller" ||
+      userData.hrmsRole === "CRE"
     ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
-        "startDate": selector.receptionistFilterIds.startDate,
-        "endDate": selector.receptionistFilterIds.endDate,
-        "dealerCodes": selector.receptionistFilterIds.dealerCodes
+        startDate: selector.receptionistFilterIds.startDate,
+        endDate: selector.receptionistFilterIds.endDate,
+        dealerCodes: selector.receptionistFilterIds.dealerCodes,
       };
       dispatch(getReceptionistData(payload));
-    } else if (userData.hrmsRole === "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
+    } else if (
+      userData.hrmsRole === "CRM" &&
+      !selector.saveCRMfilterObj?.selectedempId
+    ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
       };
       // dispatch(getReceptionistManagerData(payload));
-      dispatch(getCRM_ReceptionistManagerData(payload))
+      dispatch(getCRM_ReceptionistManagerData(payload));
     }
   }, [userData, selector.receptionistFilterIds]);
 
@@ -406,23 +412,22 @@ const HomeScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-
-    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRE" || userData.hrmsRole == "Tele Caller") {
-    // if (isReceptionist(userData.hrmsRole)) {
+    if (
+      userData.hrmsRole == "Reception" ||
+      userData.hrmsRole == "CRE" ||
+      userData.hrmsRole == "Tele Caller"
+    ) {
+      // if (isReceptionist(userData.hrmsRole)) {
       navigation.navigate(
         AppNavigator.HomeStackIdentifiers.receptionistFilter,
         {
           isFromLogin: false,
         }
       );
-    }
-    else if (userData.hrmsRole == "CRM"){
-      navigation.navigate(
-        AppNavigator.HomeStackIdentifiers.crmFilter,
-        {
-          isFromLogin: false,
-        }
-      );
+    } else if (userData.hrmsRole == "CRM") {
+      navigation.navigate(AppNavigator.HomeStackIdentifiers.crmFilter, {
+        isFromLogin: false,
+      });
     } else {
       navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
         isFromLogin: false,
@@ -1084,7 +1089,7 @@ const HomeScreen = ({ route, navigation }) => {
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
     if (!screenName) {
-      if (selector.saveCRMfilterObj?.selectedempId){
+      if (selector.saveCRMfilterObj?.selectedempId) {
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "Home",
@@ -1095,10 +1100,10 @@ const HomeScreen = ({ route, navigation }) => {
             startDate: selector.saveCRMfilterObj.startDate,
             endDate: selector.saveCRMfilterObj.endDate,
             dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-            ignoreSelectedId : true
+            ignoreSelectedId: true,
           });
         }, 1000);
-      } else if (userData.hrmsRole === "CRM"){
+      } else if (userData.hrmsRole === "CRM") {
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "TargetScreenCRM",
@@ -1109,13 +1114,12 @@ const HomeScreen = ({ route, navigation }) => {
             startDate: "",
             endDate: "",
             dealerCodes: [],
-            ignoreSelectedId:false,
+            ignoreSelectedId: false,
             parentId: selectedEmpId[0],
-            istotalClick: true
+            istotalClick: true,
           });
         }, 1000);
-      }
-      else{
+      } else {
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "Home",
@@ -1126,11 +1130,10 @@ const HomeScreen = ({ route, navigation }) => {
             startDate: selector.receptionistFilterIds.startDate,
             endDate: selector.receptionistFilterIds.endDate,
             dealerCodes: selector.receptionistFilterIds.dealerCodes,
-            ignoreSelectedId: true
+            ignoreSelectedId: true,
           });
         }, 1000);
       }
-      
     }
   }
   function navigateToContact(params) {
@@ -1244,19 +1247,29 @@ const HomeScreen = ({ route, navigation }) => {
     );
   };
   function navigateToDropLostCancel(params) {
-    if (selector.saveCRMfilterObj.selectedempId){
-      
+    if (selector.saveCRMfilterObj.selectedempId) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-        params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "Home", dealercodes: selector.saveCRMfilterObj.dealerCodes, isForDropped: true, isFilterApplied: true },
+        params: {
+          emp_id: selector.saveCRMfilterObj.selectedempId[0],
+          fromScreen: "Home",
+          dealercodes: selector.saveCRMfilterObj.dealerCodes,
+          isForDropped: true,
+          isFilterApplied: true,
+        },
       });
-    }else{
+    } else {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-        params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: false },
+        params: {
+          emp_id: "",
+          fromScreen: "Home",
+          dealercodes: selector.receptionistFilterIds.dealerCodes,
+          isForDropped: false,
+          isFilterApplied: false,
+        },
       });
     }
-   
   }
 
   return (
@@ -1294,7 +1307,7 @@ const HomeScreen = ({ route, navigation }) => {
         navigation={navigation}
       />
       <ScrollView
-      nestedScrollEnabled={true}
+        nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, paddingHorizontal: 10 }}
       >
@@ -1505,7 +1518,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.totalDroppedCount > 0 &&
-                   navigateToDropLostCancel()
+                    navigateToDropLostCancel();
                 }}
                 style={styles.view8}
               >
@@ -1558,7 +1571,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.bookingsCount > 0 &&
-                    navigateToEMS("BOOKING","",[userData.empId]);
+                    navigateToEMS("BOOKING", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1580,7 +1593,8 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                  selector.receptionistData.RetailCount > 0 &&
+                    navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1822,7 +1836,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   rankHeadingText: {
     fontSize: 10,
