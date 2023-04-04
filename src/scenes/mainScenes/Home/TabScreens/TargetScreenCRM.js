@@ -840,6 +840,7 @@ const TargetScreenCRM = ({ route }) => {
       setIsViewExpanded(false)
       setIsViewCreExpanded(false)
       setisShowSalesConsultant(false)
+      setfilterExapand(false)
     });
     setSlideRight(0);
   }, [navigation, selector.isTeam]);
@@ -863,14 +864,17 @@ const TargetScreenCRM = ({ route }) => {
   }, [selector.saveCRMfilterObj])
 
   const CRMFilterApplied = () => {
-    let payload = {
-      orgId: userData.orgId,
-      loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-      "startDate": selector.saveCRMfilterObj.startDate,
-      "endDate": selector.saveCRMfilterObj.endDate,
-      "dealerCodes": selector.saveCRMfilterObj.dealerCodes
-    };
-    dispatch(getReceptionistData(payload));
+    if (userData.orgId >0){
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+        "startDate": selector.saveCRMfilterObj.startDate,
+        "endDate": selector.saveCRMfilterObj.endDate,
+        "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+      };
+      dispatch(getReceptionistData(payload));
+    }
+
   }
 
   const getReceptionManagerTeam = async (userData) => {
@@ -1112,19 +1116,39 @@ const TargetScreenCRM = ({ route }) => {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       if (selector.saveCRMfilterObj?.selectedempId) {
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-            ignoreSelectedId: isIgnore
-          });
-        }, 1000);
+       
+
+        if (parentId){
+          setTimeout(() => {
+            navigation.navigate("LEADS", {
+              screenName: "TargetScreenCRM",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: "",
+              endDate: "",
+              dealerCodes: [],
+              ignoreSelectedId: isIgnore,
+              parentId: parentId,
+              istotalClick: false
+            });
+          }, 1000);
+        }else {
+          setTimeout(() => {
+            navigation.navigate("LEADS", {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+              startDate: selector.saveCRMfilterObj.startDate,
+              endDate: selector.saveCRMfilterObj.endDate,
+              dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+              ignoreSelectedId: isIgnore,
+            });
+          }, 1000);
+        }
       }
       else if (isIgnore){
         if(parentId){
@@ -1216,7 +1240,7 @@ const TargetScreenCRM = ({ route }) => {
     if (selector.saveCRMfilterObj.selectedempId){
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",
-        params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: selector.saveCRMfilterObj.dealerCodes,isFilterApplied :true },
+        params: { emp_id: params, fromScreen: "targetScreen1CRM", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, parentId: parentId, isSelf: isSelf },
       });
     }else{
      
@@ -1371,22 +1395,42 @@ const TargetScreenCRM = ({ route }) => {
                       )}
                       <SourceModelView
                         onClick={() => {
-                          navigation.navigate(
-                            "RECEP_SOURCE_MODEL",
-                            {
-                              empId: item?.emp_id,
-                              headerTitle: item?.emp_name,
-                              loggedInEmpId: item.emp_id,
-                              type: "TEAM",
-                              moduleType: "home",
-                              headerTitle: "Source/Model",
-                              orgId: userData.orgId,
-                              role: userData.hrmsRole,
-                              branchList: userData.branchs.map(
-                                (a) => a.branchId
-                              ),
-                            }
-                          );
+                          if (filterExapand) {
+                            handleSourceModalNavigation(item, selector.saveCRMfilterObj.selectedempId[0],[item.emp_id])
+                          }else{
+                              navigation.navigate(
+                              "RECEP_SOURCE_MODEL",
+                              {
+                                empId: item?.emp_id,
+                                headerTitle: item?.emp_name,
+                                loggedInEmpId: item.emp_id,
+                                type: "TEAM",
+                                moduleType: "home",
+                                headerTitle: "Source/Model",
+                                orgId: userData.orgId,
+                                role: userData.hrmsRole,
+                                branchList: userData.branchs.map(
+                                  (a) => a.branchId
+                                ),
+                              }
+                            );
+                          }
+                          // navigation.navigate(
+                          //   "RECEP_SOURCE_MODEL",
+                          //   {
+                          //     empId: item?.emp_id,
+                          //     headerTitle: item?.emp_name,
+                          //     loggedInEmpId: item.emp_id,
+                          //     type: "TEAM",
+                          //     moduleType: "home",
+                          //     headerTitle: "Source/Model",
+                          //     orgId: userData.orgId,
+                          //     role: userData.hrmsRole,
+                          //     branchList: userData.branchs.map(
+                          //       (a) => a.branchId
+                          //     ),
+                          //   }
+                          // );
                         }}
                         style={{
                           transform: [
@@ -1448,17 +1492,32 @@ const TargetScreenCRM = ({ route }) => {
 
                                 // todo redirections logic filter UI 
                                 if (e > 0) {
-                                if (indexss === 0) {
+                                  if (filterExapand){
+                                    if (indexss === 0) {
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true, selector.saveCRMfilterObj.selectedempId[0], false);
+                                  
+                                    } else if (indexss === 1) {
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                    } else if (indexss === 2) {
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                    } else if (indexss === 3) {
+                                      // todo navigate to lost 
+                                      navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true, item.emp_id, false)
+                                    }
+                                  }else{
+                                    if (indexss === 0) {
 
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], true);
-                                } else if (indexss === 1) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], true);
-                                } else if (indexss === 2) {
-                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
-                                } else if (indexss === 3) {
-                                  // todo navigate to lost 
-                                  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0],true)
-                                }
+                                      navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                                    } else if (indexss === 1) {
+                                      navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                    } else if (indexss === 2) {
+                                      navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                    } else if (indexss === 3) {
+                                      // todo navigate to lost 
+                                      navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
+                                    }
+                                  }
+                                
                               }
 
                               }}>
@@ -1577,22 +1636,7 @@ const TargetScreenCRM = ({ route }) => {
                       )}
                       <SourceModelView
                         onClick={() => {
-                          navigation.navigate(
-                            "RECEP_SOURCE_MODEL",
-                            {
-                              empId: item?.emp_id,
-                              headerTitle: item?.emp_name,
-                              loggedInEmpId: item.emp_id,
-                              type: "TEAM",
-                              moduleType: "home",
-                              headerTitle: "Source/Model",
-                              orgId: userData.orgId,
-                              role: userData.hrmsRole,
-                              branchList: userData.branchs.map(
-                                (a) => a.branchId
-                              ),
-                            }
-                          );
+                          handleSourceModalNavigation(item, selector.saveCRMfilterObj.selectedempId[0], [item.emp_id])
                         }}
                         style={{
                           transform: [
@@ -1663,7 +1707,7 @@ const TargetScreenCRM = ({ route }) => {
                                     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
                                   } else if (indexss === 3) {
                                     // todo navigate to lost 
-                                    navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
+                                    navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0],true,item.emp_id, false)
                                   }
                                 }
 

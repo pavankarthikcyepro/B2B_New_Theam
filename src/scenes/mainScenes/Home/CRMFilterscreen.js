@@ -46,6 +46,7 @@ import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { Colors } from "../../../styles";
 
 
+
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
@@ -100,6 +101,8 @@ const CRMFilterscreen = ({ route, navigation }) => {
   const isFocused = useIsFocused();
   const [selectDesignationsData, setSelectDesignationsData] = useState([]);
   const [selectEmployeeData, setSelectEmployeeData] = useState([]);
+  const [storeDropDownClickdata, setStoreDropDownClickdata] = useState([]);
+  const [storeDropDownClickIndex, setStoreDropDownClickIndex] = useState(-1);
   useEffect(() => {
     getAsyncData();
   }, []);
@@ -286,6 +289,12 @@ const CRMFilterscreen = ({ route, navigation }) => {
         setSelectedItemIndex(index);
         setShowDropDownModel(true);
         setDropDownFrom("EMPLOYEE_TABLE");
+      }else{
+        setDropDownData(selectEmployeeData);
+
+        setSelectedItemIndex(index);
+        setShowDropDownModel(true);
+        setDropDownFrom("EMPLOYEE_TABLE");
       }
       
     }
@@ -340,28 +349,132 @@ const CRMFilterscreen = ({ route, navigation }) => {
     }
 
     let localIndex2 = index + 1;
-    let selectedParendIds = [];
-    let unselectedParentIds = [];
-    selectedParendIds.push(Number(data.id));
-    console.log("manthan ---> Number(data.parentId ", Number(data.id));
+    for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
+      let key = nameKeyList[localIndex2];
+      const dataArray = totalDataObjLocal[key].sublevels;
+      if (dataArray.length > 0) {
+        const newDataArry = dataArray.map((subItem, index) => {
+          const obj = { ...subItem };
+          obj.selected = false;
+          return obj;
+        });
+        const newOBJ = {
+          sublevels: newDataArry,
+        };
+        totalDataObjLocal[key] = newOBJ;
+      }
+    }
+
+    let key = nameKeyList[index];
+    var newArr = totalDataObjLocal[key].sublevels;
+    const result = newArr.map((file) => {
+      return { ...file, selected: false };
+    });
+    let objIndex = result.findIndex((obj) => obj.id == data.id);
+    for (let i = 0; i < result.length; i++) {
+      if (objIndex === i) {
+        result[i].selected = true;
+      } else {
+        result[i].selected = false;
+      }
+    }
+    const newOBJ = {
+      sublevels: result,
+    };
+    totalDataObjLocal[key] = newOBJ;
+
+    dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
+    setTotalDataObj({ ...totalDataObjLocal });
+    // index == 4 && submitBtnClicked(totalDataObjLocal,"");
+  };
+
+  const updateSelectedItemsSubmit = async(data, index, initalCall = false) => {
+    const totalDataObjLocal = { ...totalDataObj };
+    console.log("manthan dhdhdh ",index);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+    // if (index > 0) {
+      let selectedParendIds = [];
+      let unselectedParentIds = [];
+      selectedParendIds.push(Number(data.parentId));
+      // data.forEach((item) => {
+      //   if (item.selected != undefined && item.selected == true) {
+      //     selectedParendIds.push(Number(item.parentId));
+      //   } else {
+      //     unselectedParentIds.push(Number(item.parentId));
+      //   }
+      // });
+
+      let localIndex =   - 1;
+
+      for (localIndex; localIndex >= 0; localIndex--) {
+        let selectedNewParentIds = [];
+        let unselectedNewParentIds = [];
+
+        let key = nameKeyList[localIndex];
+        const dataArray = totalDataObjLocal[key].sublevels;
+
+        if (dataArray.length > 0) {
+          const newDataArry = dataArray.map((subItem, index) => {
+            const obj = { ...subItem };
+            if (selectedParendIds.includes(Number(obj.id))) {
+              obj.selected = true;
+              selectedNewParentIds.push(Number(obj.parentId));
+            } else if (unselectedParentIds.includes(Number(obj.id))) {
+              if (obj.selected == undefined) {
+                obj.selected = false;
+              }
+              unselectedNewParentIds.push(Number(obj.parentId));
+            }
+            return obj;
+          });
+          const newOBJ = {
+            sublevels: newDataArry,
+          };
+          totalDataObjLocal[key] = newOBJ;
+        }
+        selectedParendIds = selectedNewParentIds;
+        unselectedParentIds = unselectedNewParentIds;
+      }
+    // }
+
+    let localIndex2 = index + 1;
+    let selectedParendIds2 = [];
+    let unselectedParentIds2 = [];
+    selectedParendIds2.push(Number(data.id));
+    
     for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
         let selectedNewParentIds = [];
         let unselectedNewParentIds = [];
 
       let key = nameKeyList[localIndex2];
       const dataArray = totalDataObjLocal[key].sublevels;
-      console.log("manthan ---> ", key);
+     
       if (dataArray.length > 0) {
         const newDataArry = dataArray.map((subItem, index) => {
-        
           //    const obj = { ...subItem };
           // obj.selected = false;
           // return obj;
           const obj = { ...subItem };
-          if (selectedParendIds.includes(Number(obj.parentId))) {
-            console.log("manthan ---> Number(data.parentId ", Number(obj.id));
-            obj.selected = true;
+          if (selectedParendIds2.includes(Number(obj.parentId))) {
+            
+            // obj.selected = true 
             selectedNewParentIds.push(Number(obj.id));
+            if (key === "Dealer Code"){ // to restrict only users assigned branches selection and auto populate
+              let data = jsonObj.branchs;
+               for (let j = 0; j < jsonObj.branchs.length; j++) {
+                 const id2 = jsonObj.branchs[j];
+                 if (id2.branchName === obj.name) {
+                   obj.selected = true
+                 }
+               }
+          
+            }else{
+              obj.selected = true
+            }
           }
           //  else if (unselectedParentIds.includes(Number(obj.id))) {
           //   if (obj.selected == undefined) {
@@ -379,8 +492,8 @@ const CRMFilterscreen = ({ route, navigation }) => {
         };
         totalDataObjLocal[key] = newOBJ;
       }
-      selectedParendIds = selectedNewParentIds;
-      unselectedParentIds = unselectedNewParentIds;
+      selectedParendIds2 = selectedNewParentIds;
+      unselectedParentIds2 = unselectedNewParentIds;
     }
 
     let key = nameKeyList[index];
@@ -403,7 +516,9 @@ const CRMFilterscreen = ({ route, navigation }) => {
     
     dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
     setTotalDataObj({ ...totalDataObjLocal });
+      return { ...totalDataObjLocal }
     // index == 4 && submitBtnClicked(totalDataObjLocal,"");
+  }
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
@@ -439,15 +554,65 @@ const CRMFilterscreen = ({ route, navigation }) => {
 
       // setEmployeeDropDownDataLocal(newDataObj);
     }else{
+   
+      // let key = employeeTitleNameList[index];
+      // const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
+      // let objIndex = newTotalDataObjLocal[key].findIndex(
+      //   (obj) => obj.name == data.name
+      // );
+      // const a = newTotalDataObjLocal[key].map((data, index) =>
+      //   index === objIndex
+      //     ? { ...newTotalDataObjLocal[key][index], selected: true }
+      //     : { ...newTotalDataObjLocal[key][index], selected: false }
+      // );
+      // newTotalDataObjLocal[key] = a;
+      // setEmployeeDropDownDataLocal(newTotalDataObjLocal);
+     
+      
+      let arrayData = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+          
+          element.name === data.designation ? element.selected = true : element.selected = false;
+
+        });
+       
+      }
+
+      let arrayData2 = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData2 = employeeDropDownDataLocal[key].map((element, i) => {
+         
+          element.name === data.name ? { ...element, selected : true } : { ...element,selected : false };
+
+        });
+
+      }
+      // setEmployeeDropDownDataLocal(arrayData2);
       let temparr2 = dropDownData.map((item, i) => {
+        if (index1 === i) {
+          item.selected = true
+          // let findEmployee = selectDesignationsData.filter(item => item.selected = true);
+        } else {
+          item.selected = false
+          // let findEmployee = selectDesignationsData.filter(item => item.selected = false);
+        }
+
+        // setEmployeeDropDownDataLocal(arrayData);
+       
+      })
+      // working code
+      // let temparr2 = dropDownData.map((item, i) => {
        
         
-        index1 === i ? item.selected = true : item.selected = false
-      })
+      //   index1 === i ? item.selected = true : item.selected = false
+      // })
     }
     
     // setEmployeeDropDownDataLocal(tempEmployeeArr);
   };
+
+  
 
   const clearBtnClicked = () => {
     const totalDataObjLocal = { ...totalDataObj };
@@ -483,27 +648,77 @@ const CRMFilterscreen = ({ route, navigation }) => {
     
   };
 
-  const submitBtnClicked = (initialData,from) => {
+  const submitBtnClicked = async(initialData,from) => {
+    
     let i = 0;
     const selectedIds = [];
     const selectedDealerCodeName = [];
-    for (i; i < nameKeyList.length; i++) {
-      let key = nameKeyList[i];
-      const dataArray = initialData
-        ? initialData[key].sublevels
-        : totalDataObj[key].sublevels;
-      if (dataArray.length > 0) {
-        dataArray.forEach((item, index) => {
-          if (item.selected != undefined && item.selected == true) {
-            selectedIds.push(item.id);
-            if (item.type === "Level5") {
-              selectedDealerCodeName.push(item.name)
+   
+    if (!_.isEmpty(storeDropDownClickdata)) {
+    
+      let temp = await updateSelectedItemsSubmit(storeDropDownClickdata, storeDropDownClickIndex)
+     
 
-            }
+      if (temp) {
+        for (i; i < nameKeyList.length; i++) {
+          let key = nameKeyList[i];
+          const dataArray = initialData
+            ? initialData[key].sublevels
+            : temp[key].sublevels;
+          if (dataArray.length > 0) {
+            dataArray.forEach((item, index) => {
+              if (item.selected != undefined && item.selected == true) {
+                selectedIds.push(item.id);
+                if (item.type === "Level5") {
+                  selectedDealerCodeName.push(item.name)
+
+                }
+              }
+            });
           }
-        });
+        }
+      }
+    } else {
+      
+      for (i; i < nameKeyList.length; i++) {
+        let key = nameKeyList[i];
+        const dataArray = initialData
+          ? initialData[key].sublevels
+          : totalDataObj[key].sublevels;
+        if (dataArray.length > 0) {
+          dataArray.forEach((item, index) => {
+            if (item.selected != undefined && item.selected == true) {
+              selectedIds.push(item.id);
+              if (item.type === "Level5") {
+                selectedDealerCodeName.push(item.name)
+
+              }
+            }
+          });
+        }
       }
     }
+   
+    // let i = 0;
+    // const selectedIds = [];
+    // const selectedDealerCodeName = [];
+    // for (i; i < nameKeyList.length; i++) {
+    //   let key = nameKeyList[i];
+    //   const dataArray = initialData
+    //     ? initialData[key].sublevels
+    //     : totalDataObj[key].sublevels;
+    //   if (dataArray.length > 0) {
+    //     dataArray.forEach((item, index) => {
+    //       if (item.selected != undefined && item.selected == true) {
+    //         selectedIds.push(item.id);
+    //         if (item.type === "Level5") {
+    //           selectedDealerCodeName.push(item.name)
+
+    //         }
+    //       }
+    //     });
+    //   }
+    // }
 
     if (selectedIds.length > 0) {
       // setIsLoading(true);
@@ -699,6 +914,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
   
 
   const submitBtnForEmployeeData = () => {
+
     if (!_.isEmpty(selector.dealerFilter)) {
       let selectedIds = [];
       for (let key in employeeDropDownDataLocal) {
@@ -786,7 +1002,10 @@ const CRMFilterscreen = ({ route, navigation }) => {
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item, o, index) => {
+          
           if (dropDownFrom === "ORG_TABLE") {
+            setStoreDropDownClickdata(item)
+            setStoreDropDownClickIndex(selectedItemIndex)
             updateSelectedItems(item, selectedItemIndex);
           } else {
             updateSelectedItemsForEmployeeDropDown(
@@ -958,7 +1177,6 @@ const CRMFilterscreen = ({ route, navigation }) => {
                           }
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
-                          
                             const data = employeeDropDownDataLocal[item];
                          
                             let selectedNames = "";

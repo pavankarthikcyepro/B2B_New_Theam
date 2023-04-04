@@ -34,7 +34,7 @@ import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/
 import { Colors } from "../../../styles";
 import { AppNavigator } from "../../../navigations";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
-
+import _ from "lodash";
 const DigitalRecepSourceModel = ({ route, navigation }) => {
   const paramsMetadata = [
     {
@@ -181,6 +181,21 @@ const DigitalRecepSourceModel = ({ route, navigation }) => {
           dispatch(getReceptionistManagerSource(newPayload3));
           dispatch(getReceptionistManagerModel(newPayload3));
         } else if (selector.saveCRMfilterObj?.selectedempId) {
+          if (!_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
+            if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+              let newPayload3 = {
+                orgId: orgId,
+                loggedInEmpId: loggedInEmpId,
+                "startDate": selector.saveCRMfilterObj.startDate,
+                "endDate": selector.saveCRMfilterObj.endDate,
+                "dealerCodes": selector.saveCRMfilterObj.dealerCodes,
+                "empList": empList ? empList : null,
+                "self": self
+              };
+              dispatch(getReceptionistManagerSource(newPayload3));
+              dispatch(getReceptionistManagerModel(newPayload3));
+            }
+          }
           let newPayload2 = {
             orgId: orgId,
             loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],

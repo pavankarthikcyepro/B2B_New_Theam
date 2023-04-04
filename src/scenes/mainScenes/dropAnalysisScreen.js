@@ -269,19 +269,35 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     }
                     dispatch(getDropAnalysisRedirectionsCRM(payload))
                 } else {
-                    payload = {
-                        "loginEmpId": selectedEmpIds,
-                        "startDate": CurrentMonthFirstDate,
-                        "endDate": currentMonthLastDate,
-                        "orgId": jsonObj.orgId,
-                        "limit": 1000,
-                        "offset": 0,
-                        "filterValue": "",
-                        "selectedEmpId": route.params.parentId ? [route.params.parentId] : [],
-                        "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
-                        "forDropped": false,
+                    if (route.params.isSelf){
+                        payload = {
+                            "loggedInEmpId": selectedEmpIds,
+                            "startDate": CurrentMonthFirstDate,
+                            "endDate": currentMonthLastDate,
+                            "orgId": jsonObj.orgId,
+                            "limit": 1000,
+                            "offset": 0,
+                            "filterValue": "",
+                            "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                            "self": route.params.isSelf
+                        }
+                        dispatch(getDropAnalysisRedirectionsCRM(payload))
+                    }else{
+                        payload = {
+                            "loginEmpId": selectedEmpIds,
+                            "startDate": CurrentMonthFirstDate,
+                            "endDate": currentMonthLastDate,
+                            "orgId": jsonObj.orgId,
+                            "limit": 1000,
+                            "offset": 0,
+                            "filterValue": "",
+                            "selectedEmpId": route.params.parentId ? [route.params.parentId] : [],
+                            "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                            "forDropped": false,
+                        }
+                        dispatch(getDropAnalysisRedirections(payload))
                     }
-                    dispatch(getDropAnalysisRedirections(payload))
+                    
                 }
             }
         }

@@ -755,6 +755,22 @@ export const getCRM_ReceptionistManagerData = createAsyncThunk(
   }
 );
 
+// for digital dashboard
+export const getCRM_ReceptionistManagerDataDigital = createAsyncThunk(
+  "HOME/getCRM_ReceptionistManagerDataDigital",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD_CRM(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const get_xrole_SalesManagerDigitalTeam = createAsyncThunk(
   "HOME/get_xrole_SalesManagerDigitalTeam",
   async (payload, { rejectWithValue }) => {
@@ -1000,6 +1016,17 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
+    receptionistDataDigitalFilter: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
     receptionistModel: [],
     receptionistSource: [],
     selectedIDS: [],
@@ -1025,6 +1052,7 @@ export const homeSlice = createSlice({
       levelSelected: "",
       selectedempId: "",
       dealerCodes: "",
+      selectedDesignation:""
     }
   },
   reducers: {
@@ -1170,6 +1198,17 @@ export const homeSlice = createSlice({
         totalLostCount: 0,
         fullResponse: {}
       };
+      state.receptionistDataDigitalFilter = {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {},
+      }
       // state.dealerFilter= { }
     },
   },
@@ -1749,6 +1788,23 @@ export const homeSlice = createSlice({
       })
       .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
 
+      // for digital dashboard filter case
+      .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => { })
+      .addCase(getCRM_ReceptionistManagerDataDigital.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistDataDigitalFilter = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getCRM_ReceptionistManagerDataDigital.rejected, (state, action) => { })
 
       .addCase(get_xrole_SalesManagerDigitalTeam.pending, (state) => { })
       .addCase(get_xrole_SalesManagerDigitalTeam.fulfilled, (state, action) => {
