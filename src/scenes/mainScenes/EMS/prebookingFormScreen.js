@@ -3879,15 +3879,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //   minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
         onChange={(event, selectedDate) => {
-          if (selector.datePickerKeyId == "RECEIPT_DATE") {
-            const date = convertDateStringToMilliseconds(selectedDate);
-            const dataObj = { ...uploadedImagesDataObj };
-            dataObj["receipt"] = { ...dataObj["receipt"], receiptDate: date };
-
-            console.log("dataObj -> ", dataObj);
-            setUploadedImagesDataObj({ ...dataObj });
-          }
-
           if (Platform.OS === "android") {
             if (!selectedDate) {
               dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
@@ -3896,6 +3887,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
           } else {
             dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+          }
+          if (selector.datePickerKeyId == "RECEIPT_DATE") {
+            const date = convertDateStringToMilliseconds(selectedDate);
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj["receipt"] = { ...dataObj["receipt"], receiptDate: date };
+            setUploadedImagesDataObj({ ...dataObj });
           }
         }}
         onRequestClose={() => dispatch(setDatePicker())}

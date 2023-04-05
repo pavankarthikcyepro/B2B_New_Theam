@@ -374,13 +374,15 @@ const AppScreen = () => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
-          BackgroundService.stop();
-        } else {
-          if (userToken) {
-            startTracking();
+        if (jsonObj.isGeolocation === "Y") {
+          if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
+            BackgroundService.stop();
           } else {
-            await BackgroundService.stop();
+            if (userToken) {
+              startTracking();
+            } else {
+              await BackgroundService.stop();
+            }
           }
         }
       }

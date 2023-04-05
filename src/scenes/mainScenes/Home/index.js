@@ -211,57 +211,59 @@ const HomeScreen = ({ route, navigation }) => {
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
-          dispatch(getNotificationList(jsonObj.empId));
-          var d = new Date();
-          const response = await client.get(
-            URL.GET_ATTENDANCE_EMPID(
-              jsonObj.empId,
-              jsonObj.orgId,
-              monthNamesCap[d.getMonth()]
-            )
-          );
-          const json = await response.json();
-          const response1 = await client.get(
-            URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
-          );
-          const json1 = await response1.json();
-          if (json1?.length > 0) {
-            return;
-          }
-          if (json.length != 0) {
-            let date = new Date(json[json.length - 1].createdtimestamp);
-            // let dist = getDistanceBetweenTwoPoints(
-            //   officeLocation.latitude,
-            //   officeLocation.longitude,
-            //   initialPosition?.latitude,
-            //   initialPosition?.longitude
-            // );
-            // if (dist > officeRadius) {
-            //   setReason(true); ///true for reason
-            // } else {
-            //   setReason(false);
-            // }
-            if (date.getDate() != new Date().getDate()) {
-              setAttendance(true);
-              // if (startDate <= now && now <= startBetween) {
-              //   setAttendance(true);
-              // } else {
-              //   setAttendance(false);
-              // }
-            } else {
-              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-              //   setAttendance(true);
-              // } else {
-              //   setAttendance(false);
-              // }
+          if (jsonObj.isAttendance === "Y") {
+            dispatch(getNotificationList(jsonObj.empId));
+            var d = new Date();
+            const response = await client.get(
+              URL.GET_ATTENDANCE_EMPID(
+                jsonObj.empId,
+                jsonObj.orgId,
+                monthNamesCap[d.getMonth()]
+              )
+            );
+            const json = await response.json();
+            const response1 = await client.get(
+              URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
+            );
+            const json1 = await response1.json();
+            if (json1?.length > 0) {
+              return;
             }
-          } else {
-            setAttendance(true);
-            //  if (startDate <= now && now <= startBetween) {
-            //    setAttendance(true);
-            //  } else {
-            //    setAttendance(false);
-            //  }
+            if (json.length != 0) {
+              let date = new Date(json[json.length - 1].createdtimestamp);
+              // let dist = getDistanceBetweenTwoPoints(
+              //   officeLocation.latitude,
+              //   officeLocation.longitude,
+              //   initialPosition?.latitude,
+              //   initialPosition?.longitude
+              // );
+              // if (dist > officeRadius) {
+              //   setReason(true); ///true for reason
+              // } else {
+              //   setReason(false);
+              // }
+              if (date.getDate() != new Date().getDate()) {
+                setAttendance(true);
+                // if (startDate <= now && now <= startBetween) {
+                //   setAttendance(true);
+                // } else {
+                //   setAttendance(false);
+                // }
+              } else {
+                // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+                //   setAttendance(true);
+                // } else {
+                //   setAttendance(false);
+                // }
+              }
+            } else {
+              setAttendance(true);
+              //  if (startDate <= now && now <= startBetween) {
+              //    setAttendance(true);
+              //  } else {
+              //    setAttendance(false);
+              //  }
+            }
           }
         }
       }
