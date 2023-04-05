@@ -815,7 +815,6 @@ export const ProformaComp = ({
   }
 
   const downloadPdf3 = async (from) => {
-
     try {
       let siteTypeName =
         (await '<body style="padding:0; margin:0;">') +
@@ -958,7 +957,9 @@ export const ProformaComp = ({
         '<td style="text-align: right;"> ' +
         selectedInsurencePrice.toString() +
         " </td>" +
+        '<td width="25%">' +
         `${selector.promotional_offer ? "Promotional Offer" : ""}` +
+        "</td>" +
         '<td style="text-align: right;"> ' +
         selector.promotional_offer.toString() +
         " </td>" +
@@ -968,7 +969,9 @@ export const ProformaComp = ({
         '<td style="text-align: right;">' +
         selectedAddOnsPrice.toString() +
         " </td>" +
+        '<td width="25%">' +
         `${selector.cash_discount ? "Cash Discount" : ""}` +
+        "</td>" +
         '<td style="text-align: right;">' +
         selector.cash_discount.toString() +
         " </td>" +
@@ -978,7 +981,9 @@ export const ProformaComp = ({
         '<td style="text-align: right;"> ' +
         selectedWarrentyPrice.toString() +
         " </td>" +
+        '<td width="25%">' +
         `${selector.for_accessories ? "FOC Accessories" : ""}` +
+        "</td>" +
         '<td style="text-align: right;"> ' +
         selector.for_accessories.toString() +
         " </td>" +
@@ -992,7 +997,9 @@ export const ProformaComp = ({
             : 0
         }` +
         "</td>" +
+        '<td width="25%">' +
         `${selector.for_accessories ? "Insurance Discount" : ""}` +
+        "</td>" +
         '<td style="text-align: right;"> ' +
         selector.insurance_discount.toString() +
         " </td>" +
@@ -1004,7 +1011,9 @@ export const ProformaComp = ({
           essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0
         }` +
         "</td>" +
+        '<td width="25%">' +
         `${selector.accessories_discount ? "Accessories Discount" : ""}` +
+        "</td>" +
         '<td style="text-align: right;"> ' +
         selector.accessories_discount.toString() +
         "</td>" +
@@ -1014,7 +1023,9 @@ export const ProformaComp = ({
         '<td style="text-align: right;"> ' +
         tcsAmount.toString() +
         " </td>" +
+        '<td width="25%">' +
         `${selector.additional_offer_1 ? "Additional Offer 1" : ""}` +
+        "</td>" +
         '<td style="text-align: right;">' +
         selector.additional_offer_1.toString() +
         " </td>" +
@@ -1024,7 +1035,9 @@ export const ProformaComp = ({
         '<td style="text-align: right;"> ' +
         selectedPaidAccessoriesPrice.toString() +
         " </td>" +
+        '<td width="25%">' +
         `${selector.additional_offer_2 ? "Additional Offer 2" : ""}` +
+        "</td>" +
         '<td style="text-align: right;">' +
         selector.additional_offer_2.toString() +
         "</td>" +
@@ -1089,6 +1102,8 @@ export const ProformaComp = ({
         "</div>" +
         "</body>";
 
+      console.log("siteTypeName -> ", siteTypeName);
+      return;
 
       let bottomPitch =
         (await '<div style="padding-top:10px;" >') +
@@ -1100,20 +1115,18 @@ export const ProformaComp = ({
       let directoryPath = "";
       if (Platform.OS === "android") {
         directoryPath = "Download";
-      }
-      else {
+      } else {
         directoryPath = "Documents";
       }
       let options = {
         html: finalHtmlText,
-        fileName: 'ProformaInvoice' + `${selectedProformaID}`,
+        fileName: "ProformaInvoice" + `${selectedProformaID}`,
         directory: directoryPath,
       };
       let file = await RNHTMLtoPDF.convert(options);
       var PdfData = await RNFS.readFile(file.filePath, "base64").then();
 
       // RNFS.copyFile(file.filePath + "/ProformaInvoice.pdf", RNFS.DocumentDirectoryPath + "/ProformaInvoice2.pdf")
-
 
       // downloadInLocal(file.filePath);
       if (from === "email") {
@@ -1143,15 +1156,12 @@ export const ProformaComp = ({
 
       // alert(file.filePath);
       Alert.alert(
-        'File Downloaded to following location',
+        "File Downloaded to following location",
         `${file.filePath}`, // <- this part is optional, you can pass an empty string
-        [
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ],
-        { cancelable: false },
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+        { cancelable: false }
       );
     } catch (error) {
-
       alert(error);
     }
   };
