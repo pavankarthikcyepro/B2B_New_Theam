@@ -1068,91 +1068,179 @@ const TargetScreenCRM = ({ route }) => {
   };
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = [],isIgnore = false,parentId = "",istotalClick= false) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       if (selector.saveCRMfilterObj?.selectedempId) {
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-            ignoreSelectedId: isIgnore
-          });
-        }, 1000);
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+              startDate: selector.saveCRMfilterObj.startDate,
+              endDate: selector.saveCRMfilterObj.endDate,
+              dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+              ignoreSelectedId: isIgnore,
+            },
+          },
+        });
+        // setTimeout(() => {
+        //   navigation.navigate("LEADS", {
+        //     screenName: "Home",
+        //     params: params,
+        //     moduleType: "",
+        //     employeeDetail: "",
+        //     selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+        //     startDate: selector.saveCRMfilterObj.startDate,
+        //     endDate: selector.saveCRMfilterObj.endDate,
+        //     dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+        //     ignoreSelectedId: isIgnore
+        //   });
+        // }, 1000);
       }
       else if (isIgnore){
         if(parentId){
           if (istotalClick)
           {
-            setTimeout(() => {
-              navigation.navigate("LEADS", {
-                screenName: "TargetScreenCRM",
-                params: params,
-                moduleType: "",
-                employeeDetail: "",
-                selectedEmpId: selectedEmpId,
-                startDate: "",
-                endDate: "",
-                dealerCodes: [],
-                ignoreSelectedId: isIgnore,
-                parentId: parentId,
-                istotalClick: true
-              });
-            }, 1000);
+            navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+              screen: "EMS",
+              params: {
+                screen: "LEADS",
+                params: {
+                  screenName: "TargetScreenCRM",
+                  params: params,
+                  moduleType: "",
+                  employeeDetail: "",
+                  selectedEmpId: selectedEmpId,
+                  startDate: "",
+                  endDate: "",
+                  dealerCodes: [],
+                  ignoreSelectedId: isIgnore,
+                  parentId: parentId,
+                  istotalClick: true,
+                },
+              },
+            });
+            // setTimeout(() => {
+            //   navigation.navigate("LEADS", {
+            //     screenName: "TargetScreenCRM",
+            //     params: params,
+            //     moduleType: "",
+            //     employeeDetail: "",
+            //     selectedEmpId: selectedEmpId,
+            //     startDate: "",
+            //     endDate: "",
+            //     dealerCodes: [],
+            //     ignoreSelectedId: isIgnore,
+            //     parentId: parentId,
+            //     istotalClick: true
+            //   });
+            // }, 1000);
           }
           else{
-            setTimeout(() => {
-              navigation.navigate("LEADS", {
-                screenName: "TargetScreenCRM",
-                params: params,
-                moduleType: "",
-                employeeDetail: "",
-                selectedEmpId: selectedEmpId,
-                startDate: "",
-                endDate: "",
-                dealerCodes: [],
-                ignoreSelectedId: isIgnore,
-                parentId: parentId
-              });
-            }, 1000);
+            navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+              screen: "EMS",
+              params: {
+                screen: "LEADS",
+                params: {
+                  screenName: "TargetScreenCRM",
+                  params: params,
+                  moduleType: "",
+                  employeeDetail: "",
+                  selectedEmpId: selectedEmpId,
+                  startDate: "",
+                  endDate: "",
+                  dealerCodes: [],
+                  ignoreSelectedId: isIgnore,
+                  parentId: parentId,
+                },
+              },
+            });
+            // setTimeout(() => {
+            //   navigation.navigate("LEADS", {
+            //     screenName: "TargetScreenCRM",
+            //     params: params,
+            //     moduleType: "",
+            //     employeeDetail: "",
+            //     selectedEmpId: selectedEmpId,
+            //     startDate: "",
+            //     endDate: "",
+            //     dealerCodes: [],
+            //     ignoreSelectedId: isIgnore,
+            //     parentId: parentId
+            //   });
+            // }, 1000);
           }
           
         }else{
-          setTimeout(() => {
-            navigation.navigate("LEADS", {
-              screenName: "Home",
-              params: params,
-              moduleType: "",
-              employeeDetail: "",
-              selectedEmpId: selectedEmpId,
-              startDate: "",
-              endDate: "",
-              dealerCodes: [],
-              ignoreSelectedId: isIgnore
-            });
-          }, 1000);
+          navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+            screen: "EMS",
+            params: {
+              screen: "LEADS",
+              params: {
+                screenName: "Home",
+                params: params,
+                moduleType: "",
+                employeeDetail: "",
+                selectedEmpId: selectedEmpId,
+                startDate: "",
+                endDate: "",
+                dealerCodes: [],
+                ignoreSelectedId: isIgnore,
+              },
+            },
+          });
+          // setTimeout(() => {
+          //   navigation.navigate("LEADS", {
+          //     screenName: "Home",
+          //     params: params,
+          //     moduleType: "",
+          //     employeeDetail: "",
+          //     selectedEmpId: selectedEmpId,
+          //     startDate: "",
+          //     endDate: "",
+          //     dealerCodes: [],
+          //     ignoreSelectedId: isIgnore
+          //   });
+          // }, 1000);
         }
 
        
       }
       
       else{
-        navigation.navigate("LEADS", {
-          screenName: "TARGETSCREEN1",
-          params: params,
-          moduleType: "",
-          employeeDetail: "",
-          selectedEmpId: selectedEmpId,
-          startDate: selector.receptionistFilterIds.startDate,
-          endDate: selector.receptionistFilterIds.endDate,
-          dealerCodes: selector.receptionistFilterIds.dealerCodes,
-          ignoreSelectedId: false
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "TARGETSCREEN1",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: selector.receptionistFilterIds.startDate,
+              endDate: selector.receptionistFilterIds.endDate,
+              dealerCodes: selector.receptionistFilterIds.dealerCodes,
+              ignoreSelectedId: false,
+            },
+          },
         });
+        // navigation.navigate("LEADS", {
+        //   screenName: "TARGETSCREEN1",
+        //   params: params,
+        //   moduleType: "",
+        //   employeeDetail: "",
+        //   selectedEmpId: selectedEmpId,
+        //   startDate: selector.receptionistFilterIds.startDate,
+        //   endDate: selector.receptionistFilterIds.endDate,
+        //   dealerCodes: selector.receptionistFilterIds.dealerCodes,
+        //   ignoreSelectedId: false
+        // });
       }
       
     }, 1000);

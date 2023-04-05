@@ -793,14 +793,12 @@ const EventDashBoardTargetScreen = ({ route }) => {
   };
 
   function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 100);
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+      },
+    });
   }
 
   function navigateToDropLostCancel(params) {

@@ -745,14 +745,12 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   };
 
   function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 1000);
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+      },
+    });
   }
 
   function navigateToDropLostCancel(params) {

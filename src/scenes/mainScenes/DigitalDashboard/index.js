@@ -852,14 +852,12 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   };
 
   function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 100);
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+      },
+    });
   }
 
   function navigateToDropLostCancel(params) {
@@ -871,14 +869,12 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   }
 
   function navigateToContact(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("PRE_ENQUIRY", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 1000);
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "PRE_ENQUIRY",
+      },
+    });
   }
   return (
     <SafeAreaView style={styles.container}>

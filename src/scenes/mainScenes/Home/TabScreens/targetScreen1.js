@@ -26,6 +26,7 @@ import {
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
   updateEmployeeDataBasedOnDelegate,
+  updateLoader,
 } from "../../../../redux/homeReducer";
 import { RenderGrandTotal } from "./components/RenderGrandTotal";
 import { RenderEmployeeParameters } from "./components/RenderEmployeeParameters";
@@ -448,6 +449,7 @@ const TargetScreen = ({ route }) => {
         tempExw[0],
         tempAcc[0],
       ]);
+      dispatch(updateLoader(false));
     } else {
     }
 
@@ -886,20 +888,37 @@ const TargetScreen = ({ route }) => {
   };
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        screenName: "TARGETSCREEN1",
-        params: params,
-        moduleType: "",
-        employeeDetail: "",
-        selectedEmpId: selectedEmpId,
-        startDate: selector.receptionistFilterIds.startDate,
-        endDate: selector.receptionistFilterIds.endDate,
-        dealerCodes: selector.receptionistFilterIds.dealerCodes,
-        ignoreSelectedId: false
-      });
-    }, 1000);
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+        params: {
+          screenName: "TARGETSCREEN1",
+          params: params,
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: selectedEmpId,
+          startDate: selector.receptionistFilterIds.startDate,
+          endDate: selector.receptionistFilterIds.endDate,
+          dealerCodes: selector.receptionistFilterIds.dealerCodes,
+          ignoreSelectedId: false,
+        },
+      },
+    });
+    // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    // setTimeout(() => {
+    //   navigation.navigate("LEADS", {
+    //     screenName: "TARGETSCREEN1",
+    //     params: params,
+    //     moduleType: "",
+    //     employeeDetail: "",
+    //     selectedEmpId: selectedEmpId,
+    //     startDate: selector.receptionistFilterIds.startDate,
+    //     endDate: selector.receptionistFilterIds.endDate,
+    //     dealerCodes: selector.receptionistFilterIds.dealerCodes,
+    //     ignoreSelectedId: false
+    //   });
+    // }, 1000);
   }
 
   function navigateToDropLostCancel(params) {

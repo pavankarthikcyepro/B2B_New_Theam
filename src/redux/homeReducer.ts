@@ -1301,7 +1301,7 @@ export const homeSlice = createSlice({
       })
       .addCase(getTargetParametersEmpData.pending, (state, action) => {
         //state.self_target_parameters_data = [];
-        state.isLoading = true;
+        // state.isLoading = true;
       })
       .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
         state.isModalVisible = false;
@@ -1311,12 +1311,12 @@ export const homeSlice = createSlice({
         } else {
           state.self_target_parameters_data = empData;
         }
-        state.isLoading = false;
+        // state.isLoading = false;
         state.isModalVisible = true;
       })
       .addCase(getTargetParametersEmpData.rejected, (state, action) => {
         //state.self_target_parameters_data = [];
-        state.isLoading = false;
+        // state.isLoading = false;
         state.isModalVisible = false;
       })
       .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
@@ -1331,13 +1331,13 @@ export const homeSlice = createSlice({
             state.insights_target_parameters_data = action.payload;
             AsyncStore.storeData("TARGET_EMP", JSON.stringify(action.payload));
           }
-          state.isLoading = false;
+          // state.isLoading = false;
           state.isModalVisible = true;
         }
       )
       .addCase(getTargetParametersEmpDataInsights.rejected, (state, action) => {
         //state.self_target_parameters_data = [];
-        state.isLoading = false;
+        // state.isLoading = false;
         state.isModalVisible = false;
       })
 

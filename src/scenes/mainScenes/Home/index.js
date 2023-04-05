@@ -386,14 +386,13 @@ const HomeScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-    dispatch(updateLoader(true));
     Promise.all([
       getMenuListFromServer(),
       getCustomerType(),
       checkLoginUserAndEnableReportButton(),
     ])
       .then(() => {
-        dispatch(updateLoader(false));
+        // dispatch(updateLoader(false));
       })
       .catch(() => {
         dispatch(updateLoader(false));
@@ -402,6 +401,7 @@ const HomeScreen = ({ route, navigation }) => {
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
+      dispatch(updateLoader(true));
       getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
     });
 
@@ -1095,54 +1095,107 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
-    navigation.navigate(
-      screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
-    );
+    // navigation.navigate(
+    //   screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
+    // );
     if (!screenName) {
       if (selector.saveCRMfilterObj?.selectedempId) {
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-            ignoreSelectedId: true,
-          });
-        }, 1000);
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+              startDate: selector.saveCRMfilterObj.startDate,
+              endDate: selector.saveCRMfilterObj.endDate,
+              dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+              ignoreSelectedId: true,
+            },
+          },
+        });
+        // setTimeout(() => {
+        //   navigation.navigate("LEADS", {
+        //     screenName: "Home",
+        //     params: params,
+        //     moduleType: "",
+        //     employeeDetail: "",
+        //     selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+        //     startDate: selector.saveCRMfilterObj.startDate,
+        //     endDate: selector.saveCRMfilterObj.endDate,
+        //     dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+        //     ignoreSelectedId: true,
+        //   });
+        // }, 1000);
       } else if (userData.hrmsRole === "CRM") {
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "TargetScreenCRM",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selectedEmpId,
-            startDate: "",
-            endDate: "",
-            dealerCodes: [],
-            ignoreSelectedId: false,
-            parentId: selectedEmpId[0],
-            istotalClick: true,
-          });
-        }, 1000);
+         navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+           screen: "EMS",
+           params: {
+             screen: "LEADS",
+             params: {
+               screenName: "TargetScreenCRM",
+               params: params,
+               moduleType: "",
+               employeeDetail: "",
+               selectedEmpId: selectedEmpId,
+               startDate: "",
+               endDate: "",
+               dealerCodes: [],
+               ignoreSelectedId: false,
+               parentId: selectedEmpId[0],
+               istotalClick: true,
+             },
+           },
+         });
+        // setTimeout(() => {
+        //   navigation.navigate("LEADS", {
+        //     screenName: "TargetScreenCRM",
+        //     params: params,
+        //     moduleType: "",
+        //     employeeDetail: "",
+        //     selectedEmpId: selectedEmpId,
+        //     startDate: "",
+        //     endDate: "",
+        //     dealerCodes: [],
+        //     ignoreSelectedId: false,
+        //     parentId: selectedEmpId[0],
+        //     istotalClick: true,
+        //   });
+        // }, 1000);
       } else {
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selectedEmpId,
-            startDate: selector.receptionistFilterIds.startDate,
-            endDate: selector.receptionistFilterIds.endDate,
-            dealerCodes: selector.receptionistFilterIds.dealerCodes,
-            ignoreSelectedId: true,
-          });
-        }, 1000);
+        // setTimeout(() => {
+           navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+             screen: "EMS",
+             params: {
+               screen: "LEADS",
+               params: {
+                 screenName: "Home",
+                 params: params,
+                 moduleType: "",
+                 employeeDetail: "",
+                 selectedEmpId: selectedEmpId,
+                 startDate: selector.receptionistFilterIds.startDate,
+                 endDate: selector.receptionistFilterIds.endDate,
+                 dealerCodes: selector.receptionistFilterIds.dealerCodes,
+                 ignoreSelectedId: true,
+               },
+             },
+           });
+        //   navigation.navigate("LEADS", {
+        //     screenName: "Home",
+        //     params: params,
+        //     moduleType: "",
+        //     employeeDetail: "",
+        //     selectedEmpId: selectedEmpId,
+        //     startDate: selector.receptionistFilterIds.startDate,
+        //     endDate: selector.receptionistFilterIds.endDate,
+        //     dealerCodes: selector.receptionistFilterIds.dealerCodes,
+        //     ignoreSelectedId: true,
+        //   });
+        // }, 1000);
       }
     }
   }
