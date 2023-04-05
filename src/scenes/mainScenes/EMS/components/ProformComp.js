@@ -822,167 +822,272 @@ export const ProformaComp = ({
         '<div style="border-left: 10px solid #FF156B; padding: 25px; font-family: Arial, Helvetica, sans-serif; ">' +
         '<div style="padding-bottom:30px;">' +
         // '<img width="100" height="100" src="http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com/assets/media/logos/Automate-Final-Logo.jpg">'+
-        '</div>' +
+        "</div>" +
         '<table style="width:100%;" border="1" cellpadding="4" cellspacing="0" bordercolor="#ddd">' +
-        '<tr>' +
+        "<tr>" +
         '<td colspan="4" style="background-color: #4d4f51; font-size: 16px; color: #fff !important; text-align:center;">' +
-        '<strong>PROFORMA INVOICE</strong></td>' +
-        '</tr>' +
-        '<tr>' +
+        "<strong>PROFORMA INVOICE</strong></td>" +
+        "</tr>" +
+        "<tr>" +
         '<td colspan="2" rowspan="5">' +
         '<table style="width:100%;">' +
-        '<tr>' +
+        "<tr>" +
         '<td width="120px" style="text-align:center;">' +
         '<img  style="max-width:100%;" src=' +
         selector.proforma_logo +
         ">" +
-        '</td>' +
+        "</td>" +
         '<td  style="border-left:1px solid #ddd; padding-left:20px;">' +
-        '<div>' +
-        selector.proforma_orgName + '</div>' +
-        '<div > GSTN: ' +
-        `${selector.proforma_gstnNumber != null ? selector.proforma_gstnNumber : " "}` + '</div>' +
-        '<div>' + selector.proforma_houseNo + '</div>' +
-        '<div >' + selector.profprma_street + '</div>' +
-        '<div >' + selector.proforma_branch + '</div>' +
-        '<div >' + selector.proforma_city + selector.proforma_pincode + '</div>' +
-        '<div >' + selector.proforma_state + '</div>' +
-        '</td>' +
-        '</tr>' +
-        '</table>' +
-
-        '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>PROFORMA NO :</td>' +
-        '<td> ' + proformaNo + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>DATE</td>' +
-        '<td>' + selectedDate + '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>PAN NO :</td>' +
-        '<td style="text-transform: uppercase"> ' + `${selector.pan_number != "" ? selector.pan_number : "-Na-"}` + '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>GST NO :</td>' +
-        '<td style="text-transform: uppercase">' + `${selector.gstin_number != "" ? selector.gstin_number : "-Na-"}` + '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td colspan="4" style="text-align:center;"><strong>' + carModel + " " + "Model" + " " + carVariant + '</strong></td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td colspan="4" style="text-align:center;"><strong>' + carColor + '</strong></td>' +
-        '</tr>' +
-        '<tr>' +
+        "<div>" +
+        selector.proforma_orgName +
+        "</div>" +
+        "<div > GSTN: " +
+        `${
+          selector.proforma_gstnNumber != null
+            ? selector.proforma_gstnNumber
+            : " "
+        }` +
+        "</div>" +
+        "<div>" +
+        selector.proforma_houseNo +
+        "</div>" +
+        "<div >" +
+        selector.profprma_street +
+        "</div>" +
+        "<div >" +
+        selector.proforma_branch +
+        "</div>" +
+        "<div >" +
+        selector.proforma_city +
+        selector.proforma_pincode +
+        "</div>" +
+        "<div >" +
+        selector.proforma_state +
+        "</div>" +
+        "</td>" +
+        "</tr>" +
+        "</table>" +
+        "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>PROFORMA NO :</td>" +
+        "<td> " +
+        proformaNo +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>DATE</td>" +
+        "<td>" +
+        selectedDate +
+        "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>PAN NO :</td>" +
+        '<td style="text-transform: uppercase"> ' +
+        `${selector.pan_number != "" ? selector.pan_number : "-Na-"}` +
+        "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>GST NO :</td>" +
+        '<td style="text-transform: uppercase">' +
+        `${selector.gstin_number != "" ? selector.gstin_number : "-Na-"}` +
+        "</td>" +
+        "</tr>" +
+        "<tr>" +
+        '<td colspan="4" style="text-align:center;"><strong>' +
+        carModel +
+        " " +
+        "Model" +
+        " " +
+        carVariant +
+        "</strong></td>" +
+        "</tr>" +
+        "<tr>" +
+        '<td colspan="4" style="text-align:center;"><strong>' +
+        carColor +
+        "</strong></td>" +
+        "</tr>" +
+        "<tr>" +
         '<td width="25%"><strong>PARTICULARS</strong></td>' +
         '<td style="text-align: right" width="25%"><strong>AMOUNT</strong></td>' +
         '<td width="25%"><strong>DISCOUNT</strong></td>' +
         '<td style="text-align: right;" width="25%"><strong>AMOUNT</strong></td>' +
-        '</tr>' +
-        '<tr>' +
+        "</tr>" +
+        "<tr>" +
         '<td width="25%">Ex-Showroom Price</td>' +
-        '<td width="25%" style="text-align: right;"> ' + priceInfomationData.ex_showroom_price.toString() + ' </td>' +
-        '<td width="25%">Consumer Offer</td>' +
-        '<td width="25%" style="text-align: right;"> ' + selector.consumer_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
+        '<td width="25%" style="text-align: right;"> ' +
+        priceInfomationData.ex_showroom_price.toString() +
+        " </td>" +
+        '<td width="25%">' +
+        `${selector.consumer_offer ? "Consumer Offer" : ""}` +
+        "</td>" +
+        '<td width="25%" style="text-align: right;"> ' +
+        selector.consumer_offer.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
         '<td width="25%">Life Tax</td>' +
-        '<td width="25%" style="text-align: right;"> ' + lifeTaxAmount.toString() + '</td>' +
-        '<td width="25%">Exchange Offer</td>' +
-        '<td width="25%" style="text-align: right;">' + selector.exchange_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Registration Charges</td>' +
-        '<td style="text-align: right;">  ' + `${selectedRegistrationCharges?.cost ? selectedRegistrationCharges?.cost : "0.00"}`
-        + '  </td>' +
-        '<td width="25%">Corporate Offer</td>' +
-        '<td width="25%" style="text-align: right;"> ' + selector.corporate_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Insurance ()</td>' +
-        '<td style="text-align: right;"> ' + selectedInsurencePrice.toString() + ' </td>' +
-        '<td>Promotional Offers</td>' +
-        '<td style="text-align: right;"> ' + selector.promotional_offer.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Add-on Insurance</td>' +
-        '<td style="text-align: right;">' + selectedAddOnsPrice.toString() + ' </td>' +
-        '<td>Cash Discount</td>' +
-        '<td style="text-align: right;">' + selector.cash_discount.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Warranty ()</td>' +
-        '<td style="text-align: right;"> ' + selectedWarrentyPrice.toString() + ' </td>' +
-        '<td>FOC Accessories</td>' +
-        '<td style="text-align: right;"> ' + selector.for_accessories.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Handling Charges:</td>' +
-        '<td style="text-align: right;"> ' + `${handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}` + '</td>' +
-        '<td>Insurance Discount</td>' +
-        '<td style="text-align: right;"> ' + selector.insurance_discount.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Essential Kit:</td>' +
-        '<td style="text-align: right;">' + `${essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}` + '</td>' +
-        '<td>Accessories Discount</td>' +
-        '<td style="text-align: right;"> ' + selector.accessories_discount.toString() + '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>TCS(&gt;10Lakhs -&gt; 1%):</td>' +
-        '<td style="text-align: right;"> ' + tcsAmount.toString() + ' </td>' +
-        '<td>Additional Offer 1</td>' +
-        '<td style="text-align: right;">' + selector.additional_offer_1.toString() + ' </td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Paid Accessories:</td>' +
-        '<td style="text-align: right;"> ' + selectedPaidAccessoriesPrice.toString() + ' </td>' +
-        ' <td>Additional Offer 2</td>' +
-        '<td style="text-align: right;">' + selector.additional_offer_2.toString() + '</td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Fast Tag</td>' +
-        '<td style="text-align: right;"> ' + `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` + ' </td>' +
-        '<td></td>' +
+        '<td width="25%" style="text-align: right;"> ' +
+        lifeTaxAmount.toString() +
+        "</td>" +
+        '<td width="25%">' +
+        `${selector.exchange_offer ? "Exchange Offer" : ""}` +
+        "</td>" +
+        '<td width="25%" style="text-align: right;">' +
+        selector.exchange_offer.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Registration Charges</td>" +
+        '<td style="text-align: right;">  ' +
+        `${
+          selectedRegistrationCharges?.cost
+            ? selectedRegistrationCharges?.cost
+            : "0.00"
+        }` +
+        "  </td>" +
+        '<td width="25%">' +
+        `${selector.corporate_offer ? "Corporate Offer" : ""}` +
+        "</td>" +
+        '<td width="25%" style="text-align: right;"> ' +
+        selector.corporate_offer.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Insurance ()</td>" +
+        '<td style="text-align: right;"> ' +
+        selectedInsurencePrice.toString() +
+        " </td>" +
+        `${selector.promotional_offer ? "Promotional Offer" : ""}` +
+        '<td style="text-align: right;"> ' +
+        selector.promotional_offer.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Add-on Insurance</td>" +
+        '<td style="text-align: right;">' +
+        selectedAddOnsPrice.toString() +
+        " </td>" +
+        `${selector.cash_discount ? "Cash Discount" : ""}` +
+        '<td style="text-align: right;">' +
+        selector.cash_discount.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Warranty ()</td>" +
+        '<td style="text-align: right;"> ' +
+        selectedWarrentyPrice.toString() +
+        " </td>" +
+        `${selector.for_accessories ? "FOC Accessories" : ""}` +
+        '<td style="text-align: right;"> ' +
+        selector.for_accessories.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Handling Charges:</td>" +
+        '<td style="text-align: right;"> ' +
+        `${
+          handlingChargSlctd
+            ? priceInfomationData.handling_charges.toFixed(2)
+            : 0
+        }` +
+        "</td>" +
+        `${selector.for_accessories ? "Insurance Discount" : ""}` +
+        '<td style="text-align: right;"> ' +
+        selector.insurance_discount.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Essential Kit:</td>" +
+        '<td style="text-align: right;">' +
+        `${
+          essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0
+        }` +
+        "</td>" +
+        `${selector.accessories_discount ? "Accessories Discount" : ""}` +
+        '<td style="text-align: right;"> ' +
+        selector.accessories_discount.toString() +
+        "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>TCS(&gt;10Lakhs -&gt; 1%):</td>" +
+        '<td style="text-align: right;"> ' +
+        tcsAmount.toString() +
+        " </td>" +
+        `${selector.additional_offer_1 ? "Additional Offer 1" : ""}` +
+        '<td style="text-align: right;">' +
+        selector.additional_offer_1.toString() +
+        " </td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Paid Accessories:</td>" +
+        '<td style="text-align: right;"> ' +
+        selectedPaidAccessoriesPrice.toString() +
+        " </td>" +
+        `${selector.additional_offer_2 ? "Additional Offer 2" : ""}` +
+        '<td style="text-align: right;">' +
+        selector.additional_offer_2.toString() +
+        "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "<td>Fast Tag</td>" +
+        '<td style="text-align: right;"> ' +
+        `${fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}` +
+        " </td>" +
+        "<td></td>" +
         '<td style="text-align: right;"></td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td>Other Charges</td>' +
-        '<td style="text-align: right;">' + otherPricesV2 + '</td>' +
-        '<td></td>' +
+        "</tr>" +
+        "<tr>" +
+        "<td>Other Charges</td>" +
+        '<td style="text-align: right;">' +
+        otherPricesV2 +
+        "</td>" +
+        "<td></td>" +
         '<td style="text-align: right;"></td>' +
-        '</tr>' +
-        '<tr>' +
-        '<td></td>' +
+        "</tr>" +
+        "<tr>" +
+        "<td></td>" +
         '<td style="text-align: right;"></td>' +
-        '<td></td>' +
+        "<td></td>" +
         '<td style="text-align: right;"></td>' +
-        '</tr>' +
-        '<tr>' +
+        "</tr>" +
+        "<tr>" +
         '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE</strong></td>' +
-        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + getActualPrice().toFixed(2).toString() + ' </strong></td>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' +
+        getActualPrice().toFixed(2).toString() +
+        " </strong></td>" +
         '<td class="tCenter" style="background-color: #4d4f51; color: #fff !important;"><strong>NET ON ROAD PRICE AFTER DISCOUNT</strong></td>' +
-        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' + getActualPriceAfterDiscount().toFixed(2).toString() + '</strong></td>' +
-        '</tr>' +
-        '<tr>' +
+        '<td style="background-color: #4d4f51; color: #fff !important; text-align: right;"><strong>' +
+        getActualPriceAfterDiscount().toFixed(2).toString() +
+        "</strong></td>" +
+        "</tr>" +
+        "<tr>" +
         '<td colspan="4">' +
         '<p style="text-decoration: underline">TERMS AND CONDITIONS</p>' +
-        '<div       class="ng-star-inserted">' + termNconditionData.map((item, index) => {
-
-          return '<div style="padding:4px">' + `${index + 1}` + " ) " + `${item}` + '</div>'
-
-        }).join(' ') + '</div>' +
-        '</td>' +
-        '</tr>' +
-        '</table>' +
+        '<div       class="ng-star-inserted">' +
+        termNconditionData
+          .map((item, index) => {
+            return (
+              '<div style="padding:4px">' +
+              `${index + 1}` +
+              " ) " +
+              `${item}` +
+              "</div>"
+            );
+          })
+          .join(" ") +
+        "</div>" +
+        "</td>" +
+        "</tr>" +
+        "</table>" +
         '<div style="text-align: right; padding-top:20px;">' +
-        '<div style="padding-bottom:30px;"><b>For,' + selector.proforma_orgName + '</b></div>' +
-        '<div> <b>Authorised Signatory</b></div>' +
-        '</div>' +
-        '</div>' +
-        '</body>';
+        '<div style="padding-bottom:30px;"><b>For,' +
+        selector.proforma_orgName +
+        "</b></div>" +
+        "<div> <b>Authorised Signatory</b></div>" +
+        "</div>" +
+        "</div>" +
+        "</body>";
 
 
       let bottomPitch =
