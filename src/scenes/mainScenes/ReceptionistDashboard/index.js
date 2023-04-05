@@ -1022,25 +1022,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistDataV2.totalDroppedCount > 0 &&
-                    navigateToDropAnalysis(userData.empId,false,"",false,true)
-                }}
-                style={styles.view8}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{ ...styles.rankHeadingText, width: 50 }}
-                >
-                  {"Drop"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.receptionistDataV2?.totalDroppedCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+             
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistDataV2.enquirysCount > 0 &&
@@ -1081,6 +1063,25 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistDataV2?.RetailCount || 0}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistDataV2.totalDroppedCount > 0 &&
+                    navigateToDropAnalysis(userData.empId, false, "", false, true)
+                }}
+                style={styles.view8}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.rankHeadingText, width: 50 }}
+                >
+                  {"Drop"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+                    {selector.receptionistDataV2?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

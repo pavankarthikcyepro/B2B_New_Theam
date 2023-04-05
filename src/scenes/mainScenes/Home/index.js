@@ -1518,34 +1518,7 @@ const HomeScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
-                    navigateToDropLostCancel();
-                }}
-                style={styles.view8}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{ ...styles.rankHeadingText, width: 50 }}
-                >
-                  {"Drop"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text
-                    style={{
-                      ...styles.rankText,
-                      color: Colors.RED,
-                      textDecorationLine: selector.receptionistData
-                        ?.totalDroppedCount
-                        ? "underline"
-                        : "none",
-                    }}
-                  >
-                    {selector.receptionistData?.totalDroppedCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.enquirysCount > 0 &&
@@ -1578,7 +1551,7 @@ const HomeScreen = ({ route, navigation }) => {
                 }}
                 style={styles.view8}
               >
-                <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
+                <Text style={styles.rankHeadingText}>{"Booking"}</Text>
                 <View style={styles.cardView}>
                   <Text
                     style={{
@@ -1601,7 +1574,7 @@ const HomeScreen = ({ route, navigation }) => {
                 }}
                 style={styles.view8}
               >
-                <Text style={styles.rankHeadingText}>{"Retails"}</Text>
+                <Text style={styles.rankHeadingText}>{"Retail"}</Text>
                 <View style={styles.cardView}>
                   <Text
                     style={{
@@ -1613,6 +1586,34 @@ const HomeScreen = ({ route, navigation }) => {
                     }}
                   >
                     {selector.receptionistData?.RetailCount || 0}
+                  </Text>
+                </View>
+              </TouchableOpacity> 
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.totalDroppedCount > 0 &&
+                    navigateToDropLostCancel();
+                }}
+                style={styles.view8}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.rankHeadingText, width: 50 }}
+                >
+                  {"Drop"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text
+                    style={{
+                      ...styles.rankText,
+                      color: Colors.RED,
+                      textDecorationLine: selector.receptionistData
+                        ?.totalDroppedCount
+                        ? "underline"
+                        : "none",
+                    }}
+                  >
+                    {selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

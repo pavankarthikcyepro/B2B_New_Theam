@@ -1070,28 +1070,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
-                    navigateToDropAnalysis(userData.empId,false,"",false,true)
-                }}
-                style={styles.view8}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{ ...styles.rankHeadingText, width: 50 }}
-                >
-                  {"Drop"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ?
-                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || 0 
-                     : selector.receptionistData?.totalDroppedCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.enquirysCount > 0 &&
@@ -1118,7 +1097,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 }}
                 style={styles.view8}
               >
-                <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
+                <Text style={styles.rankHeadingText}>{"Booking"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.saveCRMfilterObj.selectedempId ?
@@ -1134,13 +1113,35 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 }}
                 style={styles.view8}
               >
-                <Text style={styles.rankHeadingText}>{"Retails"}</Text>
+                <Text style={styles.rankHeadingText}>{"Retail"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.saveCRMfilterObj.selectedempId ?
                       selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
                         selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.RetailCount || 0 
                      : selector.receptionistData?.RetailCount || 0}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  selector.receptionistData.totalDroppedCount > 0 &&
+                    navigateToDropAnalysis(userData.empId, false, "", false, true)
+                }}
+                style={styles.view8}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.rankHeadingText, width: 50 }}
+                >
+                  {"Drop"}
+                </Text>
+                <View style={styles.cardView}>
+                  <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+                    {selector.saveCRMfilterObj.selectedempId ?
+                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || 0
+                      : selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
