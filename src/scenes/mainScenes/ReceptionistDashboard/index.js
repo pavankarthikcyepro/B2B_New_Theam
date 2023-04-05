@@ -160,7 +160,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
       dispatch(updatereceptionistDataObjectData({}))
-      console.log("manthan dhdgdg -> manthan selector.recepti ", selector.receptionistDataV2);
+      
       setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);

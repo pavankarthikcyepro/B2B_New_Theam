@@ -471,7 +471,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
       let tempArrCRMFirsttotal = [];
       let tempArrCRMSecond = [];
       let tempArrCRMFirstOwn = [];
-      console.log("manthan selector.receptionistDataV2--> ", JSON.stringify(selector.receptionistDataV2));
+     
       let firstLevelData = selector.receptionistDataV2?.fullResponse?.CRM?.map(item => {
        
           
@@ -1808,7 +1808,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
            
           }
         })
-        // console.log("manhtan dhdhd firstLevel ", JSON.stringify(temp));
+        
         tempArr.push(...temp)
         Array.prototype.push.apply(tempArr, tempInside);
       }

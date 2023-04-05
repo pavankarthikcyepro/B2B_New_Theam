@@ -2404,7 +2404,7 @@ const TargetScreenCRM = ({ route }) => {
                             <Pressable onPress={()=>{
                           
                               // todo redirections logic  first level
-                              if (e > 0) {
+                              // if (e > 0) {
                                 
                               if (!isViewExpanded){
                                 if (indexss === 0) {
@@ -2432,7 +2432,7 @@ const TargetScreenCRM = ({ route }) => {
                                   navigateToDropAnalysis(item.emp_id,true,item.emp_id)
                                 }
                                 }
-                              }
+                              // }
                              
                             }}>
                             <View

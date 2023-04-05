@@ -476,7 +476,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         loggedInEmpId: jsonObj.empId,
         "dashboardType": "digital"
       };
-      console.log("manthan hdhdhdhd ", !selector.saveCRMfilterObj.selectedempId);
+      
       if (!selector.saveCRMfilterObj.selectedempId){
         dispatch(get_xrole_SalesManagerDigitalTeam(payloadXrole))
       }
@@ -881,7 +881,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     );
     if (!screenName) {
       if (selector.saveCRMfilterObj?.selectedempId){
-        if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+        if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {  
           setTimeout(() => {
             navigation.navigate("LEADS", {
               screenName: "TargetScreenCRM",

@@ -577,7 +577,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       if (selector.saveCRMfilterObj?.selectedempId) {
-        console.log("manthan ---- ddd ", selector.saveCRMfilterObj);
+        
         if (!_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
           if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
             // todo manager api call 
@@ -1086,10 +1086,18 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
     if (selector.saveCRMfilterObj.selectedempId) {
       if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-          screen: "DROP_ANALYSIS",
-          params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: true, xrole: false, isForDropped: false },
-        });
+        if(isfromTree){
+          navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+            screen: "DROP_ANALYSIS",
+            params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, parentId: parentId, isSelf: false, xrole: xrole, isForDropped: false },
+          });
+        }else{
+          navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+            screen: "DROP_ANALYSIS",
+            params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: true, xrole: false, isForDropped: false },
+          });
+        }
+       
       }else{
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",
@@ -1104,7 +1112,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
           params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false },
         });
       } else {
-        console.log("manthan jjj");
+        
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
           params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: false },
@@ -1390,9 +1398,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
               // todo add logic for redirections filer applied manthan
               if (selector.saveCRMfilterObj.selectedempId) {
                 if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                  item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], true) :
-                    item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], true) :
-                      item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], true) :
+                  item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+                    item.id === 1 ? navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+                      item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
                         item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
                 }
               
@@ -1624,7 +1632,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
                                   } else if (indexss === 3) {
                                     // todo navigate to lost
-
+                                    
                                     navigateToDropAnalysis(item.emp_id, true, item.emp_id)
                                   }
                                 }
@@ -2408,14 +2416,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
            
           }
         })
-        // console.log("manhtan dhdhd firstLevel ", JSON.stringify(temp));
+        
         tempArr.push(...temp)
         Array.prototype.push.apply(tempArr, tempInside);
       }
       
 
     })
-    console.log("manthan fufhfhfhfhhf , ", JSON.stringify(tempArr));
+    
     setcrmSecondLevelData(tempArr)
   }
 
@@ -2423,7 +2431,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   const formateFirstLevelDataFilter = (data, index) => {
     setStoreFirstLevelLocal(data);
     let findSelectedRecData = data?.salesconsultant?.filter(item => item.emp_id === data.emp_id);
-    console.log("manthan findSelectedRecData ", findSelectedRecData);
+    
     setStoreFirstLevelSelectedRecData(findSelectedRecData)
     setIndexLocalFirstLevel(index);
     if (index === indexLocalFirstLevel) {
@@ -2444,14 +2452,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
           }
         })
-        // console.log("manhtan dhdhd firstLevel ", JSON.stringify(temp));
+        
         tempArr.push(...temp)
         Array.prototype.push.apply(tempArr, tempInside);
       }
 
 
     })
-    // console.log("manthan fufhfhfhfhhf , ", JSON.stringify(tempArr));
+    
     setcrmSecondLevelData(tempArr)
   }
 
@@ -3508,14 +3516,40 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           <SourceModelView
                             style={{ alignSelf: "flex-end" }}
                             onClick={() => {
-                              navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
-                                empId: userData.empId,
-                                headerTitle: "Source/Model",
-                                loggedInEmpId: userData.empId,
-                                orgId: userData.orgId,
-                                role: "xrole",
-                                moduleType: "DigitalDashboard",
-                              });
+                              if (selector.saveCRMfilterObj.selectedempId) {
+                                if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_DEGITAL",
+                                    {
+                                      empId: selector.saveCRMfilterObj.selectedempId[0],
+                                      loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "DigitalDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: "CRM",
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true
+                                    }
+                                  );
+                                } else {
+
+                                  // handleSourceModalNavigation(item, "", [], "CRM", true)
+                                }
+                              } else {
+                                navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
+                                  empId: userData.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId: userData.empId,
+                                  orgId: userData.orgId,
+                                  role: "xrole",
+                                  moduleType: "DigitalDashboard",
+                                });
+                              }
+                            
                             }}
                           />
                         </View>

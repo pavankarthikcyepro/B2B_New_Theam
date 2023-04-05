@@ -303,7 +303,7 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
 
   const updateSelectedItemsSubmit = async (data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-    console.log("manthan dhdhdh ", index);
+    
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
@@ -935,8 +935,7 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
         );
       });
      
-      console.log("manthan --- > ", selectedIds);
-      console.log("manthan --- > ", temp);
+   
       if (temp.length > 0) {
         let tempArr = [];
         let tempArrDesignation = [];
@@ -944,7 +943,7 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
           tempArr.push(parseInt(item.code))
         })
         const selected_designation = temp.map(item => {
-          console.log("manthan -- ", item.designation);
+          
           if(item.designation !== undefined){
             tempArrDesignation.push(item.designation)
           }

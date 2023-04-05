@@ -390,7 +390,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
 
   const updateSelectedItemsSubmit = async(data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-    console.log("manthan dhdhdh ",index);
+    
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );

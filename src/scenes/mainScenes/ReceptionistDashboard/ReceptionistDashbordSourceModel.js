@@ -251,7 +251,7 @@ const ReceptionistDashbordSourceModel = ({ route, navigation }) => {
       }
     })
 
-    console.log("manthan --- ",moduleType);
+  
 
   }, [moduleType])
 

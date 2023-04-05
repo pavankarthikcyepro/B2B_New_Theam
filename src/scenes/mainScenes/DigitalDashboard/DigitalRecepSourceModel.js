@@ -195,16 +195,18 @@ const DigitalRecepSourceModel = ({ route, navigation }) => {
               dispatch(getReceptionistManagerSource(newPayload3));
               dispatch(getReceptionistManagerModel(newPayload3));
             }
+          }else{
+            let newPayload2 = {
+              orgId: orgId,
+              loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+              "startDate": selector.saveCRMfilterObj.startDate,
+              "endDate": selector.saveCRMfilterObj.endDate,
+              "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+            };
+            dispatch(getReceptionistSource(newPayload2));
+            dispatch(getReceptionistModel(newPayload2));
           }
-          let newPayload2 = {
-            orgId: orgId,
-            loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
-            "startDate": selector.saveCRMfilterObj.startDate,
-            "endDate": selector.saveCRMfilterObj.endDate,
-            "dealerCodes": selector.saveCRMfilterObj.dealerCodes
-          };
-          dispatch(getReceptionistSource(newPayload2));
-          dispatch(getReceptionistModel(newPayload2));
+          
         }
         else {
           // dispatch(getReceptionistManagerSource(payload));
