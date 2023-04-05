@@ -1114,7 +1114,13 @@ const ParametersScreen = ({ route }) => {
   }
 
 
-  function navigateToEmsScreen(item) {
+  async function navigateToEmsScreen(item) {
+    
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
     const leads = ["enquiry", "booking", "invoice"];
     const { paramName } = item;
     const isContact = paramName.toLowerCase() === "preenquiry";
@@ -1131,7 +1137,7 @@ const ParametersScreen = ({ route }) => {
     }else{
        employeeDetail = {
         empName: "",
-        empId: "",
+        empId: jsonObj.empId,
         orgId: "",
         branchId: "",
       };
@@ -1161,6 +1167,7 @@ const ParametersScreen = ({ route }) => {
         });
       }, 100);
     }
+  }
   }
 
   const renderSelfInsightsView = (item, index) => {

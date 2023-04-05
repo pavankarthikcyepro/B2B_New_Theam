@@ -1063,7 +1063,10 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerPreInquiryCount || 0 : selector.receptionistData?.contactsCount || 0}
+                    {selector.saveCRMfilterObj.selectedempId ?
+                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"?
+                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerPreInquiryCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.contactsCount || 0 
+                     : selector.receptionistData?.contactsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1082,7 +1085,10 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || 0 : selector.receptionistData?.totalDroppedCount || 0}
+                    {selector.saveCRMfilterObj.selectedempId ?
+                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || 0 
+                     : selector.receptionistData?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1098,7 +1104,10 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount || 0 : selector.receptionistData?.enquirysCount || 0}
+                    {selector.saveCRMfilterObj.selectedempId ?
+                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.enquirysCount || 0 
+                    : selector.receptionistData?.enquirysCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1112,7 +1121,10 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount || 0  : selector.receptionistData?.bookingsCount || 0}
+                    {selector.saveCRMfilterObj.selectedempId ?
+                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.bookingsCount || 0 
+                       : selector.receptionistData?.bookingsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1125,7 +1137,10 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 <Text style={styles.rankHeadingText}>{"Retails"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || 0 : selector.receptionistData?.RetailCount || 0}
+                    {selector.saveCRMfilterObj.selectedempId ?
+                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.RetailCount || 0 
+                     : selector.receptionistData?.RetailCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

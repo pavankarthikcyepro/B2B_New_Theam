@@ -522,14 +522,15 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
     // index == 4 && submitBtnClicked(totalDataObjLocal,"");
   };
 
+  
+
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
     let keyMain = employeeTitleNameList[index];
     // clearBtnForEmployeeData();
     // dispatch(updateFilterSelectedData({}))
     // dispatch(updateLiveLeadObjectData({}))
   
-   
- 
+  
    
     if(index === 0 ){ 
       

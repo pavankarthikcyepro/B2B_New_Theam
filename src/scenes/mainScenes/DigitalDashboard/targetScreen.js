@@ -23,6 +23,7 @@ import {
   getCRM_ReceptionistManagerDataDigital,
   getEmployeesList,
   getNewTargetParametersAllData,
+  getReceptionistDataDigitalDashboard,
   getReportingManagerList,
   getTotalOftheTeam,
   getTotalTargetParametersData,
@@ -153,6 +154,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
   const [crmSecondLevelSelectedData, setCrmSecondLevelSelectedData] = useState([]);
   const [indexLocalFirstLevel, setIndexLocalFirstLevel] = useState(-1);
+  const [filterExapand, setfilterExapand] = useState(false);
 
   const [userData, setUserData] = useState({
     empId: 0,
@@ -564,6 +566,23 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   
    
   }, [selector.receptionistDataDigitalFilter])
+
+  useEffect(() => {
+
+
+    if (selector.receptionistDataDigitalFilter_CRE) {
+      let totalKey1 = selector?.receptionistDataDigitalFilter_CRE?.enquirysCount;
+      let totalKey2 = selector?.receptionistDataDigitalFilter_CRE?.bookingsCount;
+      let totalKey3 = selector?.receptionistDataDigitalFilter_CRE?.RetailCount;
+      let totalKey4 = selector?.receptionistDataDigitalFilter_CRE?.totalLostCount;
+
+      let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+      setTotalofTeam(total);
+    }
+
+
+  }, [selector.receptionistDataDigitalFilter_CRE])
+
   
 
   useEffect(() => {
@@ -579,6 +598,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       if (selector.saveCRMfilterObj?.selectedempId) {
         
         if (!_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
+          console.log("manthan hfhfhf ", selector.saveCRMfilterObj?.selectedDesignation[0]);
           if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
             // todo manager api call 
             let payloadXrole = {
@@ -589,7 +609,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
             dispatch(getCRM_ReceptionistManagerDataDigital(payloadXrole))
           } else {
             // todo recep api call 
-            
+            let payload = {
+              orgId: jsonObj.orgId,
+              loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+              "startDate": selector.saveCRMfilterObj.startDate,
+              "endDate": selector.saveCRMfilterObj.endDate,
+              "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+            };
+            dispatch(getReceptionistDataDigitalDashboard(payload));
           }
         } else {
 
@@ -1125,6 +1152,462 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
   }
 
+  const renderCRETreeFilter = () => {
+    // todo manthan
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {selector.receptionistDataDigitalFilter_CRE.consultantList?.length > 0 &&
+          selector.receptionistDataDigitalFilter_CRE.consultantList?.map((item, index) => {
+
+            if (item.emp_id == selector.saveCRMfilterObj.selectedempId[0]) {
+
+              return (
+                <View key={`${item.emp_name} ${index}`}
+                  style={{
+                    borderColor: filterExapand ? Colors.PINK : "",
+                    borderWidth: filterExapand ? 1 : 0,
+                    borderRadius: 10,
+                    margin: filterExapand ? 10 : 0
+                  }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      width: Dimensions.get("screen").width - 28,
+
+
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {item.emp_name}
+                        {"  "}
+                        {"-   " + item?.roleName}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}></View>
+                    <View style={{ flexDirection: "row" }}>
+                      {/* {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                        <Animated.View
+                          style={{
+                            transform: [
+                              { translateX: translation },
+                            ],
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                              alignSelf: "flex-start",
+                              marginLeft: 7,
+                              // transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>{selector.receptionistData?.fullResponse?.childUserCount}</Text>
+                          </View>
+                        </Animated.View>
+                      )} */}
+                      <SourceModelView
+                        onClick={() => {
+
+                          if (filterExapand) {
+
+                            // handleSourceModalNavigation()
+                            handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd")
+                          } else {
+
+                            handleSourceModalNavigation(item, "", [], "CRM", true)
+                          }
+
+                          // navigation.navigate(
+                          //   "RECEP_SOURCE_MODEL",
+                          //   {
+                          //     empId: item?.emp_id,
+                          //     headerTitle: item?.emp_name,
+                          //     loggedInEmpId: item.emp_id,
+                          //     type: "TEAM",
+                          //     moduleType: "home",
+                          //     headerTitle: "Source/Model",
+                          //     orgId: userData.orgId,
+                          //     role: userData.hrmsRole,
+                          //     branchList: userData.branchs.map(
+                          //       (a) => a.branchId
+                          //     ),
+                          //   }
+                          // );
+                        }}
+                        style={{
+                          transform: [
+                            { translateX: translation },
+                          ],
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                  {/*Source/Model View END */}
+                  <View
+                    style={[
+                      { flexDirection: "row" },
+                      item.isOpenInner && {
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: "#C62159",
+                        marginHorizontal: 6,
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
+                    {/*RIGHT SIDE VIEW*/}
+                    <View style={[styles.view6]}>
+                      <View style={styles.view7}>
+                        <RenderLevel1NameViewCRM
+                          level={0}
+                          item={item}
+                          branchName={item.branch}
+                          color={"#C62159"}
+                          receptionManager={true}
+                          navigation={navigation}
+                          titleClick={async (e) => {
+                            setfilterExapand(!filterExapand)
+                          }}
+                          roleName={item.roleName}
+                          stopLocation={true}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            backgroundColor:
+                              "rgba(223,228,231,0.67)",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {/* {[
+                          isViewExpanded ? item.enquiryCount :  selector.receptionistData.enquirysCount || 0,
+                          isViewExpanded ? item.bookingCount :  selector.receptionistData.bookingsCount || 0,
+                          isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
+                          isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
+                        ] */}
+
+                          {[
+                            filterExapand ? item.enquiryCount : selector.receptionistDataDigitalFilter_CRE.enquirysCount || 0,
+                            filterExapand ? item.bookingCount : selector.receptionistDataDigitalFilter_CRE.bookingsCount || 0,
+                            filterExapand ? item.retailCount : selector.receptionistDataDigitalFilter_CRE.RetailCount || 0,
+                            filterExapand ? item.droppedCount : selector.receptionistDataDigitalFilter_CRE.totalLostCount || 0,
+                          ].map((e, indexss) => {
+                            return (
+                              <Pressable onPress={() => {
+
+                                // todo redirections logic  first level
+                                // if (e > 0) {
+
+                                if (!filterExapand) {
+                                  if (indexss === 0) {
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true);
+                                    // navigateToEMS("ENQUIRY", "", [item.emp_id], true, item.emp_id, true, true);
+                                  } else if (indexss === 1) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], true);
+                                  } else if (indexss === 2) {
+                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true);
+                                  } else if (indexss === 3) {
+                                    // navigateToDropAnalysis(item.emp_id, false, "", true,)
+                                    navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true)
+
+                                  }
+                                }
+                                else {
+                                  if (indexss === 0) {
+
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, item.emp_id);
+                                  } else if (indexss === 1) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], true, item.emp_id);
+                                  } else if (indexss === 2) {
+                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, item.emp_id);
+                                  } else if (indexss === 3) {
+                                    // todo navigate to lost
+                                    navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true, item.emp_id, false)
+                                    // navigateToDropAnalysis(item.emp_id, true, item.emp_id, false)
+                                  }
+                                }
+                                // }
+
+                              }}>
+                                <View
+                                  style={{
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine: e > 0 ? "underline" : "none"
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </View>
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                    </View>
+                  </View>
+                  {filterExapand && renderCRETreeFilterChild()}
+                </View>
+              );
+            }
+
+          })}
+
+      </View>)
+  }
+
+  const renderCRETreeFilterChild = () => {
+    // todo manthan
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {selector.receptionistDataDigitalFilter_CRE.consultantList?.length > 0 &&
+          selector.receptionistDataDigitalFilter_CRE.consultantList?.map((item, index) => {
+
+            if (item.emp_id !== selector.saveCRMfilterObj.selectedempId[0]) {
+
+              return (
+                <View key={`${item.emp_name} ${index}`}
+                  style={{
+                    // borderColor: isViewExpanded ? Colors.PINK : "",
+                    // borderWidth: isViewExpanded ? 1 : 0,
+                    // borderRadius: 10,
+                    // margin: isViewExpanded ? 10 : 0
+                  }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      width: Dimensions.get("screen").width - 28,
+
+
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {item.emp_name}
+                        {"  "}
+                        {"-   " + item?.roleName}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}></View>
+                    <View style={{ flexDirection: "row" }}>
+                      {/* {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                        <Animated.View
+                          style={{
+                            transform: [
+                              { translateX: translation },
+                            ],
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                              alignSelf: "flex-start",
+                              marginLeft: 7,
+                              // transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>{selector.receptionistData?.fullResponse?.childUserCount}</Text>
+                          </View>
+                        </Animated.View>
+                      )} */}
+                      <SourceModelView
+                        onClick={() => {
+
+                          handleSourceModalNavigation(item, selector.saveCRMfilterObj.selectedempId[0], [item.emp_id])
+
+                          // navigation.navigate(
+                          //   "RECEP_SOURCE_MODEL",
+                          //   {
+                          //     empId: item?.emp_id,
+                          //     headerTitle: item?.emp_name,
+                          //     loggedInEmpId: item.emp_id,
+                          //     type: "TEAM",
+                          //     moduleType: "home",
+                          //     headerTitle: "Source/Model",
+                          //     orgId: userData.orgId,
+                          //     role: userData.hrmsRole,
+                          //     branchList: userData.branchs.map(
+                          //       (a) => a.branchId
+                          //     ),
+                          //   }
+                          // );
+                        }}
+                        style={{
+                          transform: [
+                            { translateX: translation },
+                          ],
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                  {/*Source/Model View END */}
+                  <View
+                    style={[
+                      { flexDirection: "row" },
+                      item.isOpenInner && {
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: "#C62159",
+                        marginHorizontal: 6,
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
+                    {/*RIGHT SIDE VIEW*/}
+                    <View style={[styles.view6]}>
+                      <View style={styles.view7}>
+                        <RenderLevel1NameViewCRM
+                          level={0}
+                          item={item}
+                          branchName={item.branch}
+                          color={"#C62159"}
+                          receptionManager={true}
+                          navigation={navigation}
+                          titleClick={async (e) => {
+                            // setfilterExapand(!filterExapand)
+                          }}
+                          roleName={item.roleName}
+                          stopLocation={true}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            backgroundColor:
+                              "rgba(223,228,231,0.67)",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {/* {[
+                          isViewExpanded ? item.enquiryCount :  selector.receptionistData.enquirysCount || 0,
+                          isViewExpanded ? item.bookingCount :  selector.receptionistData.bookingsCount || 0,
+                          isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
+                          isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
+                        ] */}
+
+                          {[
+                            item.enquiryCount || 0,
+                            item.bookingCount || 0,
+                            item.retailCount || 0,
+                            item.droppedCount || 0,
+                          ].map((e, indexss) => {
+                            return (
+                              <Pressable onPress={() => {
+
+                                // todo redirections logic  first level
+                                // if (e > 0) {
+                                  if (indexss === 0) {
+
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, selector.saveCRMfilterObj.selectedempId[0]);
+                                  } else if (indexss === 1) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], true, selector.saveCRMfilterObj.selectedempId[0]);
+                                  } else if (indexss === 2) {
+                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, selector.saveCRMfilterObj.selectedempId[0]);
+                                  } else if (indexss === 3) {
+                                    // todo navigate to lost 
+                                    navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0], true, item.emp_id, false)
+                                  }
+                                // }
+
+                              }}>
+                                <View
+                                  style={{
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine: e > 0 ? "underline" : "none"
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </View>
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                    </View>
+                  </View>
+                  {filterExapand && renderCRMTreeChildFilter()}
+                </View>
+              );
+            }
+
+          })}
+
+      </View>)
+  }
 
 
   const renderCRMTreeFilter = () => {
@@ -1174,7 +1657,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     </View>
                     <View style={{ flexDirection: "row" }}></View>
                     <View style={{ flexDirection: "row" }}>
-                      {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                      {selector.receptionistDataDigitalFilter?.fullResponse?.childUserCount > 0 && (
                         <Animated.View
                           style={{
                             transform: [
@@ -1201,7 +1684,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                               size={15}
                               color={Colors.BLACK}
                             />
-                            <Text>{selector.receptionistData?.fullResponse?.childUserCount}</Text>
+                            <Text>{selector.receptionistDataDigitalFilter?.fullResponse?.childUserCount}</Text>
                           </View>
                         </Animated.View>
                       )}
@@ -1402,6 +1885,11 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     item.id === 1 ? navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
                       item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
                         item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+                }else{
+                  item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, "",false,false) :
+                    item.id === 1 ? navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
+                      item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
+                        item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
                 }
               
               } else {
@@ -1413,21 +1901,27 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
             }
           }}>
-            {selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-              
-              item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount} </Text> :
-                item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount} </Text> :
-                  item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount} </Text> :
-                    item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount} </Text> :
+            {selector.saveCRMfilterObj?.selectedDesignation ?
+              selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+
+                item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount} </Text> :
+                  item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount} </Text> :
+                    item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount} </Text> :
+                      item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount} </Text> :
                         <Text style={styles.txt10}>0</Text>
-              
-            : 
-                item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> :
-                  item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> :
-                    item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> :
-                      item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> :
+
+                : item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.enquirysCount} </Text> :
+                  item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.bookingsCount} </Text> :
+                    item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter_CRE?.RetailCount} </Text> :
+                      item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.totalLostCount} </Text> :
                         <Text style={styles.txt10}>0</Text>
-              
+              :
+              item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> :
+                item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> :
+                  item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> :
+                    item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> :
+                      <Text style={styles.txt10}>0</Text>
+
             }
             
 
@@ -3369,7 +3863,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
 
                         renderCRMTree()
-                        : renderCRMTreeFilter() }
+                        : selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ? renderCRMTreeFilter() : renderCRETreeFilter()}
                        
                     {/* Grand Total Section */}
                     {totalOfTeam && (

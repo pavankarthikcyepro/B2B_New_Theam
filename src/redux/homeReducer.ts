@@ -725,6 +725,20 @@ export const getReceptionistData = createAsyncThunk(
   }
 );
 
+
+// digital dashboard filter cre/tele caller selected 
+export const getReceptionistDataDigitalDashboard = createAsyncThunk(
+  "HOME/getReceptionistDataDigitalDashboard",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_DASHBOARD(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistManagerData = createAsyncThunk(
   "HOME/getReceptionistManagerData",
   async (payload, { rejectWithValue }) => {
@@ -1026,6 +1040,16 @@ export const homeSlice = createSlice({
       enquirysCount: 0,
       totalLostCount: 0,
       fullResponse: {},
+    }, receptionistDataDigitalFilter_CRE: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -1199,6 +1223,17 @@ export const homeSlice = createSlice({
         fullResponse: {}
       };
       state.receptionistDataDigitalFilter = {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {},
+      } ,
+       state.receptionistDataDigitalFilter_CRE = {
         RetailCount: 0,
         bookingsCount: 0,
         consultantList: [],
@@ -1755,6 +1790,25 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
+
+      // digital dashboard filter cre/tele caller selected 
+      .addCase(getReceptionistDataDigitalDashboard.pending, (state) => { })
+      .addCase(getReceptionistDataDigitalDashboard.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistDataDigitalFilter_CRE = {
+          RetailCount: dataObj.RetailCount,
+          bookingsCount: dataObj.bookingsCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.contactsCount,
+          enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getReceptionistDataDigitalDashboard.rejected, (state, action) => { })
+
       .addCase(getReceptionistManagerData.pending, (state) => {})
       .addCase(getReceptionistManagerData.fulfilled, (state, action) => {
         const dataObj = action.payload;

@@ -428,7 +428,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 50,
+          "limit": route?.params?.moduleType === "live-leads"? 50000 : 50,
         }
         return payload;
     }
@@ -656,7 +656,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               ]}
             >
               <FlatList
-                  initialNumToRender={searchedData.length}
+                initialNumToRender={searchedData.length}
                 data={searchedData}
                 extraData={searchedData}
                 keyExtractor={(item, index) => index.toString()}

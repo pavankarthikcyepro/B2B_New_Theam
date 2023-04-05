@@ -621,7 +621,7 @@ const LeadsScreen = ({ route, navigation }) => {
       empId: employeeId,
       status: "",
       offset: offSet,
-      limit: 50,
+      limit: route?.params?.moduleType === "live-leads" ? 50000 : 50,
       leadStage: defualtLeadStage,
       leadStatus: defualtLeadStatus,
     };
@@ -1124,7 +1124,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50,
+        limit: route?.params?.moduleType === "live-leads" ? 50000 : 50, 
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
@@ -1309,7 +1309,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50,
+        limit: route?.params?.moduleType === "live-leads" ? 50000 :50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus

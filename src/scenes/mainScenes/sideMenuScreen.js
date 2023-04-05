@@ -50,7 +50,7 @@ import {
   GROUP_STR,
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
-import { clearState, updatereceptionistDataObjectData } from "../../redux/homeReducer";
+import { clearState, updatereceptionistDataObjectData, updateFilterLevelSelectedData as updateFilterLevelSelectedDataHome, updateDealerFilterData as updateDealerFilterDataHome, updateLiveLeadObjectData as updateLiveLeadObjectDataHOme, updateFilterSelectedData as updateFilterSelectedDataHome } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
@@ -418,6 +418,10 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.digitalDashboard
         );
+        dispatch(updateFilterLevelSelectedDataHome({}));
+        dispatch(updateDealerFilterDataHome({}));
+        dispatch(updateLiveLeadObjectDataHOme({}));
+        dispatch(updateFilterSelectedDataHome({}));
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
