@@ -463,13 +463,13 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                     >
                       <View
                         style={{
-                          width: "50%",
+                          width: "95%",
                           justifyContent: "center",
                           flexDirection: "row",
                           borderColor: Colors.RED,
                           borderWidth: 1,
                           borderRadius: 5,
-                          height: 41,
+                          // height: 41,
                           marginTop: 10,
                         }}
                       >
@@ -489,6 +489,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                               : Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
+                            padding:14
                           }}
                         >
                           <Text
@@ -517,6 +518,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                               : Colors.WHITE,
                             borderTopRightRadius: 5,
                             borderBottomRightRadius: 5,
+                            padding:14
                           }}
                         >
                           <Text
@@ -549,10 +551,10 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                           borderColor: Colors.RED,
                           borderWidth: 1,
                           borderRadius: 5,
-                          height: 41,
+                          // height: 41,
                           marginTop: 10,
                           justifyContent: "center",
-                          width: "80%",
+                          width: "95%",
                         }}
                       >
                         <TouchableOpacity
@@ -569,6 +571,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                             backgroundColor: Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
+                            padding:14
                           }}
                         >
                           <Text

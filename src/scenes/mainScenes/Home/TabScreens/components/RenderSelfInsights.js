@@ -79,7 +79,7 @@ export const RenderSelfInsights = (args) => {
                   screen: "EMS",
                   params: {
                     screen: "LEADS",
-                    param: {
+                    params: {
                       param: param === "INVOICE" ? "Retail" : param,
                       moduleType: "home",
                       employeeDetail: "",

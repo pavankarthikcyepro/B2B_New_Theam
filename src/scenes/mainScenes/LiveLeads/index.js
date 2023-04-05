@@ -910,7 +910,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     <View
                       style={{
                         flexDirection: "row",
-                        marginBottom: 15,
+                        marginVertical: 15,
                         justifyContent: "center",
                         alignItems: "center",
                       }}
@@ -921,10 +921,10 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                           borderColor: Colors.RED,
                           borderWidth: 1,
                           borderRadius: 5,
-                          height: 40,
+                          // height: 40,
                           marginTop: 10,
                           justifyContent: "center",
-                          width: "80%",
+                          width: "95%",
                         }}
                       >
                         <TouchableOpacity
@@ -941,6 +941,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                               : Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
+                            padding:14
                           }}
                         >
                           <Text
@@ -969,6 +970,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                               : Colors.WHITE,
                             borderTopRightRadius: 5,
                             borderBottomRightRadius: 5,
+                            padding:14
                           }}
                         >
                           <Text
@@ -1001,9 +1003,9 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                           borderColor: Colors.RED,
                           borderWidth: 1,
                           borderRadius: 5,
-                          height: 28,
+                          // height: 28,
                           justifyContent: "center",
-                          width: "80%",
+                          width: "95%",
                         }}
                       >
                         <TouchableOpacity
@@ -1018,6 +1020,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                             backgroundColor: Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
+                            padding:15
                           }}
                         >
                           <Text

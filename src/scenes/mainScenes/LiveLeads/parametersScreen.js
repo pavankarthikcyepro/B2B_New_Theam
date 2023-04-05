@@ -308,7 +308,7 @@ const ParametersScreen = ({ route }) => {
           };
           setAllParameters(myParams);
           if (!selector.saveLiveleadObject?.selectedempId) {
-            setFilterParameters([])
+            setFilterParameters([]);
           }
           // setMyParameters(myParams);
           // let tempParams = [
@@ -358,12 +358,11 @@ const ParametersScreen = ({ route }) => {
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
-        if (selector.saveLiveleadObject?.selectedempId){
+        if (selector.saveLiveleadObject?.selectedempId) {
           getDataAfterFilter();
-        }else{
-          filterParameters([])
+        } else {
+          filterParameters([]);
         }
-       
       }
       setIsLoading(false);
     } catch (error) {
@@ -371,11 +370,8 @@ const ParametersScreen = ({ route }) => {
     }
   }, [selector.saveLiveleadObject]);
 
-  const getDataAfterFilter = async()=>{
-    
-    let employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
+  const getDataAfterFilter = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       const dateFormat = "YYYY-MM-DD";
@@ -414,31 +410,31 @@ const ParametersScreen = ({ route }) => {
                   branchName: getBranchName(tempRawData[i].branchId),
                   employeeTargetAchievements: [],
                   tempTargetAchievements: tempRawData[i]?.targetAchievements,
-                targetAchievements: tempRawData[i]?.targetAchievements
+                  targetAchievements: tempRawData[i]?.targetAchievements,
                 });
               // if (i === tempRawData.length - 1) {
-                // localData[index].employeeTargetAchievements = tempRawData;
-                // let newIds = tempRawData.map((emp) => emp.empId);
-                // if (newIds.length >= 2 || true) {
-                //   for (let i = 0; i < newIds.length; i++) {
-                //     const element = newIds[i].toString();
-                //     let tempPayload = getTotalPayload(employeeData, element);
-                //     const response = await client.post(
-                //       URL.GET_LIVE_LEADS_INSIGHTS(),
-                //       tempPayload
-                //     );
-                //     const json = await response.json();
-                //     if (Array.isArray(json)) {
-                //       localData[index].employeeTargetAchievements[
-                //         i
-                //       ].targetAchievements = json;
-                //     }
-                //   }
-                // }
+              // localData[index].employeeTargetAchievements = tempRawData;
+              // let newIds = tempRawData.map((emp) => emp.empId);
+              // if (newIds.length >= 2 || true) {
+              //   for (let i = 0; i < newIds.length; i++) {
+              //     const element = newIds[i].toString();
+              //     let tempPayload = getTotalPayload(employeeData, element);
+              //     const response = await client.post(
+              //       URL.GET_LIVE_LEADS_INSIGHTS(),
+              //       tempPayload
+              //     );
+              //     const json = await response.json();
+              //     if (Array.isArray(json)) {
+              //       localData[index].employeeTargetAchievements[
+              //         i
+              //       ].targetAchievements = json;
+              //     }
+              //   }
+              // }
               // }
             }
           }
-          setFilterParameters([...tempRawData])
+          setFilterParameters([...tempRawData]);
           // alert(JSON.stringify(tempRawData))
           // setAllParameters([...tempRawData]);
         }
@@ -450,7 +446,7 @@ const ParametersScreen = ({ route }) => {
       //   }
       // }
     }
-  }
+  };
 
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
@@ -716,45 +712,66 @@ const ParametersScreen = ({ route }) => {
     const isLead = leads.includes(paramName.toLowerCase());
     // let makeparams = paramName
     let employeeDetail;
-    if(filterParameters.length>0){
-       employeeDetail = {
+    if (filterParameters.length > 0) {
+      employeeDetail = {
         empName: "",
         empId: selector.saveLiveleadObject?.selectedempId[0],
         orgId: "",
         branchId: "",
       };
-    }else{
-       employeeDetail = {
+    } else {
+      employeeDetail = {
         empName: "",
         empId: "",
         orgId: "",
         branchId: "",
       };
     }
-    
+
     if (isLead) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      setTimeout(() => {
-        navigation.navigate("LEADS", {
-          param: paramName === "INVOICE" ? "Retail" : paramName,
-          moduleType: "live-leads",
-          employeeDetail: employeeDetail,
-          // screenName: "",
-          // selectedEmpId: "",
-          // startDate: "",
-          // endDate: "",
-          // dealerCodes: "",
-          // fromScreen: ""
-        });
-      }, 1000);
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+        screen: "EMS",
+        params: {
+          screen: "LEADS",
+          params: {
+            param: paramName === "INVOICE" ? "Retail" : paramName,
+            moduleType: "live-leads",
+            employeeDetail: employeeDetail,
+          },
+        },
+      });
+      // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+      // setTimeout(() => {
+      //   navigation.navigate("LEADS", {
+      //     param: paramName === "INVOICE" ? "Retail" : paramName,
+      //     moduleType: "live-leads",
+      //     employeeDetail: employeeDetail,
+      //     // screenName: "",
+      //     // selectedEmpId: "",
+      //     // startDate: "",
+      //     // endDate: "",
+      //     // dealerCodes: "",
+      //     // fromScreen: ""
+      //   });
+      // }, 1000);
     } else if (isContact) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      setTimeout(() => {
-        navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-          moduleType: "live-leads",
-          employeeDetail: employeeDetail
-        });
-      }, 100);
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+        screen: "EMS",
+        params: {
+          screen: EmsTopTabNavigatorIdentifiers.preEnquiry,
+          params: {
+            moduleType: "live-leads",
+            employeeDetail: employeeDetail,
+          },
+        },
+      });
+      // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+      // setTimeout(() => {
+      //   navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+      //     moduleType: "live-leads",
+      //     employeeDetail: employeeDetail
+      //   });
+      // }, 100);
     }
   }
 
@@ -903,109 +920,110 @@ const ParametersScreen = ({ route }) => {
                   </View>
                 </View>
                 {/* Employee params section */}
-                  {filterParameters.length > 0 &&
-                    filterParameters.map((item, index) => {
-                      return (
-                        <View>
-                          <View
+                {filterParameters.length > 0 &&
+                  filterParameters.map((item, index) => {
+                    return (
+                      <View>
+                        <View
+                          style={{
+                            paddingHorizontal: 8,
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: 12,
+                            width: Dimensions.get("screen").width - 28,
+                          }}
+                        >
+                          <Text
                             style={{
-                              paddingHorizontal: 8,
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              marginTop: 12,
-                              width: Dimensions.get("screen").width - 28,
+                              fontSize: 12,
+                              fontWeight: "600",
+                              textTransform: "capitalize",
                             }}
                           >
-                            <Text
-                              style={{
-                                fontSize: 12,
-                                fontWeight: "600",
-                                textTransform: "capitalize",
-                              }}
-                            >
-                              {item?.empName}
-                            </Text>
-                          </View>
-                          <Pressable
-                            style={{ alignSelf: "flex-end" }}
-                            onPress={() => {
-                              navigation.navigate(
-                                AppNavigator.HomeStackIdentifiers.sourceModel,
-                                {
-                                  empId: selector.saveLiveleadObject?.selectedempId[0],
-                                  headerTitle: item?.empName,
-                                  loggedInEmpId:
-                                    selector.saveLiveleadObject?.selectedempId[0],
-                                  type: "TEAM",
-                                  moduleType: "live-leads",
-                                }
-                              );
+                            {item?.empName}
+                          </Text>
+                        </View>
+                        <Pressable
+                          style={{ alignSelf: "flex-end" }}
+                          onPress={() => {
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.sourceModel,
+                              {
+                                empId:
+                                  selector.saveLiveleadObject?.selectedempId[0],
+                                headerTitle: item?.empName,
+                                loggedInEmpId:
+                                  selector.saveLiveleadObject?.selectedempId[0],
+                                type: "TEAM",
+                                moduleType: "live-leads",
+                              }
+                            );
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              fontWeight: "600",
+                              color: Colors.BLUE,
+                              marginLeft: 8,
+                              paddingRight: 12,
                             }}
                           >
-                            <Text
-                              style={{
-                                fontSize: 12,
-                                fontWeight: "600",
-                                color: Colors.BLUE,
-                                marginLeft: 8,
-                                paddingRight: 12,
-                              }}
-                            >
-                              Source/Model
-                            </Text>
-                          </Pressable>
-                          {/*Source/Model View END */}
-                          <View style={[{ flexDirection: "row" }]}>
-                            {/*RIGHT SIDE VIEW*/}
+                            Source/Model
+                          </Text>
+                        </Pressable>
+                        {/*Source/Model View END */}
+                        <View style={[{ flexDirection: "row" }]}>
+                          {/*RIGHT SIDE VIEW*/}
+                          <View
+                            style={[
+                              {
+                                width: "100%",
+                                minHeight: 40,
+                                flexDirection: "column",
+                                paddingHorizontal: 2,
+                              },
+                            ]}
+                          >
                             <View
-                              style={[
-                                {
-                                  width: "100%",
-                                  minHeight: 40,
-                                  flexDirection: "column",
-                                  paddingHorizontal: 2,
-                                },
-                              ]}
+                              style={{
+                                width: "100%",
+                                minHeight: 40,
+                                flexDirection: "row",
+                              }}
                             >
+                              {/* todo */}
+                              <RenderLevel1NameView
+                                level={0}
+                                item={item}
+                                branchName={getBranchName(item?.branch)}
+                                color={"#C62159"}
+                                titleClick={async () => {
+                                  return;
+                                }}
+                              />
                               <View
                                 style={{
                                   width: "100%",
-                                  minHeight: 40,
+                                  height: boxHeight,
                                   flexDirection: "row",
+                                  alignSelf: "center",
+                                  // backgroundColor: "red",
                                 }}
                               >
-                                {/* todo */}
-                                <RenderLevel1NameView
-                                  level={0}
-                                  item={item}
-                                  branchName={getBranchName(item?.branch)}
-                                  color={"#C62159"}
-                                  titleClick={async () => {
-                                    return;
-                                  }}
-                                />
-                                <View
-                                  style={{
-                                    width: "100%",
-                                    height: boxHeight,
-                                    flexDirection: "row",
-                                    alignSelf: "center",
-                                    // backgroundColor: "red",
-                                  }}
-                                >
-                                  {renderFilterData(item, "#C62159")}
-                                </View>
+                                {renderFilterData(item, "#C62159")}
                               </View>
-                              {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                             </View>
+                            {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                           </View>
                         </View>
-                      );
-                    })}
+                      </View>
+                    );
+                  })}
 
-
-                  {allParameters.length > 0 && filterParameters.length == 0 &&
+                {allParameters.length > 0 &&
+                  filterParameters.length == 0 &&
                   allParameters.map((item, index) => {
                     return (
                       <View key={`${item.empId} ${index}`}>
@@ -3438,10 +3456,15 @@ const ParametersScreen = ({ route }) => {
                         navigation.navigate(
                           AppNavigator.HomeStackIdentifiers.sourceModel,
                           {
-                            empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                            empId:
+                              filterParameters.length > 0
+                                ? filterParameters[0].empId
+                                : selector.login_employee_details.empId,
                             headerTitle: "Grand Total",
                             loggedInEmpId:
-                              filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                              filterParameters.length > 0
+                                ? filterParameters[0].empId
+                                : selector.login_employee_details.empId,
                             type: "TEAM",
                             moduleType: "live-leads",
                           }
@@ -3545,9 +3568,15 @@ const ParametersScreen = ({ route }) => {
                   navigation.navigate(
                     AppNavigator.HomeStackIdentifiers.sourceModel,
                     {
-                      empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                      empId:
+                        filterParameters.length > 0
+                          ? filterParameters[0].empId
+                          : selector.login_employee_details.empId,
                       headerTitle: "Source/Model",
-                      loggedInEmpId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                      loggedInEmpId:
+                        filterParameters.length > 0
+                          ? filterParameters[0].empId
+                          : selector.login_employee_details.empId,
                       type: selector.isDSE ? "SELF" : "INSIGHTS",
                       moduleType: "live-leads",
                       orgId: selector.login_employee_details.orgId,

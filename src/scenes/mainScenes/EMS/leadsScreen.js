@@ -240,6 +240,7 @@ const LeadsScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
+    console.log("route?.params", route?.params);
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
