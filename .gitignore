@@ -74,6 +74,10 @@ build/
 .gradle
 local.properties
 *.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
 android/app/src/main/res/drawable/
 android/.gradle/
 # node.js
@@ -97,9 +101,10 @@ buck-out/
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/
 
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
 
 # Bundle artifact
 *.jsbundle
@@ -108,7 +113,10 @@ buck-out/
 /ios/Pods/
 /ios/B2B_NEW_THEME/Images.xcassets/
 /ios/Podfile.lock
+/vendor/bundle/
 
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
 
 package-lock.json
 yarn.lock
