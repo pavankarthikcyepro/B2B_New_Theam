@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, Text } from 'react-native';
 import { View, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Button, IconButton, List } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { DatePickerComponent, DropDownComponant, TextinputComp } from '../../../components';
+import { DatePickerComponent, DropDownComponant, LoaderComponent, TextinputComp } from '../../../components';
 import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
 import { addCustomer, clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
@@ -23,6 +23,7 @@ import {
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const dispatch = useDispatch();
+  let scrollRef = useRef(null);
   const selector = useSelector((state) => state.customerInfoReducer);
 
   const [userData, setUserData] = useState("");
@@ -232,81 +233,155 @@ const AddCustomerInfo = ({ navigation, route }) => {
   };
 
   const submitClick = () => {
-    return;
+    if (!selector.firstName) {
+      scrollToPos(0);
+      setOpenAccordion("1");
+      showToast("Please Enter First Name");
+      return;
+    }
     
-    let customerData = {
-      // SERVICE
-      kmReadingAtService: selector.readingAtService,
-      // information: "", (not in UI)
-      serviceAmount: selector.serviceAmount,
-      serviceCenter: selector.serviceCenter,
-      // serviceDate: selector.serviceDate, (need formate)
-      serviceManager: selector.serviceAdvisor,
-      dealerName: selector.serviceDealerName,
-      dealerLocation: selector.serviceDealerLocation,
-      lastServiceFeedback: selector.serviceFeedback,
-      reasonForComplaint: selector.complaintReason,
-      complaintStatus: selector.complaintStatus,
-      serviceType: selector.serviceType,
-      // subServiceType: selector.subServiceType, (available in ui, need to add in api)
+    if (!selector.lastName) {
+      scrollToPos(0);
+      setOpenAccordion("1");
+      showToast("Please Enter Last Name");
+      return;
+    }
+    
+    if (!selector.mobile) {
+      scrollToPos(2);
+      setOpenAccordion("1");
+      showToast("Please Enter Mobile Number");
+      return;
+    }
+    
+    if (!selector.sourceType) {
+      scrollToPos(4);
+      setOpenAccordion("1");
+      showToast("Please Enter Source Type");
+      return;
+    }
+    
+    if (!selector.subSourceType) {
+      scrollToPos(4);
+      setOpenAccordion("1");
+      showToast("Please Enter Sub Source Type");
+      return;
+    }
 
-      // VEHICLE DETAILS
-      vehicleDetails: {
-        vehicleRegNumber: selector.vehicleRegNo,
-        vin: selector.vin,
-        engineNumber: selector.engineNumber,
-        // chassisNumber: "", (not in UI)
-        vehicleModel: selector.vehicleModel,
-        variant: selector.vehicleVariant,
-        color: selector.vehicleColor,
-        fuelType: selector.vehicleFuelType,
-        purchaseDate: selector.saleDate,
-        sellingLocation: selector.sellingLocation,
-        sellingDealer: selector.sellingDealer,
-        vehicleMakeYear: selector.makingYear,
-        transmisionType: selector.vehicleTransmissionType,
-        // vehicleMake: "", (Listing remaining from api or static)
-      },
-
-      // CUSTOMER DETAILS
-      customer: {
-        firstName: selector.firstName,
-        lastName: selector.lastName,
-        leadSource: selector.subSourceType,
-        parentLeadSource: selector.sourceType,
-        contactNumber: selector.mobile,
-        alternateContactNumber: selector.alterMobile,
-        email: selector.email,
-        addresses: [
-          {
-            address: "",
-            pin: selector.pincode,
-            state: selector.state,
-            city: selector.city,
-            area: "",
-            district: selector.district,
-            longitude: 0,
-            latitude: 0,
-            label: "HOME",
-            addressLabelIfOther: "",
-          },
-        ],
-        gender: selector.gender,
-        customerType: selector.customerTypes,
-        occupation: selector.occupation,
-        // refered_by: "", (not in UI)
-        dateOfBirth: selector.dateOfBirth,
-        // dateOfArrival: "", (not in UI)
-      },
+    let newData = {
+      firstName: selector.firstName,
+      lastName: selector.lastName,
+      contactNumber: selector.mobile,
+      leadSource: selector.subSourceType,
+      parentLeadSource: selector.sourceType,
+      alternateContactNumber: selector.alterMobile,
+      email: selector.email,
+      addresses: [
+        {
+          address: selector.houseNum + selector.streetName,
+          pin: selector.pincode,
+          state: selector.state,
+          city: selector.city,
+          area: selector.streetName,
+          district: selector.district,
+          longitude: 0,
+          latitude: 0,
+          label: "HOME",
+        },
+      ],
+      gender: selector.gender,
+      customerType: selector.customerTypes,
+      occupation: selector.occupation,
+      dateOfBirth: selector.dateOfBirth,
+      // dateOfArrival: "", (not in UI)
+      refered_by: "", // (not in UI)
     };
+
+    // let customerData = {
+    //   // SERVICE
+    //   kmReadingAtService: selector.readingAtService,
+    //   // information: "", (not in UI)
+    //   serviceAmount: selector.serviceAmount,
+    //   serviceCenter: selector.serviceCenter,
+    //   // serviceDate: selector.serviceDate, (need formate)
+    //   serviceManager: selector.serviceAdvisor,
+    //   dealerName: selector.serviceDealerName,
+    //   dealerLocation: selector.serviceDealerLocation,
+    //   lastServiceFeedback: selector.serviceFeedback,
+    //   reasonForComplaint: selector.complaintReason,
+    //   complaintStatus: selector.complaintStatus,
+    //   serviceType: selector.serviceType,
+    //   // subServiceType: selector.subServiceType, (available in ui, need to add in api)
+
+    //   // VEHICLE DETAILS
+    //   vehicleDetails: {
+    //     vehicleRegNumber: selector.vehicleRegNo,
+    //     vin: selector.vin,
+    //     engineNumber: selector.engineNumber,
+    //     // chassisNumber: "", (not in UI)
+    //     vehicleModel: selector.vehicleModel,
+    //     variant: selector.vehicleVariant,
+    //     color: selector.vehicleColor,
+    //     fuelType: selector.vehicleFuelType,
+    //     purchaseDate: selector.saleDate,
+    //     sellingLocation: selector.sellingLocation,
+    //     sellingDealer: selector.sellingDealer,
+    //     vehicleMakeYear: selector.makingYear,
+    //     transmisionType: selector.vehicleTransmissionType,
+    //     // vehicleMake: "", (Listing remaining from api or static)
+    //   },
+
+    //   // CUSTOMER DETAILS
+    //   customer: {
+    //     firstName: selector.firstName,
+    //     lastName: selector.lastName,
+    //     leadSource: selector.subSourceType,
+    //     parentLeadSource: selector.sourceType,
+    //     contactNumber: selector.mobile,
+    //     alternateContactNumber: selector.alterMobile,
+    //     email: selector.email,
+    //     addresses: [
+    //       {
+    //         address: "",
+    //         pin: selector.pincode,
+    //         state: selector.state,
+    //         city: selector.city,
+    //         area: "",
+    //         district: selector.district,
+    //         longitude: 0,
+    //         latitude: 0,
+    //         label: "HOME",
+    //         addressLabelIfOther: "",
+    //       },
+    //     ],
+    //     gender: selector.gender,
+    //     customerType: selector.customerTypes,
+    //     occupation: selector.occupation,
+    //     // refered_by: "", (not in UI)
+    //     dateOfBirth: selector.dateOfBirth,
+    //     // dateOfArrival: "", (not in UI)
+    //   },
+    // };
 
     let payload = {
       tenantId: userData?.branchId,
-      customerData: customerData,
+      customerData: newData,
     };
 
     dispatch(addCustomer(payload));
   }
+
+  const scrollToPos = (itemIndex) => {
+    scrollRef.current.scrollTo({ y: itemIndex * 70 });
+  };
+
+  useEffect(() => {
+    if (selector.addCustomerResponseStatus == "success") {
+      navigation.popToTop();
+      showToast("Customer Added Successfully");
+    }
+  }, [selector.addCustomerResponseStatus]);
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -398,6 +473,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
           contentContainerStyle={{ padding: 10 }}
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
+          ref={scrollRef}
         >
           <List.AccordionGroup
             expandedId={openAccordion}
@@ -471,7 +547,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 ]}
               />
               <DropDownSelectionItem
-                label={"Gender*"}
+                label={"Gender"}
                 value={selector.gender}
                 onPress={() => showDropDownModelMethod("GENDER", "Gender")}
               />
@@ -564,9 +640,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 keyboardType={"default"}
                 maxLength={40}
                 onChangeText={(text) =>
-                  dispatch(
-                    setCustomerProfile({ key: "OCCUPATION", text: text })
-                  )
+                  dispatch(setPersonalIntro({ key: "OCCUPATION", text: text }))
                 }
               />
               <Text style={GlobalStyle.underline} />
@@ -610,7 +684,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 ]}
               />
               <DropDownSelectionItem
-                label={"Customer Type*"}
+                label={"Customer Type"}
                 value={selector.customerTypes}
                 onPress={() =>
                   showDropDownModelMethod(
@@ -650,7 +724,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
             >
               <TextinputComp
                 value={selector.pincode}
-                label={"Pincode*"}
+                label={"Pincode"}
                 maxLength={6}
                 keyboardType={"phone-pad"}
                 onChangeText={(text) => {
@@ -856,7 +930,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
             >
               <TextinputComp
                 value={selector.vehicleRegNo}
-                label={"Vehicle Reg. No"}
+                label={"Vehicle Reg. No*"}
                 onChangeText={(text) =>
                   dispatch(
                     setVehicleInformation({ key: "VEHICLE_REG_NO", text: text })
@@ -918,7 +992,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <Text style={GlobalStyle.underline} />
               <TextinputComp
                 value={selector.vin}
-                label={"VIN"}
+                label={"VIN*"}
                 onChangeText={(text) =>
                   dispatch(setVehicleInformation({ key: "VIN", text: text }))
                 }
@@ -936,7 +1010,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <Text style={GlobalStyle.underline} />
               <TextinputComp
                 value={selector.kmReading}
-                label={"Km Reading"}
+                label={"Km Reading*"}
                 onChangeText={(text) =>
                   dispatch(
                     setVehicleInformation({ key: "KM_READING", text: text })
@@ -945,13 +1019,13 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <DateSelectItem
-                label={"Sale Date"}
+                label={"Sale Date*"}
                 value={selector.saleDate}
                 onPress={() => showDatePickerModelMethod("SALE_DATE")}
               />
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
-                label={"Making Month"}
+                label={"Making Month*"}
                 value={selector.makingMonth}
                 onPress={() =>
                   showDropDownModelMethod("MAKING_MONTH", "Select Making Month")
@@ -962,7 +1036,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector.makingYear}
                 maxLength={4}
                 keyboardType="number-pad"
-                label={"Making Year"}
+                label={"Making Year*"}
                 onChangeText={(text) =>
                   dispatch(
                     setVehicleInformation({ key: "MAKING_YEAR", text: text })
@@ -1440,6 +1514,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <LoaderComponent visible={selector.isLoading} />
     </SafeAreaView>
   );
 };

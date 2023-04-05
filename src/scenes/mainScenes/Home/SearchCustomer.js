@@ -59,6 +59,7 @@ const SearchCustomer = ({ navigation, route }) => {
   const searchClick = () => {
     if (!selector.vehicleRegNo) {
       showToast("Please enter Vehicle Reg. No");
+      return;
     };
 
     let payload = {

@@ -21,7 +21,7 @@ export const addCustomer = createAsyncThunk(
   "CUSTOMER_INFO_SLICE/addCustomer",
   async (payload, { rejectWithValue }) => {
     const { tenantId, customerData } = payload;
-    const response = await client.get(URL.ADD_CUSTOMER(tenantId), customerData);
+    const response = await client.post(URL.ADD_CUSTOMER(tenantId), customerData);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -119,7 +119,7 @@ export const getInsuranceCompanyApi = createAsyncThunk(
 
 const initialState = {
   isLoading: false,
-  addCustomerResponseStatus: "false",
+  addCustomerResponseStatus: "pending",
   // Customer Info
   salutation: "",
   firstName: "",
