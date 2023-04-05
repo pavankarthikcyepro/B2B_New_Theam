@@ -9,7 +9,7 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  ScrollView,
+  
   Keyboard,
   Image,
   Platform,
@@ -103,6 +103,7 @@ import Orientation from "react-native-orientation-locker";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { isReceptionist } from "../../../utils/helperFunctions";
+import { ScrollView } from "react-native-gesture-handler";
 
 const officeLocation = {
   latitude: 37.33233141,

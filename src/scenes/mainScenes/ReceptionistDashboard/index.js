@@ -1046,7 +1046,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                 }}
                 style={styles.view8}
               >
-                <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
+                <Text style={styles.rankHeadingText}>{"Booking"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistDataV2?.bookingsCount || 0}
@@ -1059,7 +1059,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                 }}
                 style={styles.view8}
               >
-                <Text style={styles.rankHeadingText}>{"Retails"}</Text>
+                <Text style={styles.rankHeadingText}>{"Retail"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
                     {selector.receptionistDataV2?.RetailCount || 0}
