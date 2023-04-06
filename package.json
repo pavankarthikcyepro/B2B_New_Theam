@@ -32,13 +32,14 @@
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
     "@reduxjs/toolkit": "^1.9.3",
+    "deprecated-react-native-prop-types": "^4.0.0",
     "link": "^1.5.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "patch-package": "^6.5.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
-    "react-native": "^0.71.6",
+    "react-native": "^0.71.4",
     "react-native-background-actions": "^3.0.0",
     "react-native-calendars": "^1.1294.0",
     "react-native-chart-kit": "^6.12.0",
@@ -109,7 +110,6 @@
     "prettier": "^2.8.7",
     "react-test-renderer": "^18.2.0",
     "reactotron-react-native": "^5.0.3",
-    "typescript": "^5.0.3",
     "yarn-upgrade-all": "^0.7.2"
   },
   "jest": {
