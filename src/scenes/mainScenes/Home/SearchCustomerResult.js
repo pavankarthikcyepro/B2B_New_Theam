@@ -47,20 +47,20 @@ const SearchCustomerResult = ({ navigation, route }) => {
     );
   };
 
-  const renderItem = ({item,index}) => {
+  const renderItem = ({ item, index }) => {
     return (
       <View style={styles.itemContainer}>
-        <View>
-          <Text style={styles.detailText}>
+        <View style={{ width: "50%" }}>
+          <Text numberOfLines={1} style={styles.detailText}>
             {item.firstName}
             {item.lastName}
           </Text>
           <Text style={styles.detailText}>{item.vin}</Text>
           <Text style={styles.detailText}>{item.model}</Text>
           <Text style={styles.detailText}>{item.contactNumber}</Text>
-          <Text style={styles.detailHighLightText}>
-            {item.subServiceType ?? item.serviceType}
-          </Text>
+          {item.subServiceType && (
+            <Text style={styles.detailHighLightText}>{item.serviceType}</Text>
+          )}
         </View>
         <View style={styles.optionContainer}>
           <View style={styles.idContainer}>
@@ -82,14 +82,20 @@ const SearchCustomerResult = ({ navigation, route }) => {
               onPress={() => sendWhatsApp(item.contactNumber)}
             />
           </View>
-          <Text style={styles.detailText}>Gachhibowli Workshop</Text>
-          <Text style={styles.detailHighLightText}>
-            Due date: {item.dueDate}
-          </Text>
+          {item.serviceCenterName && (
+            <Text numberOfLines={2} style={styles.detailText}>
+              {item.serviceCenterName}
+            </Text>
+          )}
+          {item.dueDate && (
+            <Text style={styles.detailHighLightText}>
+              Due date: {item.dueDate}
+            </Text>
+          )}
         </View>
       </View>
     );
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -150,7 +156,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  optionContainer: { alignItems: "center" },
+  optionContainer: { alignItems: "center", width: "50%" },
   iconOptionRow: {
     flexDirection: "row",
     justifyContent: "space-evenly",
