@@ -5,6 +5,7 @@ import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
+const dateFormate = "YYYY/MM/DD"
 interface DropDownModelNew {
   key: string;
   value: string;
@@ -167,6 +168,7 @@ const initialState = {
   vehicleColorList: "",
   vin: "",
   engineNumber: "",
+  chassisNumber: "",
   kmReading: "",
   saleDate: "",
   makingMonth: "",
@@ -285,6 +287,9 @@ const customerInfoReducer = createSlice({
         case "MAKING_MONTH":
           state.makingMonth = value;
           break;
+        case "FASTAG":
+          state.fastag = value;
+          break;
         // Service Info
         case "SERVICE_TYPE":
           state.serviceType = value;
@@ -314,9 +319,6 @@ const customerInfoReducer = createSlice({
           break;
         case "AMC_NAME":
           state.amcName = value;
-          break;
-        case "FASTAG":
-          state.fastag = value;
           break;
       }
     },
@@ -380,7 +382,7 @@ const customerInfoReducer = createSlice({
           state.minDate = null;
           state.maxDate = state.insuranceExpiryDate
             ? new Date(
-                moment(state.insuranceExpiryDate, "DD/MM/YYYY").format(
+                moment(state.insuranceExpiryDate, dateFormate).format(
                   "MM/DD/YYYY"
                 )
               )
@@ -389,7 +391,7 @@ const customerInfoReducer = createSlice({
         case "INSURANCE_EXPIRY_DATE":
           state.minDate = state.insuranceStartDate
             ? new Date(
-                moment(state.insuranceStartDate, "DD/MM/YYYY").format(
+                moment(state.insuranceStartDate, dateFormate).format(
                   "MM/DD/YYYY"
                 )
               )
@@ -400,14 +402,14 @@ const customerInfoReducer = createSlice({
           state.minDate = null;
           state.maxDate = state.oemEndDate
             ? new Date(
-                moment(state.oemEndDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.oemEndDate, dateFormate).format("MM/DD/YYYY")
               )
             : new Date();
           break;
         case "OEM_END_DATE":
           state.minDate = state.oemStartDate
             ? new Date(
-                moment(state.oemStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.oemStartDate, dateFormate).format("MM/DD/YYYY")
               )
             : new Date();
           state.maxDate = null;
@@ -416,14 +418,14 @@ const customerInfoReducer = createSlice({
           state.minDate = null;
           state.maxDate = state.ewExpiryDate
             ? new Date(
-                moment(state.ewExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.ewExpiryDate, dateFormate).format("MM/DD/YYYY")
               )
             : new Date();
           break;
         case "EW_EXPIRY_DATE":
           state.minDate = state.ewStartDate
             ? new Date(
-                moment(state.ewStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.ewStartDate, dateFormate).format("MM/DD/YYYY")
               )
             : new Date();
           state.maxDate = null;
@@ -432,14 +434,14 @@ const customerInfoReducer = createSlice({
           state.minDate = null;
           state.maxDate = state.amcExpiryDate
             ? new Date(
-                moment(state.amcExpiryDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.amcExpiryDate, dateFormate).format("MM/DD/YYYY")
               )
             : new Date();
           break;
         case "AMC_EXPIRY_DATE":
           state.minDate = state.amcStartDate
             ? new Date(
-                moment(state.amcStartDate, "DD/MM/YYYY").format("MM/DD/YYYY")
+                moment(state.amcStartDate, dateFormate).format("MM/DD/YYYY")
               )
             : new Date();
           state.maxDate = null;
@@ -454,12 +456,12 @@ const customerInfoReducer = createSlice({
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
+      const selectedDate = convertTimeStampToDateString(text, "YYYY/MM/DD");
       const keyId = key ? key : state.datePickerKeyId;
       switch (keyId) {
         case "DATE_OF_BIRTH":
           state.dateOfBirth = selectedDate;
-          const given = moment(selectedDate, "DD/MM/YYYY");
+          const given = moment(selectedDate, "YYYY/MM/DD");
           const current = moment().startOf("day");
           const total = Number(
             moment.duration(current.diff(given)).asYears()
@@ -583,6 +585,9 @@ const customerInfoReducer = createSlice({
         case "ENGINE_NUMBER":
           state.engineNumber = text;
           break;
+        case "CHASSIS_NUMBER":
+          state.chassisNumber = text;
+          break;
         case "KM_READING":
           state.kmReading = text;
           break;
@@ -682,7 +687,7 @@ const customerInfoReducer = createSlice({
         state.addCustomerResponseStatus = "failed";
         state.isLoading = false;
       });
-    
+
     // Get Customer Types
     builder
       .addCase(getCustomerTypesApi.pending, (state, action) => {
@@ -802,7 +807,7 @@ const customerInfoReducer = createSlice({
       .addCase(getComplaintReasonsApi.rejected, (state, action) => {
         state.complaintReasonResponse = [];
       });
-    
+
     // Get Insurance Company
     builder
       .addCase(getInsuranceCompanyApi.pending, (state, action) => {
@@ -823,12 +828,10 @@ const customerInfoReducer = createSlice({
       .addCase(getInsuranceCompanyApi.rejected, (state, action) => {
         state.insuranceCompanyResponse = [];
       });
-    
+
     // Get Vehicle Info
     builder
-      .addCase(getVehicleInfo.pending, (state, action) => {
-
-      })
+      .addCase(getVehicleInfo.pending, (state, action) => {})
       .addCase(getVehicleInfo.fulfilled, (state, action) => {
         if (action.payload) {
           let sData = action.payload;
@@ -841,9 +844,7 @@ const customerInfoReducer = createSlice({
           state.vehicleModelList = [...newArr];
         }
       })
-      .addCase(getVehicleInfo.rejected, (state, action) => {
-
-      });
+      .addCase(getVehicleInfo.rejected, (state, action) => {});
   },
 });
 

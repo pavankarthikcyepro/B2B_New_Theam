@@ -47,3 +47,8 @@ export const FASTAG = [
   { id: "1", name: "Available" },
   { id: "2", name: "Not Available" },
 ];
+
+export const VEHICLE_MAKER = [
+  { id: "1", name: "Hundai" },
+  { id: "2", name: "Tata" },
+];

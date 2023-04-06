@@ -19,7 +19,9 @@ import {
   LAST_SERVICE_FEEDBACK,
   MONTH,
   OEM_PERIOD,
+  VEHICLE_MAKER,
 } from "../../../jsonData/addCustomerScreenJsonData";
+import moment from 'moment';
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -27,7 +29,6 @@ const AddCustomerInfo = ({ navigation, route }) => {
   const selector = useSelector((state) => state.customerInfoReducer);
 
   const [userData, setUserData] = useState("");
-
   const [openAccordion, setOpenAccordion] = useState(0);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -140,6 +141,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
           break;
         }
         break;
+      case "VEHICLE_MAKER":
+        setDataForDropDown([...VEHICLE_MAKER]);
+        break;
       case "VEHICLE_MODEL":
         setDataForDropDown([...selector.vehicleModelList]);
         break;
@@ -232,7 +236,37 @@ const AddCustomerInfo = ({ navigation, route }) => {
     dispatch(setDatePicker(key));
   };
 
+  const convertDateForPayload = (value) => {
+    if (value) {
+      return moment(value, "YYYY/MM/DD").format("YYYY-MM-DD");
+    }
+    return value;
+  };
+
+  const getPayloadId = (type, value) => {
+    if (value) {
+      if (type == "serviceType") {
+        let index = selector.serviceTypeResponse.findIndex(
+          (item) => item.name == value
+        );
+        return selector.serviceTypeResponse[index].id;
+      } else if (type == "sourceType") {
+        let index = selector.sourceTypesResponse.findIndex(
+          (item) => item.name == value
+        );
+        return selector.serviceTypeResponse[index].id;
+      } else if (type == "subSourceType") {
+        let index = selector.subServiceTypeResponse.findIndex(
+          (item) => item.name == value
+        );
+        return selector.serviceTypeResponse[index].id;
+      }
+    }
+    return "";
+  };
+
   const submitClick = () => {
+    setIsSubmitPress(true);
     if (!selector.firstName) {
       scrollToPos(0);
       setOpenAccordion("1");
@@ -267,107 +301,163 @@ const AddCustomerInfo = ({ navigation, route }) => {
       showToast("Please Enter Sub Source Type");
       return;
     }
+    
+    if (!selector.vehicleRegNo) {
+      scrollToPos(0);
+      setOpenAccordion("3");
+      showToast("Please Enter Vehicle Reg. No");
+      return;
+    }
+    
+    if (!selector.vin) {
+      setOpenAccordion("3");
+      scrollToPos(6);
+      showToast("Please Enter Vin");
+      return;
+    }
+    
+    if (!selector.readingAtService) {
+      setOpenAccordion("3");
+      scrollToPos(6);
+      showToast("Please Enter Km Reading");
+      return;
+    }
+    
+    if (!selector.saleDate) {
+      setOpenAccordion("3");
+      scrollToPos(6);
+      showToast("Please Enter Sale Date");
+      return;
+    }
+
+    if (!selector.makingMonth) {
+      setOpenAccordion("3");
+      scrollToPos(6);
+      showToast("Please Enter Making Month");
+      return;
+    }
+
+    if (!selector.makingYear) {
+      setOpenAccordion("3");
+      scrollToPos(6);
+      showToast("Please Enter Making Year");
+      return;
+    }
+
+    if (selector.makingYear && selector.makingYear.length !== 4) {
+      setOpenAccordion("3");
+      scrollToPos(6);
+      showToast("Please Enter valid making year");
+      return;
+    }
 
     let newData = {
-      firstName: selector.firstName,
-      lastName: selector.lastName,
-      contactNumber: selector.mobile,
-      leadSource: selector.subSourceType,
-      parentLeadSource: selector.sourceType,
-      alternateContactNumber: selector.alterMobile,
-      email: selector.email,
-      addresses: [
+      vehicleHistoryRequest: {
+        serviceManager: selector.serviceAdvisor,
+        complaintStatus: selector.complaintStatus,
+        lastServiceFeedback: selector.serviceFeedback,
+        reasonForComplaint: selector.complaintReason,
+        dealerName: selector.serviceDealerName,
+        dealerLocation: selector.serviceDealerLocation,
+        serviceDate: convertDateForPayload(selector.serviceDate),
+        kmReadingAtService: selector.readingAtService,
+        serviceCenter: selector.serviceCenter,
+        serviceAmount: selector.serviceAmount,
+        serviceType: getPayloadId("serviceType", selector.serviceType),
+        // subServiceType: selector.subServiceType, (available in ui, need to add in api)
+      },
+      vehicleDetails: {
+        vehicleRegNumber: selector.vehicleRegNo,
+        vehicleMake: selector.vehicleMaker,
+        vehicleModel: selector.vehicleModel,
+        variant: selector.vehicleVariant,
+        color: selector.vehicleColor,
+        fuelType: selector.vehicleFuelType,
+        transmisionType: selector.vehicleTransmissionType,
+        vin: selector.vin,
+        engineNumber: selector.engineNumber,
+        purchaseDate: convertDateForPayload(selector.saleDate),
+        chassisNumber: selector.chassisNumber,
+        sellingLocation: selector.sellingLocation,
+        sellingDealer: selector.sellingDealer,
+        makingMonth: selector.makingMonth,
+        vehicleMakeYear: selector.makingYear,
+        isFastag: selector.fastag,
+        currentKmReading: selector.kmReading,
+      },
+      customer: {
+        salutation: selector.salutation,
+        firstName: selector.firstName,
+        lastName: selector.lastName,
+        relationName: selector.relation,
+        age: selector.age,
+        leadSource: getPayloadId("subSourceType", selector.subSourceType),
+        parentLeadSource: getPayloadId("sourceType", selector.sourceType),
+        contactNumber: selector.mobile,
+        alternateContactNumber: selector.alterMobile,
+        email: selector.email,
+        addresses: [
+          {
+            houseNo: selector.houseNum,
+            street: selector.streetName,
+            villageOrTown: selector.village,
+            mandalOrTahasil: selector.mandal,
+            isUrban: selector.urban_or_rural === 1 ? true : false,
+            pin: selector.pincode,
+            state: selector.state,
+            city: selector.city,
+            district: selector.district,
+          },
+        ],
+        gender: selector.gender,
+        customerType: selector.customerTypes,
+        occupation: selector.occupation,
+        dateOfBirth: convertDateForPayload(selector.dateOfBirth),
+        // refered_by: "dsfsdf", (not in UI)
+        // dateOfArrival: "2023-03-22", (not in UI)
+      },
+      insuranceRequest: {
+        insuranceAmount: selector.insuranceAmount,
+        startDate: convertDateForPayload(selector.insuranceStartDate),
+        endDate: convertDateForPayload(selector.insuranceExpiryDate),
+        vendor: selector.insuranceCompany,
+        insuranceIdentifier: selector.insurancePolicyNo,
+      },
+      warrantyRequests: [
         {
-          address: selector.houseNum + selector.streetName,
-          pin: selector.pincode,
-          state: selector.state,
-          city: selector.city,
-          area: selector.streetName,
-          district: selector.district,
-          longitude: 0,
-          latitude: 0,
-          label: "HOME",
+          startDate: convertDateForPayload(selector.amcStartDate),
+          expiryDate: convertDateForPayload(selector.amcExpiryDate),
+          amountPaid: selector.amcAmountPaid,
+          warrantyType: "MCP",
+          amc_name: selector.amcName,
+          number: selector.amcPolicyNo,
+        },
+        {
+          startDate: convertDateForPayload(selector.ewStartDate),
+          expiryDate: convertDateForPayload(selector.ewExpiryDate),
+          amountPaid: selector.ewAmountPaid,
+          warrantyType: "EW",
+          ewName: selector.ewType,
+          number: selector.ewPolicyNo,
+        },
+        {
+          startDate: convertDateForPayload(selector.oemStartDate),
+          expiryDate: convertDateForPayload(selector.oemEndDate),
+          amountPaid: selector.oemWarrantyAmount,
+          warrantyType: "OEM",
+          oemPeriod: selector.oemPeriod,
+          number: selector.oemWarrantyNo,
         },
       ],
-      gender: selector.gender,
-      customerType: selector.customerTypes,
-      occupation: selector.occupation,
-      dateOfBirth: selector.dateOfBirth,
-      // dateOfArrival: "", (not in UI)
-      refered_by: "", // (not in UI)
     };
-
-    // let customerData = {
-    //   // SERVICE
-    //   kmReadingAtService: selector.readingAtService,
-    //   // information: "", (not in UI)
-    //   serviceAmount: selector.serviceAmount,
-    //   serviceCenter: selector.serviceCenter,
-    //   // serviceDate: selector.serviceDate, (need formate)
-    //   serviceManager: selector.serviceAdvisor,
-    //   dealerName: selector.serviceDealerName,
-    //   dealerLocation: selector.serviceDealerLocation,
-    //   lastServiceFeedback: selector.serviceFeedback,
-    //   reasonForComplaint: selector.complaintReason,
-    //   complaintStatus: selector.complaintStatus,
-    //   serviceType: selector.serviceType,
-    //   // subServiceType: selector.subServiceType, (available in ui, need to add in api)
-
-    //   // VEHICLE DETAILS
-    //   vehicleDetails: {
-    //     vehicleRegNumber: selector.vehicleRegNo,
-    //     vin: selector.vin,
-    //     engineNumber: selector.engineNumber,
-    //     // chassisNumber: "", (not in UI)
-    //     vehicleModel: selector.vehicleModel,
-    //     variant: selector.vehicleVariant,
-    //     color: selector.vehicleColor,
-    //     fuelType: selector.vehicleFuelType,
-    //     purchaseDate: selector.saleDate,
-    //     sellingLocation: selector.sellingLocation,
-    //     sellingDealer: selector.sellingDealer,
-    //     vehicleMakeYear: selector.makingYear,
-    //     transmisionType: selector.vehicleTransmissionType,
-    //     // vehicleMake: "", (Listing remaining from api or static)
-    //   },
-
-    //   // CUSTOMER DETAILS
-    //   customer: {
-    //     firstName: selector.firstName,
-    //     lastName: selector.lastName,
-    //     leadSource: selector.subSourceType,
-    //     parentLeadSource: selector.sourceType,
-    //     contactNumber: selector.mobile,
-    //     alternateContactNumber: selector.alterMobile,
-    //     email: selector.email,
-    //     addresses: [
-    //       {
-    //         address: "",
-    //         pin: selector.pincode,
-    //         state: selector.state,
-    //         city: selector.city,
-    //         area: "",
-    //         district: selector.district,
-    //         longitude: 0,
-    //         latitude: 0,
-    //         label: "HOME",
-    //         addressLabelIfOther: "",
-    //       },
-    //     ],
-    //     gender: selector.gender,
-    //     customerType: selector.customerTypes,
-    //     occupation: selector.occupation,
-    //     // refered_by: "", (not in UI)
-    //     dateOfBirth: selector.dateOfBirth,
-    //     // dateOfArrival: "", (not in UI)
-    //   },
-    // };
-
+    
     let payload = {
       tenantId: userData?.branchId,
       customerData: newData,
     };
-
+    
+    console.log("payload -> ", payload);
+    return;
     dispatch(addCustomer(payload));
   }
 
@@ -520,7 +610,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   GlobalStyle.underline,
                   {
                     backgroundColor:
-                      isSubmitPress && selector.firstName === ""
+                      isSubmitPress && selector.firstName.trim() === ""
                         ? "red"
                         : "rgba(208, 212, 214, 0.7)",
                   },
@@ -540,7 +630,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   GlobalStyle.underline,
                   {
                     backgroundColor:
-                      isSubmitPress && selector.lastName === ""
+                      isSubmitPress && selector.lastName.trim() === ""
                         ? "red"
                         : "rgba(208, 212, 214, 0.7)",
                   },
@@ -552,17 +642,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 onPress={() => showDropDownModelMethod("GENDER", "Gender")}
               />
 
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.gender === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
+              <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
                 label={"Relation"}
                 value={selector.relation}
@@ -580,7 +660,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector?.age?.toString()}
                 label={"Age"}
                 keyboardType={"phone-pad"}
-                maxLength={5}
+                maxLength={2}
                 onChangeText={(text) =>
                   dispatch(setPersonalIntro({ key: "AGE", text: text }))
                 }
@@ -606,7 +686,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   GlobalStyle.underline,
                   {
                     backgroundColor:
-                      isSubmitPress && selector.mobile === ""
+                      isSubmitPress && selector.mobile.trim() === ""
                         ? "red"
                         : "rgba(208, 212, 214, 0.7)",
                   },
@@ -693,17 +773,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   )
                 }
               />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.customerTypes === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
+              <Text style={GlobalStyle.underline} />
             </List.Accordion>
             <View style={styles.space} />
             <List.Accordion
@@ -937,11 +1007,25 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   )
                 }
               />
-              <Text style={GlobalStyle.underline} />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.vehicleRegNo.trim() === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              />
               <DropDownSelectionItem
                 label={"Vehicle Make"}
+                value={selector.vehicleMaker}
                 onPress={() =>
-                  showDropDownModelMethod("VEHICLE_MAKE", "Select Vehicle Make")
+                  showDropDownModelMethod(
+                    "VEHICLE_MAKER",
+                    "Select Vehicle Make"
+                  )
                 }
               />
               <Text style={GlobalStyle.underline} />
@@ -997,13 +1081,33 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   dispatch(setVehicleInformation({ key: "VIN", text: text }))
                 }
               />
-              <Text style={GlobalStyle.underline} />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.vin.trim() === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              />
               <TextinputComp
                 value={selector.engineNumber}
                 label={"Engine Number"}
                 onChangeText={(text) =>
                   dispatch(
                     setVehicleInformation({ key: "ENGINE_NUMBER", text: text })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline} />
+              <TextinputComp
+                value={selector.chassisNumber}
+                label={"Chassis Number"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setVehicleInformation({ key: "CHASSIS_NUMBER", text: text })
                   )
                 }
               />
@@ -1023,7 +1127,17 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector.saleDate}
                 onPress={() => showDatePickerModelMethod("SALE_DATE")}
               />
-              <Text style={GlobalStyle.underline} />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.saleDate === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              />
               <DropDownSelectionItem
                 label={"Making Month*"}
                 value={selector.makingMonth}
@@ -1031,7 +1145,17 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   showDropDownModelMethod("MAKING_MONTH", "Select Making Month")
                 }
               />
-              <Text style={GlobalStyle.underline} />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.makingMonth === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              />
               <TextinputComp
                 value={selector.makingYear}
                 maxLength={4}
@@ -1043,7 +1167,17 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   )
                 }
               />
-              <Text style={GlobalStyle.underline} />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.makingYear.trim() === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              />
               <TextinputComp
                 value={selector.sellingDealer}
                 label={"Selling Dealer"}
@@ -1100,25 +1234,15 @@ const AddCustomerInfo = ({ navigation, route }) => {
               />
               <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
-                label={"Service Type*"}
+                label={"Service Type"}
                 value={selector.serviceType}
                 onPress={() =>
                   showDropDownModelMethod("SERVICE_TYPE", "Select Service Type")
                 }
               />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.ServiceType === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
+              <Text style={GlobalStyle.underline} />
               <DropDownSelectionItem
-                label={"Sub Service Type*"}
+                label={"Sub Service Type"}
                 value={selector.subServiceType}
                 onPress={() =>
                   showDropDownModelMethod(
@@ -1127,17 +1251,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   )
                 }
               />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.subServiceType === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
+              <Text style={GlobalStyle.underline} />
               <TextinputComp
                 value={selector.serviceAmount}
                 label={"Service Amount"}
