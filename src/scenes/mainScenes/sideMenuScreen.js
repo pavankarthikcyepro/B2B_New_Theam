@@ -97,6 +97,7 @@ const CRMMenu = [
   ...commonMenu,
   "Live Leads",
   "Live Leads Receptionist",
+  "Receptionist Dashboard",
   "Digital Payment",
   "Geolocation",
 ];

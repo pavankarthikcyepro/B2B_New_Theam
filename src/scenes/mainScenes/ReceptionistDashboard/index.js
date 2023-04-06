@@ -59,6 +59,7 @@ import {
   get_xrole_SalesManagerDigitalTeam,
   updatereceptionistDataObjectData,
   get_xrole_SalesManagerReceptinistTeam,
+  getCRM_ReceptionistDashborad,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -480,9 +481,16 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
       "dashboardType": "reception"
       };
      
-      if (!selector.saveReceptionistfilterObj.selectedempId) {
-        dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole))
+      if (jsonObj.hrmsRole === "CRM"){
+        if (!selector.saveReceptionistfilterObj.selectedempId) {
+          dispatch(getCRM_ReceptionistDashborad(payloadXrole))
+        }
+      }else{
+        if (!selector.saveReceptionistfilterObj.selectedempId) {
+          dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole))
+        }
       }
+     
       Promise.all([
         
         dispatch(getOrganaizationHirarchyList(payload)),

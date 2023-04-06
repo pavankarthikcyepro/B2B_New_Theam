@@ -781,6 +781,21 @@ export const getCRM_ReceptionistManagerData = createAsyncThunk(
   }
 );
 
+export const getCRM_ReceptionistDashborad = createAsyncThunk(
+  "HOME/getCRM_ReceptionistDashborad",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD_CRM(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 // for digital dashboard
 export const getCRM_ReceptionistManagerDataDigital = createAsyncThunk(
   "HOME/getCRM_ReceptionistManagerDataDigital",
@@ -1113,6 +1128,17 @@ export const homeSlice = createSlice({
     levelSelected_recep: [],
     dealerFilter_recep: {},
     crm_employees_drop_down_data_recep: {},
+    receptionistData_CRM : {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -1291,6 +1317,17 @@ export const homeSlice = createSlice({
         totalLostCount: 0,
         fullResponse: {},
       },
+        state.receptionistData_CRM = {
+          RetailCount: 0,
+          bookingsCount: 0,
+          consultantList: [],
+          totalAllocatedCount: 0,
+          totalDroppedCount: 0,
+          contactsCount: 0,
+          enquirysCount: 0,
+          totalLostCount: 0,
+          fullResponse: {},
+        },
         state.crm_employees_drop_down_data_recep = {}
       // state.dealerFilter= { }
     },
@@ -1907,6 +1944,24 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
+
+      // CRM receptionist Dashboard
+      .addCase(getCRM_ReceptionistDashborad.pending, (state) => { })
+      .addCase(getCRM_ReceptionistDashborad.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistData_CRM = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getCRM_ReceptionistDashborad.rejected, (state, action) => { })
 
       // for digital dashboard filter case
       .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => { })
