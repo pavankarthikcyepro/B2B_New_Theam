@@ -1102,9 +1102,6 @@ export const ProformaComp = ({
         "</div>" +
         "</body>";
 
-      console.log("siteTypeName -> ", siteTypeName);
-      return;
-
       let bottomPitch =
         (await '<div style="padding-top:10px;" >') +
         "<p>" +
