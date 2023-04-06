@@ -58,6 +58,7 @@ import {
   getReceptionistManagerData,
   get_xrole_SalesManagerDigitalTeam,
   getCRM_ReceptionistManagerData,
+  updatereceptionistDataObjectData,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -158,6 +159,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
+      dispatch(updatereceptionistDataObjectData({}))
       setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
@@ -1053,8 +1055,22 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             <View style={styles.view7}>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.contactsCount > 0 &&
-                    navigateToContact();
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerPreInquiryCount > 0) {
+                        navigateToContact();
+                      }
+                    } else {
+                      if (selector?.receptionistDataDigitalFilter_CRE?.contactsCount > 0) {
+                        navigateToContact();
+                      }
+                    }
+
+                  } else {
+                    if (selector.receptionistData.contactsCount > 0) {
+                      navigateToContact();
+                    }
+                  }
                 }}
                 style={styles.view8}
               >
@@ -1073,8 +1089,25 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.enquirysCount > 0 &&
-                    navigateToEMS("ENQUIRY", "", [userData.empId]);
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount > 0) {
+                        navigateToEMS("ENQUIRY", "", [userData.empId]);
+                      }
+                    } else {
+                      if (selector?.receptionistDataDigitalFilter_CRE?.enquirysCount > 0) {
+                        navigateToEMS("ENQUIRY", "", [userData.empId]);
+                      }
+                    }
+
+                  } else {
+                    if (selector.receptionistData.enquirysCount > 0) {
+                      navigateToEMS("ENQUIRY", "", [userData.empId]);
+                    }
+                  }
+
+                  // selector?.receptionistDataDigitalFilter_CRE?.enquirysCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount || selector.receptionistData.enquirysCount > 0 &&
+                  //   navigateToEMS("ENQUIRY", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1092,7 +1125,25 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.bookingsCount > 0 &&
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"){
+                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount > 0) {
+                        navigateToEMS("BOOKING", "", [userData.empId]);
+                      }
+                    }else{
+                      if (selector?.receptionistDataDigitalFilter_CRE?.bookingsCount > 0) {
+                        navigateToEMS("BOOKING", "", [userData.empId]);
+                      }
+                    }
+                    
+                  } else {
+                    if (selector.receptionistData?.bookingsCount > 0) {
+                      navigateToEMS("BOOKING", "", [userData.empId]);
+                    }
+                  }
+
+
+                  selector?.receptionistDataDigitalFilter_CRE?.bookingsCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount || selector.receptionistData.bookingsCount > 0 &&
                     navigateToEMS("BOOKING", "", [userData.empId]);
                 }}
                 style={styles.view8}
@@ -1109,7 +1160,24 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount > 0) {
+                        navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                      }
+                    } else {
+                      if (selector?.receptionistDataDigitalFilter_CRE?.RetailCount > 0) {
+                        navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                      }
+                    }
+
+                  } else {
+                    if (selector.receptionistData.RetailCount > 0) {
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                    }
+                  }
+
+                  // selector?.receptionistDataDigitalFilter_CRE?.RetailCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1125,8 +1193,24 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
-                    navigateToDropAnalysis(userData.empId, false, "", false, true)
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount > 0) {
+                        navigateToDropAnalysis(userData.empId, false, "", false, true)
+                      }
+                    } else {
+                      if (selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount > 0) {
+                        navigateToDropAnalysis(userData.empId, false, "", false, true)
+                      }
+                    }
+
+                  } else {
+                    if (selector.receptionistData.totalDroppedCount > 0) {
+                      navigateToDropAnalysis(userData.empId, false, "", false, true)
+                    }
+                  }
+                  // selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || selector.receptionistData.totalDroppedCount > 0 &&
+                  //   navigateToDropAnalysis(userData.empId, false, "", false, true)
                 }}
                 style={styles.view8}
               >

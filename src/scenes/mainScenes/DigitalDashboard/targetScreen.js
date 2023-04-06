@@ -29,6 +29,7 @@ import {
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
   updateEmployeeDataBasedOnDelegate,
+  updatereceptionistDataObjectData,
 } from "../../../redux/homeReducer";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../navigations";
@@ -746,6 +747,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       setisShowSalesConsultant(false);
       setIsViewExpanded(false);
       setIsViewCreExpanded(false);
+      dispatch(updatereceptionistDataObjectData({}))
     });
     setSlideRight(0);
   }, [navigation, selector.isTeam]);
@@ -1881,22 +1883,22 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
               // todo add logic for redirections filer applied manthan
               if (selector.saveCRMfilterObj.selectedempId) {
                 if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                  item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
-                    item.id === 1 ? navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
-                      item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
-                        item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+                  item.id === 0 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+                    item.id === 1 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount > 0 && navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+                      item.id === 2 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+                        item.id === 3 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount > 0 &&  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
                 }else{
-                  item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, "",false,false) :
-                    item.id === 1 ? navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
-                      item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
-                        item.id === 3 ? navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+                  item.id === 0 ? selector?.receptionistDataDigitalFilter_CRE?.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, "",false,false) :
+                    item.id === 1 ? selector?.receptionistDataDigitalFilter_CRE?.bookingsCount > 0 && navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
+                      item.id === 2 ? selector?.receptionistDataDigitalFilter_CRE?.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
+                        item.id === 3 ? selector?.receptionistDataDigitalFilter_CRE?.totalLostCount > 0 && navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
                 }
               
               } else {
                 item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], false, userData.empId, true, false) :
-                  item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId], false, userData.empId, true, false) :
+                  item.id === 1 ? selector.receptionistData.bookingsCount > 0 && navigateToEMS("BOOKING", "", [userData.empId], false, userData.empId, true, false) :
                     item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], false, userData.empId, true, false) :
-                      item.id === 3 ? navigateToDropAnalysis(userData.empId,false,"",false,true) : null
+                      item.id === 3 ? selector.receptionistData.totalLostCount > 0 && navigateToDropAnalysis(userData.empId,false,"",false,true) : null
               }
 
             }
@@ -4030,7 +4032,23 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                     }
                                   );
                                 } else {
-
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_DEGITAL",
+                                    {
+                                      empId: selector.saveCRMfilterObj.selectedempId[0],
+                                      loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "DigitalDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: selector.saveCRMfilterObj?.selectedDesignation[0],
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true
+                                    }
+                                  );
                                   // handleSourceModalNavigation(item, "", [], "CRM", true)
                                 }
                               } else {

@@ -725,6 +725,18 @@ export const getReceptionistData = createAsyncThunk(
   }
 );
 
+// when filter applied in receptionist dashboard
+export const getReceptionistDataForRecepDashboard = createAsyncThunk(
+  "HOME/getReceptionistDataForRecepDashboard",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_DASHBOARD(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 // digital dashboard filter cre/tele caller selected 
 export const getReceptionistDataDigitalDashboard = createAsyncThunk(
@@ -1051,6 +1063,17 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
+    receptionistData_ReceptionistDashboard_xrole: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
     receptionistModel: [],
     receptionistSource: [],
     selectedIDS: [],
@@ -1077,7 +1100,19 @@ export const homeSlice = createSlice({
       selectedempId: "",
       dealerCodes: "",
       selectedDesignation:""
-    }
+    },
+    saveReceptionistfilterObj: {
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+      selectedDesignation: ""
+    },
+    filterSelectedData_recep: {},
+    levelSelected_recep: [],
+    dealerFilter_recep: {},
+    crm_employees_drop_down_data_recep: {},
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -1131,6 +1166,18 @@ export const homeSlice = createSlice({
     },
     updateLiveLeadObjectData: (state, action) => {
       state.saveCRMfilterObj = action.payload;
+    },
+    updateReceptionistObjectData: (state, action) => {
+      state.saveReceptionistfilterObj = action.payload;
+    },
+    updateFilterSelectedDataReceptionist: (state, action) => {
+      state.filterSelectedData_recep = action.payload;
+    },
+    updateFilterLevelSelectedDataReceptionist: (state, action) => {
+      state.levelSelected_recep = action.payload;
+    },
+    updateDealerFilterData_Recep: (state, action) => {
+      state.dealerFilter_recep = action.payload;
     },
     updatereceptionistDataObjectData: (state, action) => {
       state.receptionistData = {
@@ -1243,7 +1290,8 @@ export const homeSlice = createSlice({
         enquirysCount: 0,
         totalLostCount: 0,
         fullResponse: {},
-      }
+      },
+        state.crm_employees_drop_down_data_recep = {}
       // state.dealerFilter= { }
     },
   },
@@ -1509,15 +1557,15 @@ export const homeSlice = createSlice({
 
        // Get  Receptionist Employees Drop Down Data
       .addCase(getReceptionistEmployeesDropDownData.pending, (state, action) => {
-        state.crm_employees_drop_down_data = {};
+        state.crm_employees_drop_down_data_recep = {};
       })
       .addCase(getReceptionistEmployeesDropDownData.fulfilled, (state, action) => {
         if (action.payload) {
-          state.crm_employees_drop_down_data = action.payload;
+          state.crm_employees_drop_down_data_recep = action.payload;
         }
       })
       .addCase(getReceptionistEmployeesDropDownData.rejected, (state, action) => {
-        state.crm_employees_drop_down_data = {};
+        state.crm_employees_drop_down_data_recep = {};
       })
 
 
@@ -1791,6 +1839,24 @@ export const homeSlice = createSlice({
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
 
+      .addCase(getReceptionistDataForRecepDashboard.pending, (state) => { state.isLoading = true; })
+      .addCase(getReceptionistDataForRecepDashboard.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.isLoading = false;
+        state.receptionistData_ReceptionistDashboard_xrole = {
+          RetailCount: dataObj.RetailCount,
+          bookingsCount: dataObj.bookingsCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.contactsCount,
+          enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getReceptionistDataForRecepDashboard.rejected, (state, action) => { state.isLoading = false; })
+
       // digital dashboard filter cre/tele caller selected 
       .addCase(getReceptionistDataDigitalDashboard.pending, (state) => { })
       .addCase(getReceptionistDataDigitalDashboard.fulfilled, (state, action) => {
@@ -1878,9 +1944,12 @@ export const homeSlice = createSlice({
       .addCase(get_xrole_SalesManagerDigitalTeam.rejected, (state, action) => { })
 
 
-      .addCase(get_xrole_SalesManagerReceptinistTeam.pending, (state) => { })
+      .addCase(get_xrole_SalesManagerReceptinistTeam.pending, (state) => {
+        state.isLoading = true;
+       })
       .addCase(get_xrole_SalesManagerReceptinistTeam.fulfilled, (state, action) => {
         const dataObj = action.payload;
+        state.isLoading = false;
         state.receptionistDataV2 = {
           RetailCount: dataObj.totalRetailCount,
           bookingsCount: dataObj.totalBookingCount,
@@ -1893,7 +1962,7 @@ export const homeSlice = createSlice({
           fullResponse: dataObj
         };
       })
-      .addCase(get_xrole_SalesManagerReceptinistTeam.rejected, (state, action) => { })
+      .addCase(get_xrole_SalesManagerReceptinistTeam.rejected, (state, action) => { state.isLoading = false; })
 
 
       .addCase(getReceptionistSource.pending, (state) => {})
@@ -2016,6 +2085,7 @@ export const {
   updateTargetData,
   updateFilterIds,
   updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
-  updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData
+  updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData,updateDealerFilterData_Recep,updateFilterLevelSelectedDataReceptionist,updateFilterSelectedDataReceptionist
+  ,updateReceptionistObjectData
 } = homeSlice.actions;
 export default homeSlice.reducer;

@@ -343,7 +343,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                         "filterValue": "",
                         "selectedEmpId": route.params.parentId ? [route.params.parentId] : [],
                         "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
-                        "forDropped": false,
+                        "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
                     }
                     dispatch(getDropAnalysisRedirections(payload))
                 }

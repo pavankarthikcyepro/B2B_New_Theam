@@ -41,7 +41,7 @@ import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 
-import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, updateFilterLevelSelectedData, updateLiveLeadObjectData, } from "../../../redux/homeReducer"
+import { updateDealerFilterData_Recep, updateFilterSelectedDataReceptionist, saveFilterPayload, updateFilterLevelSelectedDataReceptionist, updateReceptionistObjectData, } from "../../../redux/homeReducer"
 import { useIsFocused } from "@react-navigation/native";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { Colors } from "../../../styles";
@@ -148,8 +148,8 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
 
   useEffect(() => {
     // navigation.addListener("focus", () => {
-    // if (!isEmpty(targetSelector.filterSelectedData)) {
-    //   const temp = { ...targetSelector.filterSelectedData };
+    // if (!isEmpty(targetSelector.filterSelectedData_recep)) {
+    //   const temp = { ...targetSelector.filterSelectedData_recep };
     //   setEmployeeDropDownDataLocal(temp);
     // }
     // });
@@ -158,8 +158,8 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      if (!isEmpty(selector.dealerFilter)) {
-        const temp = { ...selector.dealerFilter };
+      if (!isEmpty(selector.dealerFilter_recep)) {
+        const temp = { ...selector.dealerFilter_recep };
         setTotalDataObj(temp);
 
          
@@ -428,7 +428,7 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       };
       totalDataObjLocal[key] = newOBJ;
 
-      dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
+      dispatch(updateDealerFilterData_Recep({ ...totalDataObjLocal }));
       setTotalDataObj({ ...totalDataObjLocal });
       return { ...totalDataObjLocal }
       // index == 4 && submitBtnClicked(totalDataObjLocal,"");
@@ -518,7 +518,7 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
     };
     totalDataObjLocal[key] = newOBJ;
     
-    dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
+    dispatch(updateDealerFilterData_Recep({ ...totalDataObjLocal }));
     setTotalDataObj({ ...totalDataObjLocal });
     // index == 4 && submitBtnClicked(totalDataObjLocal,"");
   };
@@ -526,8 +526,8 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
     let keyMain = employeeTitleNameList[index];
     // clearBtnForEmployeeData();
-    // dispatch(updateFilterSelectedData({}))
-    // dispatch(updateLiveLeadObjectData({}))
+    // dispatch(updateFilterSelectedDataReceptionist({}))
+    // dispatch(updateReceptionistObjectData({}))
   
    
  
@@ -618,7 +618,7 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       }
     }
     setTotalDataObj({ ...totalDataObjLocal });
-    dispatch(updateFilterLevelSelectedData({}))
+    dispatch(updateFilterLevelSelectedDataReceptionist({}))
     let obj = {
       startDate: "",
       endDate: "",
@@ -626,9 +626,9 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       selectedempId: "",
       dealerCodes: "",
     }
-    dispatch(updateDealerFilterData({}))
-    // dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData(obj))
+    dispatch(updateDealerFilterData_Recep({}))
+    // dispatch(updateFilterSelectedDataReceptionist({}))
+    dispatch(updateReceptionistObjectData(obj))
     clearBtnForEmployeeData();
     
   };
@@ -751,8 +751,8 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       selectedempId: "",
       dealerCodes: selectedBranchName,
     }
-    dispatch(updateLiveLeadObjectData(tempPayload))
-    dispatch(updateFilterLevelSelectedData(selectedIds))
+    dispatch(updateReceptionistObjectData(tempPayload))
+    dispatch(updateFilterLevelSelectedDataReceptionist(selectedIds))
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
     if (!selector.isDSE){
@@ -789,7 +789,7 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       //     levelSelected: selectedIds,
       //     // selectedempId: ""
       //   }
-      //   dispatch(updateLiveLeadObjectData(tempPayload))
+      //   dispatch(updateReceptionistObjectData(tempPayload))
 
       //   navigation.navigate("LIVE_LEADS", {
       //     screenName: "LIVE_LEADS",
@@ -806,11 +806,11 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (selector.crm_employees_drop_down_data) {
+    if (selector.crm_employees_drop_down_data_recep) {
       let names = [];
       let newDataObj = {};
-      for (let key in selector.crm_employees_drop_down_data) {
-        const arrayData = selector.crm_employees_drop_down_data[key];
+      for (let key in selector.crm_employees_drop_down_data_recep) {
+        const arrayData = selector.crm_employees_drop_down_data_recep[key];
         if (arrayData.length != 0) {
           names.push(key);
         }
@@ -844,7 +844,7 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       setName(names, newDataObj);
     }
     
-  }, [selector.crm_employees_drop_down_data]);
+  }, [selector.crm_employees_drop_down_data_recep]);
 
   const setName = useCallback(
     (names, newDataObj) => {
@@ -853,8 +853,8 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
       }
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmloyeeTitleNameList(names);
-        if (!isEmpty(selector.filterSelectedData)) {
-          const temp = { ...selector.filterSelectedData };
+        if (!isEmpty(selector.filterSelectedData_recep)) {
+          const temp = { ...selector.filterSelectedData_recep };
           setEmployeeDropDownDataLocal(temp);
         } else {
           
@@ -891,15 +891,15 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
     }
     setEmloyeeTitleNameList([])
   
-    dispatch(updateFilterSelectedData({}))
-    dispatch(updateLiveLeadObjectData(obj))
+    dispatch(updateFilterSelectedDataReceptionist({}))
+    dispatch(updateReceptionistObjectData(obj))
     setEmployeeDropDownDataLocal(newDataObj);
   };
 
   
 
   const submitBtnForEmployeeData = () => {
-    if (!_.isEmpty(selector.dealerFilter)) {
+    if (!_.isEmpty(selector.dealerFilter_recep)) {
       let selectedIds = [];
       for (let key in employeeDropDownDataLocal) {
         const arrayData = employeeDropDownDataLocal[key];
@@ -952,8 +952,8 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
           dealerCodes: selectedBranchName,
           selectedDesignation: tempArrDesignation 
         }
-        dispatch(updateLiveLeadObjectData(tempPayload))
-        dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+        dispatch(updateReceptionistObjectData(tempPayload))
+        dispatch(updateFilterSelectedDataReceptionist(employeeDropDownDataLocal));
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard, {
           screen: "Home",
           params: { from: "Filter" },

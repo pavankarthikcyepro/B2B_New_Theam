@@ -382,7 +382,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation, selector.filterIds]);
+  }, [navigation, selector.saveReceptionistfilterObj]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -480,17 +480,20 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
       "dashboardType": "reception"
       };
      
+      if (!selector.saveReceptionistfilterObj.selectedempId) {
+        dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole))
+      }
       Promise.all([
-        dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole)),
+        
         dispatch(getOrganaizationHirarchyList(payload)),
-        dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
-        dispatch(
-          getVehicalModalList({
-            bu: jsonObj.orgId,
-            dropdownType: "model",
-            parentId: 0,
-          })
-        ),
+        // dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
+        // dispatch(
+        //   getVehicalModalList({
+        //     bu: jsonObj.orgId,
+        //     dropdownType: "model",
+        //     parentId: 0,
+        //   })
+        // ),
         // dispatch(
         //   getDealerRanking({
         //     payload: {
@@ -705,8 +708,8 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
-    getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => {});
+    // getTaskTableDataFromServer(empId, payload);
+    // getTargetParametersDataFromServer(payload).catch((y) => {});
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -810,18 +813,18 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
       //   ? selector.filterIds.levelSelected
       //   : null;
     }
-    Promise.allSettled([
-      //dispatch(getTargetParametersAllData(payload1)),
-      dispatch(getTotalTargetParametersData(payload2)),
-      dispatch(getNewTargetParametersAllData(payload2)),
-      dispatch(
-        isTeamPresentLocal
-          ? getTargetParametersEmpDataInsights(payload1)
-          : getTargetParametersEmpData(payload1)
-      ),
-    ])
-      .then(() => {})
-      .catch((y) => {});
+    // Promise.allSettled([
+    //   //dispatch(getTargetParametersAllData(payload1)),
+    //   dispatch(getTotalTargetParametersData(payload2)),
+    //   dispatch(getNewTargetParametersAllData(payload2)),
+    //   dispatch(
+    //     isTeamPresentLocal
+    //       ? getTargetParametersEmpDataInsights(payload1)
+    //       : getTargetParametersEmpData(payload1)
+    //   ),
+    // ])
+    //   .then(() => {})
+    //   .catch((y) => {});
   };
 
   useEffect(() => {
@@ -875,17 +878,17 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
     if (!screenName) {
-      if (selector.saveCRMfilterObj?.selectedempId){
+      if (selector.saveReceptionistfilterObj?.selectedempId){
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "Home",
             params: params,
             moduleType: "",
             employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+            selectedEmpId: selector.saveReceptionistfilterObj?.selectedempId,
+            startDate: selector.saveReceptionistfilterObj.startDate,
+            endDate: selector.saveReceptionistfilterObj.endDate,
+            dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
             ignoreSelectedId : true
           });
         }, 1000);
@@ -938,11 +941,13 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
   }
   function navigateToDropAnalysis(params, isfromTree = false, parentId = "", isSelf = false, xrole = false) {
 
-    if (selector.saveCRMfilterObj.selectedempId) {
-      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-        screen: "DROP_ANALYSIS",
-        params: { emp_id: params, fromScreen: "targetScreenReceptionist", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: xrole, isForDropped: false },
-      });
+    if (selector.saveReceptionistfilterObj.selectedempId) {
+      if (selector.saveReceptionistfilterObj?.selectedDesignation) {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: "DROP_ANALYSIS",
+          params: { emp_id: selector.saveReceptionistfilterObj.selectedempId[0], fromScreen: "targetScreenReceptionist", dealercodes: selector.saveReceptionistfilterObj.dealerCodes, isFilterApplied: true, isSelf: true, xrole: false, isForDropped: true },
+        });
+      }
     } else {
 
       if (isfromTree) {
@@ -1008,8 +1013,16 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
             <View style={styles.view7}>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistDataV2.contactsCount > 0 &&
-                    navigateToContact();
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.contactsCount > 0) {
+                      navigateToContact()
+                    }
+                  } else {
+                    if (selector.receptionistDataV2.contactsCount > 0) {
+                      navigateToContact()
+                    }
+                  }
                 }}
                 style={styles.view8}
               >
@@ -1018,15 +1031,26 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.receptionistDataV2?.contactsCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation 
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception" 
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.contactsCount || 0 : selector.receptionistDataV2?.contactsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
              
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistDataV2.enquirysCount > 0 &&
-                    navigateToEMS("ENQUIRY", "", [userData.empId]);
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.enquirysCount > 0) {
+                      navigateToEMS("ENQUIRY", "", [userData.empId])
+                    }
+                  } else {
+                    if (selector.receptionistDataV2.enquirysCount > 0) {
+                      navigateToEMS("ENQUIRY", "", [userData.empId])
+                    }
+                  }
+                     
                 }}
                 style={styles.view8}
               >
@@ -1035,41 +1059,79 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.receptionistDataV2?.enquirysCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.enquirysCount || 0 : selector.receptionistDataV2?.enquirysCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistDataV2.bookingsCount > 0 &&
-                    navigateToEMS("BOOKING", "", [userData.empId]);
+
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.bookingsCount > 0) {
+                      navigateToEMS("BOOKING", "", [userData.empId])
+                    }
+                  } else {
+                    if (selector.receptionistDataV2.bookingsCount > 0) {
+                      navigateToEMS("BOOKING", "", [userData.empId])
+                    }
+                  }
+                  // selector.receptionistData_ReceptionistDashboard_xrole?.bookingsCount > 0 || selector.receptionistDataV2.bookingsCount > 0 ?
+                  //   navigateToEMS("BOOKING", "", [userData.empId]) : null
                 }}
                 style={styles.view8}
               >
                 <Text style={styles.rankHeadingText}>{"Booking"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.receptionistDataV2?.bookingsCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.bookingsCount || 0 : selector.receptionistDataV2?.bookingsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistDataV2.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.RetailCount > 0) {
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                    }
+                  } else {
+                    if (selector.receptionistDataV2.RetailCount) {
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                    }
+                  }
                 }}
                 style={styles.view8}
               >
                 <Text style={styles.rankHeadingText}>{"Retail"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.receptionistDataV2?.RetailCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.RetailCount || 0 : selector.receptionistDataV2?.RetailCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistDataV2.totalDroppedCount > 0 &&
-                    navigateToDropAnalysis(userData.empId, false, "", false, true)
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.totalDroppedCount > 0) {
+                      navigateToDropAnalysis(userData.empId, false, "", false, true)
+                    }
+                  } else {
+                    if (selector.receptionistDataV2.totalDroppedCount) {
+                      navigateToDropAnalysis(userData.empId, false, "", false, true)
+                    }
+                  }
+
+                  // selector.receptionistData_ReceptionistDashboard_xrole?.totalDroppedCount || selector.receptionistDataV2.totalDroppedCount > 0 &&
+                  //   navigateToDropAnalysis(userData.empId, false, "", false, true)
                 }}
                 style={styles.view8}
               >
@@ -1081,7 +1143,9 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.receptionistDataV2?.totalDroppedCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.totalDroppedCount || 0 : selector.receptionistDataV2?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
