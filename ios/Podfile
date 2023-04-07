@@ -5,6 +5,9 @@ platform :ios, '11.0'
 
 target 'B2B_NEW_THEME' do
   config = use_native_modules!
+    pod 'Firebase', :modular_headers => true
+    pod 'FirebaseCoreInternal', :modular_headers => true
+    pod 'GoogleUtilities', :modular_headers => true
     pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
   use_react_native!(
     :path => config[:reactNativePath],

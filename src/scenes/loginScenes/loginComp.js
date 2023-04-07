@@ -135,6 +135,7 @@ const LoginScreen = ({ navigation }) => {
     let object = {
       username: employeeId,
       password: password,
+      deviceId: selector.token,
     };
 
     dispatch(postUserData(object));
