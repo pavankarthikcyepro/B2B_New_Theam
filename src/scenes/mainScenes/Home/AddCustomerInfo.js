@@ -254,12 +254,12 @@ const AddCustomerInfo = ({ navigation, route }) => {
         let index = selector.sourceTypesResponse.findIndex(
           (item) => item.name == value
         );
-        return selector.serviceTypeResponse[index].id;
+        return selector.sourceTypesResponse[index].id;
       } else if (type == "subSourceType") {
-        let index = selector.subServiceTypeResponse.findIndex(
+        let index = selector.subSourceTypesResponse.findIndex(
           (item) => item.name == value
         );
-        return selector.serviceTypeResponse[index].id;
+        return selector.subSourceTypesResponse[index].id;
       }
     }
     return "";
@@ -382,7 +382,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
         sellingDealer: selector.sellingDealer,
         makingMonth: selector.makingMonth,
         vehicleMakeYear: selector.makingYear,
-        isFastag: selector.fastag,
+        isFastag: selector.fastag == "Available" ? true : false,
         currentKmReading: selector.kmReading,
       },
       customer: {
@@ -1597,9 +1597,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 maxLength={10}
                 keyboardType={"phone-pad"}
                 onChangeText={(text) =>
-                  dispatch(
-                    setInsuranceInfo({ key: "AMC_AMOUNT_PAID", text: text })
-                  )
+                  dispatch(setAmcInfo({ key: "AMC_AMOUNT_PAID", text: text }))
                 }
               />
               <Text style={GlobalStyle.underline} />
