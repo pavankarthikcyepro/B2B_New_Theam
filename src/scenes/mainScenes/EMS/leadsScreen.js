@@ -404,7 +404,8 @@ const LeadsScreen = ({ route, navigation }) => {
           // "selectedEmpId": route?.params?.selectedEmpId,
           "limit": 1000,
           "offset": 0,
-          "self": route.params.self
+          "self": route.params.self,
+          "dashboardType": route.params.dashboardType
         }
         setTimeout(() => {
           dispatch(getLeadsListCRM(payloadReceptionist))

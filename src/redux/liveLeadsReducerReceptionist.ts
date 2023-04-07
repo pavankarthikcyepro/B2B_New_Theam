@@ -530,6 +530,7 @@ export const liveLeadsSlice_recep = createSlice({
         receptionist_self_data:[],
         crm_response_data: [],
         crm_employees_drop_down_data: {},
+        crm_employees_drop_down_data_recepLiveleads:{}
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -614,7 +615,8 @@ export const liveLeadsSlice_recep = createSlice({
             state.insights_target_parameters_data =empData
             state.receptionist_self_data = [],
             state.crm_response_data = [],
-                state.crm_employees_drop_down_data = {}
+                state.crm_employees_drop_down_data = {},
+                state.crm_employees_drop_down_data_recepLiveleads = {}
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -1135,15 +1137,15 @@ export const liveLeadsSlice_recep = createSlice({
 
             // Get  CRM Employees Drop Down Data Receptionist
             .addCase(getCRMEmployeesDropDownDataReception.pending, (state, action) => {
-                state.crm_employees_drop_down_data = {};
+                state.crm_employees_drop_down_data_recepLiveleads = {};
             })
             .addCase(getCRMEmployeesDropDownDataReception.fulfilled, (state, action) => {
                 if (action.payload) {
-                    state.crm_employees_drop_down_data = action.payload;
+                    state.crm_employees_drop_down_data_recepLiveleads = action.payload;
                 }
             })
             .addCase(getCRMEmployeesDropDownDataReception.rejected, (state, action) => {
-                state.crm_employees_drop_down_data = {};
+                state.crm_employees_drop_down_data_recepLiveleads = {};
             })
     }
 });

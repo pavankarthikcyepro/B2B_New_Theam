@@ -1946,9 +1946,10 @@ export const homeSlice = createSlice({
       .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
 
       // CRM receptionist Dashboard
-      .addCase(getCRM_ReceptionistDashborad.pending, (state) => { })
+      .addCase(getCRM_ReceptionistDashborad.pending, (state) => { state.isLoading = true; })
       .addCase(getCRM_ReceptionistDashborad.fulfilled, (state, action) => {
         const dataObj = action.payload;
+        state.isLoading = false;
         state.receptionistData_CRM = {
           RetailCount: dataObj.totalRetailCount,
           bookingsCount: dataObj.totalBookingCount,
@@ -1961,7 +1962,7 @@ export const homeSlice = createSlice({
           fullResponse: dataObj
         };
       })
-      .addCase(getCRM_ReceptionistDashborad.rejected, (state, action) => { })
+      .addCase(getCRM_ReceptionistDashborad.rejected, (state, action) => { state.isLoading = false; })
 
       // for digital dashboard filter case
       .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => { })

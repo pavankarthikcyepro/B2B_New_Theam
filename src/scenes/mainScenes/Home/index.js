@@ -1310,9 +1310,9 @@ const HomeScreen = ({ route, navigation }) => {
         notification={true}
         navigation={navigation}
       />
-      <ScrollView
-        nestedScrollEnabled={true}
-        showsVerticalScrollIndicator={false}
+      <View
+        // nestedScrollEnabled={true} // changed due to scrolling issue with CRM login 
+        // showsVerticalScrollIndicator={false}
         style={{ flex: 1, paddingHorizontal: 10 }}
       >
         {/* 0000 */}
@@ -1723,7 +1723,7 @@ const HomeScreen = ({ route, navigation }) => {
             )}
           </View>
         </View>
-      </ScrollView>
+      </View>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );

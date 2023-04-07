@@ -92,7 +92,7 @@ const ReceptionistDashbordSourceModel = ({ route, navigation }) => {
     type,
     moduleType,
     role,
-    branchList, empList, self
+    branchList, empList, self, dashboardType
   } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -176,7 +176,8 @@ const ReceptionistDashbordSourceModel = ({ route, navigation }) => {
             "endDate": selector.receptionistFilterIds.endDate,
             "dealerCodes": selector.receptionistFilterIds.dealerCodes,
             "empList": empList ? empList : null,
-            "self": self
+            "self": self,
+            "dashboardType": dashboardType 
           };
           dispatch(getReceptionistManagerSource(newPayload3));
           dispatch(getReceptionistManagerModel(newPayload3));

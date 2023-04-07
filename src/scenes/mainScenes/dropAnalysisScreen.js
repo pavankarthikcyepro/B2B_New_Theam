@@ -254,7 +254,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                 }
                 dispatch(getDropAnalysisRedirectionsXrole(payload))
             } else {
-                console.log("manthan dhdhdh ", route.params.isFilterApplied);
+                
                 if (!route.params.isFilterApplied) {
                     payload = {
                         "loggedInEmpId": selectedEmpIds,
@@ -318,7 +318,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                 }
                 dispatch(getDropAnalysisRedirectionsXrole(payload))
             } else {
-                console.log("manthan dhdhdh ", route.params.isFilterApplied);
+                
                 if (!route.params.isFilterApplied) {
                     payload = {
                         "loggedInEmpId": selectedEmpIds,
@@ -328,8 +328,9 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                         "limit": 1000,
                         "offset": 0,
                         "filterValue": "",
-                        "forDropped": false,
-                        "self": route.params.isSelf
+                        "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                        "self": route.params.isSelf,
+                        "dashboardType": route.params.dashboardType,
                     }
                     dispatch(getDropAnalysisRedirectionsCRM(payload))
                 } else {

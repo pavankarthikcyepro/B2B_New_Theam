@@ -65,7 +65,9 @@ const ParametersScreen = ({ route }) => {
   const [myParameters, setMyParameters] = useState([]);
   const [filterParameters, setFilterParameters] = useState([]);
 
+  const [isFilterViewExapanded, setisFilterViewExapanded] = useState(false);
   const [CRM_filterParameters, setCRM_filterParameters] = useState([]);
+  const [CRM_filterParametersSecondLevel, setCRM_filterParametersSecondLevel] = useState([]);
   const [crmFirstLevelData, setCrmFirstLevelData] = useState([]);
   const [crmFirstLevelTotalData, setCrmFirstLevelTotalData] = useState([]);
   const [creFirstLevelData, setCreFirstLevelData] = useState([]);
@@ -214,6 +216,7 @@ const ParametersScreen = ({ route }) => {
     navigation.addListener("focus", async () => {
       // setSelfInsightsData([]);
     
+      setisFilterViewExapanded(false);
       setIsViewCreExpanded(false);
       setIsViewExpanded(false);
       setIsSecondLevelExpanded(false);
@@ -395,6 +398,8 @@ const ParametersScreen = ({ route }) => {
 
       if (!_.isEmpty(selector.saveLiveleadObjectCRM)){
         let filterSelectedUSerdata = selector.receptionist_self_data.consultantList.filter(item => item.emp_id === selector.saveLiveleadObjectCRM?.selectedempId[0])
+        let filterOtherData = selector.receptionist_self_data.consultantList.filter(item => item.emp_id !== selector.saveLiveleadObjectCRM?.selectedempId[0])
+        setCRM_filterParametersSecondLevel(filterOtherData);
         setCRM_filterParameters(filterSelectedUSerdata);
 
         let totalKey1 = selector.receptionist_self_data.contactsCount;
@@ -1035,7 +1040,7 @@ const ParametersScreen = ({ route }) => {
 
       }, 1000);
     } else if (selector.saveLiveleadObjectCRM.selectedempId) {
-     
+      
       setTimeout(() => {
         // crm filter applied case
         if (params === "Contact") {
@@ -1044,7 +1049,7 @@ const ParametersScreen = ({ route }) => {
             params: params,
             moduleType: "live-leadsV2",
             employeeDetail: "",
-            selectedEmpId: [],
+            selectedEmpId: selectedEmpId,
             startDate: selector.saveLiveleadObjectCRM.startDate,
             endDate: selector.saveLiveleadObjectCRM.endDate,
             dealerCodes: selector.saveLiveleadObjectCRM.levelSelected,
@@ -1058,7 +1063,7 @@ const ParametersScreen = ({ route }) => {
             params: params,
             moduleType: "live-leadsV2",
             employeeDetail: "",
-            selectedEmpId: [],
+            selectedEmpId: selectedEmpId,
             startDate: selector.saveLiveleadObjectCRM.startDate,
             endDate: selector.saveLiveleadObjectCRM.endDate,
             dealerCodes: selector.saveLiveleadObjectCRM.levelSelected,
@@ -2436,6 +2441,216 @@ const ParametersScreen = ({ route }) => {
           
             return (
               <View style={{
+                borderColor: isFilterViewExapanded ? Colors.BLUE : "",
+                borderWidth: isFilterViewExapanded ? 1 : 0,
+                borderRadius: 10,
+                margin: isFilterViewExapanded ? 5 : 0
+              }}>
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item?.emp_name}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    if (isFilterViewExapanded) {
+                      handleSourceModalNavigation(item, item.emp_id, [item.emp_id])
+                    } else {
+                      handleSourceModalNavigation(item, item.emp_id, [])
+                    }
+                    // handleSourceModalNavigation(item, item.emp_id, [])
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={getBranchName(item?.branch)}
+                        color={"#C62159"}
+                        titleClick={async () => {
+                          setisFilterViewExapanded(!isFilterViewExapanded)
+                          return;
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor:
+                            "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+
+
+      
+                        {/* {[
+                          item.contactCount || 0,
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                        ]. */}
+                        {/* {[
+                          selector.receptionist_self_data?.contactsCount || 0,
+                          selector.receptionist_self_data?.enquirysCount || 0,
+                          selector.receptionist_self_data?.bookingsCount || 0,
+                          selector.receptionist_self_data?.RetailCount || 0,
+                        ]. */}
+                        {[
+                          isFilterViewExapanded ? item.contactCount : selector.receptionist_self_data?.contactsCount || 0,
+                          isFilterViewExapanded ? item.enquiryCount : selector.receptionist_self_data?.enquirysCount || 0,
+                          isFilterViewExapanded ? item.bookingCount : selector.receptionist_self_data?.bookingsCount || 0,
+                          isFilterViewExapanded ? item.retailCount : selector.receptionist_self_data?.RetailCount || 0,
+                        ].
+                          map((e, index) => {
+                          return (
+                            <Pressable onPress={() => {
+                              if (e > 0) {
+                                if (isFilterViewExapanded) {
+                                  if (index === 0) {
+                                    navigateToEMS("Contact", "", [item.emp_id], false, userData.empId, true);
+
+                                  } else if (index === 1) {
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, userData.empId, true);
+                                  } else if (index === 2) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], false, userData.empId, true);
+                                  } else if (index === 3) {
+                                    navigateToEMS("Invoice", "", [item.emp_id], false, userData.empId, true);
+                                  }
+                                } else {
+                                  if (index === 0) {
+                                    navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                                  } else if (index === 1) {
+                                    navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                  } else if (index === 2) {
+                                    navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                  } else if (index === 3) {
+                                    navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                  }
+                                }
+
+                              }
+                              // // todo redirections logic filter UI 
+                              // if (e > 0) {
+                              //   if (index === 0) {
+                              //     navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                              //   } else if (index === 1) {
+                              //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                              //   } else if (index === 2) {
+                              //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                              //   } else if (index === 3) {
+                              //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                              //   }
+                              // }
+
+                            }}>
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isFilterViewExapanded && renderCRMFilterViewSecondLevel()}
+              </View>
+            );
+          })
+        }
+      </>)
+  }
+
+  const renderCRMFilterViewSecondLevel = () => {
+
+    return (
+      <>
+        {
+          CRM_filterParametersSecondLevel.length > 0 &&
+          CRM_filterParametersSecondLevel.map((item, index) => {
+
+            return (
+              <View style={{
                 // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
                 // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
                 // borderRadius: 10,
@@ -2464,7 +2679,7 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    handleSourceModalNavigation(item, item.emp_id, [])
+                    handleSourceModalNavigation(item, selector.saveLiveleadObjectCRM?.selectedempId[0], [item.emp_id])
                   }}
                 >
                   <Text
@@ -2521,7 +2736,7 @@ const ParametersScreen = ({ route }) => {
                       >
 
 
-      
+
                         {/* {[
                           item.contactCount || 0,
                           item.enquiryCount || 0,
@@ -2529,53 +2744,53 @@ const ParametersScreen = ({ route }) => {
                           item.retailCount || 0,
                         ]. */}
                         {[
-                          selector.receptionist_self_data?.contactsCount || 0,
-                          selector.receptionist_self_data?.enquirysCount || 0,
-                          selector.receptionist_self_data?.bookingsCount || 0,
-                          selector.receptionist_self_data?.RetailCount || 0,
+                          item?.contactCount || 0,
+                          item?.enquiryCount || 0,
+                          item?.bookingCount || 0,
+                          item?.retailCount || 0,
                         ].
                           map((e, index) => {
-                          return (
-                            <Pressable onPress={() => {
+                            return (
+                              <Pressable onPress={() => {
 
-                              // todo redirections logic filter UI 
-                              if (e > 0) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, userData.empId, true);
+                                // todo redirections logic filter UI 
+                                if (e > 0) {
+                                  if (index === 0) {
+                                    navigateToEMS("Contact", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
 
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, userData.empId, true);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                  } else if (index === 1) {
+                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                  } else if (index === 2) {
+                                    navigateToEMS("BOOKING", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                  } else if (index === 3) {
+                                    navigateToEMS("Invoice", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                  }
                                 }
-                              }
 
-                            }}>
-                              <View
-                                style={{
-                                  width: 55,
-                                  height: 30,
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  marginLeft: 10,
-                                }}
-                              >
-                                <Text
+                              }}>
+                                <View
                                   style={{
-                                    fontSize: 16,
-                                    fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
-                                    // marginLeft: 50,
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginLeft: 10,
                                   }}
                                 >
-                                  {e || 0}
-                                </Text>
-                              </View>
-                            </Pressable>
-                          );
-                        })}
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine: e > 0 ? "underline" : "none"
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
                       </View>
                       {/* <View
                       style={{

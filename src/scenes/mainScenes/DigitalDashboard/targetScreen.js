@@ -599,7 +599,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       if (selector.saveCRMfilterObj?.selectedempId) {
         
         if (!_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
-          console.log("manthan hfhfhf ", selector.saveCRMfilterObj?.selectedDesignation[0]);
+          
           if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
             // todo manager api call 
             let payloadXrole = {
