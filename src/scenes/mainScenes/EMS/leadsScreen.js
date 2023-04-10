@@ -32,6 +32,7 @@ import {
   getLiveleadsReceptinoist,
   getLiveleadsReceptinoistManager,
   getMoreEnquiryList,
+  getSalesHomeDashbaordRedirections,
   updateTheCount,
 } from "../../../redux/enquiryReducer";
 import moment from "moment";
@@ -488,7 +489,7 @@ const LeadsScreen = ({ route, navigation }) => {
         route?.params?.moduleType === "live-leadsV2"
           ? moment().format(dateFormat)
           : currentDate;
-      
+
       setFromDateState(liveLeadsStartDate);
       setToDateState(liveLeadsEndDate);
 
@@ -524,23 +525,41 @@ const LeadsScreen = ({ route, navigation }) => {
 
       } else {
 
-      let payload = {
-        "loginEmpId": route?.params?.parentId,
-        // "startDate": liveLeadsStartDate,
-        // "endDate": liveLeadsEndDate,
-        "orgId": userData.orgId,
-        "branchList": route.params.dealerCodes,
-        "stageName": route?.params?.params,
-        "selectedEmpId": route?.params?.selectedEmpId,
-        "limit": 1000,
-        "offset": 0
+        let payload = {
+          "loginEmpId": route?.params?.parentId,
+          // "startDate": liveLeadsStartDate,
+          // "endDate": liveLeadsEndDate,
+          "orgId": userData.orgId,
+          "branchList": route.params.dealerCodes,
+          "stageName": route?.params?.params,
+          "selectedEmpId": route?.params?.selectedEmpId,
+          "limit": 1000,
+          "offset": 0
+        }
+        setTimeout(() => {
+          dispatch(getLiveleadsReceptinoist(payload))
+        }, 2000);
       }
-      setTimeout(() => {
-        dispatch(getLiveleadsReceptinoist(payload))
-      }, 2000);
     }
 
 
+    if (route?.params?.screenName === "TargetScreenSales") {
+      let payload = {
+        "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+        "loggedInEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
+        "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+        "selectedEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
+        "levelSelected": route.params.dealerCodes,
+        "pageNo": 0,
+        "size": 500,
+        "filterValue": "",
+        "isSelf": false,
+        "stageName": route?.params?.params
+      }
+      console.log("manthan jjjj");
+      setTimeout(() => {
+        dispatch(getSalesHomeDashbaordRedirections(payload))
+      }, 2000);
     }
 
   }, [route.params]);

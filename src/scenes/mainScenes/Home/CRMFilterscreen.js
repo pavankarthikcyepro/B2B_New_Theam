@@ -821,6 +821,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    console.log("manthan  test filter crm_employees_drop_down_data ", selector.crm_employees_drop_down_data);
     if (selector.crm_employees_drop_down_data) {
       let names = [];
       let newDataObj = {};

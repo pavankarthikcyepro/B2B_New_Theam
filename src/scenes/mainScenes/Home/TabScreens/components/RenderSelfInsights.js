@@ -76,14 +76,31 @@ export const RenderSelfInsights = (args) => {
                 param === "Booking" ||
                 param === "INVOICE"
               ) {
+                
                 navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
                 setTimeout(() => {
                   navigation.navigate("LEADS", {
-                    param: param === "INVOICE" ? "Retail" : param,
-                    moduleType: "home",
+                    screenName: "TargetScreenSales",
+                    params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
+                    moduleType: "",
                     employeeDetail: "",
+                    selectedEmpId: "",
+                    startDate: "",
+                    endDate: "",
+                    dealerCodes: [],
+                    ignoreSelectedId: false,
+                    parentId: "",
+                    istotalClick: true,
+                    self: false
                   });
                 }, 1000);
+                // setTimeout(() => {
+                //   navigation.navigate("LEADS", {
+                //     param: param === "INVOICE" ? "Retail" : param,
+                //     moduleType: "home",
+                //     employeeDetail: "",
+                //   });
+                // }, 1000);
               } else if (param == "Home Visit" || param == "Test Drive") {
                 navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
                   screen: "CLOSED",

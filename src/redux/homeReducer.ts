@@ -1128,6 +1128,7 @@ export const homeSlice = createSlice({
     levelSelected_recep: [],
     dealerFilter_recep: {},
     crm_employees_drop_down_data_recep: {},
+    employees_drop_down_data_local: {},
     receptionistData_CRM : {
       RetailCount: 0,
       bookingsCount: 0,
@@ -1158,6 +1159,9 @@ export const homeSlice = createSlice({
     },
     updateEmpDropDown: (state, action) => {
       state.employees_drop_down_data = {};
+    },
+    updateEmpDropDown_Local: (state, action) => {
+      state.employees_drop_down_data_local = action.payload;
     },
     updateIsTeamPresent: (state, action) => {
       state.isTeamPresent = action.payload;
@@ -1568,15 +1572,22 @@ export const homeSlice = createSlice({
 
       // Get Employees Drop Down Data
       .addCase(getEmployeesDropDownData.pending, (state, action) => {
-        state.employees_drop_down_data = {};
+        console.log("manthan api called 00");
+        
+        // state.employees_drop_down_data = {};
+        // state.employees_drop_down_data_local ={};
       })
       .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
         if (action.payload) {
+          console.log("manthan api called 11");
           state.employees_drop_down_data = action.payload;
+          state.employees_drop_down_data_local = action.payload;
         }
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
-        state.employees_drop_down_data = {};
+        console.log("manthan api called 22");
+        // state.employees_drop_down_data = {};
+        // state.employees_drop_down_data_local = {};
       })
 
       // Get  CRM Employees Drop Down Data
@@ -2142,6 +2153,6 @@ export const {
   updateFilterIds,
   updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
   updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData,updateDealerFilterData_Recep,updateFilterLevelSelectedDataReceptionist,updateFilterSelectedDataReceptionist
-  ,updateReceptionistObjectData
+  ,updateReceptionistObjectData,updateEmpDropDown_Local
 } = homeSlice.actions;
 export default homeSlice.reducer;

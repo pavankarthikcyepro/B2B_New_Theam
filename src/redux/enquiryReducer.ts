@@ -118,6 +118,23 @@ export const getLiveleadsReceptinoistManager = createAsyncThunk(
   }
 );
 
+export const getSalesHomeDashbaordRedirections = createAsyncThunk(
+  "ENQUIRY/getSalesHomeDashbaordRedirections",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_SALES_DASHBOARD_LEADS();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 
 export const getLeadsListCRM = createAsyncThunk(
   "ENQUIRY/getLeadsListCRM",
@@ -352,6 +369,33 @@ const enquirySlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getLiveleadsReceptinoistManager.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+
+
+    builder.addCase(getSalesHomeDashbaordRedirections.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getSalesHomeDashbaordRedirections.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getSalesHomeDashbaordRedirections.fulfilled, (state, action) => {
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;

@@ -3062,6 +3062,7 @@ const TargetScreenCRM = ({ route }) => {
                         style={{
                           width: Dimensions.get("screen").width - 35,
                           marginTop: 20,
+                          marginBottom:20
                         }}
                       >
                         <View

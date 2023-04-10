@@ -46,7 +46,7 @@ const DropDown = ({
   data = [],
   selectedItems,
   keyId = "",
-  onRequestClose,
+  onRequestClose,isFromSales = false
 }) => {
   const [multipleData, setMultipleData] = useState([]);
 
@@ -76,7 +76,19 @@ const DropDown = ({
       // })
       selectedItems(multipleData, keyId);
     } else {
-      selectedItems(item, keyId, index);
+      if(isFromSales){
+        if (item.selected != undefined) {
+          item.selected = !item.selected;
+        } else {
+          item.selected = true;
+        }
+        selectedItems(item, keyId, index);
+        console.log(" manthan debug 11", item);  
+      }else{
+        console.log(" manthan debug 22", item);
+        selectedItems(item, keyId, index);
+      }
+     
     }
   };
 
