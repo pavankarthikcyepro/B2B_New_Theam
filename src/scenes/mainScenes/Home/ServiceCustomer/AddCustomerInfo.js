@@ -372,7 +372,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
         vehicleModel: selector.vehicleModel,
         variant: selector.vehicleVariant,
         color: selector.vehicleColor,
-        fuelType: selector.vehicleFuelType,
+        fuelType: selector.vehicleFuelType ? selector.vehicleFuelType.toUpperCase() : "",
         transmisionType: selector.vehicleTransmissionType,
         vin: selector.vin,
         engineNumber: selector.engineNumber,
@@ -409,7 +409,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
             district: selector.district,
           },
         ],
-        gender: selector.gender,
+        gender: selector.gender ? selector.gender.toUpperCase() : "",
         customerType: selector.customerTypes,
         occupation: selector.occupation,
         dateOfBirth: convertDateForPayload(selector.dateOfBirth),
@@ -457,7 +457,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
     };
     
     console.log("payload -> ", payload);
-    return;
+    // return;
     dispatch(addCustomer(payload));
   }
 
