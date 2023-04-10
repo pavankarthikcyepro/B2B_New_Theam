@@ -513,6 +513,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - Firebase
+  - FirebaseCore
   - FirebaseCoreInternal
   - Flipper (~> 0.75.1)
   - Flipper-DoubleConversion (= 1.1.7)
@@ -820,8 +821,8 @@ SPEC CHECKSUMS:
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
-  RNFBApp: 0f6bd7ee155a50f5e68cd68aab2709a4d24bfdff
-  RNFBMessaging: 5d1480ff1fa7fd8dfd5a1a7f0df35c709f75dd4e
+  RNFBApp: 55dbfc574e5ae414f2984394934f79f87eb4b050
+  RNFBMessaging: d365361650cc697294227e1280923f35a31d2501
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
@@ -833,6 +834,6 @@ SPEC CHECKSUMS:
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 5dfbf6c17a1464794715d9a1387e260030b0ec4d
+PODFILE CHECKSUM: 24e93f230bbcccf2de8bc72b5f7735cc2cddb529
 
 COCOAPODS: 1.12.0

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>252064520094-isi0de1pj5k16ccm5p428gu530hbpcgq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.252064520094-isi0de1pj5k16ccm5p428gu530hbpcgq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDo83leX-9rp1VAWYJ2mnOm972JK8zCZV4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>252064520094</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.B2B-NEW-THEME</string>
+	<key>PROJECT_ID</key>
+	<string>cyepro-373009</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cyepro-373009.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:252064520094:ios:7845c2ad44a5306f69a88f</string>
+</dict>
+</plist>
