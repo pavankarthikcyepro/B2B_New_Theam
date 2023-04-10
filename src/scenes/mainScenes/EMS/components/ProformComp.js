@@ -1012,7 +1012,7 @@ export const ProformaComp = ({
         "</td>" +
         "</tr>" +
         `${
-          selector.consumer_offer
+          selector.consumer_offer && selector.consumer_offer != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Consumer Offer</span>" +
@@ -1026,7 +1026,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.exchange_offer
+          selector.exchange_offer && selector.exchange_offer != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Exchange Offer</span>" +
@@ -1040,7 +1040,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.corporate_offer
+          selector.corporate_offer && selector.corporate_offer != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Corporate Offer</span>" +
@@ -1054,7 +1054,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.promotional_offer
+          selector.promotional_offer && selector.promotional_offer != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Promotional Offer</span>" +
@@ -1068,7 +1068,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.cash_discount
+          selector.cash_discount && selector.cash_discount != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Cash Discount</span>" +
@@ -1082,7 +1082,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.for_accessories
+          selector.for_accessories && selector.for_accessories != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>FOC Accessories</span>" +
@@ -1096,7 +1096,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.insurance_discount
+          selector.insurance_discount && selector.insurance_discount != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Insurance Discount</span>" +
@@ -1110,7 +1110,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.accessories_discount
+          selector.accessories_discount && selector.accessories_discount != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Accessories Discount</span>" +
@@ -1124,7 +1124,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.additional_offer_1
+          selector.additional_offer_1 && selector.additional_offer_1 != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Additional Offer 1</span>" +
@@ -1138,7 +1138,7 @@ export const ProformaComp = ({
             : ""
         }` +
         `${
-          selector.additional_offer_2
+          selector.additional_offer_2 && selector.additional_offer_2 != 0
             ? "<tr>" +
               '<td width="50%">' +
               "<span>Additional Offer 2</span>" +
