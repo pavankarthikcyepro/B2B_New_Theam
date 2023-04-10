@@ -39,6 +39,7 @@ import moment from "moment";
 import { showToast } from "../../../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
 import { setNotificationMyTaskAllFilter } from "../../../../redux/notificationReducer";
+import { LoaderComponent } from "../../../../components";
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
@@ -88,6 +89,7 @@ const ListComponent = ({ route, navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState("TODAY");
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [employeeData, setEmployeeData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.mytaskReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
@@ -97,6 +99,7 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     if (isFocused) {
+      console.log("LLLL", route.params);
       if (route.params) {
        
         if (route.params?.from) {
@@ -188,7 +191,7 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal,fromClick) => {
-   
+   console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -1765,6 +1768,7 @@ const ListComponent = ({ route, navigation }) => {
           </View>
         </TouchableOpacity>
       </Modal>
+      {/* <LoaderComponent visible={true} /> */}
     </View>
   );
 };
