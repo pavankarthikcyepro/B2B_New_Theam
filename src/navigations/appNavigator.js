@@ -123,9 +123,9 @@ import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
-import SearchCustomer from "../scenes/mainScenes/Home/SearchCustomer";
-import SearchCustomerResult from "../scenes/mainScenes/Home/SearchCustomerResult";
-import AddCustomerInfo from "../scenes/mainScenes/Home/AddCustomerInfo";
+import SearchCustomer from "../scenes/mainScenes/Home/ServiceCustomer/SearchCustomer";
+import SearchCustomerResult from "../scenes/mainScenes/Home/ServiceCustomer/SearchCustomerResult";
+import AddCustomerInfo from "../scenes/mainScenes/Home/ServiceCustomer/AddCustomerInfo";
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 

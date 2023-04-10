@@ -3,14 +3,14 @@ import { Keyboard, Text } from 'react-native';
 import { View, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Button, IconButton, List } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { DatePickerComponent, DropDownComponant, LoaderComponent, TextinputComp } from '../../../components';
-import { Gender_Types, Salutation_Types } from '../../../jsonData/enquiryFormScreenJsonData';
-import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../pureComponents';
-import { addCustomer, clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../redux/customerInfoReducer';
-import { Colors, GlobalStyle } from '../../../styles';
-import * as AsyncStore from "../../../asyncStore";
-import { showToast } from '../../../utils/toast';
-import { PincodeDetailsNew } from '../../../utils/helperFunctions';
+import { DatePickerComponent, DropDownComponant, LoaderComponent, TextinputComp } from '../../../../components';
+import { Gender_Types, Salutation_Types } from '../../../../jsonData/enquiryFormScreenJsonData';
+import { DateSelectItem, DropDownSelectionItem, RadioTextItem } from '../../../../pureComponents';
+import { addCustomer, clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../../redux/customerInfoReducer';
+import { Colors, GlobalStyle } from '../../../../styles';
+import * as AsyncStore from "../../../../asyncStore";
+import { showToast } from '../../../../utils/toast';
+import { PincodeDetailsNew } from '../../../../utils/helperFunctions';
 import { Dropdown } from 'react-native-element-dropdown';
 import {
   COMPLAINT_STATUS,
@@ -20,7 +20,7 @@ import {
   MONTH,
   OEM_PERIOD,
   VEHICLE_MAKER,
-} from "../../../jsonData/addCustomerScreenJsonData";
+} from "../../../../jsonData/addCustomerScreenJsonData";
 import moment from 'moment';
 
 const AddCustomerInfo = ({ navigation, route }) => {

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { ButtonComp } from '../../../components';
-import { clearSearchResult } from '../../../redux/searchCustomerReducer';
-import { Colors, GlobalStyle } from '../../../styles';
-import { callNumber, sendWhatsApp } from '../../../utils/helperFunctions';
+import { ButtonComp } from '../../../../components';
+import { clearSearchResult } from '../../../../redux/searchCustomerReducer';
+import { Colors, GlobalStyle } from '../../../../styles';
+import { callNumber, sendWhatsApp } from '../../../../utils/helperFunctions';
 
 const IconComp = ({ iconName, onPress, opacity = 1 }) => {
   return (

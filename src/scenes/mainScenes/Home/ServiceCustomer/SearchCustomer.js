@@ -8,13 +8,13 @@ import {
   View,
   ScrollView,
 } from "react-native";
-import { ButtonComp, DropDownComponant, LoaderComponent, TextinputComp } from '../../../components';
-import { DropDownSelectionItem } from '../../../pureComponents';
-import { Colors, GlobalStyle } from '../../../styles';
-import * as AsyncStore from "../../../asyncStore";
+import { ButtonComp, DropDownComponant, LoaderComponent, TextinputComp } from '../../../../components';
+import { DropDownSelectionItem } from '../../../../pureComponents';
+import { Colors, GlobalStyle } from '../../../../styles';
+import * as AsyncStore from "../../../../asyncStore";
 import { useDispatch, useSelector } from 'react-redux';
-import { clearStateData, getServiceTypesApi, searchCustomer, setDropDownData, setSearchInformation } from '../../../redux/searchCustomerReducer';
-import { showToast } from '../../../utils/toast';
+import { clearStateData, getServiceTypesApi, searchCustomer, setDropDownData, setSearchInformation } from '../../../../redux/searchCustomerReducer';
+import { showToast } from '../../../../utils/toast';
 
 const SearchCustomer = ({ navigation, route }) => {
   const dispatch = useDispatch();
