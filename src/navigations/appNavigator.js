@@ -125,6 +125,7 @@ import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedCom
 import * as AsyncStore from "../asyncStore";
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
+import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -461,6 +462,7 @@ export const MyTasksStackIdentifiers = {
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN",
   myTaskFilterScreen: "MYTASK_FILTER",
+  webCallScreen: "WEB_CALL",
   testDriveHistory: "TEST_HISTORY",
 };
 
@@ -1562,6 +1564,15 @@ const MainStackNavigator = ({ navigation }) => {
         name={"NOTIF_1"}
         component={NotificationScreen}
         options={{ title: "Notifications" }}
+      />
+      <MainStack.Screen
+        name={MyTasksStackIdentifiers.webCallScreen}
+        component={WebCallScreen}
+        options={{
+          headerTransparent: true,
+          headerTitle: "",
+          headerTintColor: Colors.BLACK,
+        }}
       />
     </MainStack.Navigator>
   );

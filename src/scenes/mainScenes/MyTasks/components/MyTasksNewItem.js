@@ -410,12 +410,22 @@ export const MyTaskNewItem = ({
             <IconComp
               iconName={"phone-outline"}
               onPress={() => {
-                callWebViewRecord({
-                  navigator,
-                  phone,
-                  uniqueId,
-                  type,
-                });
+                if (from == "MY_TASKS") {
+                  navigator.navigate(
+                    AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                    {
+                      phone,
+                      uniqueId,
+                    }
+                  );
+                } else {
+                  callWebViewRecord({
+                    navigator,
+                    phone,
+                    uniqueId,
+                    type,
+                  });
+                }
                 return;
                 if (onlylead) {
                   let user = userData.toLowerCase();
