@@ -142,7 +142,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
         }
         break;
       case "VEHICLE_MAKER":
-        setDataForDropDown([...VEHICLE_MAKER]);
+        setDataForDropDown([...selector.vehicleMakerList]);
         break;
       case "VEHICLE_MODEL":
         setDataForDropDown([...selector.vehicleModelList]);

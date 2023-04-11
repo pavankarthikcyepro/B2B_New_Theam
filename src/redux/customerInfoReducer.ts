@@ -4,6 +4,7 @@ import { Gender_Data_Obj, Relation_Data_Obj } from "../jsonData/enquiryFormScree
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
+import _ from "lodash";
 
 const dateFormate = "YYYY/MM/DD"
 interface DropDownModelNew {
@@ -158,6 +159,7 @@ const initialState = {
   // Vehicle Information
   vehicleRegNo: "",
   vehicleMaker: "",
+  vehicleMakerList: [],
   vehicleModel: "",
   vehicleModelList: [],
   vehicleVariant: "",
@@ -836,12 +838,18 @@ const customerInfoReducer = createSlice({
         if (action.payload) {
           let sData = action.payload;
           let newArr = [];
-
+          let newMakerArr = [];
           for (let i = 0; i < sData.length; i++) {
             let data = { ...sData[i], name: sData[i].model };
             newArr.push(Object.assign({}, data));
+
+            if (sData[i].maker){
+              let payload = { id: i, name: sData[i].maker };
+              newMakerArr.push(Object.assign({}, payload));
+            } 
           }
           state.vehicleModelList = [...newArr];
+          state.vehicleMakerList = _.uniqBy(newMakerArr, "name");
         }
       })
       .addCase(getVehicleInfo.rejected, (state, action) => {});
