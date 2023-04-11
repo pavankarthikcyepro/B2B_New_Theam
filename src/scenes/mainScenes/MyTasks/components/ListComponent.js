@@ -101,13 +101,10 @@ const ListComponent = ({ route, navigation }) => {
     if (isFocused) {
       console.log("LLLL", route.params);
       if (route.params) {
-       
         if (route.params?.from) {
-          
           dispatch(updateCurrentScreen(route.params.from));
         }
         if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
-         
           setIndex(1);
           changeTab(1);
         }
@@ -123,7 +120,6 @@ const ListComponent = ({ route, navigation }) => {
         );
         setIsOpenFilter(false);
       } else {
-        
         initialTask(selectedFilter);
       }
     }
@@ -167,12 +163,49 @@ const ListComponent = ({ route, navigation }) => {
     },
   ];
   useEffect(() => {
-    
     setSelectedFilter("TODAY");
     setIndex(0);
     initialTask("TODAY");
   }, []);
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = () => {
+    switch (route.params.from) {
+      case "TODAY":
+        getCount(route.params.from);
+        break;
+      case "PENDING":
+        getCount(route.params.from);
+        break;
+      case "RESCHEDULE":
+        getCount(route.params.from);
+        break;
+      case "CLOSED":
+        getCount(route.params.from);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getCount = async (tabName) => {
+    console.log("tabName",tabName);
+    try {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      setMyTasksData([...defaultData]);
+      setMyTeamsData([...defaultData]);
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
   //     setSelectedFilter("TODAY");
@@ -184,14 +217,13 @@ const ListComponent = ({ route, navigation }) => {
   // }, [navigation]);
 
   useEffect(() => {
-    
     setMyTasksData([...defaultData]);
     setMyTeamsData([...defaultData]);
     initialTask(selectedFilter);
   }, [index]);
 
-  const initialTask = async (selectedFilterLocal,fromClick) => {
-   console.log(route.params.from);
+  const initialTask = async (selectedFilterLocal, fromClick) => {
+    console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -853,13 +885,18 @@ const ListComponent = ({ route, navigation }) => {
             });
           }
         } else if (route.params.from === "CLOSED") {
-        
-          if (homeSelector.filterIds?.startDate && homeSelector.filterIds.endDate) {
-           
-            startDate = await homeSelector.filterIds?.startDate ? homeSelector.filterIds?.startDate : startDate;
-            endDate = await homeSelector.filterIds?.endDate ? homeSelector.filterIds?.endDate : endDate
+          if (
+            homeSelector.filterIds?.startDate &&
+            homeSelector.filterIds.endDate
+          ) {
+            startDate = (await homeSelector.filterIds?.startDate)
+              ? homeSelector.filterIds?.startDate
+              : startDate;
+            endDate = (await homeSelector.filterIds?.endDate)
+              ? homeSelector.filterIds?.endDate
+              : endDate;
           }
-          if (fromClick !== undefined && fromClick === true){
+          if (fromClick !== undefined && fromClick === true) {
             if (selectedFilterLocal === "TODAY") {
               startDate = currentDate;
               endDate = currentDate;
@@ -882,9 +919,6 @@ const ListComponent = ({ route, navigation }) => {
               endDate = moment(lastday).format(dateFormat);
             }
           }
-        
-          
-
 
           if (index === 0) {
             let payload = {};
@@ -1230,420 +1264,10 @@ const ListComponent = ({ route, navigation }) => {
 
   const removeIsAllFilter = () => {
     dispatch(setNotificationMyTaskAllFilter(false));
-  }
+  };
 
-  return (
-    <View style={styles.mainView}>
-      <View
-        style={styles.view2}
-      >
-        {/* <View style={{ width: "75%" }}>
-                    <SegmentedControl
-                        values={['My Tasks', 'Team Tasks']}
-                        enabled={true}
-                        backgroundColor={Colors.WHITE}
-                        fontStyle={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700" }}
-                        activeFontStyle={{ color: Colors.WHITE, fontSize: 16, fontWeight: "700" }}
-                        style={{ backgroundColor: "white", height: 50, borderColor: "red", borderWidth: 1, borderRadius: 4 }}
-                        tabStyle={{ borderRadius: 1 }}
-                        tintColor={Colors.RED}
-                        selectedIndex={index}
-                        onChange={(event) => {
-                            setIndex(event.nativeEvent.selectedSegmentIndex);
-                        }}
-                    />
-                </View> */}
-
-        {/* Hide the tabs only for sales  */}
-        {/* {
-                    selector.role != "Showroom DSE" && (
-                        <View style={styles.selfBtnWrap}>
-                            <TouchableOpacity onPress={() => {
-                                setIndex(0)
-                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {
-                                setIndex(1)
-                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )
-                } */}
-        {homeSelector.isTeamPresent &&
-          !homeSelector.isDSE &&
-          (route.params.from !== "TODAY" ? (
-            <View style={{ flexDirection: "row" }}>
-              <View
-                style={[
-                  styles.selfBtnWrap,
-                  { width: route.params.from !== "TODAY" ? "75%" : "100%" },
-                ]}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    setIndex(0);
-                    changeTab(0);
-                  }}
-                  style={{
-                    width: "50%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: index ? Colors.WHITE : Colors.RED,
-                    borderTopLeftRadius: 5,
-                    borderBottomLeftRadius: 5,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      color: index ? Colors.BLACK : Colors.WHITE,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Self
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIndex(1);
-                    changeTab(1);
-                  }}
-                  style={{
-                    width: "50%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: index ? Colors.RED : Colors.WHITE,
-                    borderTopRightRadius: 5,
-                    borderBottomRightRadius: 5,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      color: index ? Colors.WHITE : Colors.BLACK,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Teams
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {route.params.from !== "TODAY" && (
-                <View>
-                  <TouchableOpacity
-                    style={styles.touchable}
-                    onPress={() => setIsOpenFilter(true)}
-                  >
-                    <Image
-                      style={{ height: 20, width: 10 }}
-                      source={require("../../../../assets/images/more_new.png")}
-                    />
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "600",
-                        color: "#fff",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Filter
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          ) : (
-            <View style={styles.selfBtnWrap}>
-              <TouchableOpacity
-                onPress={() => {
-                  setIndex(0);
-                  changeTab(0);
-                }}
-                style={{
-                  width: "50%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: index ? Colors.WHITE : Colors.RED,
-                  borderTopLeftRadius: 5,
-                  borderBottomLeftRadius: 5,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: index ? Colors.BLACK : Colors.WHITE,
-                    fontWeight: "600",
-                  }}
-                >
-                  Self
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setIndex(1);
-                  changeTab(1);
-                }}
-                style={{
-                  width: "50%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: index ? Colors.RED : Colors.WHITE,
-                  borderTopRightRadius: 5,
-                  borderBottomRightRadius: 5,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: index ? Colors.WHITE : Colors.BLACK,
-                    fontWeight: "600",
-                  }}
-                >
-                  Teams
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        {homeSelector.isDSE &&
-          (route.params.from !== "TODAY" ? (
-            <View style={{ flexDirection: "row" }}>
-              <View style={[styles.selfBtnWrap, { width: "75%" }]}>
-                <View
-                  style={styles.selfbtn}
-                >
-                  <Text
-                    style={styles.txt1}
-                  >
-                    Self
-                  </Text>
-                </View>
-              </View>
-              {route.params.from !== "TODAY" && (
-                <View>
-                  <TouchableOpacity
-                    style={styles.touchable}
-                    onPress={() => setIsOpenFilter(true)}
-                  >
-                    <Image
-                      style={{ height: 20, width: 10 }}
-                      source={require("../../../../assets/images/more_new.png")}
-                    />
-                    <Text
-                      style={styles.txt5}
-                    >
-                      Filter
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          ) : (
-            <View style={[styles.selfBtnWrap]}>
-              <View
-                style={styles.view3}
-              >
-                <Text
-                  style={styles.txt2}
-                >
-                  Self
-                </Text>
-              </View>
-            </View>
-          ))}
-      </View>
-      {/* {route.params.from !== "TODAY" &&
-            <View style={{alignItems: 'flex-end'}}>
-                <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5}} onPress={() => setIsOpenFilter(true)}>
-                    <Image style={{height: 20, width: 10}} source={require('../../../../assets/images/more_new.png')} />
-                    <Text style={{fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10}}>Filter</Text>
-                </TouchableOpacity>
-            </View>
-} */}
-      {index === 0 && myTasksData.length > 0 && (
-        <FlatList
-          data={checkForTaskData(myTasksData)}
-          extraData={myTasksData}
-          style={{ flex: 1 }}
-          numColumns={3}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            const chartHeight = itemWidth - 20;
-            const overlayViewHeight = chartHeight - 10;
-            return (
-              <View style={styles.list}>
-                <TouchableOpacity onPress={() => itemClicked(item)}>
-                  <View
-                    style={[
-                      {
-                        height: 180,
-                        width: itemWidth,
-                        backgroundColor: Colors.WHITE,
-                        flexDirection: "column",
-                        alignItems: "center",
-                        paddingBottom: 10,
-                        borderRadius: 5,
-                      },
-                    ]}
-                  >
-                    {/* // pie chart */}
-                    <View
-                      style={{
-                        width: itemWidth - 10,
-                        height: 120,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <PieChart
-                        widthAndHeight={chartHeight}
-                        series={series}
-                        sliceColor={sliceColor}
-                      />
-                      {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
-                      {/* // Overlay View */}
-                      <View
-                        style={{
-                          position: "absolute",
-                          width: overlayViewHeight,
-                          height: overlayViewHeight,
-                          borderRadius: overlayViewHeight / 2,
-                          backgroundColor: Colors.WHITE,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text
-                          style={styles.txt3}
-                        >
-                          {item.taskCnt}
-                        </Text>
-                        <Text
-                          style={styles.txt4}
-                        >
-                          {"follow up"}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={styles.view4}
-                    >
-                      <View
-                        style={styles.emptyView}
-                      ></View>
-                      <Text
-                        style={styles.txt6}
-                        numberOfLines={3}
-                      >
-                        {checkForTaskNames(item.taskName)}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        />
-      )}
-
-      {index === 1 && myTeamsData.length > 0 && (
-        <FlatList
-          data={checkForTaskData(myTeamsData)}
-          style={{ flex: 1 }}
-          numColumns={3}
-          extraData={myTeamsData}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            const chartHeight = itemWidth - 20;
-            const overlayViewHeight = chartHeight - 10;
-            return (
-              <View style={styles.list}>
-                <TouchableOpacity onPress={() => itemClicked(item)}>
-                  <View
-                    style={[
-                      {
-                        height: 180,
-                        width: itemWidth,
-                        backgroundColor: Colors.WHITE,
-                        flexDirection: "column",
-                        alignItems: "center",
-                        paddingBottom: 10,
-                        borderRadius: 5,
-                      },
-                    ]}
-                  >
-                    {/* // pie chart */}
-                    <View
-                      style={{
-                        width: itemWidth - 10,
-                        height: 120,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <PieChart
-                        widthAndHeight={chartHeight}
-                        series={series}
-                        sliceColor={sliceColor}
-                      />
-                      {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
-                      {/* // Overlay View */}
-                      <View
-                        style={{
-                          position: "absolute",
-                          width: overlayViewHeight,
-                          height: overlayViewHeight,
-                          borderRadius: overlayViewHeight / 2,
-                          backgroundColor: Colors.WHITE,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text
-                          style={styles.txt3}
-                        >
-                          {item.taskCnt}
-                        </Text>
-                        <Text
-                          style={styles.txt4}
-                        >
-                          {"follow up"}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={styles.view4}
-                    >
-                      <View
-                        style={styles.emptyView}
-                      ></View>
-                      <Text
-                        style={styles.txt6}
-                        numberOfLines={2}
-                      >
-                        {checkForTaskNames(item.taskName)}
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        />
-      )}
-
-      {index === 0 && myTasksData.length == 0 && (
-        // <NoDataFound />
-        <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
-      )}
-      {index === 1 && myTeamsData.length == 0 && (
-        <EmptyListView
-          title={"No Data Found"}
-          isLoading={selector.isTeamsTaskLoading}
-        />
-      )}
-
+  const RenderModal =()=>{
+    return (
       <Modal
         // animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
         transparent={true}
@@ -1671,7 +1295,7 @@ const ListComponent = ({ route, navigation }) => {
               ]}
               onPress={() => {
                 if (selectedFilter !== "TODAY") {
-                  initialTask("TODAY",true);
+                  initialTask("TODAY", true);
                 }
                 removeIsAllFilter();
                 setSelectedFilter("TODAY");
@@ -1768,7 +1392,380 @@ const ListComponent = ({ route, navigation }) => {
           </View>
         </TouchableOpacity>
       </Modal>
-      {/* <LoaderComponent visible={true} /> */}
+    );
+  }
+
+  return (
+    <View style={styles.mainView}>
+      <View style={styles.view2}>
+        {/* <View style={{ width: "75%" }}>
+                    <SegmentedControl
+                        values={['My Tasks', 'Team Tasks']}
+                        enabled={true}
+                        backgroundColor={Colors.WHITE}
+                        fontStyle={{ color: Colors.BLACK, fontSize: 16, fontWeight: "700" }}
+                        activeFontStyle={{ color: Colors.WHITE, fontSize: 16, fontWeight: "700" }}
+                        style={{ backgroundColor: "white", height: 50, borderColor: "red", borderWidth: 1, borderRadius: 4 }}
+                        tabStyle={{ borderRadius: 1 }}
+                        tintColor={Colors.RED}
+                        selectedIndex={index}
+                        onChange={(event) => {
+                            setIndex(event.nativeEvent.selectedSegmentIndex);
+                        }}
+                    />
+                </View> */}
+
+        {/* Hide the tabs only for sales  */}
+        {/* {
+                    selector.role != "Showroom DSE" && (
+                        <View style={styles.selfBtnWrap}>
+                            <TouchableOpacity onPress={() => {
+                                setIndex(0)
+                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                setIndex(1)
+                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
+                } */}
+        {homeSelector.isTeamPresent &&
+          !homeSelector.isDSE &&
+          (route.params.from !== "TODAY" ? (
+            <View style={{ flexDirection: "row" }}>
+              <View
+                style={[
+                  styles.selfBtnWrap,
+                  { width: route.params.from !== "TODAY" ? "75%" : "100%" },
+                ]}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    setIndex(0);
+                    changeTab(0);
+                  }}
+                  style={{
+                    width: "50%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: index ? Colors.WHITE : Colors.RED,
+                    borderTopLeftRadius: 5,
+                    borderBottomLeftRadius: 5,
+                    padding: 14,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: index ? Colors.BLACK : Colors.WHITE,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Self
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setIndex(1);
+                    changeTab(1);
+                  }}
+                  style={{
+                    width: "50%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: index ? Colors.RED : Colors.WHITE,
+                    borderTopRightRadius: 5,
+                    borderBottomRightRadius: 5,
+                    padding: 14,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: index ? Colors.WHITE : Colors.BLACK,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Teams
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {route.params.from !== "TODAY" && (
+                <View>
+                  <TouchableOpacity
+                    style={styles.touchable}
+                    onPress={() => setIsOpenFilter(true)}
+                  >
+                    <Image
+                      style={{ height: 20, width: 10 }}
+                      source={require("../../../../assets/images/more_new.png")}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "600",
+                        color: "#fff",
+                        marginLeft: 10,
+                      }}
+                    >
+                      Filter
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          ) : (
+            <View style={styles.selfBtnWrap}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIndex(0);
+                  changeTab(0);
+                }}
+                style={{
+                  width: "50%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: index ? Colors.WHITE : Colors.RED,
+                  borderTopLeftRadius: 5,
+                  borderBottomLeftRadius: 5,
+                  padding: 14,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: index ? Colors.BLACK : Colors.WHITE,
+                    fontWeight: "600",
+                  }}
+                >
+                  Self
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setIndex(1);
+                  changeTab(1);
+                }}
+                style={{
+                  width: "50%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: index ? Colors.RED : Colors.WHITE,
+                  borderTopRightRadius: 5,
+                  borderBottomRightRadius: 5,
+                  padding: 14,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: index ? Colors.WHITE : Colors.BLACK,
+                    fontWeight: "600",
+                  }}
+                >
+                  Teams
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        {homeSelector.isDSE &&
+          (route.params.from !== "TODAY" ? (
+            <View style={{ flexDirection: "row" }}>
+              <View style={[styles.selfBtnWrap, { width: "75%" }]}>
+                <View style={styles.selfbtn}>
+                  <Text style={styles.txt1}>Self</Text>
+                </View>
+              </View>
+              {route.params.from !== "TODAY" && (
+                <View>
+                  <TouchableOpacity
+                    style={styles.touchable}
+                    onPress={() => setIsOpenFilter(true)}
+                  >
+                    <Image
+                      style={{ height: 20, width: 10 }}
+                      source={require("../../../../assets/images/more_new.png")}
+                    />
+                    <Text style={styles.txt5}>Filter</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          ) : (
+            <View style={[styles.selfBtnWrap]}>
+              <View style={styles.view3}>
+                <Text style={styles.txt2}>Self</Text>
+              </View>
+            </View>
+          ))}
+      </View>
+      {/* {route.params.from !== "TODAY" &&
+            <View style={{alignItems: 'flex-end'}}>
+                <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5}} onPress={() => setIsOpenFilter(true)}>
+                    <Image style={{height: 20, width: 10}} source={require('../../../../assets/images/more_new.png')} />
+                    <Text style={{fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10}}>Filter</Text>
+                </TouchableOpacity>
+            </View>
+} */}
+      {index === 0 && myTasksData.length > 0 && (
+        <FlatList
+          data={checkForTaskData(myTasksData)}
+          extraData={myTasksData}
+          style={{ flex: 1 }}
+          numColumns={3}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            const chartHeight = itemWidth - 20;
+            const overlayViewHeight = chartHeight - 10;
+            return (
+              <View style={styles.list}>
+                <TouchableOpacity onPress={() => itemClicked(item)}>
+                  <View
+                    style={[
+                      {
+                        height: 180,
+                        width: itemWidth,
+                        backgroundColor: Colors.WHITE,
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingBottom: 10,
+                        borderRadius: 5,
+                      },
+                    ]}
+                  >
+                    {/* // pie chart */}
+                    <View
+                      style={{
+                        width: itemWidth - 10,
+                        height: 120,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <PieChart
+                        widthAndHeight={chartHeight}
+                        series={series}
+                        sliceColor={sliceColor}
+                      />
+                      {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
+                      {/* // Overlay View */}
+                      <View
+                        style={{
+                          position: "absolute",
+                          width: overlayViewHeight,
+                          height: overlayViewHeight,
+                          borderRadius: overlayViewHeight / 2,
+                          backgroundColor: Colors.WHITE,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={styles.txt3}>{item.taskCnt}</Text>
+                        <Text style={styles.txt4}>{"follow up"}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.view4}>
+                      <View style={styles.emptyView}></View>
+                      <Text style={styles.txt6} numberOfLines={3}>
+                        {checkForTaskNames(item.taskName)}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        />
+      )}
+
+      {index === 1 && myTeamsData.length > 0 && (
+        <FlatList
+          data={checkForTaskData(myTeamsData)}
+          style={{ flex: 1 }}
+          numColumns={3}
+          extraData={myTeamsData}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            const chartHeight = itemWidth - 20;
+            const overlayViewHeight = chartHeight - 10;
+            return (
+              <View style={styles.list}>
+                <TouchableOpacity onPress={() => itemClicked(item)}>
+                  <View
+                    style={[
+                      {
+                        height: 180,
+                        width: itemWidth,
+                        backgroundColor: Colors.WHITE,
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingBottom: 10,
+                        borderRadius: 5,
+                      },
+                    ]}
+                  >
+                    {/* // pie chart */}
+                    <View
+                      style={{
+                        width: itemWidth - 10,
+                        height: 120,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <PieChart
+                        widthAndHeight={chartHeight}
+                        series={series}
+                        sliceColor={sliceColor}
+                      />
+                      {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
+                      {/* // Overlay View */}
+                      <View
+                        style={{
+                          position: "absolute",
+                          width: overlayViewHeight,
+                          height: overlayViewHeight,
+                          borderRadius: overlayViewHeight / 2,
+                          backgroundColor: Colors.WHITE,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={styles.txt3}>{item.taskCnt}</Text>
+                        <Text style={styles.txt4}>{"follow up"}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.view4}>
+                      <View style={styles.emptyView}></View>
+                      <Text style={styles.txt6} numberOfLines={2}>
+                        {checkForTaskNames(item.taskName)}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        />
+      )}
+
+      {index === 0 && myTasksData.length == 0 && (
+        // <NoDataFound />
+        <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
+      )}
+      {index === 1 && myTeamsData.length == 0 && (
+        <EmptyListView
+          title={"No Data Found"}
+          isLoading={selector.isTeamsTaskLoading}
+        />
+      )}
+      {/* Filter Modal Starts */}
+      <RenderModal />
+      {/* Filter Modal Ends */}
+      <LoaderComponent visible={selector.isLoading} />
     </View>
   );
 };
@@ -1787,10 +1784,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     borderWidth: 1,
     borderRadius: 5,
-    height: 41,
+    // height: 41,
     marginTop: 10,
     justifyContent: "center",
-    width: "80%",
+    width: "90%",
   },
   list: {
     height: 185,
@@ -1834,7 +1831,7 @@ const styles = StyleSheet.create({
   },
   touchable: {
     width: 80,
-    height: 40,
+    // height: 40,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -1842,6 +1839,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     marginLeft: 10,
+    padding: 14,
   },
   selfbtn: {
     width: "100%",
@@ -1850,6 +1848,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
+    padding:15
   },
   txt1: {
     fontSize: 16,
@@ -1863,6 +1862,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
+    padding:15
   },
   txt2: {
     fontSize: 16,
@@ -1884,13 +1884,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
- emptyView: {
+  emptyView: {
     width: "75%",
     backgroundColor: Colors.DARK_GRAY,
     height: 2,
     marginBottom: 13,
   },
-   txt5: {
+  txt5: {
     fontSize: 16,
     fontWeight: "600",
     color: "#fff",
@@ -1900,5 +1900,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     textAlign: "center",
-  }
+  },
 });
