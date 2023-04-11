@@ -242,6 +242,14 @@ const AddCustomerInfo = ({ navigation, route }) => {
     }
     return value;
   };
+  
+  const stringToNumber = (value) => {
+    if (value) {
+      return Number(value);
+    } else {
+      return 0;
+    }
+  };
 
   const getPayloadId = (type, value) => {
     if (value) {
@@ -360,9 +368,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
         dealerName: selector.serviceDealerName,
         dealerLocation: selector.serviceDealerLocation,
         serviceDate: convertDateForPayload(selector.serviceDate),
-        kmReadingAtService: selector.readingAtService,
+        kmReadingAtService: stringToNumber(selector.readingAtService),
         serviceCenter: selector.serviceCenter,
-        serviceAmount: selector.serviceAmount,
+        serviceAmount: stringToNumber(selector.serviceAmount),
         serviceType: getPayloadId("serviceType", selector.serviceType),
         // subServiceType: selector.subServiceType, (available in ui, need to add in api)
       },
@@ -372,25 +380,27 @@ const AddCustomerInfo = ({ navigation, route }) => {
         vehicleModel: selector.vehicleModel,
         variant: selector.vehicleVariant,
         color: selector.vehicleColor,
-        fuelType: selector.vehicleFuelType ? selector.vehicleFuelType.toUpperCase() : "",
+        fuelType: selector.vehicleFuelType
+          ? selector.vehicleFuelType.toUpperCase()
+          : "",
         transmisionType: selector.vehicleTransmissionType,
         vin: selector.vin,
         engineNumber: selector.engineNumber,
+        currentKmReading: stringToNumber(selector.kmReading),
         purchaseDate: convertDateForPayload(selector.saleDate),
+        makingMonth: selector.makingMonth,
+        makingYear: selector.makingYear,
         chassisNumber: selector.chassisNumber,
         sellingLocation: selector.sellingLocation,
         sellingDealer: selector.sellingDealer,
-        makingMonth: selector.makingMonth,
-        vehicleMakeYear: selector.makingYear,
         isFastag: selector.fastag == "Available" ? true : false,
-        currentKmReading: selector.kmReading,
       },
       customer: {
         salutation: selector.salutation,
         firstName: selector.firstName,
         lastName: selector.lastName,
         relationName: selector.relation,
-        age: selector.age,
+        age: stringToNumber(selector.age),
         leadSource: getPayloadId("subSourceType", selector.subSourceType),
         parentLeadSource: getPayloadId("sourceType", selector.sourceType),
         contactNumber: selector.mobile,
@@ -417,7 +427,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
         // dateOfArrival: "2023-03-22", (not in UI)
       },
       insuranceRequest: {
-        insuranceAmount: selector.insuranceAmount,
+        insuranceAmount: stringToNumber(selector.insuranceAmount),
         startDate: convertDateForPayload(selector.insuranceStartDate),
         endDate: convertDateForPayload(selector.insuranceExpiryDate),
         vendor: selector.insuranceCompany,
@@ -427,26 +437,26 @@ const AddCustomerInfo = ({ navigation, route }) => {
         {
           startDate: convertDateForPayload(selector.amcStartDate),
           expiryDate: convertDateForPayload(selector.amcExpiryDate),
-          amountPaid: selector.amcAmountPaid,
+          amountPaid: stringToNumber(selector.amcAmountPaid),
           warrantyType: "MCP",
           amc_name: selector.amcName,
-          number: selector.amcPolicyNo,
+          number: stringToNumber(selector.amcPolicyNo),
         },
         {
           startDate: convertDateForPayload(selector.ewStartDate),
           expiryDate: convertDateForPayload(selector.ewExpiryDate),
-          amountPaid: selector.ewAmountPaid,
+          amountPaid: stringToNumber(selector.ewAmountPaid),
           warrantyType: "EW",
           ewName: selector.ewType,
-          number: selector.ewPolicyNo,
+          number: stringToNumber(selector.ewPolicyNo),
         },
         {
           startDate: convertDateForPayload(selector.oemStartDate),
           expiryDate: convertDateForPayload(selector.oemEndDate),
-          amountPaid: selector.oemWarrantyAmount,
+          amountPaid: stringToNumber(selector.oemWarrantyAmount),
           warrantyType: "OEM",
           oemPeriod: selector.oemPeriod,
-          number: selector.oemWarrantyNo,
+          number: stringToNumber(selector.oemWarrantyNo),
         },
       ],
     };
@@ -659,7 +669,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <TextinputComp
                 value={selector?.age?.toString()}
                 label={"Age"}
-                keyboardType={"phone-pad"}
+                keyboardType={"number-pad"}
                 maxLength={2}
                 onChangeText={(text) =>
                   dispatch(setPersonalIntro({ key: "AGE", text: text }))
@@ -796,7 +806,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector.pincode}
                 label={"Pincode"}
                 maxLength={6}
-                keyboardType={"phone-pad"}
+                keyboardType={"number-pad"}
                 onChangeText={(text) => {
                   if (text.length === 6) {
                     updateAddressDetails(text);
@@ -1256,7 +1266,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector.serviceAmount}
                 label={"Service Amount"}
                 maxLength={10}
-                keyboardType={"phone-pad"}
+                keyboardType={"number-pad"}
                 onChangeText={(text) =>
                   dispatch(
                     setServiceInfo({ key: "SERVICE_AMOUNT", text: text })
@@ -1398,7 +1408,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector.insuranceAmount}
                 label={"Insurance Amount"}
                 maxLength={10}
-                keyboardType={"phone-pad"}
+                keyboardType={"number-pad"}
                 onChangeText={(text) =>
                   dispatch(
                     setInsuranceInfo({ key: "INSURANCE_AMOUNT", text: text })
