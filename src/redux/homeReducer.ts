@@ -1572,20 +1572,20 @@ export const homeSlice = createSlice({
 
       // Get Employees Drop Down Data
       .addCase(getEmployeesDropDownData.pending, (state, action) => {
-        console.log("manthan api called 00");
+        
         
         // state.employees_drop_down_data = {};
         // state.employees_drop_down_data_local ={};
       })
       .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
         if (action.payload) {
-          console.log("manthan api called 11");
+          
           state.employees_drop_down_data = action.payload;
           state.employees_drop_down_data_local = action.payload;
         }
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
-        console.log("manthan api called 22");
+        
         // state.employees_drop_down_data = {};
         // state.employees_drop_down_data_local = {};
       })

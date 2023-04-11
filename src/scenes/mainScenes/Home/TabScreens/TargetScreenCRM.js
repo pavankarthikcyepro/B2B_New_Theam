@@ -1781,8 +1781,8 @@ const TargetScreenCRM = ({ route }) => {
               return (
                 <View key={`${item.emp_name} ${index}`}
                   style={{
-                    borderColor: isViewCREExpanded && index === creIndex ? Colors.BLUE : "",
-                    borderWidth: isViewCREExpanded && index === creIndex ? 1 : 0,
+                    borderColor: isViewCREExpanded && index === creIndex ? Colors.RED : "",
+                    borderWidth: isViewCREExpanded && index === creIndex ? 2 : 0,
                     borderRadius: 10,
                     margin: isViewCREExpanded && index === creIndex ? 10 : 0
                   }}>
@@ -2246,8 +2246,8 @@ const TargetScreenCRM = ({ route }) => {
             return (
               <View key={`${item.emp_name} ${index}`} 
               style={{ 
-                borderColor: isViewExpanded ? Colors.PINK : "",
-                borderWidth:isViewExpanded? 1: 0, 
+                borderColor: isViewExpanded ? "#C62159" : "",
+                borderWidth:isViewExpanded? 2: 0, 
                 borderRadius:10,
                 margin: isViewExpanded?10:0
                  }}>
@@ -2487,7 +2487,7 @@ const TargetScreenCRM = ({ route }) => {
                 <View key={`${item.emp_name} ${index}`}
                   style={{
                     borderColor: isShowSalesConsultant && indexLocal === index ? Colors.BLUE : "",
-                    borderWidth: isShowSalesConsultant && indexLocal === index ? 1 : 0,
+                    borderWidth: isShowSalesConsultant && indexLocal === index ? 2 : 0,
                     borderRadius: 10,
                     margin: isShowSalesConsultant && indexLocal === index ? 10 : 0
                   }}>

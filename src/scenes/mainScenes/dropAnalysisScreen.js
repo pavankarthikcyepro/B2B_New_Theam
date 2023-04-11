@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM, getDropAnalysisRedirectionsXrole } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM, getDropAnalysisRedirectionsXrole, getDropAnalysisSalesHome } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -350,6 +350,24 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                 }
             }
         }
+        else if (from === "targetSaleshome") {
+
+            let payload = {
+                "endDate": currentMonthLastDate,
+                "loggedInEmpId": selectedEmpIds,
+                "startDate": CurrentMonthFirstDate,
+                "selectedEmpId": selectedEmpIds,
+                "levelSelected": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                "pageNo": 0,
+                "size": 5000,
+                "filterValue": "",
+                "isSelf": route?.params?.isSelf ? route?.params?.isSelf : false,
+                "stageName": "DROPPED"
+            }
+            dispatch(getDropAnalysisSalesHome(payload))
+
+
+        }
         
         // const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
        
@@ -581,6 +599,10 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             setLeadsSubMenuFilterDropDownText("All");
         } else if (route.params.fromScreen == "targetScreenReceptionist" && route?.params?.emp_id) {
             getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreenReceptionist", route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
+        } else if (route.params.fromScreen == "targetSaleshome" && route?.params?.emp_id){
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetSaleshome", route?.params?.dealercodes)
             setLeadsFilterDropDownText("Enquiry")
             setLeadsSubMenuFilterDropDownText("All");
         }

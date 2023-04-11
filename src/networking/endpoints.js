@@ -429,6 +429,9 @@ const URL = {
   DROP_ANALYSIS_LIST_REDIRECTIONS_XROLE: () =>
     sales_url + "/lead-drop/XRoleManager/leadlist",
 
+  DROP_ANALYSIS_LIST_REDIRECTIONS_SALESHOME: () =>
+    baseUrl + "dfd/dashboard/leads/redirection",
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },

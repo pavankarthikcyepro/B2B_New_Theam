@@ -243,7 +243,13 @@ const LeadsScreen = ({ route, navigation }) => {
     [route?.params, leadsFilterData]
   );
 
-  useEffect(() => {
+  useEffect(async() => {
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+    
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
@@ -373,10 +379,10 @@ const LeadsScreen = ({ route, navigation }) => {
       
       // setSearchedData([])
       let payloadReceptionist = {
-        "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : userData.empId  ,
+        "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : jsonObj.empId  ,
         "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
         "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-        "orgId": userData.orgId,
+        "orgId": jsonObj.orgId,
         "branchCodes": route.params.dealerCodes,
         "stageName": route?.params?.params,
         "selectedEmpId": route?.params?.ignoreSelectedId? [] :route?.params?.selectedEmpId,
@@ -399,7 +405,7 @@ const LeadsScreen = ({ route, navigation }) => {
           "loggedInEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-          "orgId": userData.orgId,
+          "orgId": jsonObj.orgId,
           // "branchCodes": route.params.dealerCodes,
           "stageName": route?.params?.params,
           // "selectedEmpId": route?.params?.selectedEmpId,
@@ -417,7 +423,7 @@ const LeadsScreen = ({ route, navigation }) => {
           "loginEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-          "orgId": userData.orgId,
+          "orgId": jsonObj.orgId,
           "branchCodes": route.params.dealerCodes,
           "stageName": route?.params?.params,
           "selectedEmpId": route?.params?.selectedEmpId,
@@ -440,7 +446,7 @@ const LeadsScreen = ({ route, navigation }) => {
 
      
         let payload = {
-          "orgId": userData.orgId,
+          "orgId": jsonObj.orgId,
           "loggedInEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate, 
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
@@ -463,7 +469,7 @@ const LeadsScreen = ({ route, navigation }) => {
 
 
       let payload = {
-        "orgId": userData.orgId,
+        "orgId": jsonObj.orgId,
         "loggedInEmpId": route?.params?.parentId,
         "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
         "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
@@ -498,7 +504,7 @@ const LeadsScreen = ({ route, navigation }) => {
         if (route.params.isgetCRMTotalData) {
           let payload = {
             "loggedInEmpId": route?.params?.parentId,
-            "orgId": userData.orgId,
+            "orgId": jsonObj.orgId,
             "stageName": route?.params?.params,
             "limit": 1000,
             "offset": 0,
@@ -511,7 +517,7 @@ const LeadsScreen = ({ route, navigation }) => {
         } else {
           let payload = {
             "loggedInEmpId": route?.params?.parentId,
-            "orgId": userData.orgId,
+            "orgId": jsonObj.orgId,
             "stageName": route?.params?.params,
             "limit": 1000,
             "offset": 0,
@@ -529,7 +535,7 @@ const LeadsScreen = ({ route, navigation }) => {
           "loginEmpId": route?.params?.parentId,
           // "startDate": liveLeadsStartDate,
           // "endDate": liveLeadsEndDate,
-          "orgId": userData.orgId,
+          "orgId": jsonObj.orgId,
           "branchList": route.params.dealerCodes,
           "stageName": route?.params?.params,
           "selectedEmpId": route?.params?.selectedEmpId,
@@ -551,17 +557,17 @@ const LeadsScreen = ({ route, navigation }) => {
         "selectedEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
         "levelSelected": route.params.dealerCodes,
         "pageNo": 0,
-        "size": 500,
+        "size": 5000,
         "filterValue": "",
-        "isSelf": false,
+        "isSelf": route?.params?.self,
         "stageName": route?.params?.params
       }
-      console.log("manthan jjjj");
+     
       setTimeout(() => {
         dispatch(getSalesHomeDashbaordRedirections(payload))
       }, 2000);
     }
-
+  }
   }, [route.params]);
 
   // useEffect(() => {

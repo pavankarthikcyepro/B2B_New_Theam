@@ -83,9 +83,9 @@ const DropDown = ({
           item.selected = true;
         }
         selectedItems(item, keyId, index);
-        console.log(" manthan debug 11", item);  
+      
       }else{
-        console.log(" manthan debug 22", item);
+       
         selectedItems(item, keyId, index);
       }
      

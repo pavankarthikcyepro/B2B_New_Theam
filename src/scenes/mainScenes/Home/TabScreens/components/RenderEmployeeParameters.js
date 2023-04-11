@@ -4,13 +4,14 @@ import { achievementPercentage } from "../../../../../utils/helperFunctions";
 import { Colors } from "../../../../../styles";
 import { AppNavigator } from "../../../../../navigations";
 import { EmsTopTabNavigatorIdentifiers } from "../../../../../navigations/emsTopTabNavigator";
-
+import _ from "lodash";
+import { useSelector } from "react-redux";
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 
 export const RenderEmployeeParameters = (parameter) => {
   // const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
-
+  const selector = useSelector((state) => state.homeReducer);
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
       return "#1C95A6";
@@ -41,6 +42,7 @@ export const RenderEmployeeParameters = (parameter) => {
   ];
 
   function navigateToEmsScreen(param) {
+    
     const leads = ["enquiry", "booking", "invoice"];
     const isDropped = param.toLowerCase() === "dropped";
     const isContact = param.toLowerCase() === "preenquiry";
@@ -55,11 +57,28 @@ export const RenderEmployeeParameters = (parameter) => {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
       setTimeout(() => {
         navigation.navigate("LEADS", {
-          param: param === "INVOICE" ? "Retail" : param,
-          employeeDetail: employeeDetail,
-          moduleType: "live-leads",
+          screenName: "TargetScreenSales",
+          params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: item.empId,
+          startDate: "",
+          endDate: "",
+          dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected: [],
+          ignoreSelectedId: false,
+          parentId: "",
+          istotalClick: true,
+          self: item.isOpenInner
         });
       }, 1000);
+      // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+      // setTimeout(() => {
+      //   navigation.navigate("LEADS", {
+      //     param: param === "INVOICE" ? "Retail" : param,
+      //     employeeDetail: employeeDetail,
+      //     moduleType: "live-leads",
+      //   });
+      // }, 1000);
     } else if (isContact) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
       setTimeout(() => {
@@ -76,13 +95,30 @@ export const RenderEmployeeParameters = (parameter) => {
     } else if (isDropped) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",
-        params: { emp_id: "", fromScreen: "" },
+        params: {
+          emp_id: item.empId,
+          fromScreen: "targetSaleshome",
+          dealercodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+          isFilterApplied: true,
+          parentId: "",
+          isSelf: item.isOpenInner
+        },
       });
     } else if (param === "Test Drive" || param === "Home Visit") {
       navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
       setTimeout(() => {
-        navigation.navigate("CLOSED");
-      }, 750);
+        navigation.navigate("CLOSED", {
+          screenName: "TargetScreenSales",
+          // selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : "",
+          selectedEmpId: item.empId,
+          isself: item.isOpenInner ? item.isOpenInner : item.roleName === "Field DSE" ? true : false,
+          startDate: "",
+          endDate: "",
+          dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+          isTeam: item.isOpenInner ? false : item.roleName === "Field DSE" ? false: true
+
+        });
+      }, 2000);
     }
   }
 
@@ -149,7 +185,7 @@ export const RenderEmployeeParameters = (parameter) => {
                 >
                   <Text
                     onPress={() =>
-                      selectedParameter?.achievment !== "0" &&
+                      // selectedParameter?.achievment !== "0" &&
                       navigateToEmsScreen(param)
                     }
                     style={[

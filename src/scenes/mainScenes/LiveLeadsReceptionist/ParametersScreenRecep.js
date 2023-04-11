@@ -1684,8 +1684,8 @@ const ParametersScreenRecep = ({ route }) => {
           return (
 
             <View style={{
-              borderColor: isViewExpanded ? Colors.PINK : "",
-              borderWidth: isViewExpanded ? 1 : 0,
+              borderColor: isViewExpanded ? "#C62159" : "",
+              borderWidth: isViewExpanded ? 2 : 0, 
               borderRadius: 10,
               margin: isViewExpanded ? 10 : 0
               }}>

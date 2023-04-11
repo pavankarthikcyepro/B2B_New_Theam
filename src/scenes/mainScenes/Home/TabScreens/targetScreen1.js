@@ -3453,6 +3453,7 @@ const TargetScreen = ({ route }) => {
                           type={togglePercentage}
                           navigation={navigation}
                           moduleType={"home"}
+                          userData = {userData}
                         />
                       </View>
                     </>
