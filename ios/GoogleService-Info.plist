@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>252064520094-isi0de1pj5k16ccm5p428gu530hbpcgq.apps.googleusercontent.com</string>
+	<string>252064520094-rndlg94nh5tkbsfn3vqvanij0gcsfjop.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.252064520094-isi0de1pj5k16ccm5p428gu530hbpcgq</string>
+	<string>com.googleusercontent.apps.252064520094-rndlg94nh5tkbsfn3vqvanij0gcsfjop</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDo83leX-9rp1VAWYJ2mnOm972JK8zCZV4</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.reactjs.native.example.B2B-NEW-THEME</string>
+	<string>com.cyeone.cyepro</string>
 	<key>PROJECT_ID</key>
 	<string>cyepro-373009</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:252064520094:ios:7845c2ad44a5306f69a88f</string>
+	<string>1:252064520094:ios:01bc0f6186e1632769a88f</string>
 </dict>
 </plist>

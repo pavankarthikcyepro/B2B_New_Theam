@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
   Clipboard,
+  Platform,
 } from "react-native";
 import { Colors } from "../../styles";
 import { ButtonComp } from "../../components/buttonComp";
@@ -35,7 +36,6 @@ import {
 } from "../../redux/targetSettingsReducer";
 import PushNotification from "react-native-push-notification";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { useDispatch } from "react-redux";
 import { updateToken } from "../../redux/loginReducer";
 import messaging from "@react-native-firebase/messaging";
 import firebase from "@react-native-firebase/app";
@@ -44,17 +44,20 @@ const WelcomeScreen = ({ navigation }) => {
   const { signOut } = React.useContext(AuthContext);
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-  
-  useEffect(() => {
+
+  useEffect(async() => {
+const token = await messaging().getToken();
+console.log("OOOOO",token);
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
+        console.log(token);
         Clipboard.setString(token.token);
         dispatch(updateToken(token.token));
       },
       // (required) Called when a remote is received or opened, or local notification is opened
       onNotification: function (notification) {
-        console.log("NOTI",notification);
+        console.log("NOTI", notification);
         if (notification.foreground) {
           PushNotification.localNotification({
             title: notification.title,
@@ -148,12 +151,10 @@ const WelcomeScreen = ({ navigation }) => {
     // checkAppUpdate();
   }, []);
 
-
-
   const loginButtonClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
   };
-  
+
   const RegisterButtonClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.REGISTER);
   };
@@ -240,15 +241,19 @@ const WelcomeScreen = ({ navigation }) => {
         onPress={selector.newUpdateAvailable ? UpdateApp : loginButtonClicked}
         color={Colors.PINK}
       />
-      <View style={{ height: 10 }} />
-      <ButtonComp
-        title={"REGISTER"}
-        width={getWidth(100) - 40}
-        onPress={
-          selector.newUpdateAvailable ? UpdateApp : RegisterButtonClicked
-        }
-        color={Colors.PINK}
-      />
+      {Platform.OS === "ios" && (
+        <>
+          <View style={{ height: 10 }} />
+          <ButtonComp
+            title={"REGISTER"}
+            width={getWidth(100) - 40}
+            onPress={
+              selector.newUpdateAvailable ? UpdateApp : RegisterButtonClicked
+            }
+            color={Colors.PINK}
+          />
+        </>
+      )}
       <View style={styles.bottomViewStyle}>
         <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
         <Text style={styles.textTwoStyle}>
