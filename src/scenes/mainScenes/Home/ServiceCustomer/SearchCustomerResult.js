@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { ButtonComp } from '../../../../components';
+import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
 import { clearSearchResult } from '../../../../redux/searchCustomerReducer';
 import { Colors, GlobalStyle } from '../../../../styles';
 import { callNumber, sendWhatsApp } from '../../../../utils/helperFunctions';
@@ -28,7 +29,7 @@ const SearchCustomerResult = ({ navigation, route }) => {
   
   useEffect(() => {
     return () => {
-      dispatch(clearSearchResult());
+      // dispatch(clearSearchResult());
     };
   }, []);
 
@@ -69,7 +70,9 @@ const SearchCustomerResult = ({ navigation, route }) => {
           <View style={styles.iconOptionRow}>
             <IconComp
               iconName={"format-list-bulleted-square"}
-              onPress={() => {}}
+              onPress={() =>
+                navigation.navigate(HomeStackIdentifiers.customerInfo)
+              }
             />
             <View style={{ padding: 5 }} />
             <IconComp
