@@ -571,6 +571,7 @@ const ParametersScreen = ({ route }) => {
       ...allParameters[0],
       targetAchievements: selector.totalParameters,
     };
+    console.log("manthan ----> 11 ", JSON.stringify(allParameters));
     setAllParameters(allParameters);
   }, [selector.totalParameters]);
 
@@ -595,6 +596,7 @@ const ParametersScreen = ({ route }) => {
             targetAchievements: selector.totalParameters,
             tempTargetAchievements: myParams[0]?.targetAchievements,
           };
+          console.log("manthan ----> 22", JSON.stringify(myParams));
           setAllParameters(myParams);
           if (!selector.saveLiveleadObject?.selectedempId) {
             setFilterParameters([])
@@ -733,6 +735,8 @@ const ParametersScreen = ({ route }) => {
           }
           // setFilterParameters([...tempRawData])
           // alert(JSON.stringify(tempRawData))
+          console.log("manthan jjdjdjdjdjd ", JSON.stringify(tempRawData));
+          console.log("manthan ----> 33", JSON.stringify(tempRawData));
           setAllParameters([...tempRawData]);
         }
       );
@@ -848,6 +852,7 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
+    // console.log("manthan jfjfjhf ", JSON.stringify(item));
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -977,6 +982,7 @@ const ParametersScreen = ({ route }) => {
               }
             }
             // alert(JSON.stringify(localData))
+            console.log("manthan ----> 44");
             setAllParameters([...localData]);
           }
         );
@@ -988,6 +994,7 @@ const ParametersScreen = ({ route }) => {
         // }
       }
     } else {
+      console.log("manthan ----> 55");
       setAllParameters([...localData]);
     }
   };
@@ -3676,6 +3683,7 @@ const ParametersScreen = ({ route }) => {
                                                                 }
                                                               }
                                                             }
+                                                            console.log("manthan ----> 66");
                                                             setAllParameters([
                                                               ...localData,
                                                             ]);
