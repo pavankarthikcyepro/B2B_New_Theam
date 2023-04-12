@@ -131,6 +131,7 @@ const LeadsScreen = ({ route, navigation }) => {
   const [AssignByMe, setAssignByMe] = useState(false);
   const [AssignToMe, setAssignToMe] = useState(false);
   const [isVip, setIsVip] = useState(false);
+  const [isHni, setIsHni] = useState(false);
 
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
@@ -1446,6 +1447,7 @@ const LeadsScreen = ({ route, navigation }) => {
         <View style={{ marginTop: index == 0 ? 10 : 0 }}>
           <MyTaskNewItem
             IsVip={item.isVip === "Y" ? true : false}
+            IsHni={item.isHni === "Y" ? true : false}
             tdflage={item?.tdflage ? item.tdflage : ""}
             hvflage={item?.hvflage ? item.hvflage : ""}
             showTdHvHighLight={true}
@@ -1541,7 +1543,16 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMeLength(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
+      } else if (isVip) {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
@@ -1549,11 +1560,19 @@ const LeadsScreen = ({ route, navigation }) => {
             userData.empName !== i.salesConsultant
         );
         return newData.length;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
       } else {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName 
-          &&
-          userData.empName !== i.salesConsultant
+          (i) =>
+            i.createdBy === userData.empName &&
+            userData.empName !== i.salesConsultant
         );
         return newData.length;
       }
@@ -1564,9 +1583,22 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMeLength(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.isVip === "Y" &&
+            i.isHni === "Y"
+        );
+        return newData.length;
+      } else if (isVip) {
         let newData = data.filter(
           (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+        );
+        return newData.length;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant && i.isHni === "Y"
         );
         return newData.length;
       } else {
@@ -1582,11 +1614,31 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMe(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName && i.isVip === "Y"
-          &&
-          userData.empName !== i.salesConsultant
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1609,9 +1661,24 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMe(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.isVip === "Y" &&
+            i.isHni === "Y"
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip) {
         let newData = data.filter(
           (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant && i.isHni === "Y"
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1630,8 +1697,16 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function OnVip(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter((i) => i.isVip === "Y" && i.isHni === "Y");
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip) {
         let newData = data.filter((i) => i.isVip === "Y");
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni) {
+        let newData = data.filter((i) => i.isHni === "Y");
         dispatch(updateTheCount(newData.length));
         return newData;
       } else {
@@ -1756,7 +1831,7 @@ const LeadsScreen = ({ route, navigation }) => {
         </Pressable>
       </View>
       <View style={styles.view3}>
-        <View style={{ width: subMenu?.length > 1 ? "35%" : "70%" }}>
+        <View style={{ width: subMenu?.length > 1 ? "25%" : "50%" }}>
           <Pressable
             onPress={() => {
               setLeadsFilterVisible(true);
@@ -1778,7 +1853,7 @@ const LeadsScreen = ({ route, navigation }) => {
         {subMenu?.length > 1 && (
           <View
             style={{
-              width: "35%",
+              width: "25%",
               alignSelf: "center",
               backgroundColor: "white",
               marginBottom: 5,
@@ -1826,17 +1901,46 @@ const LeadsScreen = ({ route, navigation }) => {
           </View>
         )}
         <View style={{ alignItems: "center", flexDirection: "row" }}>
-          <Text
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: "600",
+              alignItems: "center",
+              flexDirection: "row",
               marginRight: 5,
-              color: Colors.RED,
             }}
           >
-            VIP
-          </Text>
-          <Switch color={Colors.RED} value={isVip} onValueChange={setIsVip} />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "600",
+                color: Colors.RED,
+              }}
+            >
+              VIP
+            </Text>
+            <Switch
+              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+              color={Colors.RED}
+              value={isVip}
+              onValueChange={setIsVip}
+            />
+          </View>
+          <View style={{ alignItems: "center", flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "600",
+                color: Colors.RED,
+              }}
+            >
+              HNI
+            </Text>
+            <Switch
+              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+              color={Colors.RED}
+              value={isHni}
+              onValueChange={setIsHni}
+            />
+          </View>
         </View>
       </View>
       <View style={styles.AssignView}>
@@ -2072,7 +2176,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   txt1: {
-    width: "80%",
+    width: "70%",
     paddingHorizontal: 5,
     paddingVertical: 2,
     fontSize: 12,
