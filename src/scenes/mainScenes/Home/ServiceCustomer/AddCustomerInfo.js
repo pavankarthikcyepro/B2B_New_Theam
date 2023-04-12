@@ -891,7 +891,6 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 value={selector.houseNum}
                 label={"H.No"}
                 maxLength={50}
-                keyboardType={"number-pad"}
                 onChangeText={(text) =>
                   dispatch(
                     setCommunicationAddress({ key: "HOUSE_NO", text: text })
