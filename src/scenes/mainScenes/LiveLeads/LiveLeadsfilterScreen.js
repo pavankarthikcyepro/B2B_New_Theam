@@ -209,6 +209,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     }
 
     if (index === 4) {
+      
       setDropDownData([...newData]);
       if (initalCall) {
         let updatedMultipleData = [...newData];
@@ -225,6 +226,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       }
       //   submitBtnClicked(null)
     } else {
+      
       setDropDownData([...data]);
     }
     setSelectedItemIndex(index);
@@ -251,8 +253,21 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
         dropdownDatas = [...data];
       }
     }
+
+    const arrayData = dropdownDatas;
+      const newArray = [];
+      if (arrayData.length > 0) {
+        arrayData.forEach((element) => {
+          newArray.push({
+            ...element,
+            selected: false,
+          });
+        });
+      }
+      // newDataObj[key] = newArray;
     
-    setDropDownData([...dropdownDatas]);
+    
+    setDropDownData([...newArray]);
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");
@@ -425,7 +440,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
         sublevels: result,
       };
       totalDataObjLocal[key] = newOBJ;
-
+      dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
       // dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
       setTotalDataObj({ ...totalDataObjLocal });
       return { ...totalDataObjLocal }
@@ -514,6 +529,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       sublevels: result,
     };
     totalDataObjLocal[key] = newOBJ;
+
     dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
     setTotalDataObj({ ...totalDataObjLocal });
     // index == 4 && submitBtnClicked(totalDataObjLocal,"");
@@ -525,9 +541,11 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     let key = employeeTitleNameList[index];
     // const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
     const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
+   
     let objIndex = newTotalDataObjLocal[key].findIndex(
       (obj) => obj.id == data.id
     );
+   
     const a = newTotalDataObjLocal[key].map((data, index) =>
       index === objIndex
         ? { ...newTotalDataObjLocal[key][index], selected: true }
@@ -541,6 +559,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
       if (nData) return nData;
       return val;
     });
+  
     // let isChange = arrayCheck?.find((val, j) => {
     //   return val?.selected !== newData[j]?.selected;
     // });
@@ -627,7 +646,7 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     }
     // }
     newTotalDataObjLocal[key] = newData;
-
+    
     setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
   };
   // const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
@@ -758,6 +777,13 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
     };
     setLevelSelected(selectedIds)
     dispatch(updateFilterLevelSelectedData(selectedIds))
+    let tempPayload = {
+      startDate: fromDate,
+      endDate: toDate,
+      levelSelected: selectedIds,
+      // selectedempId: ""
+    }
+    dispatch(updateLiveLeadObjectData(tempPayload))
     // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
     if (!selector.isDSE && !receptionistRole.includes(userData.hrmsRole)){

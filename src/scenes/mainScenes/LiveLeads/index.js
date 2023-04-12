@@ -761,12 +761,15 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null, // selected employes id active-dropdowns APi
       "selectedEmpId": jsonObj.empId
     }
+      if (!selector.saveLiveleadObject?.selectedempId) {
+      dispatch(getNewTargetParametersAllData(payload4)) // TEAM
+    }
     //todo 
       if (!crmRole.includes(jsonObj.hrmsRole)){
         Promise.allSettled([
           //dispatch(getTargetParametersAllData(payload1)),
           dispatch(getTotalTargetParametersData(payload4)), // grand total
-          dispatch(getNewTargetParametersAllData(payload4)), // TEAM
+         
           // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
         ])
           .then(() => { })

@@ -82,6 +82,8 @@ const DropDown = ({
         } else {
           item.selected = true;
         }
+        // item.selected = true;
+       
         selectedItems(item, keyId, index);
       
       }else{

@@ -264,7 +264,18 @@ const CRMFilterscreen = ({ route, navigation }) => {
     
     if(index === 0){
       const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-
+      
+      // const arrayData = data;
+      // const newArray = [];
+      // if (arrayData.length > 0) {
+      //   arrayData.forEach((element) => {
+      //     newArray.push({
+      //       ...element,
+      //       selected: false,
+      //     });
+      //   });
+      // }
+     
 
       setDropDownData(data);
       setSelectedItemIndex(index);
@@ -282,7 +293,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
          
         })
       }
-    
+     
       if (tempFinal.length > 0){
         setDropDownData(tempFinal);
 

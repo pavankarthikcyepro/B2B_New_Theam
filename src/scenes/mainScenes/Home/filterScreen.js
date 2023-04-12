@@ -269,8 +269,21 @@ const FilterScreen = ({ route, navigation }) => {
         dropdownDatas = [...data];
       }
     }
-    
-    setDropDownData([...dropdownDatas]);
+    const arrayData = dropdownDatas;
+    const newArray = [];
+    if (arrayData.length > 0) {
+      arrayData.forEach((element) => {
+        newArray.push({
+          ...element,
+          selected: false,
+        });
+      });
+    }
+    // newDataObj[key] = newArray;
+
+
+    setDropDownData([...newArray]);
+    // setDropDownData([...dropdownDatas]);
     setSelectedItemIndex(index);
     setShowDropDownModel(true);
     setDropDownFrom("EMPLOYEE_TABLE");

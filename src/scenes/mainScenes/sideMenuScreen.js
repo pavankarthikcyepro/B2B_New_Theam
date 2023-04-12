@@ -50,7 +50,7 @@ import {
   GROUP_STR,
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
-import { clearState, updatereceptionistDataObjectData, updateFilterLevelSelectedData as updateFilterLevelSelectedDataHome, updateDealerFilterData as updateDealerFilterDataHome, updateLiveLeadObjectData as updateLiveLeadObjectDataHOme, updateFilterSelectedData as updateFilterSelectedDataHome, updateDealerFilterData_Recep, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedDataReceptionist, updateReceptionistObjectData } from "../../redux/homeReducer";
+import { clearState, updatereceptionistDataObjectData, updateFilterLevelSelectedData as updateFilterLevelSelectedDataHome, updateDealerFilterData as updateDealerFilterDataHome, updateLiveLeadObjectData as updateLiveLeadObjectDataHOme, updateFilterSelectedData as updateFilterSelectedDataHome, updateDealerFilterData_Recep, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedDataReceptionist, updateReceptionistObjectData, updateCrm_employees_drop_down_data, updateFilterIds, updateEmpDropDown_Local } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
@@ -323,6 +323,17 @@ const SideMenuScreen = ({ navigation }) => {
       case 99:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
         navigation.navigate(managerMenu[0]);
+        dispatch(updateFilterLevelSelectedDataHome({}));
+        dispatch(updateDealerFilterDataHome({}));
+        dispatch(updateLiveLeadObjectDataHOme({}));
+        dispatch(updateFilterSelectedDataHome({}));
+        dispatch(updateCrm_employees_drop_down_data({}));
+        dispatch(updateFilterSelectedDataReceptionist({}));
+        dispatch(updateFilterLevelSelectedDataReceptionist({}));
+        dispatch(updateDealerFilterData_Recep({}));
+        dispatch(updateCrm_employees_drop_down_data({}))
+        dispatch(updateFilterIds({}))
+        dispatch(updateEmpDropDown_Local({}))
         break;
       case 100:
         navigation.navigate(

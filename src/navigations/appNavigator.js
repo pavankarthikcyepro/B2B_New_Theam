@@ -25,7 +25,7 @@ import { Colors } from "../styles";
 //   SCHEDULE_FILL,
 //   SCHEDULE_LINE,
 // } from "../assets/svg";
-
+import { EventRegister } from 'react-native-event-listeners'
 import EMS_LINE from "../assets/images/ems_line.svg"; // import SVG
 import HOME_LINE from "../assets/images/home_line.svg"; // import SVG
 import HOME_FILL from "../assets/images/home_fill.svg"; // import SVG
@@ -137,6 +137,7 @@ import DigitalRecepSourceModel from "../scenes/mainScenes/DigitalDashboard/Digit
 import ReceptionistDashboardScreen from "../scenes/mainScenes/ReceptionistDashboard";
 import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashbordSourceModel";
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
+import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -858,7 +859,7 @@ const TabNavigator = ({ navigation, route }) => {
   const nav = useRoute();
   // let routeName = getFocusedRouteNameFromRoute(route);
   let routeName = nav.params.screen;
-
+  const dispatch = useDispatch();
   return (
     <Tab.Navigator
       // initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}
@@ -916,6 +917,30 @@ const TabNavigator = ({ navigation, route }) => {
         name={TabStackIdentifiers.home}
         component={HomeStackNavigator}
         options={{ title: "Home" }}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            // todo manthan 
+            let obj = {
+              startDate: "",
+              endDate: "",
+              levelSelected: "",
+              selectedempId: "",
+              dealerCodes: "",
+            }
+            dispatch(updateDealerFilterData({}))
+            // dispatch(updateFilterSelectedData({}))
+            dispatch(updateLiveLeadObjectData(obj))
+            dispatch(updateFilterSelectedData({}));
+            dispatch(updateReceptionistObjectData({}));
+            dispatch(updateFilterSelectedDataReceptionist({}));
+            dispatch(updateFilterLevelSelectedDataReceptionist({}));
+            dispatch(updateDealerFilterData_Recep({}));
+            dispatch(updateCrm_employees_drop_down_data({}))
+            dispatch(updateFilterIds({}))
+            dispatch(updateEmpDropDown_Local({}))
+            
+          },
+        })}
       />
       <Tab.Screen
         name={TabStackIdentifiers.ems}
@@ -923,6 +948,8 @@ const TabNavigator = ({ navigation, route }) => {
         options={{ title: "EMS" }}
         listeners={({ navigation, route }) => ({
           tabPress: e => {
+            // todo manthan 
+            EventRegister.emit("EMSBOTTOMTAB_CLICKED", true)
             navigation.setParams(
               {
                 screenName: "DEFAULT",

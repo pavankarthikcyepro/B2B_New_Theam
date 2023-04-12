@@ -567,12 +567,16 @@ const ParametersScreen = ({ route }) => {
   }, [selector.isTeam]);
 
   useEffect(() => {
-    allParameters[0] = {
-      ...allParameters[0],
-      targetAchievements: selector.totalParameters,
-    };
-    console.log("manthan ----> 11 ", JSON.stringify(allParameters));
-    setAllParameters(allParameters);
+   
+    
+      allParameters[0] = {
+        ...allParameters[0],
+        targetAchievements: selector.totalParameters,
+      };
+      
+      setAllParameters(allParameters);
+   
+    
   }, [selector.totalParameters]);
 
   useEffect(async () => {
@@ -596,7 +600,7 @@ const ParametersScreen = ({ route }) => {
             targetAchievements: selector.totalParameters,
             tempTargetAchievements: myParams[0]?.targetAchievements,
           };
-          console.log("manthan ----> 22", JSON.stringify(myParams));
+         
           setAllParameters(myParams);
           if (!selector.saveLiveleadObject?.selectedempId) {
             setFilterParameters([])
@@ -735,8 +739,7 @@ const ParametersScreen = ({ route }) => {
           }
           // setFilterParameters([...tempRawData])
           // alert(JSON.stringify(tempRawData))
-          console.log("manthan jjdjdjdjdjd ", JSON.stringify(tempRawData));
-          console.log("manthan ----> 33", JSON.stringify(tempRawData));
+      
           setAllParameters([...tempRawData]);
         }
       );
@@ -852,7 +855,7 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
-    // console.log("manthan jfjfjhf ", JSON.stringify(item));
+    
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -982,7 +985,7 @@ const ParametersScreen = ({ route }) => {
               }
             }
             // alert(JSON.stringify(localData))
-            console.log("manthan ----> 44");
+           
             setAllParameters([...localData]);
           }
         );
@@ -994,7 +997,7 @@ const ParametersScreen = ({ route }) => {
         // }
       }
     } else {
-      console.log("manthan ----> 55");
+      
       setAllParameters([...localData]);
     }
   };
@@ -3683,7 +3686,6 @@ const ParametersScreen = ({ route }) => {
                                                                 }
                                                               }
                                                             }
-                                                            console.log("manthan ----> 66");
                                                             setAllParameters([
                                                               ...localData,
                                                             ]);
@@ -5781,10 +5783,9 @@ const ParametersScreen = ({ route }) => {
                                 navigation.navigate(
                                   AppNavigator.HomeStackIdentifiers.sourceModel,
                                   {
-                                    empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                                    empId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId)  ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
                                     headerTitle: "Grand Total",
-                                    loggedInEmpId:
-                                      filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                                    loggedInEmpId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
                                     type: "TEAM",
                                     moduleType: "live-leads",
                                   }
@@ -5898,9 +5899,9 @@ const ParametersScreen = ({ route }) => {
                       navigation.navigate(
                         AppNavigator.HomeStackIdentifiers.sourceModel,
                         {
-                          empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                          empId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
                           headerTitle: "Source/Model",
-                          loggedInEmpId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                          loggedInEmpId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
                           type: selector.isDSE ? "SELF" : "INSIGHTS",
                           moduleType: "live-leads",
                           orgId: selector.login_employee_details.orgId,

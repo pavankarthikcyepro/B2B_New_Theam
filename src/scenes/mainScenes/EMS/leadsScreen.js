@@ -48,7 +48,7 @@ import { getLeadsList } from "../../../redux/enquiryReducer";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
-
+import { EventRegister } from "react-native-event-listeners";
 const EmployeesRoles = [
   "Reception".toLowerCase(),
   "Tele Caller".toLowerCase(),
@@ -568,8 +568,23 @@ const LeadsScreen = ({ route, navigation }) => {
         dispatch(getSalesHomeDashbaordRedirections(payload))
       }, 2000);
     }
+
+ 
   }
   }, [route.params]);
+
+  useEffect(() => {
+    EventRegister.addEventListener("EMSBOTTOMTAB_CLICKED", (res) => {
+      if (res) {
+       onRefresh();
+      }
+    });
+   
+    return () => {
+      EventRegister.removeEventListener();
+    };
+  }, [])
+  
 
   // useEffect(() => {
   //   navigation.addListener("focus", () => {

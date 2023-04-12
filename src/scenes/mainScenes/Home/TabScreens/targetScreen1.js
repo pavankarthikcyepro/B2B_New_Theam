@@ -831,9 +831,9 @@ const TargetScreen = ({ route }) => {
 
   useEffect(() => {
     
-    if (selector.filterIds?.empSelected[0]){
-      // getDataAfterFilter()
-    }
+    // if (selector.filterIds?.empSelected[0]){
+    //   // getDataAfterFilter()
+    // }
   }, [selector.filterIds])
   
 
