@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  SectionList,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Linking,
-} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getWorkFlow,
-  getEnquiryDetails,
-  getLeadAge,
-  getFollowUPCount,
-  getTestDriveHistoryCount,
-  clearListData,
-} from "../../../redux/taskThreeSixtyReducer";
-import { Colors, GlobalStyle } from "../../../styles";
+import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount, getTestDriveHistoryCount } from "../../../redux/taskThreeSixtyReducer";
+import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
@@ -66,14 +48,14 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    return () => {
+     return () => {
       setPlannedTasks([]);
       dispatch(clearListData());
     };
   }, []);
-
+  
   useEffect(() => {
-    navigation.addListener("focus", () => {
+    navigation.addListener('focus', () => {
       dispatch(getLeadAge(universalId));
       dispatch(getFollowUPCount(universalId));
       dispatch(getTestDriveHistoryCount(universalId));
@@ -275,9 +257,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
           sections={dataForSectionList}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item, index, section }) => {
-            const date = moment(item.taskUpdatedTime)
-              .format("DD/MM/YY h:mm a")
-              .split(" ");
+            const date = moment(item.taskUpdatedTime).format("DD/MM/YY h:mm a").split(" ");
 
             let topBcgColor = Colors.LIGHT_GRAY;
             let bottomBcgColor = Colors.LIGHT_GRAY;

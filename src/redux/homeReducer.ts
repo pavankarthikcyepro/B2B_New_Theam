@@ -358,7 +358,6 @@ export const getEmployeesDropDownData = createAsyncThunk(
   }
 );
 
-
 export const getCRMEmployeesDropDownData = createAsyncThunk(
   "HOME/getCRMEmployeesDropDownData",
   async (payload: any, { rejectWithValue }) => {
@@ -578,7 +577,7 @@ export const getLeaderBoardListWithoutFilter = createAsyncThunk(
   }
 );
 
-export const  getBranchRanksList = createAsyncThunk(
+export const getBranchRanksList = createAsyncThunk(
   "HOME/getBranchRanksList",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(
@@ -863,7 +862,7 @@ export const homeSlice = createSlice({
       contactsCount: 0,
       enquirysCount: 0,
       totalLostCount: 0,
-      fullResponse:"",
+      fullResponse: "",
     },
     receptionistModel: [],
     receptionistSource: [],
@@ -875,7 +874,7 @@ export const homeSlice = createSlice({
       levelSelected: [],
       empSelected: [],
       allEmpSelected: [],
-      employeeName:[]
+      employeeName: [],
     },
     leaderShipFIlterId: [],
     receptionistFilterIds: [],
@@ -890,7 +889,8 @@ export const homeSlice = createSlice({
       levelSelected: "",
       selectedempId: "",
       dealerCodes: "",
-    }
+    },
+    newUpdateAvailable: false,
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -922,6 +922,9 @@ export const homeSlice = createSlice({
     },
     updateIsDSE: (state, action) => {
       state.isDSE = action.payload;
+    },
+    SetNewUpdateAvailable: (state, action) => {
+      state.newUpdateAvailable = action.payload;
     },
     updateTargetData: (state, action) => {
       state.target_parameters_data = action.payload.targetData;
@@ -998,7 +1001,7 @@ export const homeSlice = createSlice({
         contactsCount: 0,
         enquirysCount: 0,
         totalLostCount: 0,
-        fullResponse:""
+        fullResponse: "",
       };
       state.filterIds = {
         startDate: "",
@@ -1006,11 +1009,11 @@ export const homeSlice = createSlice({
         levelSelected: [],
         empSelected: [],
         allEmpSelected: [],
-        employeeName:[]
+        employeeName: [],
       };
       state.leaderShipFIlterId = [];
       state.receptionistFilterIds = [];
-      state.crm_employees_drop_down_data = {}
+      state.crm_employees_drop_down_data = {};
       // state.dealerFilter= { }
     },
   },
@@ -1489,7 +1492,7 @@ export const homeSlice = createSlice({
       .addCase(getSourceModelDataForSelf.rejected, (state, action) => {
         state.isLoading = false;
       })
-      
+
       .addCase(getEventSourceModelForSelf.pending, (state, action) => {
         state.isEventLoading = true;
         state.eventSourceModelForSelf = [];
@@ -1514,7 +1517,7 @@ export const homeSlice = createSlice({
       })
       .addCase(getEventSourceModel.fulfilled, (state, action) => {
         state.isEventLoading = false;
-        
+
         if (action.payload) {
           const tmpArr = action.payload;
           tmpArr.sort(function (a, b) {
@@ -1538,7 +1541,7 @@ export const homeSlice = createSlice({
           contactsCount: dataObj.contactsCount,
           enquirysCount: dataObj.enquirysCount,
           totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
+          fullResponse: dataObj,
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
@@ -1558,7 +1561,7 @@ export const homeSlice = createSlice({
       })
       .addCase(getReceptionistManagerData.rejected, (state, action) => {})
 
-      .addCase(getCRM_ReceptionistManagerData.pending, (state) => { })
+      .addCase(getCRM_ReceptionistManagerData.pending, (state) => {})
       .addCase(getCRM_ReceptionistManagerData.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistData = {
@@ -1569,12 +1572,11 @@ export const homeSlice = createSlice({
           totalDroppedCount: dataObj.totalDroppedCount,
           contactsCount: dataObj.totalPreInquiryCount,
           enquirysCount: dataObj.totalEnquiryCount,
-          totalLostCount: dataObj.totalLostCount  ,
-          fullResponse: dataObj
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj,
         };
       })
-      .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
-
+      .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => {})
 
       .addCase(getReceptionistSource.pending, (state) => {})
       .addCase(getReceptionistSource.fulfilled, (state, action) => {
@@ -1642,7 +1644,13 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
-  updateFilterSelectedData,updateLiveLeadObjectData
+  updateEmpDropDown,
+  updateLeaderShipFilter,
+  updateReceptionistFilterids,
+  updateDealerFilterData,
+  updateFilterLevelSelectedData,
+  updateFilterSelectedData,
+  updateLiveLeadObjectData,
+  SetNewUpdateAvailable,
 } = homeSlice.actions;
 export default homeSlice.reducer;

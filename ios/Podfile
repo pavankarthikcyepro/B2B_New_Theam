@@ -10,6 +10,7 @@ target 'B2B_NEW_THEME' do
     pod 'FirebaseCoreInternal', :modular_headers => true
     pod 'GoogleUtilities', :modular_headers => true
     pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
+    pod 'react-native-maps', :path => '../node_modules/react-native-maps'
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods

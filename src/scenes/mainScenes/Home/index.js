@@ -1070,6 +1070,7 @@ const HomeScreen = ({ route, navigation }) => {
             Authorization: "Bearer " + token,
           })
           .then((res) => {
+            console.log("res", res);
             setLoading(false);
             setTimeout(() => {
               // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
@@ -1078,9 +1079,10 @@ const HomeScreen = ({ route, navigation }) => {
             }, 300);
           })
           .catch((errorMessage) => {
+            console.log(errorMessage);
             setLoading(false);
           });
-      });
+      }).catch((er)=>{console.log(er);});
     }
   };
 

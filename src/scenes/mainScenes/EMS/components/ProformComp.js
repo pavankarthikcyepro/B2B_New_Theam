@@ -3165,6 +3165,7 @@ export const ProformaComp = ({
                         paddingVertical: 0,
                       },
                     ]}
+                    maxLength={2}
                     // disabled= {isDownLoadVisible ? true :false}
                     maxLength={2}
                     disabled={!isInputsEditable()}
