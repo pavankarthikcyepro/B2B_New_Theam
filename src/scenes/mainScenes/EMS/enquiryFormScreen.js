@@ -329,6 +329,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [eventConfigRes, setEventConfigRes] = useState([]);
   const [isVip, setIsVip] = useState(null);
+  const [isHni, setIsHni] = useState(null);
 
   // todo
   useLayoutEffect(() => {
@@ -758,6 +759,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       setShowPreBookingBtn(false);
       setIsVip(
         selector.enquiry_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
+      setIsHni(
+        selector.enquiry_details_response.dmsLeadDto.isHni === "Y"
           ? true
           : false
       );
@@ -1441,6 +1447,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.dmsLeadProducts = carModelsList;
       dmsLeadDto.isVip = isVip ? "Y" : "N";
+      dmsLeadDto.isHni = isHni ? "Y" : "N";
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
       dmsLeadDto.model = primaryModel[0].model;
 
@@ -3904,6 +3911,46 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={"No"}
                     status={isVip === null ? false : !isVip}
                     onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is HNI?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isHni}
+                    onPress={() => setIsHni(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isHni === null ? false : !isHni}
+                    onPress={() => setIsHni(false)}
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
