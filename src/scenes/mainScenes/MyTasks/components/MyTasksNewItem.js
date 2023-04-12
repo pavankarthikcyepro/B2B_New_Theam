@@ -128,6 +128,7 @@ export const MyTaskNewItem = ({
   showTdHvHighLight = false,
   updatedOn,
   IsVip = false,
+  IsHni = false,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -189,7 +190,7 @@ export const MyTaskNewItem = ({
       onPress={onItemPress}
       style={{
         ...styles.section,
-        borderLeftWidth: IsVip ? 3 : 0,
+        borderLeftWidth: IsVip || IsHni ? 3 : 0,
         borderLeftColor: Colors.RED,
       }}
     >
@@ -362,7 +363,13 @@ export const MyTaskNewItem = ({
           )}
         </View>
         <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
-          {IsVip && <Text style={styles.badgeText}>{"VIP"}</Text>}
+          {(IsVip || IsHni) && (
+            <View style={styles.vipHniRow}>
+              {IsVip && <Text style={styles.badgeText}>{"VIP"}</Text>}
+              {IsVip && IsHni && <View style={styles.vipHniDivider} />}
+              {IsHni && <Text style={styles.badgeText}>{"HNI"}</Text>}
+            </View>
+          )}
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
@@ -594,4 +601,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   badgeText: { fontSize: 15, color: Colors.PINK, fontWeight: "bold" },
+  vipHniRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  vipHniDivider: {
+    width: 1.5,
+    height: "80%",
+    backgroundColor: Colors.BLACK,
+    marginHorizontal: 5
+  },
 });
