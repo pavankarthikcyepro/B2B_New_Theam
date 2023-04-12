@@ -731,9 +731,9 @@ const ParametersScreen = ({ route }) => {
               // }
             }
           }
-          setFilterParameters([...tempRawData])
+          // setFilterParameters([...tempRawData])
           // alert(JSON.stringify(tempRawData))
-          // setAllParameters([...tempRawData]);
+          setAllParameters([...tempRawData]);
         }
       );
 

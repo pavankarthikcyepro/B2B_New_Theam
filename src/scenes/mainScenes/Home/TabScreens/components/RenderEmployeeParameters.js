@@ -54,31 +54,35 @@ export const RenderEmployeeParameters = (parameter) => {
       branchId: item.branchId,
     };
     if (isLead) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      setTimeout(() => {
-        navigation.navigate("LEADS", {
-          screenName: "TargetScreenSales",
-          params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
-          moduleType: "",
-          employeeDetail: "",
-          selectedEmpId: item.empId,
-          startDate: "",
-          endDate: "",
-          dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected: [],
-          ignoreSelectedId: false,
-          parentId: "",
-          istotalClick: true,
-          self: item.isOpenInner
-        });
-      }, 1000);
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      // setTimeout(() => {
-      //   navigation.navigate("LEADS", {
-      //     param: param === "INVOICE" ? "Retail" : param,
-      //     employeeDetail: employeeDetail,
-      //     moduleType: "live-leads",
-      //   });
-      // }, 1000);
+      if (moduleType !== "live-leads") {
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "TargetScreenSales",
+            params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: item.empId,
+            startDate: "",
+            endDate: "",
+            dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+            ignoreSelectedId: false,
+            parentId: "",
+            istotalClick: true,
+            self: item.isOpenInner
+          });
+        }, 1000);
+      } else {
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            param: param === "INVOICE" ? "Retail" : param,
+            employeeDetail: employeeDetail,
+            moduleType: "live-leads",
+          });
+        }, 1000);
+      }
+     
     } else if (isContact) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
       setTimeout(() => {
