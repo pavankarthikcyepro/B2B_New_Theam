@@ -491,7 +491,7 @@ const HomeScreen = ({ route, navigation }) => {
         .subtract(0, "months")
         .endOf("month")
         .format(dateFormat);
-
+     
       Promise.all([
         dispatch(getOrganaizationHirarchyList(payload)),
         dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
@@ -506,9 +506,9 @@ const HomeScreen = ({ route, navigation }) => {
           getDealerRanking({
             payload: {
               endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
+              loggedInEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds.empSelected[0] : jsonObj.empId,
               startDate: monthFirstDate,
-              levelSelected: null,
+              levelSelected: selector.filterIds?.levelSelected ? selector.filterIds?.levelSelected :null,
               pageNo: 0,
               size: 0,
             },
@@ -520,9 +520,9 @@ const HomeScreen = ({ route, navigation }) => {
           getGroupDealerRanking({
             payload: {
               endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
+              loggedInEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds.empSelected[0] : jsonObj.empId,
               startDate: monthFirstDate,
-              levelSelected: null,
+              levelSelected: selector.filterIds?.levelSelected ? selector.filterIds?.levelSelected :null,
               pageNo: 0,
               size: 0,
             },
