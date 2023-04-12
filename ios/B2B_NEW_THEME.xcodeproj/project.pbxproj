@@ -242,8 +242,6 @@
 			dependencies = (
 			);
 			name = B2B_NEW_THEME;
-			packageProductDependencies = (
-			);
 			productName = B2B_NEW_THEME;
 			productReference = 13B07F961A680F5B00A75B9A /* B2B_NEW_THEME.app */;
 			productType = "com.apple.product-type.application";
@@ -274,8 +272,6 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
-			packageReferences = (
-			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
