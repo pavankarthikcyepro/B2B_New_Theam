@@ -87,6 +87,12 @@ const DropDown = ({
         selectedItems(item, keyId, index);
       
       }else{
+        // if (item.selected != undefined) {
+        //   item.selected = !item.selected;
+        // } else {
+        //   item.selected = true;
+        // }
+        item.selected = true;
        
         selectedItems(item, keyId, index);
       }

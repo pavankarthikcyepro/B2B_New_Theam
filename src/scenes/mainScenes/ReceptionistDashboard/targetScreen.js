@@ -30,7 +30,7 @@ import {
   updateEmployeeDataBasedOnDelegate,
   updatereceptionistDataObjectData,
 } from "../../../redux/homeReducer";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../navigations";
 import { IconButton } from "react-native-paper";
 import { client } from "../../../networking/client";
@@ -119,7 +119,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
   const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] =
     useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const isFocused = useIsFocused();
   const [branches, setBranches] = useState([]);
   const [togglePercentage, setTogglePercentage] = useState(0);
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
@@ -715,7 +715,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
     getDataBasedOnfilter()
 
-  }, [selector.saveReceptionistfilterObj])
+  }, [selector.saveReceptionistfilterObj, isFocused])
 
   const getDataBasedOnfilter = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -3390,9 +3390,23 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                   >
                     <View>
                       <View key={"headers"} style={styles.view3}>
-                        <View
+                        {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
-                        ></View>
+                        ></View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          >
+                            <Text style={{
+                              fontSize: 9,
+                              color: Colors.RED,
+                              fontWeight: "600",
+                              alignSelf: "center",
+                              textAlign: "center",
+
+                              marginTop: 10
+                            }}>Employee name</Text>
+
+                          </View>
                         <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
@@ -3549,6 +3563,61 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           marginTop: 20,
                         }}
                       >
+                          <View style={{ alignItems: "flex-end" }}>
+                            <SourceModelView
+                              onClick={() => {
+                                if (selector.saveReceptionistfilterObj.selectedempId) {
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                    {
+                                      empId: selector.saveReceptionistfilterObj.selectedempId[0],
+                                      loggedInEmpId: selector.saveReceptionistfilterObj.selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "ReceptionistDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: selector.saveReceptionistfilterObj?.selectedDesignation[0],
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true
+                                    }
+                                  );
+                                } else {
+                                  if (userData.hrmsRole === "CRM") {
+                                    navigation.navigate("RECEP_SOURCE_MODEL_RECEPTIONIST", {
+                                      empId: userData.empId,
+                                      headerTitle: "Source/Model",
+                                      loggedInEmpId: userData.empId,
+                                      orgId: userData.orgId,
+                                      role: "CRM",
+                                      moduleType: "ReceptionistDashboard",
+                                      dashboardType: "reception",
+                                      self: false
+                                    });
+                                  } else {
+                                    navigation.navigate("RECEP_SOURCE_MODEL_RECEPTIONIST", {
+                                      empId: userData.empId,
+                                      headerTitle: "Source/Model",
+                                      loggedInEmpId: userData.empId,
+                                      orgId: userData.orgId,
+                                      role: "xrole",
+                                      moduleType: "ReceptionistDashboard",
+                                    });
+                                  }
+
+                                }
+
+
+                              }}
+                              style={{
+                                transform: [
+                                  { translateX: translation },
+                                ],
+                              }}
+                            />
+                          </View>
                         <View
                           style={{
                             flexDirection: "row",
@@ -3697,9 +3766,23 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                 >
                   <View>
                     <View key={"headers"} style={styles.view3}>
-                      <View
+                      {/* <View
                         style={{ width: 100, height: 20, marginRight: 5 }}
-                      ></View>
+                      ></View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          >
+                            <Text style={{
+                              fontSize: 9,
+                              color: Colors.RED,
+                              fontWeight: "600",
+                              alignSelf: "center",
+                              textAlign: "center",
+
+                              marginTop: 10
+                            }}>Employee name</Text>
+
+                          </View>
                       <View style={styles.view4}>
                         {toggleParamsMetaData.map((param) => {
                           return (
@@ -3857,6 +3940,61 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         marginTop: 20,
                       }}
                     >
+                          <View style={{ alignItems: "flex-end" }}>
+                            <SourceModelView
+                              onClick={() => {
+                                if (selector.saveReceptionistfilterObj.selectedempId) {
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                    {
+                                      empId: selector.saveReceptionistfilterObj.selectedempId[0],
+                                      loggedInEmpId: selector.saveReceptionistfilterObj.selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "ReceptionistDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: selector.saveReceptionistfilterObj?.selectedDesignation[0],
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true
+                                    }
+                                  );
+                                } else {
+                                  if (userData.hrmsRole === "CRM") {
+                                    navigation.navigate("RECEP_SOURCE_MODEL_RECEPTIONIST", {
+                                      empId: userData.empId,
+                                      headerTitle: "Source/Model",
+                                      loggedInEmpId: userData.empId,
+                                      orgId: userData.orgId,
+                                      role: "CRM",
+                                      moduleType: "ReceptionistDashboard",
+                                      dashboardType: "reception",
+                                      self: false
+                                    });
+                                  } else {
+                                    navigation.navigate("RECEP_SOURCE_MODEL_RECEPTIONIST", {
+                                      empId: userData.empId,
+                                      headerTitle: "Source/Model",
+                                      loggedInEmpId: userData.empId,
+                                      orgId: userData.orgId,
+                                      role: "xrole",
+                                      moduleType: "ReceptionistDashboard",
+                                    });
+                                  }
+
+                                }
+                         
+
+                              }}
+                              style={{
+                                transform: [
+                                  { translateX: translation },
+                                ],
+                              }}
+                            />
+                          </View>
                       <View
                         style={{
                           flexDirection: "row",

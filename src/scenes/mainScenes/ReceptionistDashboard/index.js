@@ -979,6 +979,16 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       navigation.navigate("PRE_ENQUIRY", {
+        screenName: "reception",
+        params: params,
+        moduleType: "",
+        employeeDetail: "",
+        selectedEmpId: "",
+        startDate: selector.saveReceptionistfilterObj.startDate,
+        endDate: selector.saveReceptionistfilterObj.endDate,
+        dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
+        ignoreSelectedId: "",
+        parentId: "",
         // param: param === "INVOICE" ? "Retail" : param,
         // moduleType: "home",
         // employeeDetail: "",
@@ -1025,14 +1035,14 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                   if (selector.saveReceptionistfilterObj?.selectedDesignation
                     && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
                     if (selector.receptionistData_ReceptionistDashboard_xrole?.contactsCount > 0) {
-                      navigateToContact()
+                      navigateToContact("Contact")
                     }
                   } else {
                     
                       if (userData.hrmsRole === "CRM" && selector.receptionistData_CRM.contactsCount > 0) {
-                        navigateToContact()
+                        navigateToContact("Contact")
                       }else if (selector.receptionistDataV2.contactsCount > 0) {
-                        navigateToContact()
+                        navigateToContact("Contact")
                       }
                     
                     

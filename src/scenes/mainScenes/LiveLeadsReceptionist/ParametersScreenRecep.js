@@ -2796,22 +2796,58 @@ const ParametersScreenRecep = ({ route }) => {
         <Pressable
           style={{ alignSelf: "flex-end" }}
           onPress={() => {
-            navigation.navigate(
-              "RECEP_SOURCE_MODEL_CRM_RECEP",
-              {
-                empId: selector.login_employee_details.empId,
-                headerTitle: "Grand Total",
-                loggedInEmpId: selector.login_employee_details.empId,
-                type: "TEAM",
-                moduleType: "live-leads",
-                orgId: userData.orgId,
-                role: userData.hrmsRole,
-                branchList: userData.branchs.map(
-                  (a) => a.branchId
-                ),
-                self: false
-              }
-            );
+            // navigation.navigate(
+            //   "RECEP_SOURCE_MODEL_CRM_RECEP",
+            //   {
+            //     empId: selector.login_employee_details.empId,
+            //     headerTitle: "Grand Total",
+            //     loggedInEmpId: selector.login_employee_details.empId,
+            //     type: "TEAM",
+            //     moduleType: "live-leads",
+            //     orgId: userData.orgId,
+            //     role: userData.hrmsRole,
+            //     branchList: userData.branchs.map(
+            //       (a) => a.branchId
+            //     ),
+            //     self: false
+            //   }
+            // );
+            if (CRM_filterParameters.length > 0) {
+
+              handleSourceModalNavigation(CRM_filterParameters[0], CRM_filterParameters[0].emp_id)
+              // navigation.navigate(
+              //   "RECEP_SOURCE_MODEL_CRM_RECEP",
+              //   {
+              //     empId: CRM_filterParameters[0].emp_id,
+              //     headerTitle: "Source/Model",
+              //     loggedInEmpId: CRM_filterParameters[0].emp_id,
+              //     type: "TEAM",
+              //     moduleType: "live-leads",
+              //     orgId: userData.orgId,
+              //     role: CRM_filterParameters[0].roleName,
+              //     branchList: userData.branchs.map(
+              //       (a) => a.branchId
+              //     ),
+              //   }
+              // );
+            } else {
+              navigation.navigate(
+                "RECEP_SOURCE_MODEL_CRM_RECEP",
+                {
+                  empId: selector.login_employee_details.empId,
+                  headerTitle: "Source/Model",
+                  loggedInEmpId: selector.login_employee_details.empId,
+                  type: "TEAM",
+                  moduleType: "live-leads",
+                  orgId: userData.orgId,
+                  role: userData.hrmsRole,
+                  branchList: userData.branchs.map(
+                    (a) => a.branchId
+                  ),
+                  self: false,
+                }
+              );
+            }
           }}
         >
           <Text
@@ -2823,7 +2859,7 @@ const ParametersScreenRecep = ({ route }) => {
               paddingRight: 12,
             }}
           >
-            {/* Source/Model */}
+            Source/Model
           </Text>
         </Pressable>
 
@@ -2976,9 +3012,23 @@ const ParametersScreenRecep = ({ route }) => {
                       borderBottomColor: Colors.GRAY,
                     }}
                   >
-                    <View
+                    {/* <View
                       style={{ width: 70, height: 20, marginRight: 5 }}
-                    ></View>
+                    ></View> */}
+                      <View
+                        style={{ width: 70, height: 20, marginRight: 5, alignItems: "center" }}
+                      >
+                        <Text style={{
+                          fontSize: 9,
+                          color: Colors.RED,
+                          fontWeight: "600",
+                          alignSelf: "center",
+                          textAlign: "center",
+
+                          marginTop: 10
+                        }}>Employee name</Text>
+
+                      </View>
                     <View
                       style={{ width: "100%", height: 20, flexDirection: "row" }}
                     >

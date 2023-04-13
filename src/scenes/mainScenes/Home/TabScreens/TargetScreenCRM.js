@@ -3008,12 +3008,23 @@ const TargetScreenCRM = ({ route }) => {
                     bounces={false}
                     scrollEventThrottle={16}
                   >
-                    <View>
+                    <View >
                       <View key={"headers"} style={styles.view3}>
                         <View
-                          style={{ width: 100, height: 20, marginRight: 5 }}
-                        ></View>
-                        <View style={styles.view4}>
+                          style={{ width: 100, height: 20, marginRight: 5,alignItems:"center" }}
+                        >
+                          <Text style={{
+                            fontSize:12,
+                            color:Colors.RED,
+                            fontWeight:"600",
+                            alignSelf:"center",
+                            textAlign:"center",
+
+                            marginTop:6
+                            }}>Employee name</Text>
+
+                        </View>
+                            <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
                               <View
@@ -3065,6 +3076,26 @@ const TargetScreenCRM = ({ route }) => {
                           marginBottom:20
                         }}
                       >
+                        <View style={{alignItems:"flex-end"}}>
+                            <SourceModelView
+                              onClick={() => {
+
+                                navigation.navigate("RECEP_SOURCE_MODEL", {
+                                  empId: userData.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId: userData.empId,
+                                  orgId: userData.orgId,
+                                  role: userData.hrmsRole,
+                                });
+
+                              }}
+                              style={{
+                                transform: [
+                                  { translateX: translation },
+                                ],
+                              }}
+                            />
+                        </View>
                         <View
                           style={{
                             flexDirection: "row",

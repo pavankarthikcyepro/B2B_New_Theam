@@ -1142,6 +1142,16 @@ const HomeScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       navigation.navigate("PRE_ENQUIRY", {
+        screenName: userData.hrmsRole === "Reception" ? "reception" : "digital",
+        params: params,
+        moduleType: "",
+        employeeDetail: "",
+        selectedEmpId: !_.isEmpty(selector.saveCRMfilterObj.selectedempId) ? selector.saveCRMfilterObj.selectedempId[0] : "",
+        startDate: selector.saveCRMfilterObj.startDate,
+        endDate: selector.saveCRMfilterObj.endDate,
+        dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+        ignoreSelectedId: "",
+        parentId: "",
         // param: param === "INVOICE" ? "Retail" : param,
         // moduleType: "home",
         // employeeDetail: "",
@@ -1498,7 +1508,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.contactsCount > 0 &&
-                    navigateToContact();
+                    navigateToContact("Contact");
                 }}
                 style={styles.view8}
               >
@@ -1914,7 +1924,7 @@ const HomeScreen = ({ route, navigation }) => {
                   <TouchableOpacity
                     onPress={() => {
                       selector.receptionistData.contactsCount > 0 &&
-                        navigateToContact();
+                        navigateToContact("Contact");
                     }}
                     style={styles.view8}
                   >

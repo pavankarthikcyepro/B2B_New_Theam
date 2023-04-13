@@ -334,6 +334,7 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateCrm_employees_drop_down_data({}))
         dispatch(updateFilterIds({}))
         dispatch(updateEmpDropDown_Local({}))
+        
         break;
       case 100:
         navigation.navigate(
@@ -493,6 +494,16 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterLevelSelectedDataReceptionist({}))
     dispatch(updateFilterSelectedDataReceptionist({}))
     dispatch(updateReceptionistObjectData({}))
+    
+    dispatch(updateFilterLevelSelectedDataHome({}));
+    dispatch(updateDealerFilterDataHome({}));
+    dispatch(updateLiveLeadObjectDataHOme({}));
+    dispatch(updateFilterSelectedDataHome({}));
+    dispatch(updateFilterSelectedDataReceptionist({}));
+    dispatch(updateCrm_employees_drop_down_data({}))
+    dispatch(updateFilterIds({}))
+    dispatch(updateEmpDropDown_Local({}))
+
     signOut();
   };
 

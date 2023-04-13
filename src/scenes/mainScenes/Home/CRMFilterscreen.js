@@ -265,18 +265,21 @@ const CRMFilterscreen = ({ route, navigation }) => {
     if(index === 0){
       const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
       
-      // const arrayData = data;
-      // const newArray = [];
-      // if (arrayData.length > 0) {
-      //   arrayData.forEach((element) => {
-      //     newArray.push({
-      //       ...element,
-      //       selected: false,
-      //     });
-      //   });
-      // }
-     
-
+      const arrayData = data;
+      
+      const newArray = [];
+      if (arrayData.length > 0) {
+        arrayData.forEach((element) => {
+          
+          newArray.push({
+            ...element,
+            selected:false,
+          });
+        });
+      }
+      
+      
+      // setDropDownData(newArray);
       setDropDownData(data);
       setSelectedItemIndex(index);
       setShowDropDownModel(true);
@@ -537,21 +540,39 @@ const CRMFilterscreen = ({ route, navigation }) => {
     // clearBtnForEmployeeData();
     // dispatch(updateFilterSelectedData({}))
     // dispatch(updateLiveLeadObjectData({}))
+    
   
-   
- 
+    // let temparr22 = dropDownData.map((item, i) => (
+
+    //   {...item, selected : false}
+    // ))
+
    
     if(index === 0 ){ 
       
-      let temparr = dropDownData.map((item,i) =>{
-         
-       index1===i? item.selected = true : item.selected = false
-      })
-      let temparr2 = selectEmployeeData.map((item, i) => {
+      // let temparr = temparr22.map((item,i) =>
+       
+      //   index1 === i ? { ...item, selected: true } : { ...item, selected: false }
+      // )
+      // let temparr2 = selectEmployeeData.map((item, i) => {
         
-        item.selected = false;
+      //   item.selected = false;
       
-      })
+      // })
+    
+      // setDropDownData(temparr)
+      // let key = employeeTitleNameList[index];
+      // // const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
+      // const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
+      // let objIndex = newTotalDataObjLocal[key].findIndex(
+      //   (obj) => obj.id == data.id
+      // );
+      // const a = newTotalDataObjLocal[key].map((data, index) =>
+      //   index === objIndex
+      //     ? { ...newTotalDataObjLocal[key][index], selected: true }
+      //     : { ...newTotalDataObjLocal[key][index], selected: false }
+      // );
+      // newTotalDataObjLocal[key] = a;
       // let arrayData = [];
       // for (let key in employeeDropDownDataLocal) {
       //   arrayData = employeeDropDownDataLocal[key].map((element,i) => {
@@ -564,6 +585,17 @@ const CRMFilterscreen = ({ route, navigation }) => {
      
 
       // setEmployeeDropDownDataLocal(newDataObj);
+
+
+      let temparr = dropDownData.map((item, i) => {
+
+        index1 === i ? item.selected = true : item.selected = false
+      })
+      let temparr2 = selectEmployeeData.map((item, i) => {
+
+        item.selected = false;
+
+      })
     }else{
    
       // let key = employeeTitleNameList[index];
@@ -882,9 +914,10 @@ const CRMFilterscreen = ({ route, navigation }) => {
         setEmloyeeTitleNameList(names);
         if (!isEmpty(selector.filterSelectedData)) {
           const temp = { ...selector.filterSelectedData };
+         
           setEmployeeDropDownDataLocal(temp);
         } else {
-          
+         
           setEmployeeDropDownDataLocal(newDataObj);
         }
         setIsLoading(false);
@@ -920,6 +953,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
   
     dispatch(updateFilterSelectedData({}))
     dispatch(updateLiveLeadObjectData(obj))
+   
     setEmployeeDropDownDataLocal(newDataObj);
   };
 
@@ -1028,6 +1062,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
           }
           setShowDropDownModel(false);
         }}
+        
       />
       <DatePickerComponent
         visible={showDatePicker}
@@ -1190,7 +1225,7 @@ const CRMFilterscreen = ({ route, navigation }) => {
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
                             const data = employeeDropDownDataLocal[item];
-                         
+                          
                             let selectedNames = "";
                             // if (item) {
                             //   for (let i = 1; i < employeeTitleNameList.length; i++) {

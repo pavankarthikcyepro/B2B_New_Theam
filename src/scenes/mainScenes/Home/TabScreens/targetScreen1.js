@@ -1103,9 +1103,23 @@ const TargetScreen = ({ route }) => {
                   >
                     <View>
                       <View key={"headers"} style={styles.view3}>
-                        <View
+                        {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
-                        ></View>
+                        ></View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          >
+                            <Text style={{
+                              fontSize: 10,
+                              color: Colors.RED,
+                              fontWeight: "600",
+                              alignSelf: "center",
+                              textAlign: "center",
+
+                              marginTop: 10
+                            }}>Employee name</Text>
+
+                          </View>
                         <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
@@ -1138,7 +1152,7 @@ const TargetScreen = ({ route }) => {
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
-                            console.log("item -> ", item);
+                            
                             return (
                               <View key={`${item.empName} ${index}`}>
                                 <View
@@ -1442,9 +1456,23 @@ const TargetScreen = ({ route }) => {
                   <View>
                     {/* TOP Header view */}
                     <View key={"headers"} style={styles.view3}>
-                      <View
+                      {/* <View
                         style={{ width: 100, height: 20, marginRight: 5 }}
-                      ></View>
+                      ></View> */}
+                        <View
+                          style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                        >
+                          <Text style={{
+                            fontSize: 10,
+                            color: Colors.RED,
+                            fontWeight: "600",
+                            alignSelf: "center",
+                            textAlign: "center",
+
+                            marginTop: 10
+                          }}>Employee name</Text>
+
+                        </View>
                       <View style={styles.view4}>
                         {toggleParamsMetaData.map((param) => {
                           return (

@@ -31,7 +31,7 @@ import {
   updateEmployeeDataBasedOnDelegate,
   updatereceptionistDataObjectData,
 } from "../../../redux/homeReducer";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../navigations";
 import { IconButton } from "react-native-paper";
 import { client } from "../../../networking/client";
@@ -78,7 +78,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-
+  const isFocused = useIsFocused();
   const [retailData, setRetailData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [enqData, setEnqData] = useState(null);
@@ -549,7 +549,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       let total = [totalKey1, totalKey2, totalKey3, totalKey4];
       setTotalofTeam(total);
     }
-
+    
   }, [selector.receptionistData])
 
   useEffect(() => {
@@ -564,7 +564,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       let total = [totalKey1, totalKey2, totalKey3, totalKey4];
       setTotalofTeam(total);
     }
-  
+    
    
   }, [selector.receptionistDataDigitalFilter])
 
@@ -581,7 +581,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       setTotalofTeam(total);
     }
 
-
+    
   }, [selector.receptionistDataDigitalFilter_CRE])
 
   
@@ -590,7 +590,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     
     getDataBasedOnfilter()
     
-  }, [selector.saveCRMfilterObj])
+  }, [selector.saveCRMfilterObj, isFocused])
   
   const getDataBasedOnfilter = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -2938,25 +2938,72 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
     let tempArr = [];
     let tempInside = [];
-    let firstLevelData = selector.receptionistData?.fullResponse.CRM.map(item => {
-      if (item.emp_id === data.emp_id) {
-        let temp = item.data.manager.filter(item2 => item2.emp_id !== data.emp_id)
-        let temp2 = item.data.manager.filter(item3 => {
-          if (item3.emp_id === data.emp_id) {
 
-            tempInside = item3.salesconsultant.filter(item4 => item4.emp_id !== data.emp_id);
+    let data2 = selector.receptionistDataDigitalFilter.fullResponse?.manager
+    if (data2?.length > 0) {
+      let otherUserData = data2.filter((item) => {
+        return item.emp_id !== data.emp_id
+      })
+      let consultantDataForCRM = data2.filter((item) => {
+        return item.emp_id === data.emp_id
+      })
 
-          }
+
+      if (consultantDataForCRM.length > 0) {
+
+        consultantDataForCRM.map((item) => {
+          item.salesconsultant.forEach(element => {
+            if (element.emp_id !== data.emp_id) {
+              otherUserData.push(element)
+            }
+
+          });
+
         })
-        
-        tempArr.push(...temp)
-        Array.prototype.push.apply(tempArr, tempInside);
       }
 
+      setcrmSecondLevelData([...otherUserData])
+      // setSecondLevelCRMdata([...otherUserData])
+    }
 
-    })
+    // let firstLevelData = selector.receptionistDataDigitalFilter?.fullResponse.manager.map(item => {
+    //   if (item.emp_id === data.emp_id) {
+    //     let temp = item.filter(item2 => item2.emp_id !== data.emp_id)
+    //     let temp2 = item.filter(item3 => {
+    //       if (item3.emp_id === data.emp_id) {
+
+    //         tempInside = item3.salesconsultant.filter(item4 => item4.emp_id !== data.emp_id);
+
+    //       }
+    //     })
+
+    //     tempArr.push(...temp)
+    //     Array.prototype.push.apply(tempArr, tempInside);
+    //   }
+
+
+    // })
+
+
+    // let firstLevelData = selector.receptionistData?.fullResponse.CRM.map(item => {
+    //   if (item.emp_id === data.emp_id) {
+    //     let temp = item.data.manager.filter(item2 => item2.emp_id !== data.emp_id)
+    //     let temp2 = item.data.manager.filter(item3 => {
+    //       if (item3.emp_id === data.emp_id) {
+
+    //         tempInside = item3.salesconsultant.filter(item4 => item4.emp_id !== data.emp_id);
+
+    //       }
+    //     })
+        
+    //     tempArr.push(...temp)
+    //     Array.prototype.push.apply(tempArr, tempInside);
+    //   }
+
+
+    // })
     
-    setcrmSecondLevelData(tempArr)
+    // setcrmSecondLevelData(tempArr)
   }
 
   const renderCRMTreeChildFilter = () => {
@@ -3716,9 +3763,23 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                   >
                     <View>
                       <View key={"headers"} style={styles.view3}>
-                        <View
+                        {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
-                        ></View>
+                        ></View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          >
+                            <Text style={{
+                              fontSize: 9,
+                              color: Colors.RED,
+                              fontWeight: "600",
+                              alignSelf: "center",
+                              textAlign: "center",
+
+                              marginTop: 10
+                            }}>Employee name</Text>
+
+                          </View>
                         <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
@@ -3875,6 +3936,68 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           marginTop: 20,
                         }}
                       >
+                          <View style={{ alignItems: "flex-end" }}>
+                            <SourceModelView
+                              onClick={() => {
+
+                                if (selector.saveCRMfilterObj.selectedempId) {
+                                  if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                                    navigation.navigate(
+                                      "RECEP_SOURCE_MODEL_DEGITAL",
+                                      {
+                                        empId: selector.saveCRMfilterObj.selectedempId[0],
+                                        loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+                                        // type: "TEAM",
+                                        moduleType: "DigitalDashboard",
+                                        headerTitle: "Source/Model",
+                                        orgId: userData.orgId,
+                                        role: "CRM",
+                                        branchList: userData.branchs.map(
+                                          (a) => a.branchId
+                                        ),
+                                        // empList: selector.saveCRMfilterObj.selectedempId,
+                                        self: true
+                                      }
+                                    );
+                                  } else {
+                                    navigation.navigate(
+                                      "RECEP_SOURCE_MODEL_DEGITAL",
+                                      {
+                                        empId: selector.saveCRMfilterObj.selectedempId[0],
+                                        loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+                                        // type: "TEAM",
+                                        moduleType: "DigitalDashboard",
+                                        headerTitle: "Source/Model",
+                                        orgId: userData.orgId,
+                                        role: selector.saveCRMfilterObj?.selectedDesignation[0],
+                                        branchList: userData.branchs.map(
+                                          (a) => a.branchId
+                                        ),
+                                        // empList: selector.saveCRMfilterObj.selectedempId,
+                                        self: true
+                                      }
+                                    );
+                                    // handleSourceModalNavigation(item, "", [], "CRM", true)
+                                  }
+                                } else {
+                                  navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
+                                    empId: userData.empId,
+                                    headerTitle: "Source/Model",
+                                    loggedInEmpId: userData.empId,
+                                    orgId: userData.orgId,
+                                    role: "xrole",
+                                    moduleType: "DigitalDashboard",
+                                  });
+                                }
+
+                              }}
+                              style={{
+                                transform: [
+                                  { translateX: translation },
+                                ],
+                              }}
+                            />
+                          </View>
                         <View
                           style={{
                             flexDirection: "row",

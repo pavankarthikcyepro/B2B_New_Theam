@@ -25,6 +25,7 @@ import { getLeadsList, getStatus } from '../../../redux/leaddropReducer';
 import { useIsFocused } from '@react-navigation/native';
 import AnimLoaderComp from '../../../components/AnimLoaderComp';
 import { getLiveleadsReceptinoist } from '../../../redux/enquiryReducer';
+import { EventRegister } from 'react-native-event-listeners';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
@@ -156,13 +157,19 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           const { empId } = route.params.employeeDetail;
           employeeId = empId;
         }
+        let dashboardType = route?.params?.screenName
+        if (route && route.params && route.params.selectedEmpId) {
+          employeeId = route.params.selectedEmpId
+        }
+       
         // setEmployeeId(jsonObj.empId);
         // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
        
         getPreEnquiryListFromServer(
           employeeId,
           lastMonthFirstDateLocal,
-          currentDateLocal
+          currentDateLocal,
+          dashboardType
         );
       }
     };
@@ -242,6 +249,21 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         }
     }, [appSelector.isSearch])
 
+
+  useEffect(() => {
+    EventRegister.addEventListener("EMSBOTTOMTAB_CLICKED", (res) => {
+      if (res) {
+        onRefreshBringData();
+      }
+    });
+
+    return () => {
+      EventRegister.removeEventListener();
+    };
+  }, [])
+
+    
+
     const getPreEnquiryListFromDB = () => {
         const data = realm.objects('PRE_ENQUIRY_TABLE');
         dispatch(setPreEnquiryList(JSON.stringify(data)));
@@ -259,8 +281,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         // }
     }
 
-    const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
-        const payload = getPayloadData(empId, startDate, endDate, 0);
+    const getPreEnquiryListFromServer = (empId, startDate, endDate,dashboardType = "") => {
+        const payload = getPayloadData(empId, startDate, endDate, 0,[],[],[],dashboardType);
      
         dispatch(getPreEnquiryData(payload));
     }
@@ -417,7 +439,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     }
 
 
-    const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+    const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = [],dashboardType = "") => {
         let payload = new Object();
         payload = {
             "startdate": startDate,
@@ -429,6 +451,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "status": "PREENQUIRY",
             "offset": offSet,
           "limit": route?.params?.moduleType === "live-leads"? 50000 : 50,
+          "dashboardType": dashboardType
         }
         return payload;
     }
@@ -530,6 +553,24 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         dispatch(updateSearchKey(query));
         dispatch(updateIsSearch(true));
     };
+
+    const onRefreshBringData = async() =>{
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+      
+        getPreEnquiryListFromServer(
+          jsonObj.empId,
+          lastMonthFirstDate,
+          lastMonthLastDate
+        )
+        setFromDateState(lastMonthFirstDate);
+        setToDateState(lastMonthLastDate)
+      }
+      
+    }
 
     const renderItem=({item,index})=>{
       return (

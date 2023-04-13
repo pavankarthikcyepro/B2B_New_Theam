@@ -1012,6 +1012,16 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       navigation.navigate("PRE_ENQUIRY", {
+        screenName: "digital",
+        params: params,
+        moduleType: "",
+        employeeDetail: "",
+        selectedEmpId: !_.isEmpty(selector.saveCRMfilterObj.selectedempId) ? selector.saveCRMfilterObj.selectedempId[0] : "",
+        startDate: selector.saveCRMfilterObj.startDate,
+        endDate: selector.saveCRMfilterObj.endDate,
+        dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+        ignoreSelectedId: "",
+        parentId: "",
         // param: param === "INVOICE" ? "Retail" : param,
         // moduleType: "home",
         // employeeDetail: "",
@@ -1055,20 +1065,27 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             <View style={styles.view7}>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                  
+                  if (!_.isEmpty(selector.saveCRMfilterObj.selectedempId) && !_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
+                  
+                    
                     if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+                      
                       if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerPreInquiryCount > 0) {
-                        navigateToContact();
+                       
+                        navigateToContact("Contact");
                       }
                     } else {
                       if (selector?.receptionistDataDigitalFilter_CRE?.contactsCount > 0) {
-                        navigateToContact();
+                      
+                        navigateToContact("Contact");
                       }
                     }
 
                   } else {
                     if (selector.receptionistData.contactsCount > 0) {
-                      navigateToContact();
+                  
+                      navigateToContact("Contact");
                     }
                   }
                 }}
@@ -1089,7 +1106,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
                     if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
                       if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount > 0) {
                         navigateToEMS("ENQUIRY", "", [userData.empId]);
@@ -1125,7 +1142,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
                     if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"){
                       if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount > 0) {
                         navigateToEMS("BOOKING", "", [userData.empId]);
@@ -1160,7 +1177,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
                     if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
                       if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount > 0) {
                         navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
@@ -1193,7 +1210,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveReceptionistfilterObj?.selectedDesignation) {
+                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
                     if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
                       if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount > 0) {
                         navigateToDropAnalysis(userData.empId, false, "", false, true)

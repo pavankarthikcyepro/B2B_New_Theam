@@ -966,7 +966,7 @@ const ListComponent = ({ route, navigation }) => {
             // }else{
               // let payload = {};
               // if (selectedFilterLocal !== "ALL") {
-              //   console.log("manthan 000 or", route.params.selectedEmpId);
+      
               //   payload = {
               //     orgId: jsonObj.orgId,
               //     loggedInEmpId: jsonObj.empId,
@@ -979,7 +979,7 @@ const ListComponent = ({ route, navigation }) => {
               //     branchCodes: selector.filterIds?.dealerCodes || [],
               //   };
               // } else {
-              //   console.log("manthan 111 or");
+              //   
               //   payload = {
               //     orgId: jsonObj.orgId,
               //     loggedInEmpId:  jsonObj.empId,
