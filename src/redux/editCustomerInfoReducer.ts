@@ -3,6 +3,7 @@ import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import moment from "moment";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
+import _ from "lodash";
 
 interface DropDownModelNew {
   key: string;
@@ -40,6 +41,18 @@ export const getSourceTypesApi = createAsyncThunk(
   }
 );
 
+export const getVehicleInfo = createAsyncThunk(
+  "EDIT_CUSTOMER_INFO_SLICE/getVehicleInfo",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_VEHICLE_INFO(orgId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const initialState = {
   showDatepicker: false,
   // Customer Info
@@ -69,6 +82,17 @@ const initialState = {
   district: "",
   state: "",
   isAddressSet: false,
+  // Vehicle Info
+  vehicleMaker: "",
+  vehicleMakerList: [],
+  vehicleModel: "",
+  vehicleModelList: [],
+  vehicleVariant: "",
+  vehicleVariantList: [],
+  vehicleTransmissionType: "",
+  vehicleFuelType: "",
+  vehicleColor: "",
+  vehicleColorList: "",
 };
 
 const editCustomerInfoReducer = createSlice({
@@ -131,6 +155,31 @@ const editCustomerInfoReducer = createSlice({
           break;
         case "SUB_SOURCE_TYPE":
           state.subSourceType = value;
+          break;
+
+        // Vehicle Info
+        case "VEHICLE_MAKER":
+          state.vehicleMaker = value;
+          break;
+        case "VEHICLE_MODEL":
+          state.vehicleModel = value;
+          state.vehicleVariant = "";
+          state.vehicleTransmissionType = "";
+          state.vehicleFuelType = "";
+          state.vehicleColor = "";
+          break;
+        case "VEHICLE_VARIANT":
+          state.vehicleVariant = value;
+          state.vehicleColor = "";
+          break;
+        case "VEHICLE_COLOR":
+          state.vehicleColor = value;
+          break;
+        case "VEHICLE_TRANSMISSION_TYPE":
+          state.vehicleTransmissionType = value;
+          break;
+        case "VEHICLE_FUEL_TYPE":
+          state.vehicleFuelType = value;
           break;
       }
     },
@@ -272,7 +321,30 @@ const editCustomerInfoReducer = createSlice({
         state.sourceTypesResponse = [];
         state.subSourceTypesResponse = [];
       });
-  }
+
+    // Get Vehicle Info
+    builder
+      .addCase(getVehicleInfo.pending, (state, action) => {})
+      .addCase(getVehicleInfo.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload;
+          let newArr = [];
+          let newMakerArr = [];
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].model };
+            newArr.push(Object.assign({}, data));
+
+            if (sData[i].maker) {
+              let payload = { id: i, name: sData[i].maker };
+              newMakerArr.push(Object.assign({}, payload));
+            }
+          }
+          state.vehicleModelList = [...newArr];
+          state.vehicleMakerList = _.uniqBy(newMakerArr, "name");
+        }
+      })
+      .addCase(getVehicleInfo.rejected, (state, action) => {});
+  },
 });
 
 export const {

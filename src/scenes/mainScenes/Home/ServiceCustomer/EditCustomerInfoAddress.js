@@ -57,6 +57,8 @@ const EditCustomerInfoAddress = ({ navigation, route }) => {
     setDropDownTitle("Select Data");
     setShowDropDownModel(false);
     setDataForDropDown([]);
+    setIsSubmitPress(false);
+    setDatePickerMode("date");
   };
 
   const updateAddressDetails = (pincode) => {

@@ -66,7 +66,7 @@ const CustomerInfo = ({ navigation, route }) => {
 
       <ScrollView>
         {activeTabIndex == 0 ? (
-          <View>
+          <>
             {/* Customer Radio row */}
             <View style={styles.topRadioRow}>
               <View style={styles.radioContainer}>
@@ -86,7 +86,7 @@ const CustomerInfo = ({ navigation, route }) => {
             </View>
 
             {activeRadioIndex == 0 ? (
-              <View>
+              <>
                 {/* Customer Details */}
                 <View style={styles.customerDetailsContainer}>
                   <View style={styles.customerInfoSection}>
@@ -167,9 +167,9 @@ const CustomerInfo = ({ navigation, route }) => {
                 >
                   <Text style={styles.editBtnText}>EDIT PROFILE</Text>
                 </TouchableOpacity>
-              </View>
+              </>
             ) : (
-              <View>
+              <>
                 {/* Customer Address Details */}
                 <View style={styles.customerDetailsContainer}>
                   <View style={styles.customerInfoSection}>
@@ -241,10 +241,144 @@ const CustomerInfo = ({ navigation, route }) => {
                 >
                   <Text style={styles.editBtnText}>EDIT CUSTOMER ADDRESS</Text>
                 </TouchableOpacity>
-              </View>
+              </>
             )}
-          </View>
-        ) : null}
+          </>
+        ) : (
+          <>
+            <View style={styles.customerDetailsContainer}>
+              <TouchableOpacity
+                style={styles.editVehicleIcon}
+                onPress={() =>
+                  navigation.navigate(HomeStackIdentifiers.editCustomerVehicle)
+                }
+              >
+                <IconButton
+                  icon={"pencil-circle"}
+                  color={Colors.PINK}
+                  size={35}
+                />
+              </TouchableOpacity>
+
+              <View style={styles.vehicleInfoRow}>
+                <View style={[styles.customerInfoSection, { width: "50%" }]}>
+                  <Text style={styles.customerInfoTitleText}>
+                    Vehicle Reg. No
+                  </Text>
+                  <Text style={styles.customerInfoInfoText}>APVD345</Text>
+                </View>
+                <View style={styles.customerInfoSection}>
+                  <Text style={styles.customerInfoTitleText}>Model</Text>
+                  <Text style={styles.customerInfoInfoText}>Creta</Text>
+                </View>
+              </View>
+              <View style={styles.vehicleInfoRow}>
+                <View style={[styles.customerInfoSection, { width: "50%" }]}>
+                  <Text style={styles.customerInfoTitleText}>Variant</Text>
+                  <Text style={styles.customerInfoInfoText}>Climber CRDI</Text>
+                </View>
+                <View style={styles.customerInfoSection}>
+                  <Text style={styles.customerInfoTitleText}>Color</Text>
+                  <Text style={styles.customerInfoInfoText}>White</Text>
+                </View>
+              </View>
+              <View style={styles.vehicleInfoRow}>
+                <View style={[styles.customerInfoSection, { width: "50%" }]}>
+                  <Text style={styles.customerInfoTitleText}>Fuel Type</Text>
+                  <Text style={styles.customerInfoInfoText}>Petrol</Text>
+                </View>
+                <View style={styles.customerInfoSection}>
+                  <Text style={styles.customerInfoTitleText}>Vin Number</Text>
+                  <Text style={styles.customerInfoInfoText}>76BHF6</Text>
+                </View>
+              </View>
+              <View style={styles.vehicleInfoRow}>
+                <View style={[styles.customerInfoSection, { width: "50%" }]}>
+                  <Text style={styles.customerInfoTitleText}>
+                    Engine Number
+                  </Text>
+                  <Text style={styles.customerInfoInfoText}>Ehgsd677HH</Text>
+                </View>
+                <View style={styles.customerInfoSection}>
+                  <Text style={styles.customerInfoTitleText}>Making Month</Text>
+                  <Text style={styles.customerInfoInfoText}>Jan</Text>
+                </View>
+              </View>
+              <View style={styles.vehicleInfoRow}>
+                <View style={[styles.customerInfoSection, { width: "50%" }]}>
+                  <Text style={styles.customerInfoTitleText}>Making Year</Text>
+                  <Text style={styles.customerInfoInfoText}>2017</Text>
+                </View>
+                <View style={styles.customerInfoSection}>
+                  <Text style={styles.customerInfoTitleText}>Sale Date</Text>
+                  <Text style={styles.customerInfoInfoText}>15-5-2020</Text>
+                </View>
+              </View>
+              <View style={styles.vehicleInfoRow}>
+                <View style={[styles.customerInfoSection, { width: "50%" }]}>
+                  <Text style={styles.customerInfoTitleText}>
+                    Selling Dealer
+                  </Text>
+                  <Text style={styles.customerInfoInfoText}>Ratan Motors</Text>
+                </View>
+                <View style={styles.customerInfoSection}>
+                  <Text style={styles.customerInfoTitleText}>
+                    Dealer Location
+                  </Text>
+                  <Text style={styles.customerInfoInfoText}>Guntur</Text>
+                </View>
+              </View>
+            </View>
+            {/* <View style={styles.customerDetailsContainer}>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>
+                  Vehicle Reg. No
+                </Text>
+                <Text style={styles.customerInfoInfoText}>APVD345</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>Service Date</Text>
+                <Text style={styles.customerInfoInfoText}>15-02-2019</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>Service Type</Text>
+                <Text style={styles.customerInfoInfoText}>Free Service</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>
+                  Sub Service Type
+                </Text>
+                <Text style={styles.customerInfoInfoText}>1st Free</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>Service Amount</Text>
+                <Text style={styles.customerInfoInfoText}>2000</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>Service Center</Text>
+                <Text style={styles.customerInfoInfoText}>S543T6</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>
+                  Reading At Service
+                </Text>
+                <Text style={styles.customerInfoInfoText}>3500</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>Dealer Name</Text>
+                <Text style={styles.customerInfoInfoText}>Navee</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>RO Number</Text>
+                <Text style={styles.customerInfoInfoText}>454535</Text>
+              </View>
+              <View style={styles.customerInfoSection}>
+                <Text style={styles.customerInfoTitleText}>RO Date</Text>
+                <Text style={styles.customerInfoInfoText}>15-02-2019</Text>
+              </View>
+            </View> */}
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -293,6 +427,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  editVehicleIcon: {
+    position: "absolute",
+    right: 0,
+    top: -15
+  },
   customerDetailsContainer: {
     paddingHorizontal: "10%",
     marginTop: 5,
@@ -302,6 +441,10 @@ const styles = StyleSheet.create({
   },
   customerInfoRow: {
     flexDirection: "row",
+  },
+  vehicleInfoRow: {
+    flexDirection: "row",
+    marginTop: 15
   },
   customerInfoTitleText: {
     color: Colors.GRAY,
@@ -320,11 +463,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: Colors.PINK,
     marginTop: 20,
-    paddingVertical: 10
+    paddingVertical: 10,
   },
   editBtnText: {
     color: Colors.WHITE,
     fontSize: 13,
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 });

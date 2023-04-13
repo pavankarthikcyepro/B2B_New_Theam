@@ -130,6 +130,7 @@ import CustomerInfo from "../scenes/mainScenes/Home/ServiceCustomer/CustomerInfo
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 import EditCustomerInfoAddress from "../scenes/mainScenes/Home/ServiceCustomer/EditCustomerInfoAddress";
+import EditCustomerVehicle from "../scenes/mainScenes/Home/ServiceCustomer/EditCustomerVehicle";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -419,9 +420,10 @@ export const HomeStackIdentifiers = {
   addCustomerInfo: "ADD_CUSTOMER_INFO",
   customerInfo: "CUSTOMER_INFO",
   editCustomerInfoAddress: "EDIT_CUSTOMER_INFO_ADDRESS",
+  editCustomerVehicle: "EDIT_CUSTOMER_VEHICLE",
   searchCustomerResult: "SEARCH_CUSTOMER_RESULT",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
-  crmFilter:"CRM_FILTER"
+  crmFilter: "CRM_FILTER",
 };
 
 export const EmsStackIdentifiers = {
@@ -588,6 +590,14 @@ const HomeStackNavigator = ({ navigation }) => {
         component={EditCustomerInfoAddress}
         options={{
           title: "Customer Information",
+          headerRight: () => <NotificationIcon navigation={navigation} />,
+        }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.editCustomerVehicle}
+        component={EditCustomerVehicle}
+        options={{
+          title: "Vehicle Information",
           headerRight: () => <NotificationIcon navigation={navigation} />,
         }}
       />

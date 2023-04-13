@@ -22,6 +22,9 @@ import {
   VEHICLE_MAKER,
 } from "../../../../jsonData/addCustomerScreenJsonData";
 import moment from 'moment';
+import { DropDownServices } from '../../../../pureComponents/dropDownServices';
+import { TextInputServices } from '../../../../components/textInputServices';
+import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -595,7 +598,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 styles.accordionBorder,
               ]}
             >
-              <DropDownSelectionItem
+              <DropDownServices
                 label={"Salutation"}
                 value={selector.salutation}
                 onPress={() =>
@@ -605,55 +608,44 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 clearKey={"SALUTATION"}
                 onClear={onDropDownClear}
               />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
-                value={selector.firstName}
-                label={"First Name*"}
-                autoCapitalize="words"
-                keyboardType={"default"}
-                onChangeText={(text) =>
-                  dispatch(setPersonalIntro({ key: "FIRST_NAME", text: text }))
-                }
-              />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.firstName.trim() === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
-              <TextinputComp
-                value={selector.lastName}
-                label={"Last Name*"}
-                autoCapitalize="words"
-                keyboardType={"default"}
-                onChangeText={(text) =>
-                  dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
-                }
-              />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.lastName.trim() === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
-              <DropDownSelectionItem
+
+              <View style={styles.inputRow}>
+                <TextInputServices
+                  value={selector.firstName}
+                  label={"First Name*"}
+                  placeholder={"Enter First Name"}
+                  autoCapitalize="words"
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "FIRST_NAME", text: text })
+                    )
+                  }
+                  containerStyle={styles.rowInputBox}
+                  error={isSubmitPress && selector.firstName.trim() === ""}
+                />
+
+                <TextInputServices
+                  value={selector.lastName}
+                  label={"Last Name*"}
+                  placeholder={"Enter Last Name"}
+                  autoCapitalize="words"
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
+                  }
+                  containerStyle={styles.rowInputBox}
+                  error={isSubmitPress && selector.lastName.trim() === ""}
+                />
+              </View>
+
+              <DropDownServices
                 label={"Gender"}
                 value={selector.gender}
                 onPress={() => showDropDownModelMethod("GENDER", "Gender")}
               />
 
-              <Text style={GlobalStyle.underline} />
-              <DropDownSelectionItem
+              <DropDownServices
                 label={"Relation"}
                 value={selector.relation}
                 onPress={() => showDropDownModelMethod("RELATION", "Relation")}
@@ -661,98 +653,95 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 clearKey={"RELATION"}
                 onClear={onDropDownClear}
               />
-              <DateSelectItem
-                label={"Date Of Birth"}
-                value={selector.dateOfBirth}
-                onPress={() => showDatePickerModelMethod("DATE_OF_BIRTH")}
-              />
-              <TextinputComp
-                value={selector?.age?.toString()}
-                label={"Age"}
-                keyboardType={"number-pad"}
-                maxLength={2}
-                onChangeText={(text) =>
-                  dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                }
-              />
-              <Text style={GlobalStyle.underline} />
-              <DateSelectItem
+
+              <View style={styles.inputRow}>
+                <DateSelectServices
+                  label={"Date Of Birth"}
+                  value={selector.dateOfBirth}
+                  onPress={() => showDatePickerModelMethod("DATE_OF_BIRTH")}
+                  containerStyle={styles.rowInputBox}
+                />
+
+                <TextInputServices
+                  value={selector?.age?.toString()}
+                  label={"Age"}
+                  placeholder={"Enter Age"}
+                  keyboardType={"number-pad"}
+                  maxLength={2}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                  }
+                  containerStyle={styles.rowInputBox}
+                />
+              </View>
+
+              <DateSelectServices
                 label={"Anniversary Date"}
                 value={selector.anniversaryDate}
                 onPress={() => showDatePickerModelMethod("ANNIVERSARY_DATE")}
               />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
-                value={selector.mobile}
-                label={"Mobile Number*"}
-                maxLength={10}
-                keyboardType={"phone-pad"}
-                onChangeText={(text) =>
-                  dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                }
-              />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.mobile.trim() === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
-              <TextinputComp
-                value={selector.alterMobile}
-                label={"Alternate Mobile Number"}
-                keyboardType={"phone-pad"}
-                maxLength={10}
-                onChangeText={(text) =>
-                  dispatch(
-                    setPersonalIntro({ key: "ALTER_MOBILE", text: text })
-                  )
-                }
-              />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
+
+              <View style={styles.inputRow}>
+                <TextInputServices
+                  value={selector.mobile}
+                  label={"Mobile Number*"}
+                  placeholder={"Enter Mobile Number"}
+                  maxLength={10}
+                  keyboardType={"phone-pad"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
+                  }
+                  containerStyle={styles.rowInputBox}
+                  error={isSubmitPress && selector.mobile.trim() === ""}
+                />
+
+                <TextInputServices
+                  value={selector.alterMobile}
+                  label={"Alternate Mobile Number"}
+                  placeholder={"Enter Alternate Mobile Number"}
+                  keyboardType={"phone-pad"}
+                  maxLength={10}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
+                    )
+                  }
+                  containerStyle={styles.rowInputBox}
+                />
+              </View>
+
+              <TextInputServices
                 value={selector.email}
                 label={"Email ID"}
+                placeholder={"Enter Email ID"}
                 keyboardType={"email-address"}
                 onChangeText={(text) =>
                   dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
                 }
               />
-              <Text style={GlobalStyle.underline} />
-              <TextinputComp
+
+              <TextInputServices
                 value={selector.occupation}
                 autoCapitalize="words"
                 label={"Occupation"}
+                placeholder={"Enter Occupation"}
                 keyboardType={"default"}
                 maxLength={40}
                 onChangeText={(text) =>
                   dispatch(setPersonalIntro({ key: "OCCUPATION", text: text }))
                 }
               />
-              <Text style={GlobalStyle.underline} />
-              <DropDownSelectionItem
+
+              <DropDownServices
                 label={"Source Type*"}
                 value={selector.sourceType}
                 onPress={() =>
                   showDropDownModelMethod("SOURCE_TYPE", "Select Source Type")
                 }
+                error={isSubmitPress && selector.sourceType === ""}
               />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.sourceType === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
-              <DropDownSelectionItem
+
+              <DropDownServices
                 label={"Sub Source Type*"}
                 value={selector.subSourceType}
                 onPress={() =>
@@ -761,19 +750,10 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     "Select Sub Source Type"
                   )
                 }
+                error={isSubmitPress && selector.subSourceType === ""}
               />
-              <Text
-                style={[
-                  GlobalStyle.underline,
-                  {
-                    backgroundColor:
-                      isSubmitPress && selector.subSourceType === ""
-                        ? "red"
-                        : "rgba(208, 212, 214, 0.7)",
-                  },
-                ]}
-              />
-              <DropDownSelectionItem
+
+              <DropDownServices
                 label={"Customer Type"}
                 value={selector.customerTypes}
                 onPress={() =>
@@ -783,7 +763,6 @@ const AddCustomerInfo = ({ navigation, route }) => {
                   )
                 }
               />
-              <Text style={GlobalStyle.underline} />
             </List.Accordion>
             <View style={styles.space} />
             <List.Accordion
@@ -1644,6 +1623,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: Colors.WHITE
   },
   accordionBorder: {
     borderWidth: 0.5,
@@ -1653,6 +1633,8 @@ const styles = StyleSheet.create({
   space: {
     height: 5,
   },
+  rowInputBox: { width: "48%" },
+  inputRow: { flexDirection: "row", justifyContent: "space-between" },
   addressDropDownRow: {
     flexDirection: "row",
     backgroundColor: "#fff",
