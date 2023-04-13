@@ -948,17 +948,21 @@ const LiveLeadsfilterScreen = ({ route, navigation }) => {
           levelSelected: levelSelected,
           selectedempId: [tempArr[tempArr.length - 1]]
         }
-        dispatch(updateLiveLeadObjectData(tempPayload))
-        dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        navigation.navigate("LIVE_LEADS", {
-          screenName: "LIVE_LEADS",
+        // if ([tempArr[tempArr.length - 1]] > 0) {
+          dispatch(updateLiveLeadObjectData(tempPayload))
+          dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+          navigation.navigate("LIVE_LEADS", {
+            screenName: "LIVE_LEADS",
             fromScreen: "Filter",
             // selectedID: selectedIds[selectedIds.length - 1],
             selectedID: temp[temp.length - 1].id,
             fromDate: fromDate,
             toDate: toDate,
-        
-        });
+
+          });
+        // } else {
+        //   showToast("Please select Employee");
+        // }
         
       }else{
         showToast("Please select any value");

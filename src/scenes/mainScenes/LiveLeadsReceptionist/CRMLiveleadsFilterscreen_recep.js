@@ -935,6 +935,7 @@ const CRMLiveleadsFilterscreen_recep = ({ route, navigation }) => {
           dealerCodes: selectedBranchName,
           selectedDesignation: tempArrDesignation 
         }
+        if ([tempArr[tempArr.length - 1]] > 0) {
         dispatch(updateLiveLeadObjectDataCRM(tempPayload))
         dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
         // navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
@@ -943,7 +944,9 @@ const CRMLiveleadsFilterscreen_recep = ({ route, navigation }) => {
         // });
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist)
-        
+        } else {
+          showToast("Please select Employee");
+        }
       }
 
       

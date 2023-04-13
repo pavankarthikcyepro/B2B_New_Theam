@@ -933,15 +933,18 @@ const CRMLiveleadsFilterscreen = ({ route, navigation }) => {
           dealerCodes: selectedBranchName,
           selectedDesignation: tempArrDesignation 
         }
-        dispatch(updateLiveLeadObjectDataCRM(tempPayload))
-        dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        // navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
-        //   screen: "Home",
-        //   params: { from: "Filter" },
-        // });
-        navigation.navigate(
-          AppNavigator.DrawerStackIdentifiers.liveLeads)
-        
+        if ([tempArr[tempArr.length - 1]] > 0) {
+          dispatch(updateLiveLeadObjectDataCRM(tempPayload))
+          dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+          // navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+          //   screen: "Home",
+          //   params: { from: "Filter" },
+          // });
+          navigation.navigate(
+            AppNavigator.DrawerStackIdentifiers.liveLeads)
+        } else {
+          showToast("Please select Employee");
+        }
       }
 
       

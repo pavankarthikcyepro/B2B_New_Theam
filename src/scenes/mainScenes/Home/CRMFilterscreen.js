@@ -1005,12 +1005,18 @@ const CRMFilterscreen = ({ route, navigation }) => {
           selectedempId: [tempArr[tempArr.length - 1]],
           dealerCodes: selectedBranchName,
         }
-        dispatch(updateLiveLeadObjectData(tempPayload))
-        dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
-          screen: "Home",
-          params: { from: "Filter" },
-        });
+        
+        if ([tempArr[tempArr.length - 1]] > 0) {
+          dispatch(updateLiveLeadObjectData(tempPayload))
+          dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+          navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+            screen: "Home",
+            params: { from: "Filter" },
+          });
+        } else {
+          showToast("Please select Employee");
+        }
+        
        
         
       }

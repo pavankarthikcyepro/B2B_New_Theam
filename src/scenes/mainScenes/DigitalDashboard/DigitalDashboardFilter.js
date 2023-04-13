@@ -958,13 +958,16 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
           dealerCodes: selectedBranchName,
           selectedDesignation: tempArrDesignation
         }
-        dispatch(updateLiveLeadObjectData(tempPayload))
-        dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalDashboard, {
-          screen: "Home",
-          params: { from: "Filter" },
-        });
-       
+        if ([tempArr[tempArr.length - 1]] > 0) {
+          dispatch(updateLiveLeadObjectData(tempPayload))
+          dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+          navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalDashboard, {
+            screen: "Home",
+            params: { from: "Filter" },
+          });
+        } else {
+          showToast("Please select Employee");
+        }
         
       }
 

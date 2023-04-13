@@ -952,13 +952,16 @@ const ReceptionistDashboardFilter = ({ route, navigation }) => {
           dealerCodes: selectedBranchName,
           selectedDesignation: tempArrDesignation 
         }
-        dispatch(updateReceptionistObjectData(tempPayload))
-        dispatch(updateFilterSelectedDataReceptionist(employeeDropDownDataLocal));
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard, {
-          screen: "Home",
-          params: { from: "Filter" },
-        });
-       
+        if ([tempArr[tempArr.length - 1]] > 0) {
+          dispatch(updateReceptionistObjectData(tempPayload))
+          dispatch(updateFilterSelectedDataReceptionist(employeeDropDownDataLocal));
+          navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard, {
+            screen: "Home",
+            params: { from: "Filter" },
+          });
+        } else {
+          showToast("Please select Employee");
+        }
         
       }
 
