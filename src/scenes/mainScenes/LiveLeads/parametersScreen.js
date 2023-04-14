@@ -64,6 +64,7 @@ const ParametersScreen = ({ route }) => {
   const [allParameters, setAllParameters] = useState([]);
   const [myParameters, setMyParameters] = useState([]);
   const [filterParameters, setFilterParameters] = useState([]);
+  const [filterParametersApplied, setfilterParametersApplied] = useState(false);
 
   const [isFilterViewExapanded, setisFilterViewExapanded] = useState(false);
   const [CRM_filterParameters, setCRM_filterParameters] = useState([]);
@@ -341,6 +342,8 @@ const ParametersScreen = ({ route }) => {
     
   }, [selector.crm_response_data])
   
+  
+  
 
   useEffect(async() => {
     // navigation.addListener("focus", async () => {
@@ -588,22 +591,45 @@ const ParametersScreen = ({ route }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         if (selector.all_emp_parameters_data.length > 0) {
-          let myParams = [
-            ...selector.all_emp_parameters_data.filter(
-              (item) => item.empId === jsonObj.empId
-            ),
-          ];
-          myParams[0] = {
-            ...myParams[0],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-            targetAchievements: selector.totalParameters,
-            tempTargetAchievements: myParams[0]?.targetAchievements,
-          };
-         
-          setAllParameters(myParams);
+          if (!_.isEmpty(selector.saveLiveleadObject?.selectedempId)) {
+            myParams = [
+              ...selector.all_emp_parameters_data.filter(
+                (item) => item.empId == selector.saveLiveleadObject?.selectedempId[0]
+              ),
+            ];
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: selector.totalParameters,
+              tempTargetAchievements: myParams[0]?.targetAchievements,
+            };
+
+            setAllParameters(myParams);
+          }else{
+            let myParams = [
+              ...selector.all_emp_parameters_data.filter(
+                (item) => item.empId === jsonObj.empId
+              ),
+            ];
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: selector.totalParameters,
+              tempTargetAchievements: myParams[0]?.targetAchievements,
+            };
+            
+            setAllParameters(myParams);
+          }
+
+
+
+
+        
           if (!selector.saveLiveleadObject?.selectedempId) {
             setFilterParameters([])
+            setfilterParametersApplied(false);
           }
           // setMyParameters(myParams);
           // let tempParams = [
@@ -644,7 +670,7 @@ const ParametersScreen = ({ route }) => {
     } catch (error) {
       setIsLoading(false);
     }
-  }, [selector.all_emp_parameters_data]);
+  }, [selector.all_emp_parameters_data, selector.totalParameters]);
 
   useEffect(async () => {
     try {
@@ -654,9 +680,10 @@ const ParametersScreen = ({ route }) => {
       );
       if (employeeData) {
         if (selector.saveLiveleadObject?.selectedempId){
-          getDataAfterFilter();
+          // getDataAfterFilter();
         }else{
-          filterParameters([])
+          setFilterParameters([])
+          setfilterParametersApplied(false)
         }
        
       }
@@ -739,7 +766,7 @@ const ParametersScreen = ({ route }) => {
           }
           // setFilterParameters([...tempRawData])
           // alert(JSON.stringify(tempRawData))
-      
+          setfilterParametersApplied(true);
           setAllParameters([...tempRawData]);
         }
       );
@@ -855,7 +882,7 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
-    
+   
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -1142,7 +1169,8 @@ const ParametersScreen = ({ route }) => {
     const isLead = leads.includes(paramName.toLowerCase());
     // let makeparams = paramName
     let employeeDetail;
-    if(filterParameters.length>0){
+    // if(filterParameters.length>0){
+      if (filterParametersApplied) {
        employeeDetail = {
         empName: "",
         empId: selector.saveLiveleadObject?.selectedempId[0],
@@ -3364,7 +3392,9 @@ const ParametersScreen = ({ route }) => {
                           })}
 
 
-                        {allParameters.length > 0 && filterParameters.length == 0 &&
+                        {/* {allParameters.length > 0 && filterParameters.length == 0 && */}
+                        {
+                          allParameters.length > 0  &&
                           allParameters.map((item, index) => {
                             return (
                               <View key={`${item.empId} ${index}`}>

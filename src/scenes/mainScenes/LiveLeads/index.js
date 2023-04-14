@@ -765,9 +765,9 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null, // selected employes id active-dropdowns APi
       "selectedEmpId": jsonObj.empId
     }
-      if (!selector.saveLiveleadObject?.selectedempId) {
+      // if (!selector.saveLiveleadObject?.selectedempId) {
       dispatch(getNewTargetParametersAllData(payload4)) // TEAM
-    }
+    // }
     //todo 
       if (!crmRole.includes(jsonObj.hrmsRole)){
         Promise.allSettled([
