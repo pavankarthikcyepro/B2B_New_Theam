@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://dev-api.cyepro.com/";
+export const baseUrl = "http://qa-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
