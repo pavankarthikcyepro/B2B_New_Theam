@@ -278,7 +278,6 @@ const CRMFilterscreen = ({ route, navigation }) => {
         });
       }
       
-      
       // setDropDownData(newArray);
       setDropDownData(data);
       setSelectedItemIndex(index);
@@ -549,6 +548,24 @@ const CRMFilterscreen = ({ route, navigation }) => {
 
    
     if(index === 0 ){ 
+      // if (!_.isEmpty(selector.filterSelectedData)) {
+      //   let newDataObj = {};
+      //   for (let key in employeeDropDownDataLocal) {
+      //     const arrayData = employeeDropDownDataLocal[key];
+      //     const newArray = [];
+      //     if (arrayData.length > 0) {
+      //       arrayData.forEach((element) => {
+      //         newArray.push({
+      //           ...element,
+      //           selected: false,
+      //         });
+      //       });
+      //     }
+      //     newDataObj[key] = newArray;
+      //   }
+      //   setEmployeeDropDownDataLocal(newDataObj);
+      //   dispatch(updateFilterSelectedData({}))
+      // }
       
       // let temparr = temparr22.map((item,i) =>
        
@@ -586,9 +603,8 @@ const CRMFilterscreen = ({ route, navigation }) => {
 
       // setEmployeeDropDownDataLocal(newDataObj);
 
-
       let temparr = dropDownData.map((item, i) => {
-
+      
         index1 === i ? item.selected = true : item.selected = false
       })
       let temparr2 = selectEmployeeData.map((item, i) => {
@@ -596,6 +612,9 @@ const CRMFilterscreen = ({ route, navigation }) => {
         item.selected = false;
 
       })
+      // let temparr2 = selectEmployeeData.map((item, i) => ({...item,selected:false}))
+      // setSelectEmployeeData(temparr2)
+     
     }else{
    
       // let key = employeeTitleNameList[index];
@@ -894,9 +913,24 @@ const CRMFilterscreen = ({ route, navigation }) => {
         newDataObj[key] = newArray;
         if (key === "Select Designation") {
           setSelectDesignationsData(newDataObj[key])
-        }else{
+        } else {
           setSelectEmployeeData(newDataObj[key])
         }
+        // if (key === "Select Designation") {
+        //   if (!isEmpty(selector.filterSelectedData)){
+        //     setSelectDesignationsData(selector.filterSelectedData[key])
+        //   }else{
+        //     setSelectDesignationsData(newDataObj[key])
+        //   }
+          
+        // }else{
+          
+        //   if (!isEmpty(selector.filterSelectedData)) {
+        //     setSelectEmployeeData(selector.filterSelectedData[key])
+        //   } else {
+        //     setSelectEmployeeData(newDataObj[key])
+        //   }
+        // }
       }
       // setEmloyeeTitleNameList(names);
       // setEmployeeDropDownDataLocal(names)

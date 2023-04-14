@@ -1290,7 +1290,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -1524,7 +1524,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -1601,7 +1601,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                     </View>
                   </View>
-                  {filterExapand && renderCRMTreeChildFilter()}
+                  {/* {filterExapand && renderCRMTreeChildFilter()} */}
                 </View>
               );
             }
@@ -2569,7 +2569,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        color={Colors.CORAL}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
@@ -2812,7 +2812,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => { }}
@@ -2913,8 +2913,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
           }
         })
         
-        tempArr.push(...temp)
-        Array.prototype.push.apply(tempArr, tempInside);
+        tempArr.unshift(...temp)
+        Array.prototype.unshift.apply(tempArr, tempInside);
       }
       
 
@@ -2954,7 +2954,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         consultantDataForCRM.map((item) => {
           item.salesconsultant.forEach(element => {
             if (element.emp_id !== data.emp_id) {
-              otherUserData.push(element)
+              otherUserData.unshift(element)
             }
 
           });
@@ -3094,7 +3094,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        // color={"#C62159"}
+                        color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
@@ -3317,7 +3318,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        // color={"#C62159"}
+                        color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
@@ -3532,7 +3534,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => { }}

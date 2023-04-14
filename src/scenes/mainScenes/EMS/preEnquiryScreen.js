@@ -26,7 +26,7 @@ import { useIsFocused } from '@react-navigation/native';
 import AnimLoaderComp from '../../../components/AnimLoaderComp';
 import { getLiveleadsReceptinoist } from '../../../redux/enquiryReducer';
 import { EventRegister } from 'react-native-event-listeners';
-
+import _ from "lodash";
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -158,10 +158,10 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           employeeId = empId;
         }
         let dashboardType = route?.params?.screenName
-        if (route && route.params && route.params.selectedEmpId) {
+        if (route && route.params && !_.isEmpty(route.params.selectedEmpId)) {
           employeeId = route.params.selectedEmpId
         }
-       
+     
         // setEmployeeId(jsonObj.empId);
         // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
        

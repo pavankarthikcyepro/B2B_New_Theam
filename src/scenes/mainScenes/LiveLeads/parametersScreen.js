@@ -273,7 +273,7 @@ const ParametersScreen = ({ route }) => {
           firstLevel.map((itemfrist) => {
             itemfrist.salesconsultant.forEach(element => {
               if (element.emp_id !== userData.empId) {
-                consultantForCRM.push(element)
+                consultantForCRM.unshift(element)
               }
 
             });
@@ -1438,7 +1438,7 @@ const ParametersScreen = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
+                      color={Colors.CORAL}
                       titleClick={async () => {
                         formatCRrSecondLeveleData(item, index);
                         // setIsViewCreExpanded(!isViewCREExpanded)
@@ -1622,7 +1622,7 @@ const ParametersScreen = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
+                      color={"#2C97DE"}
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
@@ -2017,7 +2017,7 @@ const ParametersScreen = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
+                     color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" :"#FF4040"}
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
@@ -2236,7 +2236,7 @@ const ParametersScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#C62159"}
+                        color={"#2C97DE"}
                         titleClick={async () => {
                         
                           return;
@@ -2524,7 +2524,7 @@ const ParametersScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#C62159"}
+                        color={Colors.CORAL}
                         titleClick={async () => {
                           setisFilterViewExapanded(!isFilterViewExapanded)
                           return;
@@ -2729,7 +2729,7 @@ const ParametersScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#C62159"}
+                        color={"#2C97DE"}
                         titleClick={async () => {
 
                           return;
@@ -3015,6 +3015,7 @@ const ParametersScreen = ({ route }) => {
                       style={{ width: 70, height: 20, marginRight: 5 }}
                     ></View> */}
                       <View
+                        // style={styles.itemBox}
                         style={{ width: 70, height: 20, marginRight: 5, alignItems: "center" }}
                       >
                         <Text style={{

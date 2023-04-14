@@ -649,7 +649,8 @@ const TargetScreenCRM = ({ route }) => {
     if (selector.receptionistData?.fullResponse && _.isEmpty(selector.saveCRMfilterObj.selectedempId)){
       let data = selector.receptionistData.fullResponse?.manager
       if (data?.length > 0 ){
-        let otherUserData = data.filter((item) => {
+        let otherUserData;
+         otherUserData = data.filter((item) => {
           return item.emp_id !== userData.empId
         })
         let consultantDataForCRM = data.filter((item) => {
@@ -663,7 +664,7 @@ const TargetScreenCRM = ({ route }) => {
             item.salesconsultant.forEach(element => {
               if (element.emp_id !== userData.empId)
               {
-                otherUserData.push(element)
+                otherUserData.unshift(element)
               }
              
             });
@@ -1461,7 +1462,7 @@ const TargetScreenCRM = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -1667,7 +1668,7 @@ const TargetScreenCRM = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -1902,7 +1903,7 @@ const TargetScreenCRM = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -2145,7 +2146,7 @@ const TargetScreenCRM = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {  }}
@@ -2560,7 +2561,7 @@ const TargetScreenCRM = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" :"#FF4040"}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => { 
@@ -2777,7 +2778,7 @@ const TargetScreenCRM = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {  }}

@@ -1909,7 +1909,19 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistDataForRecepDashboard.rejected, (state, action) => { state.isLoading = false; })
 
       // digital dashboard filter cre/tele caller selected 
-      .addCase(getReceptionistDataDigitalDashboard.pending, (state) => { })
+      .addCase(getReceptionistDataDigitalDashboard.pending, (state) => {
+        state.receptionistDataDigitalFilter_CRE = {
+          RetailCount: 0,
+          bookingsCount: 0,
+          consultantList: [],
+          totalAllocatedCount: 0,
+          totalDroppedCount: 0,
+          contactsCount: 0,
+          enquirysCount: 0,
+          totalLostCount: 0,
+          fullResponse: {},
+        }
+       })
       .addCase(getReceptionistDataDigitalDashboard.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistDataDigitalFilter_CRE = {
@@ -1924,7 +1936,19 @@ export const homeSlice = createSlice({
           fullResponse: dataObj
         };
       })
-      .addCase(getReceptionistDataDigitalDashboard.rejected, (state, action) => { })
+      .addCase(getReceptionistDataDigitalDashboard.rejected, (state, action) => {
+        state.receptionistDataDigitalFilter_CRE = {
+          RetailCount: 0,
+          bookingsCount: 0,
+          consultantList: [],
+          totalAllocatedCount: 0,
+          totalDroppedCount: 0,
+          contactsCount: 0,
+          enquirysCount: 0,
+          totalLostCount: 0,
+          fullResponse: {},
+        }
+       })
 
       .addCase(getReceptionistManagerData.pending, (state) => {})
       .addCase(getReceptionistManagerData.fulfilled, (state, action) => {

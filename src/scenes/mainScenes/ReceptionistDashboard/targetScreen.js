@@ -1342,7 +1342,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -1548,7 +1548,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -2026,7 +2026,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        color={Colors.CORAL}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
@@ -2269,7 +2269,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => { }}
@@ -2920,7 +2920,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           level={0}
                           item={item}
                           branchName={item.branch}
-                          color={"#C62159"}
+                          color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
                           titleClick={async (e) => {
@@ -3128,7 +3128,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={item.branch}
-                        color={"#C62159"}
+                        color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {

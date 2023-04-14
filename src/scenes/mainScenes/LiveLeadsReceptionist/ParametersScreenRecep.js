@@ -1401,7 +1401,7 @@ const ParametersScreenRecep = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
+                      color={Colors.CORAL}
                       titleClick={async () => {
                        
                         formatCRESecondLeveleData(item,index);
@@ -1585,7 +1585,7 @@ const ParametersScreenRecep = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
+                      color={"#2C97DE"}
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
@@ -1980,7 +1980,7 @@ const ParametersScreenRecep = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
+                      color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
@@ -2506,7 +2506,7 @@ const ParametersScreenRecep = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#C62159"}
+                        color={Colors.CORAL}
                         titleClick={async () => {
                           setisFilterViewExapanded(!isFilterViewExapanded)
                           return;
@@ -2694,7 +2694,7 @@ const ParametersScreenRecep = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#C62159"}
+                        color={"#2C97DE"} 
                         titleClick={async () => {
 
                           return;

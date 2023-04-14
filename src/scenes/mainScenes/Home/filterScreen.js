@@ -125,7 +125,7 @@ const FilterScreen = ({ route, navigation }) => {
         let localData =
           data[key] && data[key]?.sublevels?.length ? data[key].sublevels : [];
         let newData = localData?.map((obj) => {
-          if (key === "Dealer Code" && filterIds.includes(obj?.id)) {
+          if (key === "Dealer Code" && filterIds?.includes(obj?.id)) {
             dealerIds.push(obj?.id);
           }
           return {

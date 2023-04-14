@@ -579,6 +579,10 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
           .then((x) => {})
           .catch((y) => {});
+      }else{
+        setIsTeamPresent(false);
+        dispatch(updateIsTeamPresent(false));
+        dispatch(updateIsTeam(false));
       }
 
       if (
