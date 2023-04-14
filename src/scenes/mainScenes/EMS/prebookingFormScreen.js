@@ -409,6 +409,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
   const [receiptDocModel, setReceiptDocModel] = useState(false);
   const [isVip, setIsVip] = useState(null);
+  const [isHni, setIsHni] = useState(null);
 
   // Edit buttons shows
   useEffect(() => {
@@ -421,6 +422,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let isEditFlag = false;
       setIsVip(
         selector.pre_booking_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
+      setIsHni(
+        selector.pre_booking_details_response.dmsLeadDto.isHni === "Y"
           ? true
           : false
       );
@@ -2332,6 +2338,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dmsLeadDto.lastName = selector.last_name;
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.email = selector.email;
+      dmsLeadDto.isVip = isVip ? "Y" : "N";
+      dmsLeadDto.isHni = isHni ? "Y" : "N";
       dmsLeadDto.model =
         selectedModel.length > 0 ? selectedModel[0].model : selector.model;
       const employeeData = await AsyncStore.getData(
@@ -4178,6 +4186,48 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     disabled={!isInputsEditable()}
                     status={isVip === null ? false : !isVip}
                     onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={[GlobalStyle.underline]}></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is HNI?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isHni}
+                    disabled={!isInputsEditable()}
+                    onPress={() => setIsHni(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    disabled={!isInputsEditable()}
+                    status={isHni === null ? false : !isHni}
+                    onPress={() => setIsHni(false)}
                   />
                 </View>
                 <Text style={[GlobalStyle.underline]}></Text>
