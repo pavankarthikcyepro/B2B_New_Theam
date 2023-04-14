@@ -16,6 +16,7 @@ import AttendanceFilter from "../scenes/mainScenes/Attendance/AttendanceFilter";
 import AttendanceDashboard from "../scenes/mainScenes/Attendance/Dashboard";
 import FilterAttendanceDashBoardScreen from "../scenes/mainScenes/Attendance/DashboardFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
+import FilterScreen2 from "../scenes/mainScenes/Attendance/AttendanceFilter2";
 
 export const AttendanceTopTabNavigatorIdentifiers = {
   myattendance: "MY_ATTENDANCE",
@@ -119,7 +120,8 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
       />
       <MyAttendanceTopTab.Screen
         name={AttendanceTopTabNavigatorIdentifiers.filter}
-        component={AttendanceFilter}
+        // component={AttendanceFilter}
+        component={FilterScreen2}
         options={{
           title: "Filter",
           headerShown: true,

@@ -122,11 +122,9 @@ const AppScreen = () => {
         var now = new Date();
         var isBetween = startDate <= now && now <= endDate;
         if (true) {
-          console.log("LLLLL");
           // setInterval(() => {
           const watchID = Geolocation.getCurrentPosition(
             async (lastPosition) => {
-              console.log("lastPosition", lastPosition);
               let speed =
                 lastPosition?.coords?.speed <= -1
                   ? 0
@@ -147,7 +145,6 @@ const AppScreen = () => {
                   longitude: lastPosition.coords.longitude,
                 };
                 if (trackingJson.length > 0) {
-                  console.log("INNER", newLatLng);
                   // let dist = getDistanceBetweenTwoPoints(
                   //   officeLocation.latitude,
                   //   officeLocation.longitude,
@@ -178,13 +175,6 @@ const AppScreen = () => {
                     lastPosition?.coords?.longitude
                   );
                   let distance = dist * 1000;
-                    console.log(
-                      "distance",
-                      lastlocation.latitude,
-                      lastlocation.longitude,
-                      lastPosition?.coords?.latitude,
-                      lastPosition?.coords?.longitude
-                    );
                   // if (newLatLng && parsedValue) {
                   //   // if (
                   //   //   objectsEqual(
@@ -202,8 +192,6 @@ const AppScreen = () => {
                   );
                   let condition =
                     new Date(date).getDate() == new Date().getDate();
-                                      console.log("condition", condition);
-
                   if (trackingJson.length > 0 && condition) {
                     let tempPayload = {
                       id: trackingJson[trackingJson.length - 1]?.id,
@@ -217,10 +205,6 @@ const AppScreen = () => {
                       kmph: speed.toString(),
                       speed: speed.toString(),
                     };
-                    console.log(
-                      speed <= 10,
-                      distance,distance > distanceFilterValue
-                    );
                     if (speed <= 10 && distance > distanceFilterValue) {
                       // await AsyncStore.storeJsonData(
                       //   AsyncStore.Keys.COORDINATES,
@@ -235,7 +219,6 @@ const AppScreen = () => {
                       //     );
                       //   }, 300000);
                       // }
-                      console.log("KKKKKK");
                       const response = await client.put(
                         locationUpdate +
                           `/${trackingJson[trackingJson.length - 1].id}`,
@@ -261,8 +244,6 @@ const AppScreen = () => {
                       //   AsyncStore.Keys.COORDINATES,
                       //   newArray
                       // );
-                                            console.log("ggggggg");
-
                       const response = await client.post(saveLocation, payload);
                       const json = await response.json();
                     }
@@ -285,8 +266,6 @@ const AppScreen = () => {
                     //   AsyncStore.Keys.COORDINATES,
                     //   newArray
                     // );
-                                          console.log("lllllll");
-
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
                   }
@@ -323,7 +302,6 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        // console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
