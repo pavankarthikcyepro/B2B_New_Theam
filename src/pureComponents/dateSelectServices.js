@@ -13,7 +13,9 @@ export const DateSelectServices = ({
 }) => {
   return (
     <View style={[styles.container, containerStyle]}>
-      <Text style={styles.label}>{label}</Text>
+      <Text numberOfLines={1} style={styles.label}>
+        {label}
+      </Text>
       <Pressable
         style={[styles.valueContainer, error ? styles.errorContainer : null]}
         onPress={onPress}
@@ -57,9 +59,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.BRIGHT_GRAY,
     borderRadius: 5,
     paddingHorizontal: 10,
+    height: 45,
   },
   valueText: {
     flex: 1,

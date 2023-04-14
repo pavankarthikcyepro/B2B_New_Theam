@@ -18,9 +18,11 @@ const TextInputServices = ({
 }) => {
   return (
     <View style={[styles.container, containerStyle]}>
-      <Text style={styles.label}>{label}</Text>
+      <Text numberOfLines={1} style={styles.label}>
+        {label}
+      </Text>
       <TextInput
-        placeholder={placeholder}
+        placeholder={placeholder ? placeholder : `Enter ${label}`}
         placeholderTextColor={Colors.LIGHT_GRAY2}
         label={label}
         value={value}
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     borderWidth: 1,
-    borderColor: "red"
+    borderColor: Colors.PINK,
   },
   label: {
     fontSize: 12,
@@ -55,11 +57,12 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   input: {
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.BRIGHT_GRAY,
     borderRadius: 5,
     padding: 10,
     paddingVertical: 15,
-    fontSize: 14
+    fontSize: 14,
+    height: 45,
   },
 });
 

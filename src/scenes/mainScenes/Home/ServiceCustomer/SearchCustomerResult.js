@@ -41,7 +41,11 @@ const SearchCustomerResult = ({ navigation, route }) => {
         <View style={{ marginHorizontal: 15 }}>
           <ButtonComp
             title={"Add Customer"}
-            onPress={() => navigation.navigate("ADD_CUSTOMER_INFO")}
+            onPress={() =>
+              navigation.navigate(HomeStackIdentifiers.addCustomerInfo, {
+                fromScreen: "addCustomer",
+              })
+            }
           />
         </View>
       </View>
@@ -71,7 +75,9 @@ const SearchCustomerResult = ({ navigation, route }) => {
             <IconComp
               iconName={"format-list-bulleted-square"}
               onPress={() =>
-                navigation.navigate(HomeStackIdentifiers.customerInfo)
+                navigation.navigate(HomeStackIdentifiers.addCustomerInfo, {
+                  fromScreen: "search"
+                })
               }
             />
             <View style={{ padding: 5 }} />

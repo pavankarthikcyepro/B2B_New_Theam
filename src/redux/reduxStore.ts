@@ -36,7 +36,6 @@ import settingReducer from "./settingReducer";
 import complaintTrackerReducer from "./complaintTrackerReducer";
 import digitalPaymentReducer from "./digitalPaymentReducer";
 import customerInfoReducer from "./customerInfoReducer";
-import editCustomerInfoReducer from "./editCustomerInfoReducer";
 import searchCustomerReducer from "./searchCustomerReducer";
 
 
@@ -76,7 +75,6 @@ const reducer = combineReducers({
   complaintTrackerReducer,
   digitalPaymentReducer,
   customerInfoReducer,
-  editCustomerInfoReducer,
   searchCustomerReducer,
 });
 

@@ -147,6 +147,7 @@ const initialState = {
   subSourceTypesResponse: [],
   // Customer Address
   pincode: "",
+  addressName: "",
   urban_or_rural: 0,
   houseNum: "",
   streetName: "",
@@ -522,6 +523,9 @@ const customerInfoReducer = createSlice({
         case "PINCODE":
           state.pincode = text;
           break;
+        case "ADDRESS":
+          state.addressName = text;
+          break;
         case "RURAL_URBAN":
           state.urban_or_rural = Number(text);
           break;
@@ -549,6 +553,9 @@ const customerInfoReducer = createSlice({
       }
     },
     updateAddressByPincode: (state, action) => {
+      console.log("action -> ", action);
+      
+      state.addressName = action.payload.Name || "";
       state.village = action.payload.Block || "";
       state.mandal = state.mandal ? state.mandal : action.payload.Mandal || "";
       state.city = action.payload.District || "";
