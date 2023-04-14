@@ -3301,7 +3301,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                         value={taxPercent}
                         disabled={true}
                         editable={false}
-                        maxLength={2}
+                        maxLength={5}
                         style={[{ fontSize: 14, fontWeight: "400" }]}
                         keyboardType={"number-pad"}
                         onChangeText={(text) => {

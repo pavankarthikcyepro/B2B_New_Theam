@@ -228,7 +228,7 @@ const HomeScreen = ({ route, navigation }) => {
             if (json1?.length > 0) {
               return;
             }
-            if (json.length != 0) {
+            if (json.length !== 0) {
               let date = new Date(json[json.length - 1].createdtimestamp);
               // let dist = getDistanceBetweenTwoPoints(
               //   officeLocation.latitude,
@@ -241,7 +241,7 @@ const HomeScreen = ({ route, navigation }) => {
               // } else {
               //   setReason(false);
               // }
-              if (date.getDate() != new Date().getDate()) {
+              if (date.getDate() !== new Date().getDate()) {
                 setAttendance(true);
                 // if (startDate <= now && now <= startBetween) {
                 //   setAttendance(true);

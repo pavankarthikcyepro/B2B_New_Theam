@@ -3263,7 +3263,7 @@ export const ProformaComp = ({
                       },
                     ]}
                     // disabled= {isDownLoadVisible ? true :false}
-                    maxLength={2}
+                    maxLength={5}
                     disabled={!isInputsEditable()}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
