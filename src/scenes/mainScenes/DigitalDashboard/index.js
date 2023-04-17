@@ -1030,7 +1030,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         // moduleType: "home",
         // employeeDetail: "",
       });
-    }, 1000);
+    }, 2000);
   }
   return (
     <SafeAreaView style={styles.container}>

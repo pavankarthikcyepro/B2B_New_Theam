@@ -158,10 +158,9 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           employeeId = empId;
         }
         let dashboardType = route?.params?.screenName
-        if (route && route.params && !_.isEmpty(route.params.selectedEmpId)) {
+        if (route && route.params && route.params.selectedEmpId !== "") {
           employeeId = route.params.selectedEmpId
         }
-     
         // setEmployeeId(jsonObj.empId);
         // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
        

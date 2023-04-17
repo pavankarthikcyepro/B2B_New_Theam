@@ -76,7 +76,7 @@ import { DashboardTopTabNavigatorNew } from "../../../navigations/dashboardTopTa
 import { HomeStackIdentifiers } from "../../../navigations/appNavigator";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-
+import _ from "lodash";
 import {
   HeaderComp,
   DropDownComponant,
@@ -987,7 +987,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
         params: params,
         moduleType: "",
         employeeDetail: "",
-        selectedEmpId: "",
+        selectedEmpId: !_.isEmpty(selector.saveReceptionistfilterObj.selectedempId) ? selector.saveReceptionistfilterObj.selectedempId[0] : "",
         startDate: selector.saveReceptionistfilterObj.startDate,
         endDate: selector.saveReceptionistfilterObj.endDate,
         dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
@@ -997,7 +997,7 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
         // moduleType: "home",
         // employeeDetail: "",
       });
-    }, 1000);
+    }, 2000);
   }
   return (
     <SafeAreaView style={styles.container}>
