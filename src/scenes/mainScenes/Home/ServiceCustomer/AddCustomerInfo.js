@@ -10,7 +10,7 @@ import { addCustomer, clearStateData, getComplaintReasonsApi, getCustomerTypesAp
 import { Colors, GlobalStyle } from '../../../../styles';
 import * as AsyncStore from "../../../../asyncStore";
 import { showToast } from '../../../../utils/toast';
-import { PincodeDetailsNew } from '../../../../utils/helperFunctions';
+import { PincodeDetailsNew, isEmail } from '../../../../utils/helperFunctions';
 import {
   COMPLAINT_STATUS,
   EW_TYPE,
@@ -299,6 +299,13 @@ const AddCustomerInfo = ({ navigation, route }) => {
       return;
     }
 
+    if (selector.email.length > 0 && !isEmail(selector.email)) {
+      scrollToPos(2);
+      setOpenAccordion("1");
+      showToast("Please enter valid email");
+      return;
+    }
+
     if (!selector.sourceType) {
       scrollToPos(4);
       setOpenAccordion("1");
@@ -410,19 +417,19 @@ const AddCustomerInfo = ({ navigation, route }) => {
         contactNumber: selector.mobile,
         alternateContactNumber: selector.alterMobile,
         email: selector.email,
-        // addresses: [
-        //   {
-        //     houseNo: selector.houseNum,
-        //     street: selector.streetName,
-        //     villageOrTown: selector.village,
-        //     mandalOrTahasil: selector.mandal,
-        //     isUrban: selector.urban_or_rural === 1 ? true : false,
-        //     pin: selector.pincode,
-        //     state: selector.state,
-        //     city: selector.city,
-        //     district: selector.district,
-        //   },
-        // ],
+        addresses: [
+          {
+            houseNo: selector.houseNum,
+            street: selector.streetName,
+            villageOrTown: selector.village,
+            mandalOrTahasil: selector.mandal,
+            isUrban: selector.urban_or_rural === 1 ? true : false,
+            pin: selector.pincode,
+            state: selector.state,
+            city: selector.city,
+            district: selector.district,
+          },
+        ],
         gender: selector.gender ? selector.gender.toUpperCase() : "",
         customerType: selector.customerTypes,
         occupation: selector.occupation,
@@ -444,7 +451,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
           amountPaid: stringToNumber(selector.amcAmountPaid),
           warrantyType: "MCP",
           amc_name: selector.amcName,
-          number: stringToNumber(selector.amcPolicyNo),
+          number: selector.amcPolicyNo,
         },
         {
           startDate: convertDateForPayload(selector.ewStartDate),
@@ -452,7 +459,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
           amountPaid: stringToNumber(selector.ewAmountPaid),
           warrantyType: "EW",
           ewName: selector.ewType,
-          number: stringToNumber(selector.ewPolicyNo),
+          number: selector.ewPolicyNo,
         },
         {
           startDate: convertDateForPayload(selector.oemStartDate),
@@ -460,7 +467,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
           amountPaid: stringToNumber(selector.oemWarrantyAmount),
           warrantyType: "OEM",
           oemPeriod: selector.oemPeriod,
-          number: stringToNumber(selector.oemWarrantyNo),
+          number: selector.oemWarrantyNo,
         },
       ],
     };
@@ -471,7 +478,6 @@ const AddCustomerInfo = ({ navigation, route }) => {
     };
 
     console.log("payload -> ", payload);
-    // return;
     dispatch(addCustomer(payload));
   };
 
@@ -1737,7 +1743,8 @@ const AddCustomerInfo = ({ navigation, route }) => {
             </TouchableOpacity>
           )}
 
-          {isEditable && (
+          {(fromScreen == "search" && isEditable) ||
+          fromScreen == "addCustomer" ? (
             <View style={styles.buttonRow}>
               <Button
                 mode="contained"
@@ -1764,7 +1771,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 {fromScreen == "search" ? "Save" : "Submit"}
               </Button>
             </View>
-          )}
+          ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
       <LoaderComponent visible={selector.isLoading} />
