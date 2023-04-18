@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM, getDropAnalysisRedirectionsXrole, getDropAnalysisSalesHome } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -208,7 +208,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
 
             
         } else if (from === "targetScreen1CRM") {
-
+            
             if (!route.params.isFilterApplied){
                 payload = {
                     "loggedInEmpId": selectedEmpIds,
@@ -219,6 +219,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     "offset": 0,
                     "filterValue": "",
                     "forDropped": false,
+                    "self":route.params.isSelf
                 }
                 dispatch(getDropAnalysisRedirectionsCRM(payload))
             }else{
@@ -237,6 +238,135 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                 dispatch(getDropAnalysisRedirections(payload))
             }
            
+        } else if (from === "targetScreenDigital"){
+
+            if (route.params.xrole) {
+                payload = {
+                    "loggedInEmpId": selectedEmpIds,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "orgId": jsonObj.orgId,
+                    "limit": 1000,
+                    "offset": 0,
+                    "filterValue": "",
+                    "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                    "self": route.params.isSelf
+                }
+                dispatch(getDropAnalysisRedirectionsXrole(payload))
+            } else {
+                
+                if (!route.params.isFilterApplied) {
+                    payload = {
+                        "loggedInEmpId": selectedEmpIds,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "forDropped": false,
+                        "self": route.params.isSelf
+                    }
+                    dispatch(getDropAnalysisRedirectionsCRM(payload))
+                } else {
+                    if (route.params.isSelf){
+                        payload = {
+                            "loggedInEmpId": selectedEmpIds,
+                            "startDate": CurrentMonthFirstDate,
+                            "endDate": currentMonthLastDate,
+                            "orgId": jsonObj.orgId,
+                            "limit": 1000,
+                            "offset": 0,
+                            "filterValue": "",
+                            "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                            "self": route.params.isSelf
+                        }
+                        dispatch(getDropAnalysisRedirectionsCRM(payload))
+                    }else{
+                        payload = {
+                            "loginEmpId": selectedEmpIds,
+                            "startDate": CurrentMonthFirstDate,
+                            "endDate": currentMonthLastDate,
+                            "orgId": jsonObj.orgId,
+                            "limit": 1000,
+                            "offset": 0,
+                            "filterValue": "",
+                            "selectedEmpId": route.params.parentId ? [route.params.parentId] : [],
+                            "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                            "forDropped": false,
+                        }
+                        dispatch(getDropAnalysisRedirections(payload))
+                    }
+                    
+                }
+            }
+        }
+        else if (from === "targetScreenReceptionist") {
+
+            if (route.params.xrole) {
+                payload = {
+                    "loggedInEmpId": selectedEmpIds,
+                    "startDate": CurrentMonthFirstDate,
+                    "endDate": currentMonthLastDate,
+                    "orgId": jsonObj.orgId,
+                    "limit": 1000,
+                    "offset": 0,
+                    "filterValue": "",
+                    "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                    "self": route.params.isSelf,
+                    "dashboardType": "reception"
+                }
+                dispatch(getDropAnalysisRedirectionsXrole(payload))
+            } else {
+                
+                if (!route.params.isFilterApplied) {
+                    payload = {
+                        "loggedInEmpId": selectedEmpIds,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                        "self": route.params.isSelf,
+                        "dashboardType": route.params.dashboardType,
+                    }
+                    dispatch(getDropAnalysisRedirectionsCRM(payload))
+                } else {
+                    payload = {
+                        "loginEmpId": selectedEmpIds,
+                        "startDate": CurrentMonthFirstDate,
+                        "endDate": currentMonthLastDate,
+                        "orgId": jsonObj.orgId,
+                        "limit": 1000,
+                        "offset": 0,
+                        "filterValue": "",
+                        "selectedEmpId": route.params.parentId ? [route.params.parentId] : [],
+                        "branchCodes": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                        "forDropped": route.params.isForDropped ? route.params.isForDropped : false,
+                    }
+                    dispatch(getDropAnalysisRedirections(payload))
+                }
+            }
+        }
+        else if (from === "targetSaleshome") {
+
+            let payload = {
+                "endDate": currentMonthLastDate,
+                "loggedInEmpId": selectedEmpIds,
+                "startDate": CurrentMonthFirstDate,
+                "selectedEmpId": selectedEmpIds,
+                "levelSelected": lodash.isEmpty(branchCodes) ? [] : branchCodes,
+                "pageNo": 0,
+                "size": 5000,
+                "filterValue": "",
+                "isSelf": route?.params?.isSelf ? route?.params?.isSelf : false,
+                "stageName": "DROPPED"
+            }
+            dispatch(getDropAnalysisSalesHome(payload))
+
+
         }
         
         // const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
@@ -461,6 +591,18 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             getDropAnalysisFromRedirections(route?.params?.emp_id, "Home", route?.params?.dealercodes)
         } else if (route.params.fromScreen == "targetScreen1CRM" && route?.params?.emp_id) {
             getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreen1CRM", route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
+        } else if (route.params.fromScreen == "targetScreenDigital" && route?.params?.emp_id){
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreenDigital", route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
+        } else if (route.params.fromScreen == "targetScreenReceptionist" && route?.params?.emp_id) {
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreenReceptionist", route?.params?.dealercodes)
+            setLeadsFilterDropDownText("Enquiry")
+            setLeadsSubMenuFilterDropDownText("All");
+        } else if (route.params.fromScreen == "targetSaleshome" && route?.params?.emp_id){
+            getDropAnalysisFromRedirections(route?.params?.emp_id, "targetSaleshome", route?.params?.dealercodes)
             setLeadsFilterDropDownText("Enquiry")
             setLeadsSubMenuFilterDropDownText("All");
         }

@@ -7,13 +7,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../../../../../../styles";
+
 import moment from "moment/moment";
-import { RenderSourceModelParameters } from "../RenderSourceModelParameters";
-import PercentageToggleControl from "./PercentageToggleControl";
-import URL from "../../../../../../networking/endpoints";
+
+
+
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getCRMModelLive,
+  getCRMSourceLive,
   getReceptionistManagerModel,
   getReceptionistManagerSource,
   getReceptionistModel,
@@ -21,16 +23,27 @@ import {
   getReceptionistSource,
   getReceptionistSourceLive,
   getSourceModelDataForSelf,
-} from "../../../../../../redux/homeReducer";
+} from "../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { IconButton } from "react-native-paper";
-import { AppNavigator } from "../../../../../../navigations";
-import { achievementPercentage } from "../../../../../../utils/helperFunctions";
-import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
-import { useIsFocused } from "@react-navigation/native";
 
-const RecepSourceModel = ({ route, navigation }) => {
+import { achievementPercentage } from "../../../../../../utils/helperFunctions";
+
+import { useIsFocused } from "@react-navigation/native";
+import { Colors } from "../../../styles";
+import { AppNavigator } from "../../../navigations";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
+
+const RecepSourceModelCRM = ({ route, navigation }) => {
   const paramsMetadata = [
+    {
+      color: "#9E31BE",
+      paramName: "contact",
+      shortName: "Con",
+      initial: "contact",
+      toggleIndex: 0,
+    },
     {
       color: "#FA03B9",
       paramName: "Enquiry",
@@ -66,13 +79,14 @@ const RecepSourceModel = ({ route, navigation }) => {
       initial: "R",
       toggleIndex: 0,
     },
-    {
-      color: "#9E31BE",
-      paramName: "Lost",
-      shortName: "Lost",
-      initial: "L",
-      toggleIndex: 0,
-    },
+    // {
+    //   color: "#9E31BE",
+    //   paramName: "Lost",
+    //   shortName: "Lost",
+    //   initial: "L",
+    //   toggleIndex: 0,
+    // },
+    
   ];
   const idFocused= useIsFocused();
   const dispatch = useDispatch();
@@ -121,9 +135,6 @@ const RecepSourceModel = ({ route, navigation }) => {
               if (moduleType === "live-leads") {
                 navigation.navigate(
                   AppNavigator.DrawerStackIdentifiers.liveLeads)
-              } else if (moduleType === "DigitalDashboard"){
-                navigation.navigate(
-                  AppNavigator.DrawerStackIdentifiers.digitalDashboard)
               }
               else {
                 navigation.goBack();
@@ -140,7 +151,7 @@ const RecepSourceModel = ({ route, navigation }) => {
         setIsSourceIndex(0);
       }
       setIsLoading(true);
-     
+      
       if (moduleType === "live-leads") {
         // let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": selector.saveLiveleadObject?.levelSelected }
         // dispatch(getReceptionistSourceLive(payloadReceptionist));
@@ -163,17 +174,8 @@ const RecepSourceModel = ({ route, navigation }) => {
           dispatch(getReceptionistSource(newPayload));
           dispatch(getReceptionistModel(newPayload));
         } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
-          let newPayload3 = {
-            orgId: orgId,
-            loggedInEmpId: loggedInEmpId,
-            "startDate": selector.receptionistFilterIds.startDate,
-            "endDate": selector.receptionistFilterIds.endDate,
-            "dealerCodes": selector.receptionistFilterIds.dealerCodes,
-            "empList": empList ? empList : null,
-            "self": self
-          };
-          dispatch(getReceptionistManagerSource(newPayload3));
-          dispatch(getReceptionistManagerModel(newPayload3));
+          dispatch(getReceptionistManagerSource(newPayload));
+          dispatch(getReceptionistManagerModel(newPayload));
         } else if (selector.saveCRMfilterObj?.selectedempId) {
           let newPayload2 = {
             orgId: orgId,
@@ -209,15 +211,37 @@ const RecepSourceModel = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener("focus", () => {
       if (moduleType === "live-leads") {
-      
+     
         if (liveLeads_selector.saveLiveleadObject?.levelSelected !== "") {
-          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected }
-          dispatch(getReceptionistSourceLive(payloadReceptionist));
-          dispatch(getReceptionistModelLive(payloadReceptionist));
+          
+          if (role === "CRM") {
+            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "self":self}
+            dispatch(getCRMModelLive(payloadCRM))
+            dispatch(getCRMSourceLive(payloadCRM))
+          } else {
+            if (liveLeads_selector.saveLiveleadObjectCRM.levelSelected !== undefined){
+              let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObjectCRM?.levelSelected, "empList": empList ? empList : null }
+              dispatch(getReceptionistSourceLive(payloadReceptionist));
+              dispatch(getReceptionistModelLive(payloadReceptionist));
+            }else{
+              let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "empList": empList ? empList : null }
+              dispatch(getReceptionistSourceLive(payloadReceptionist));
+              dispatch(getReceptionistModelLive(payloadReceptionist));
+            }
+           
+          }
         } else {
-          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
-          dispatch(getReceptionistSourceLive(payloadReceptionist));
-          dispatch(getReceptionistModelLive(payloadReceptionist));
+         
+          if (role === "CRM") {
+            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, }
+            dispatch(getCRMModelLive(payloadCRM))
+            dispatch(getCRMSourceLive(payloadCRM))
+          } else {
+            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null }
+            dispatch(getReceptionistSourceLive(payloadReceptionist));
+            dispatch(getReceptionistModelLive(payloadReceptionist));
+          }
+
         }
 
       }
@@ -225,7 +249,7 @@ const RecepSourceModel = ({ route, navigation }) => {
     
   
     
-  }, [liveLeads_selector.saveLiveleadObject])
+  }, [liveLeads_selector.saveLiveleadObject, liveLeads_selector.saveLiveleadObjectCRM])
   
 
   useEffect(() => {
@@ -336,6 +360,8 @@ const RecepSourceModel = ({ route, navigation }) => {
       isSourceIndex === 0
         ? selector.receptionistSource
         : selector.receptionistModel;
+
+       
     return (
       <>
         {
@@ -643,7 +669,7 @@ const RecepSourceModel = ({ route, navigation }) => {
   );
 };
 
-export default RecepSourceModel;
+export default RecepSourceModelCRM;
 
 const styles = StyleSheet.create({
   flexRow: { flexDirection: "row", display: "flex" },

@@ -41,7 +41,7 @@ import {
   updateIsTeam,
   updateIsTeamPresent,
   updateTargetData,
-} from "../../../redux/liveLeadsReducer";
+} from "../../../redux/liveLeadsReducerReceptionist";
 import { AppNavigator } from "../../../navigations";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import moment from "moment/moment";
@@ -54,7 +54,7 @@ import {
 } from "../../../components";
 import { Colors } from "../../../styles";
 import { DashboardTopTabNavigatorNew } from "../../../navigations/dashboardTopTabNavigatorNew";
-import ParametersScreen from "./parametersScreen";
+import ParametersScreenRecep from "./ParametersScreenRecep";
 import Orientation from "react-native-orientation-locker";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
@@ -63,8 +63,8 @@ import _ from "lodash";
 const receptionistRole = ["Reception","Tele Caller", "CRE"];
 const crmRole = ["CRM"];
 
-const LiveLeadsScreen = ({ route, navigation }) => {
-  const selector = useSelector((state) => state.liveLeadsReducer);
+const LiveLeadsScreenReceptionist = ({ route, navigation }) => {
+  const selector = useSelector((state) => state.liveLeadsReducerReceptionist);
   const dispatch = useDispatch();
   const [selectedBranchName, setSelectedBranchName] = useState("");
 
@@ -167,7 +167,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
               headerRight: () => (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   {/* <SearchIcon /> */}
-                  <MyTaskFilter navigation={navigation} screenName="CRM_LIVE_FILTERS" />
+                  <MyTaskFilter navigation={navigation} screenName="CRM_LIVE_FILTERS_RECEP" />
 
                 </View>
               ),
@@ -187,7 +187,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
               headerRight: () => (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   {/* <SearchIcon /> */}
-                  <MyTaskFilter navigation={navigation} screenName="LIVE_LEADS_FILTERS" />
+                  <MyTaskFilter navigation={navigation} screenName="LIVE_LEADS_FILTERS_RECEP" />
 
                 </View>
               ),
@@ -488,7 +488,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         // getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
         //   .then((x) => {})
         //   .catch((y) => {});
-      }else{
+      } else {
         setIsTeamPresent(false);
         dispatch(updateIsTeamPresent(false));
         dispatch(updateIsTeam(false));
@@ -765,15 +765,12 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null, // selected employes id active-dropdowns APi
       "selectedEmpId": jsonObj.empId
     }
-      // if (!selector.saveLiveleadObject?.selectedempId) {
-      dispatch(getNewTargetParametersAllData(payload4)) // TEAM
-    // }
     //todo 
       if (!crmRole.includes(jsonObj.hrmsRole)){
         Promise.allSettled([
           //dispatch(getTargetParametersAllData(payload1)),
           dispatch(getTotalTargetParametersData(payload4)), // grand total
-         
+          dispatch(getNewTargetParametersAllData(payload4)), // TEAM
           // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
         ])
           .then(() => { })
@@ -1115,7 +1112,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                     {(selector.target_parameters_data.length > 0 ||
                       (isTeamPresent &&
                         selector.all_target_parameters_data.length > 0)) && (
-                      <ParametersScreen />
+                      <ParametersScreenRecep />
                     )}
                   </View>
                 </View>
@@ -1129,7 +1126,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
   );
 };
 
-export default LiveLeadsScreen;
+export default LiveLeadsScreenReceptionist;
 
 const styles = StyleSheet.create({
   container: {

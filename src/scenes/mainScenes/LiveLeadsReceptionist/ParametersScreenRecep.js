@@ -22,7 +22,7 @@ import {
   getReportingManagerList,
   getTargetReceptionistData,
   getUserWiseTargetParameters,
-} from "../../../redux/liveLeadsReducer";
+} from "../../../redux/liveLeadsReducerReceptionist";
 import { useNavigation } from "@react-navigation/native";
 import { Card, IconButton } from "react-native-paper";
 import { RenderGrandTotal } from "../Home/TabScreens/components/RenderGrandTotal";
@@ -42,9 +42,9 @@ const crmRole = ["CRM"];
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 const boxHeight = 35;
-const ParametersScreen = ({ route }) => {
+const ParametersScreenRecep = ({ route }) => {
   const navigation = useNavigation();
-  const selector = useSelector((state) => state.liveLeadsReducer);
+  const selector = useSelector((state) => state.liveLeadsReducerReceptionist);
   const dispatch = useDispatch();
 
   const [retailData, setRetailData] = useState(null);
@@ -64,7 +64,6 @@ const ParametersScreen = ({ route }) => {
   const [allParameters, setAllParameters] = useState([]);
   const [myParameters, setMyParameters] = useState([]);
   const [filterParameters, setFilterParameters] = useState([]);
-  const [filterParametersApplied, setfilterParametersApplied] = useState(false);
 
   const [isFilterViewExapanded, setisFilterViewExapanded] = useState(false);
   const [CRM_filterParameters, setCRM_filterParameters] = useState([]);
@@ -72,7 +71,6 @@ const ParametersScreen = ({ route }) => {
   const [crmFirstLevelData, setCrmFirstLevelData] = useState([]);
   const [crmFirstLevelTotalData, setCrmFirstLevelTotalData] = useState([]);
   const [creFirstLevelData, setCreFirstLevelData] = useState([]);
-  const [creIndex, setcreIndex] = useState(false);
   const [creSecondLevelData, setCreSecondLevelData] = useState([]);
   const [creFirstLevelSelfData, setCreFirstLevelSelfData] = useState([]);
   const [crmSecondLevelData, setcrmSecondLevelData] = useState([]);
@@ -81,8 +79,9 @@ const ParametersScreen = ({ route }) => {
   const [crmSecondLevelSelectedData, setCrmSecondLevelSelectedData] = useState([]);
   const [isViewExpanded, setIsViewExpanded] = useState(false);
   const [isViewCREExpanded, setIsViewCreExpanded] = useState(false);
+  const [creIndex, setcreIndex] = useState(false);
   const [isSecondLevelExpanded, setIsSecondLevelExpanded] = useState(false);
-  const [isThirdLevelExpanded, setIsThirdLevelExpanded] = useState(false);
+  
   const [indexLocal, setIndexLocal] = useState(-1);
   const [storeFirstLevelLocal, setStoreFirstLevelLocal] = useState([]);
   const [totalOfTeam, setTotalofTeam] = useState([]);
@@ -216,7 +215,6 @@ const ParametersScreen = ({ route }) => {
   useEffect(() => {
     navigation.addListener("focus", async () => {
       // setSelfInsightsData([]);
-    
       setisFilterViewExapanded(false);
       setIsViewCreExpanded(false);
       setIsViewExpanded(false);
@@ -237,6 +235,7 @@ const ParametersScreen = ({ route }) => {
           let tempPayload = {
             "orgId": jsonObj.orgId,
             "loggedInEmpId": jsonObj.empId,
+            "dashboardType": "reception"
           }
           dispatch(getCRM_ManagerLiveLeads(tempPayload))
         }
@@ -260,7 +259,7 @@ const ParametersScreen = ({ route }) => {
 
       let total = [totalKey1, totalKey2, totalKey3, totalKey4];
       setTotalofTeam(total);
-      let firstLevelData = selector.crm_response_data.CRM.map(item =>{
+      let firstLevelData = selector.crm_response_data.CRM?.map(item =>{
       
         setCrmFirstLevelTotalData(item.data)
 
@@ -274,7 +273,7 @@ const ParametersScreen = ({ route }) => {
           firstLevel.map((itemfrist) => {
             itemfrist.salesconsultant.forEach(element => {
               if (element.emp_id !== userData.empId) {
-                consultantForCRM.unshift(element)
+                consultantForCRM.push(element)
               }
 
             });
@@ -285,44 +284,21 @@ const ParametersScreen = ({ route }) => {
       })
 
       let tempArr = [];
-      let tempArrSelf = selector.crm_response_data.CRE?.map((item => item.data))
+      let tempArrSelf = selector.crm_response_data.CRE?.map((item => item.data) )
 
-      let firstLevelDataLevel2 = selector.crm_response_data.CRE?.map((item, index) => {
-
+      let firstLevelDataLevel2 = selector.crm_response_data.CRE?.map((item,index) => {
+       
         let firstLevel = item.data.consultantList?.filter(item2 => item2.emp_id === item.emp_id)
-
-
-
-        // if(salesPeopleUnderCre.length > 0){
-        //   Array.prototype.push.apply(tempArrSelf, salesPeopleUnderCre); 
-        // }
+        
         if (firstLevel.length > 0) {
         
-          Array.prototype.push.apply(tempArr, firstLevel);
-
+          Array.prototype.push.apply(tempArr, firstLevel); 
+          
         }
       })
-     
+    
       setCreFirstLevelData(tempArr)
       setCreFirstLevelSelfData(tempArrSelf);
-
-
-      // let firstLevelDataLevel2 = selector.crm_response_data.CRE.map(item => {
-        
-      //   setCreFirstLevelSelfData(item.data);
-      //   let firstLevel = item.data.consultantList.filter(item2 => item2.emp_id === item.emp_id)
-      //   let salesPeopleUnderCre = item.data.consultantList.filter(item2 => item2.emp_id !== item.emp_id)
-      
-      //   // let consultantForCRM = item.data.filter(item2 => item2.emp_id !== userData.empId)
-      //   if(salesPeopleUnderCre.length > 0){
-      //     setCreSecondLevelData(salesPeopleUnderCre)
-      //   }
-      //   if (firstLevel.length > 0) {
-      //     setCreFirstLevelData(firstLevel)
-      //   }
-      // })
-
-
       // set crm insights data 
       let updateReceptinistData = LocalDataForReceptionist.map(item => {
         if (item.paramName === "PreEnquiry") {
@@ -341,8 +317,6 @@ const ParametersScreen = ({ route }) => {
   
     
   }, [selector.crm_response_data])
-  
-  
   
 
   useEffect(async() => {
@@ -429,7 +403,9 @@ const ParametersScreen = ({ route }) => {
       
     }else{
       setCRM_filterParameters([]);
-      settotalOfTeamAfterFilter([])
+      settotalOfTeamAfterFilter([]);
+      setCRM_filterParametersSecondLevel([]);
+      setisFilterViewExapanded(false)
     }
     
   }, [selector.saveLiveleadObjectCRM])
@@ -570,16 +546,11 @@ const ParametersScreen = ({ route }) => {
   }, [selector.isTeam]);
 
   useEffect(() => {
-   
-    
-      allParameters[0] = {
-        ...allParameters[0],
-        targetAchievements: selector.totalParameters,
-      };
-      
-      setAllParameters(allParameters);
-   
-    
+    allParameters[0] = {
+      ...allParameters[0],
+      targetAchievements: selector.totalParameters,
+    };
+    setAllParameters(allParameters);
   }, [selector.totalParameters]);
 
   useEffect(async () => {
@@ -591,45 +562,21 @@ const ParametersScreen = ({ route }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         if (selector.all_emp_parameters_data.length > 0) {
-          if (!_.isEmpty(selector.saveLiveleadObject?.selectedempId)) {
-            myParams = [
-              ...selector.all_emp_parameters_data.filter(
-                (item) => item.empId == selector.saveLiveleadObject?.selectedempId[0]
-              ),
-            ];
-            myParams[0] = {
-              ...myParams[0],
-              isOpenInner: false,
-              employeeTargetAchievements: [],
-              targetAchievements: selector.totalParameters,
-              tempTargetAchievements: myParams[0]?.targetAchievements,
-            };
-
-            setAllParameters(myParams);
-          }else{
-            let myParams = [
-              ...selector.all_emp_parameters_data.filter(
-                (item) => item.empId === jsonObj.empId
-              ),
-            ];
-            myParams[0] = {
-              ...myParams[0],
-              isOpenInner: false,
-              employeeTargetAchievements: [],
-              targetAchievements: selector.totalParameters,
-              tempTargetAchievements: myParams[0]?.targetAchievements,
-            };
-            
-            setAllParameters(myParams);
-          }
-
-
-
-
-        
+          let myParams = [
+            ...selector.all_emp_parameters_data.filter(
+              (item) => item.empId === jsonObj.empId
+            ),
+          ];
+          myParams[0] = {
+            ...myParams[0],
+            isOpenInner: false,
+            employeeTargetAchievements: [],
+            targetAchievements: selector.totalParameters,
+            tempTargetAchievements: myParams[0]?.targetAchievements,
+          };
+          setAllParameters(myParams);
           if (!selector.saveLiveleadObject?.selectedempId) {
             setFilterParameters([])
-            setfilterParametersApplied(false);
           }
           // setMyParameters(myParams);
           // let tempParams = [
@@ -670,7 +617,7 @@ const ParametersScreen = ({ route }) => {
     } catch (error) {
       setIsLoading(false);
     }
-  }, [selector.all_emp_parameters_data, selector.totalParameters]);
+  }, [selector.all_emp_parameters_data]);
 
   useEffect(async () => {
     try {
@@ -680,10 +627,9 @@ const ParametersScreen = ({ route }) => {
       );
       if (employeeData) {
         if (selector.saveLiveleadObject?.selectedempId){
-          // getDataAfterFilter();
+          getDataAfterFilter();
         }else{
-          setFilterParameters([])
-          setfilterParametersApplied(false)
+          filterParameters([])
         }
        
       }
@@ -764,10 +710,9 @@ const ParametersScreen = ({ route }) => {
               // }
             }
           }
-          // setFilterParameters([...tempRawData])
+          setFilterParameters([...tempRawData])
           // alert(JSON.stringify(tempRawData))
-          setfilterParametersApplied(true);
-          setAllParameters([...tempRawData]);
+          // setAllParameters([...tempRawData]);
         }
       );
 
@@ -882,7 +827,6 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
-   
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -1012,7 +956,6 @@ const ParametersScreen = ({ route }) => {
               }
             }
             // alert(JSON.stringify(localData))
-           
             setAllParameters([...localData]);
           }
         );
@@ -1024,7 +967,6 @@ const ParametersScreen = ({ route }) => {
         // }
       }
     } else {
-      
       setAllParameters([...localData]);
     }
   };
@@ -1077,7 +1019,7 @@ const ParametersScreen = ({ route }) => {
 
       }, 1000);
     } else if (selector.saveLiveleadObjectCRM.selectedempId) {
-      
+     
       setTimeout(() => {
         // crm filter applied case
         if (params === "Contact") {
@@ -1156,21 +1098,14 @@ const ParametersScreen = ({ route }) => {
   }
 
 
-  async function navigateToEmsScreen(item) {
-    
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
+  function navigateToEmsScreen(item) {
     const leads = ["enquiry", "booking", "invoice"];
     const { paramName } = item;
     const isContact = paramName.toLowerCase() === "preenquiry";
     const isLead = leads.includes(paramName.toLowerCase());
     // let makeparams = paramName
     let employeeDetail;
-    // if(filterParameters.length>0){
-      if (filterParametersApplied) {
+    if(filterParameters.length>0){
        employeeDetail = {
         empName: "",
         empId: selector.saveLiveleadObject?.selectedempId[0],
@@ -1180,7 +1115,7 @@ const ParametersScreen = ({ route }) => {
     }else{
        employeeDetail = {
         empName: "",
-        empId: jsonObj.empId,
+        empId: "",
         orgId: "",
         branchId: "",
       };
@@ -1210,7 +1145,6 @@ const ParametersScreen = ({ route }) => {
         });
       }, 100);
     }
-  }
   }
 
   const renderSelfInsightsView = (item, index) => {
@@ -1352,7 +1286,7 @@ const ParametersScreen = ({ route }) => {
     );
   };
 
-  const formatCRrSecondLeveleData = (item, index) => {
+  const formatCRESecondLeveleData = (item,index)=>{
 
     setcreIndex(index)
 
@@ -1363,7 +1297,7 @@ const ParametersScreen = ({ route }) => {
 
       setIsViewCreExpanded(true)
     }
-
+    
     setStoreCREFirstLevelLocal(item);
 
     let salesPeopleUnderCre = creFirstLevelSelfData[index].consultantList.filter(item2 => item2.emp_id !== item.emp_id)
@@ -1378,6 +1312,7 @@ const ParametersScreen = ({ route }) => {
       <>{
         creFirstLevelData.length > 0 &&
         creFirstLevelData.map((item, index) => {
+         
           return (
 
             <View style={{
@@ -1468,9 +1403,9 @@ const ParametersScreen = ({ route }) => {
                       branchName={getBranchName(item?.branch)}
                       color={Colors.CORAL}
                       titleClick={async () => {
-                        formatCRrSecondLeveleData(item, index);
-                        // setIsViewCreExpanded(!isViewCREExpanded)
-                        // setStoreCREFirstLevelLocal(item);
+                       
+                        formatCRESecondLeveleData(item,index);
+                       
                         // setStoreFirstLevelLocal(item)
 
                         return;
@@ -1487,13 +1422,13 @@ const ParametersScreen = ({ route }) => {
                     >
                       {[
                         isViewCREExpanded && index === creIndex ? item.contactCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].contactsCount : 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].enquirysCount : 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].bookingsCount : 0 || 0,
+                        isViewCREExpanded && index === creIndex ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].enquirysCount: 0 || 0,
+                        isViewCREExpanded && index === creIndex ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].bookingsCount: 0 || 0,
                         isViewCREExpanded && index === creIndex ? item.retailCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].RetailCount : 0 || 0,
                       ].map((e, index) => {
                         return (
                           <Pressable onPress={() => {
-
+                            
                             
                             if (e > 0) {
                               if (isViewCREExpanded) {
@@ -2045,7 +1980,7 @@ const ParametersScreen = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                     color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" :"#FF4040"}
+                      color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
@@ -2264,7 +2199,7 @@ const ParametersScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#2C97DE"}
+                        color={"#C62159"}
                         titleClick={async () => {
                         
                           return;
@@ -2354,9 +2289,28 @@ const ParametersScreen = ({ route }) => {
   const handleSourceModalNavigation = (item, parentId = "", empList = [], role = "",self = false) => {
     
     switch (item.roleName.toLowerCase()) {
+      case "reception":
+        navigation.navigate(
+          "RECEP_SOURCE_MODEL_CRM_RECEP",
+          {
+            empId: parentId ? parentId : item?.emp_id,
+            headerTitle: item?.emp_name,
+            loggedInEmpId: parentId ? parentId : item.emp_id,
+            type: "TEAM",
+            moduleType: "live-leads",
+            headerTitle: "Source/Model",
+            orgId: userData.orgId,
+            role: item.roleName,
+            branchList: userData.branchs.map(
+              (a) => a.branchId
+            ),
+            empList: empList,
+            self: false
+          }
+        );
       case "tele caller":
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
+          "RECEP_SOURCE_MODEL_CRM_RECEP",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2376,7 +2330,7 @@ const ParametersScreen = ({ route }) => {
         break;
       case "cre":
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
+          "RECEP_SOURCE_MODEL_CRM_RECEP",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2397,7 +2351,7 @@ const ParametersScreen = ({ route }) => {
       case "field dse":
 
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
+          "RECEP_SOURCE_MODEL_CRM_RECEP",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2446,7 +2400,7 @@ const ParametersScreen = ({ route }) => {
         // )
        
         navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
+          "RECEP_SOURCE_MODEL_CRM_RECEP",
           {
             empId: parentId ? parentId : item?.emp_id,
             headerTitle: item?.emp_name,
@@ -2479,10 +2433,10 @@ const ParametersScreen = ({ route }) => {
           
             return (
               <View style={{
-                borderColor: isFilterViewExapanded ? Colors.BLUE : "",
+                borderColor: isFilterViewExapanded  ? Colors.BLUE : "",
                 borderWidth: isFilterViewExapanded ? 1 : 0,
                 borderRadius: 10,
-                margin: isFilterViewExapanded ? 5 : 0
+                margin: isFilterViewExapanded  ? 5 : 0
               }}>
                 <View
                   style={{
@@ -2507,12 +2461,12 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    if (isFilterViewExapanded) {
+                    if(isFilterViewExapanded){
                       handleSourceModalNavigation(item, item.emp_id, [item.emp_id])
-                    } else {
-                      handleSourceModalNavigation(item, item.emp_id, [])
+                    }else{
+                      handleSourceModalNavigation(item, item.emp_id, [])   
                     }
-                    // handleSourceModalNavigation(item, item.emp_id, [])
+                   
                   }}
                 >
                   <Text
@@ -2576,12 +2530,6 @@ const ParametersScreen = ({ route }) => {
                           item.bookingCount || 0,
                           item.retailCount || 0,
                         ]. */}
-                        {/* {[
-                          selector.receptionist_self_data?.contactsCount || 0,
-                          selector.receptionist_self_data?.enquirysCount || 0,
-                          selector.receptionist_self_data?.bookingsCount || 0,
-                          selector.receptionist_self_data?.RetailCount || 0,
-                        ]. */}
                         {[
                           isFilterViewExapanded ? item.contactCount : selector.receptionist_self_data?.contactsCount || 0,
                           isFilterViewExapanded ? item.enquiryCount : selector.receptionist_self_data?.enquirysCount || 0,
@@ -2591,8 +2539,10 @@ const ParametersScreen = ({ route }) => {
                           map((e, index) => {
                           return (
                             <Pressable onPress={() => {
+
+                              // todo redirections logic filter UI 
                               if (e > 0) {
-                                if (isFilterViewExapanded) {
+                                if(isFilterViewExapanded){
                                   if (index === 0) {
                                     navigateToEMS("Contact", "", [item.emp_id], false, userData.empId, true);
 
@@ -2603,7 +2553,7 @@ const ParametersScreen = ({ route }) => {
                                   } else if (index === 3) {
                                     navigateToEMS("Invoice", "", [item.emp_id], false, userData.empId, true);
                                   }
-                                } else {
+                                }else{
                                   if (index === 0) {
                                     navigateToEMS("Contact", "", [], false, userData.empId, true);
 
@@ -2615,21 +2565,8 @@ const ParametersScreen = ({ route }) => {
                                     navigateToEMS("Invoice", "", [], false, userData.empId, true);
                                   }
                                 }
-
+                                
                               }
-                              // // todo redirections logic filter UI 
-                              // if (e > 0) {
-                              //   if (index === 0) {
-                              //     navigateToEMS("Contact", "", [], false, userData.empId, true);
-
-                              //   } else if (index === 1) {
-                              //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
-                              //   } else if (index === 2) {
-                              //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
-                              //   } else if (index === 3) {
-                              //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
-                              //   }
-                              // }
 
                             }}>
                               <View
@@ -2757,7 +2694,7 @@ const ParametersScreen = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#2C97DE"}
+                        color={"#2C97DE"} 
                         titleClick={async () => {
 
                           return;
@@ -2785,7 +2722,7 @@ const ParametersScreen = ({ route }) => {
                           item?.contactCount || 0,
                           item?.enquiryCount || 0,
                           item?.bookingCount || 0,
-                          item?.retailCount || 0,
+                          item?.retailCount  || 0,
                         ].
                           map((e, index) => {
                             return (
@@ -2859,22 +2796,58 @@ const ParametersScreen = ({ route }) => {
         <Pressable
           style={{ alignSelf: "flex-end" }}
           onPress={() => {
-            navigation.navigate(
-              "RECEP_SOURCE_MODEL_CRM",
-              {
-                empId: selector.login_employee_details.empId,
-                headerTitle: "Grand Total",
-                loggedInEmpId: selector.login_employee_details.empId,
-                type: "TEAM",
-                moduleType: "live-leads",
-                orgId: userData.orgId,
-                role: userData.hrmsRole,
-                branchList: userData.branchs.map(
-                  (a) => a.branchId
-                ),
-                self: false
-              }
-            );
+            // navigation.navigate(
+            //   "RECEP_SOURCE_MODEL_CRM_RECEP",
+            //   {
+            //     empId: selector.login_employee_details.empId,
+            //     headerTitle: "Grand Total",
+            //     loggedInEmpId: selector.login_employee_details.empId,
+            //     type: "TEAM",
+            //     moduleType: "live-leads",
+            //     orgId: userData.orgId,
+            //     role: userData.hrmsRole,
+            //     branchList: userData.branchs.map(
+            //       (a) => a.branchId
+            //     ),
+            //     self: false
+            //   }
+            // );
+            if (CRM_filterParameters.length > 0) {
+
+              handleSourceModalNavigation(CRM_filterParameters[0], CRM_filterParameters[0].emp_id)
+              // navigation.navigate(
+              //   "RECEP_SOURCE_MODEL_CRM_RECEP",
+              //   {
+              //     empId: CRM_filterParameters[0].emp_id,
+              //     headerTitle: "Source/Model",
+              //     loggedInEmpId: CRM_filterParameters[0].emp_id,
+              //     type: "TEAM",
+              //     moduleType: "live-leads",
+              //     orgId: userData.orgId,
+              //     role: CRM_filterParameters[0].roleName,
+              //     branchList: userData.branchs.map(
+              //       (a) => a.branchId
+              //     ),
+              //   }
+              // );
+            } else {
+              navigation.navigate(
+                "RECEP_SOURCE_MODEL_CRM_RECEP",
+                {
+                  empId: selector.login_employee_details.empId,
+                  headerTitle: "Source/Model",
+                  loggedInEmpId: selector.login_employee_details.empId,
+                  type: "TEAM",
+                  moduleType: "live-leads",
+                  orgId: userData.orgId,
+                  role: userData.hrmsRole,
+                  branchList: userData.branchs.map(
+                    (a) => a.branchId
+                  ),
+                  self: false,
+                }
+              );
+            }
           }}
         >
           <Text
@@ -2886,7 +2859,7 @@ const ParametersScreen = ({ route }) => {
               paddingRight: 12,
             }}
           >
-            {/* Source/Model */}
+            Source/Model
           </Text>
         </Pressable>
 
@@ -3043,7 +3016,6 @@ const ParametersScreen = ({ route }) => {
                       style={{ width: 70, height: 20, marginRight: 5 }}
                     ></View> */}
                       <View
-                        // style={styles.itemBox}
                         style={{ width: 70, height: 20, marginRight: 5, alignItems: "center" }}
                       >
                         <Text style={{
@@ -3096,7 +3068,7 @@ const ParametersScreen = ({ route }) => {
                             style={{ alignSelf: "flex-end" }}
                             onPress={() => {
                               navigation.navigate(
-                                "RECEP_SOURCE_MODEL_CRM",
+                                "RECEP_SOURCE_MODEL_CRM_RECEP",
                                 {
                                   empId: selector.login_employee_details.empId,
                                   headerTitle: "Grand Total",
@@ -3392,9 +3364,7 @@ const ParametersScreen = ({ route }) => {
                           })}
 
 
-                        {/* {allParameters.length > 0 && filterParameters.length == 0 && */}
-                        {
-                          allParameters.length > 0  &&
+                        {allParameters.length > 0 && filterParameters.length == 0 &&
                           allParameters.map((item, index) => {
                             return (
                               <View key={`${item.empId} ${index}`}>
@@ -5828,9 +5798,10 @@ const ParametersScreen = ({ route }) => {
                                 navigation.navigate(
                                   AppNavigator.HomeStackIdentifiers.sourceModel,
                                   {
-                                    empId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId)  ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
+                                    empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
                                     headerTitle: "Grand Total",
-                                    loggedInEmpId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
+                                    loggedInEmpId:
+                                      filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
                                     type: "TEAM",
                                     moduleType: "live-leads",
                                   }
@@ -5944,9 +5915,9 @@ const ParametersScreen = ({ route }) => {
                       navigation.navigate(
                         AppNavigator.HomeStackIdentifiers.sourceModel,
                         {
-                          empId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
+                          empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
                           headerTitle: "Source/Model",
-                          loggedInEmpId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
+                          loggedInEmpId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
                           type: selector.isDSE ? "SELF" : "INSIGHTS",
                           moduleType: "live-leads",
                           orgId: selector.login_employee_details.orgId,
@@ -5989,7 +5960,7 @@ const ParametersScreen = ({ route }) => {
                     style={{ alignSelf: "flex-end" }}
                     onPress={() => {
                       navigation.navigate(
-                        "RECEP_SOURCE_MODEL_CRM",
+                        "RECEP_SOURCE_MODEL_CRM_RECEP",
                         {
                           empId: selector.login_employee_details.empId,
                           headerTitle: "Source/Model",
@@ -6056,7 +6027,7 @@ const ParametersScreen = ({ route }) => {
                       
                         handleSourceModalNavigation(CRM_filterParameters[0],CRM_filterParameters[0].emp_id)
                         // navigation.navigate(
-                        //   "RECEP_SOURCE_MODEL_CRM",
+                        //   "RECEP_SOURCE_MODEL_CRM_RECEP",
                         //   {
                         //     empId: CRM_filterParameters[0].emp_id,
                         //     headerTitle: "Source/Model",
@@ -6072,7 +6043,7 @@ const ParametersScreen = ({ route }) => {
                         // );
                       }else{
                         navigation.navigate(
-                          "RECEP_SOURCE_MODEL_CRM",
+                          "RECEP_SOURCE_MODEL_CRM_RECEP",
                           {
                             empId: selector.login_employee_details.empId,
                             headerTitle: "Source/Model",
@@ -6145,7 +6116,7 @@ const ParametersScreen = ({ route }) => {
   );
 };
 
-export default ParametersScreen;
+export default ParametersScreenRecep;
 
 export const RenderLevel1NameView = ({
   level,

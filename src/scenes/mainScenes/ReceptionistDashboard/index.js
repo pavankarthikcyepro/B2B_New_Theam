@@ -57,8 +57,9 @@ import {
   updateIsModalVisible,
   getReceptionistManagerData,
   get_xrole_SalesManagerDigitalTeam,
-  getCRM_ReceptionistManagerData,
   updatereceptionistDataObjectData,
+  get_xrole_SalesManagerReceptinistTeam,
+  getCRM_ReceptionistDashborad,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -75,7 +76,7 @@ import { DashboardTopTabNavigatorNew } from "../../../navigations/dashboardTopTa
 import { HomeStackIdentifiers } from "../../../navigations/appNavigator";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import { TargetAchivementComp } from "./targetAchivementComp";
+import _ from "lodash";
 import {
   HeaderComp,
   DropDownComponant,
@@ -101,18 +102,18 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import { getNotificationList } from "../../../redux/notificationReducer";
 import AttendanceFromSelf from "../../../components/AttendanceFromSelf";
-import DigitalDashBoardTargetScreen from "./targetScreen";
+import ReceptionistDashBoardTargetScreen from "./targetScreen";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import Orientation from "react-native-orientation-locker";
-import _ from "lodash";
+
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
 const receptionistRole = ["Reception", "CRM"];
 
-const DigitalDashBoardScreen = ({ route, navigation }) => {
+const ReceptionistDashboardScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [salesDataAry, setSalesDataAry] = useState([]);
@@ -160,6 +161,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
       dispatch(updatereceptionistDataObjectData({}))
+      
       setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
@@ -381,7 +383,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation, selector.saveCRMfilterObj]);
+  }, [navigation, selector.saveReceptionistfilterObj]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -398,7 +400,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   };
   const moveToFilter = () => {
     navigation.navigate(
-        "DIGITAL_DASHBOARD_FILTER",
+        "RECEPTIONIST_DASHBOARD_FILTER",
         {
           isFromLogin: false,
         }
@@ -476,25 +478,30 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     let payloadXrole = {
         orgId: jsonObj.orgId,
         loggedInEmpId: jsonObj.empId,
-        "dashboardType": "digital"
+      "dashboardType": "reception"
       };
-      
-      if (!selector.saveCRMfilterObj.selectedempId){
-        dispatch(get_xrole_SalesManagerDigitalTeam(payloadXrole))
+     
+      if (jsonObj.hrmsRole === "CRM"){
+        if (!selector.saveReceptionistfilterObj.selectedempId) {
+          dispatch(getCRM_ReceptionistDashborad(payloadXrole))
+        }
+      }else{
+        if (!selector.saveReceptionistfilterObj.selectedempId) {
+          dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole))
+        }
       }
-
-
+     
       Promise.all([
-       
+        
         dispatch(getOrganaizationHirarchyList(payload)),
-        dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
-        dispatch(
-          getVehicalModalList({
-            bu: jsonObj.orgId,
-            dropdownType: "model",
-            parentId: 0,
-          })
-        ),
+        // dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
+        // dispatch(
+        //   getVehicalModalList({
+        //     bu: jsonObj.orgId,
+        //     dropdownType: "model",
+        //     parentId: 0,
+        //   })
+        // ),
         // dispatch(
         //   getDealerRanking({
         //     payload: {
@@ -713,8 +720,8 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
-    getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => {});
+    // getTaskTableDataFromServer(empId, payload);
+    // getTargetParametersDataFromServer(payload).catch((y) => {});
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -818,18 +825,18 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       //   ? selector.filterIds.levelSelected
       //   : null;
     }
-    Promise.allSettled([
-      //dispatch(getTargetParametersAllData(payload1)),
-      dispatch(getTotalTargetParametersData(payload2)),
-      dispatch(getNewTargetParametersAllData(payload2)),
-      dispatch(
-        isTeamPresentLocal
-          ? getTargetParametersEmpDataInsights(payload1)
-          : getTargetParametersEmpData(payload1)
-      ),
-    ])
-      .then(() => {})
-      .catch((y) => {});
+    // Promise.allSettled([
+    //   //dispatch(getTargetParametersAllData(payload1)),
+    //   dispatch(getTotalTargetParametersData(payload2)),
+    //   dispatch(getNewTargetParametersAllData(payload2)),
+    //   dispatch(
+    //     isTeamPresentLocal
+    //       ? getTargetParametersEmpDataInsights(payload1)
+    //       : getTargetParametersEmpData(payload1)
+    //   ),
+    // ])
+    //   .then(() => {})
+    //   .catch((y) => {});
   };
 
   useEffect(() => {
@@ -849,9 +856,6 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   useEffect(() => {
     setIsTeam(selector.isTeam);
   }, [selector.isTeam]);
-
-
- 
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -886,52 +890,20 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
     );
     if (!screenName) {
-      if (selector.saveCRMfilterObj?.selectedempId){
-        if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {  
-          setTimeout(() => {
-            navigation.navigate("LEADS", {
-              screenName: "TargetScreenCRM",
-              params: params,
-              moduleType: "",
-              employeeDetail: "",
-              selectedEmpId: selectedEmpId,
-              startDate: "",
-              endDate: "",
-              dealerCodes: [],
-              ignoreSelectedId: false,
-              parentId: selector.saveCRMfilterObj?.selectedempId[0],
-              istotalClick: true,
-              self: true
-            });
-          }, 1000);
-        } else {
-       setTimeout(() => {
+      if (selector.saveReceptionistfilterObj?.selectedempId){
+        setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "Home",
             params: params,
             moduleType: "",
             employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+            selectedEmpId: selector.saveReceptionistfilterObj?.selectedempId,
+            startDate: selector.saveReceptionistfilterObj.startDate,
+            endDate: selector.saveReceptionistfilterObj.endDate,
+            dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
             ignoreSelectedId : true
           });
         }, 1000);
-        }
-        // setTimeout(() => {
-        //   navigation.navigate("LEADS", {
-        //     screenName: "Home",
-        //     params: params,
-        //     moduleType: "",
-        //     employeeDetail: "",
-        //     selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-        //     startDate: selector.saveCRMfilterObj.startDate,
-        //     endDate: selector.saveCRMfilterObj.endDate,
-        //     dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-        //     ignoreSelectedId : true
-        //   });
-        // }, 1000);
       } else if (userData.hrmsRole === "CRM"){
         setTimeout(() => {
           navigation.navigate("LEADS", {
@@ -946,14 +918,15 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             ignoreSelectedId:false,
             parentId: selectedEmpId[0],
             istotalClick: true,
-            self: false
+            self: false,
+            dashboardType:"reception"
           });
         }, 1000);
       }
       else{
         setTimeout(() => {
           navigation.navigate("LEADS", {
-            screenName: "DigitalHome",
+            screenName: "ReceptionistHome",
             params: params,
             moduleType: "",
             employeeDetail: "",
@@ -981,30 +954,24 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   }
   function navigateToDropAnalysis(params, isfromTree = false, parentId = "", isSelf = false, xrole = false) {
 
-    if (selector.saveCRMfilterObj.selectedempId) {
-      if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"){
+    if (selector.saveReceptionistfilterObj.selectedempId) {
+      if (selector.saveReceptionistfilterObj?.selectedDesignation) {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: true, xrole: false, isForDropped: true },
-        });
-      }else{
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-          screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: selector.saveCRMfilterObj.dealerCodes, isFilterApplied: true, isSelf: isSelf, xrole: false, isForDropped: false },
+          params: { emp_id: selector.saveReceptionistfilterObj.selectedempId[0], fromScreen: "targetScreenReceptionist", dealercodes: selector.saveReceptionistfilterObj.dealerCodes, isFilterApplied: true, isSelf: true, xrole: false, isForDropped: true },
         });
       }
-      
     } else {
 
       if (isfromTree) {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false },
+          params: { emp_id: params, fromScreen: "targetScreenReceptionist", dealercodes: [], isFilterApplied: true, parentId: parentId, isSelf: isSelf, xrole: xrole, isForDropped: false, dashboardType: "reception", },
         });
       } else {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: params, fromScreen: "targetScreenDigital", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: true },
+          params: { emp_id: params, fromScreen: "targetScreenReceptionist", dealercodes: [], isFilterApplied: false, isSelf: isSelf, xrole: xrole, isForDropped: true, dashboardType: "reception", },
         });
       }
 
@@ -1016,14 +983,14 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
     setTimeout(() => {
       navigation.navigate("PRE_ENQUIRY", {
-        screenName: "digital",
+        screenName: "reception",
         params: params,
         moduleType: "",
         employeeDetail: "",
-        selectedEmpId: !_.isEmpty(selector.saveCRMfilterObj.selectedempId) ? selector.saveCRMfilterObj.selectedempId[0] : "",
-        startDate: selector.saveCRMfilterObj.startDate,
-        endDate: selector.saveCRMfilterObj.endDate,
-        dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+        selectedEmpId: !_.isEmpty(selector.saveReceptionistfilterObj.selectedempId) ? selector.saveReceptionistfilterObj.selectedempId[0] : "",
+        startDate: selector.saveReceptionistfilterObj.startDate,
+        endDate: selector.saveReceptionistfilterObj.endDate,
+        dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
         ignoreSelectedId: "",
         parentId: "",
         // param: param === "INVOICE" ? "Retail" : param,
@@ -1069,28 +1036,20 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             <View style={styles.view7}>
               <TouchableOpacity
                 onPress={() => {
-                  
-                  if (!_.isEmpty(selector.saveCRMfilterObj.selectedempId) && !_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
-                  
-                    
-                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                      
-                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerPreInquiryCount > 0) {
-                       
-                        navigateToContact("Contact");
-                      }
-                    } else {
-                      if (selector?.receptionistDataDigitalFilter_CRE?.contactsCount > 0) {
-                      
-                        navigateToContact("Contact");
-                      }
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.contactsCount > 0) {
+                      navigateToContact("Contact")
                     }
-
                   } else {
-                    if (selector.receptionistData.contactsCount > 0) {
-                  
-                      navigateToContact("Contact");
-                    }
+                    
+                      if (userData.hrmsRole === "CRM" && selector.receptionistData_CRM.contactsCount > 0) {
+                        navigateToContact("Contact")
+                      }else if (selector.receptionistDataV2.contactsCount > 0) {
+                        navigateToContact("Contact")
+                      }
+                    
+                    
                   }
                 }}
                 style={styles.view8}
@@ -1100,35 +1059,33 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ?
-                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"?
-                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerPreInquiryCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.contactsCount || 0 
-                     : selector.receptionistData?.contactsCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.contactsCount || 0 :
+
+                      userData.hrmsRole === "CRM" ?
+                        selector.receptionistData_CRM?.contactsCount || 0
+                        :
+                        selector.receptionistDataV2?.contactsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
-              
+             
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
-                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount > 0) {
-                        navigateToEMS("ENQUIRY", "", [userData.empId]);
-                      }
-                    } else {
-                      if (selector?.receptionistDataDigitalFilter_CRE?.enquirysCount > 0) {
-                        navigateToEMS("ENQUIRY", "", [userData.empId]);
-                      }
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.enquirysCount > 0) {
+                      navigateToEMS("ENQUIRY", "", [userData.empId])
                     }
-
                   } else {
-                    if (selector.receptionistData.enquirysCount > 0) {
-                      navigateToEMS("ENQUIRY", "", [userData.empId]);
+                    if (userData.hrmsRole === "CRM" && selector.receptionistData_CRM.enquirysCount > 0) {
+                      navigateToEMS("ENQUIRY", "", [userData.empId])
+                    }else if (selector.receptionistDataV2.enquirysCount > 0) {
+                      navigateToEMS("ENQUIRY", "", [userData.empId])
                     }
                   }
-
-                  // selector?.receptionistDataDigitalFilter_CRE?.enquirysCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount || selector.receptionistData.enquirysCount > 0 &&
-                  //   navigateToEMS("ENQUIRY", "", [userData.empId]);
+                     
                 }}
                 style={styles.view8}
               >
@@ -1137,100 +1094,96 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ?
-                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.enquirysCount || 0 
-                    : selector.receptionistData?.enquirysCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.enquirysCount || 0 :
+                      userData.hrmsRole === "CRM" ?
+                        selector.receptionistData_CRM?.enquirysCount || 0
+                      : 
+                        selector.receptionistDataV2?.enquirysCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
-                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"){
-                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount > 0) {
-                        navigateToEMS("BOOKING", "", [userData.empId]);
-                      }
-                    }else{
-                      if (selector?.receptionistDataDigitalFilter_CRE?.bookingsCount > 0) {
-                        navigateToEMS("BOOKING", "", [userData.empId]);
-                      }
+
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.bookingsCount > 0) {
+                      navigateToEMS("BOOKING", "", [userData.empId])
                     }
-                    
                   } else {
-                    if (selector.receptionistData?.bookingsCount > 0) {
-                      navigateToEMS("BOOKING", "", [userData.empId]);
+                    if (userData.hrmsRole === "CRM" && selector.receptionistData_CRM.bookingsCount > 0) {
+                      navigateToEMS("BOOKING", "", [userData.empId])
+                    } else if (selector.receptionistDataV2.bookingsCount > 0) {
+                      navigateToEMS("BOOKING", "", [userData.empId])
                     }
                   }
-
-
-                  selector?.receptionistDataDigitalFilter_CRE?.bookingsCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount || selector.receptionistData.bookingsCount > 0 &&
-                    navigateToEMS("BOOKING", "", [userData.empId]);
+                  // selector.receptionistData_ReceptionistDashboard_xrole?.bookingsCount > 0 || selector.receptionistDataV2.bookingsCount > 0 ?
+                  //   navigateToEMS("BOOKING", "", [userData.empId]) : null
                 }}
                 style={styles.view8}
               >
                 <Text style={styles.rankHeadingText}>{"Booking"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ?
-                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.bookingsCount || 0 
-                       : selector.receptionistData?.bookingsCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.bookingsCount || 0 :
+                      userData.hrmsRole === "CRM" ?
+                        selector.receptionistData_CRM?.bookingsCount || 0
+                        : 
+                      selector.receptionistDataV2?.bookingsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
-                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount > 0) {
-                        navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
-                      }
-                    } else {
-                      if (selector?.receptionistDataDigitalFilter_CRE?.RetailCount > 0) {
-                        navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
-                      }
-                    }
 
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.RetailCount > 0) {
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                    }
                   } else {
-                    if (selector.receptionistData.RetailCount > 0) {
-                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                    
+                    if (userData.hrmsRole === "CRM" && selector.receptionistData_CRM.RetailCount > 0) {
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                    } else if (selector.receptionistDataV2.RetailCount) {
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
                     }
                   }
-
-                  // selector?.receptionistDataDigitalFilter_CRE?.RetailCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
                 <Text style={styles.rankHeadingText}>{"Retail"}</Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ?
-                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.RetailCount || 0 
-                     : selector.receptionistData?.RetailCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.RetailCount || 0 : 
+                      userData.hrmsRole === "CRM" ?
+                        selector.receptionistData_CRM?.RetailCount || 0
+                        : selector.receptionistDataV2?.RetailCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  if (selector.saveCRMfilterObj.selectedempId && selector.saveCRMfilterObj?.selectedDesignation) {
-                    if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                      if (selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount > 0) {
-                        navigateToDropAnalysis(userData.empId, false, "", false, true)
-                      }
-                    } else {
-                      if (selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount > 0) {
-                        navigateToDropAnalysis(userData.empId, false, "", false, true)
-                      }
+                  if (selector.saveReceptionistfilterObj?.selectedDesignation
+                    && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception") {
+                    if (selector.receptionistData_ReceptionistDashboard_xrole?.totalDroppedCount > 0) {
+                      navigateToDropAnalysis(userData.empId, false, "", false, true)
                     }
-
                   } else {
-                    if (selector.receptionistData.totalDroppedCount > 0) {
+                    if (userData.hrmsRole === "CRM" && selector.receptionistData_CRM.totalDroppedCount > 0) {
+                      navigateToDropAnalysis(userData.empId, false, "", false, false)
+                    } else if (selector.receptionistDataV2.totalDroppedCount) {
                       navigateToDropAnalysis(userData.empId, false, "", false, true)
                     }
                   }
-                  // selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || selector.receptionistData.totalDroppedCount > 0 &&
+
+                  // selector.receptionistData_ReceptionistDashboard_xrole?.totalDroppedCount || selector.receptionistDataV2.totalDroppedCount > 0 &&
                   //   navigateToDropAnalysis(userData.empId, false, "", false, true)
                 }}
                 style={styles.view8}
@@ -1243,10 +1196,12 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                 </Text>
                 <View style={styles.cardView}>
                   <Text style={{ ...styles.rankText, color: Colors.PINK }}>
-                    {selector.saveCRMfilterObj.selectedempId ?
-                      selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-                        selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || 0 : selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || 0
-                      : selector.receptionistData?.totalDroppedCount || 0}
+                    {selector.saveReceptionistfilterObj?.selectedDesignation
+                      && selector.saveReceptionistfilterObj?.selectedDesignation[0] === "Reception"
+                      ? selector.receptionistData_ReceptionistDashboard_xrole?.totalDroppedCount || 0 :
+                      userData.hrmsRole === "CRM" ?
+                        selector.receptionistData_CRM?.totalDroppedCount || 0
+                        : selector.receptionistDataV2?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1348,7 +1303,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             {(selector.target_parameters_data.length > 0 ||
               (isTeamPresent &&
                 selector.all_target_parameters_data.length > 0)) && (
-              <DigitalDashBoardTargetScreen />
+              <ReceptionistDashBoardTargetScreen />
             )}
           </View>
         </View>
@@ -1358,7 +1313,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   );
 };
 
-export default DigitalDashBoardScreen;
+export default ReceptionistDashboardScreen;
 
 const styles = StyleSheet.create({
   container: {

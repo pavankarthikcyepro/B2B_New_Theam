@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../../../../../../styles";
+
 import moment from "moment/moment";
-import { RenderSourceModelParameters } from "../RenderSourceModelParameters";
-import PercentageToggleControl from "./PercentageToggleControl";
-import URL from "../../../../../../networking/endpoints";
+
+
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   getReceptionistManagerModel,
@@ -21,15 +21,21 @@ import {
   getReceptionistSource,
   getReceptionistSourceLive,
   getSourceModelDataForSelf,
-} from "../../../../../../redux/homeReducer";
+  getXroleModel,
+  getXroleSource,
+} from "../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { IconButton } from "react-native-paper";
-import { AppNavigator } from "../../../../../../navigations";
-import { achievementPercentage } from "../../../../../../utils/helperFunctions";
-import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
-import { useIsFocused } from "@react-navigation/native";
 
-const RecepSourceModel = ({ route, navigation }) => {
+
+
+import { useIsFocused } from "@react-navigation/native";
+import PercentageToggleControl from "../Home/TabScreens/components/EmployeeView/PercentageToggleControl";
+import { Colors } from "../../../styles";
+import { AppNavigator } from "../../../navigations";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import _ from "lodash";
+const DigitalRecepSourceModel = ({ route, navigation }) => {
   const paramsMetadata = [
     {
       color: "#FA03B9",
@@ -175,19 +181,36 @@ const RecepSourceModel = ({ route, navigation }) => {
           dispatch(getReceptionistManagerSource(newPayload3));
           dispatch(getReceptionistManagerModel(newPayload3));
         } else if (selector.saveCRMfilterObj?.selectedempId) {
-          let newPayload2 = {
-            orgId: orgId,
-            loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
-            "startDate": selector.saveCRMfilterObj.startDate,
-            "endDate": selector.saveCRMfilterObj.endDate,
-            "dealerCodes": selector.saveCRMfilterObj.dealerCodes
-          };
-          dispatch(getReceptionistSource(newPayload2));
-          dispatch(getReceptionistModel(newPayload2));
+          if (!_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
+            if (selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+              let newPayload3 = {
+                orgId: orgId,
+                loggedInEmpId: loggedInEmpId,
+                "startDate": selector.saveCRMfilterObj.startDate,
+                "endDate": selector.saveCRMfilterObj.endDate,
+                "dealerCodes": selector.saveCRMfilterObj.dealerCodes,
+                "empList": empList ? empList : null,
+                "self": self
+              };
+              dispatch(getReceptionistManagerSource(newPayload3));
+              dispatch(getReceptionistManagerModel(newPayload3));
+            }
+          }else{
+            let newPayload2 = {
+              orgId: orgId,
+              loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+              "startDate": selector.saveCRMfilterObj.startDate,
+              "endDate": selector.saveCRMfilterObj.endDate,
+              "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+            };
+            dispatch(getReceptionistSource(newPayload2));
+            dispatch(getReceptionistModel(newPayload2));
+          }
+          
         }
         else {
-          dispatch(getReceptionistManagerSource(payload));
-          dispatch(getReceptionistManagerModel(payload));
+          // dispatch(getReceptionistManagerSource(payload));
+          // dispatch(getReceptionistManagerModel(payload));
         }
       }
     })
@@ -227,6 +250,29 @@ const RecepSourceModel = ({ route, navigation }) => {
     
   }, [liveLeads_selector.saveLiveleadObject])
   
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      if (moduleType === "DigitalDashboard") {
+        if (role == "xrole") {
+          let payload = {
+            "orgId": orgId,
+            "loggedInEmpId": loggedInEmpId,
+            // "dashboardType": "reception"
+          }
+          dispatch(getXroleModel(payload));
+          dispatch(getXroleSource(payload));
+
+        }
+
+
+      }
+    })
+
+
+
+  }, [moduleType])
+
+
 
   useEffect(() => {
     if (selector.sourceModelData) {
@@ -643,7 +689,7 @@ const RecepSourceModel = ({ route, navigation }) => {
   );
 };
 
-export default RecepSourceModel;
+export default DigitalRecepSourceModel;
 
 const styles = StyleSheet.create({
   flexRow: { flexDirection: "row", display: "flex" },

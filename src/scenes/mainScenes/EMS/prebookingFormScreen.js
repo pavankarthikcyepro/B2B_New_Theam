@@ -1289,7 +1289,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           fileName: item.fileName,
           keyName: item.keyName,
           documentNumber: item.documentNumber,
-          receiptDate: item.receiptDate,
         };
         dataObj[item.documentType] = obj;
       });
@@ -2950,13 +2949,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           return;
         }
         
-        if (uploadedImagesDataObj.hasOwnProperty("receipt") && !uploadedImagesDataObj.receipt.receiptDate) {
-          scrollToPos(12);
-          setOpenAccordian("12");
-          showToast("Please select receipt date");
-          return;
-        }
-
         const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
         let paymentDate = "";
         if (paymentMode === "InternetBanking") {
@@ -3042,6 +3034,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     payload.paymentName = "Booking Advance Amount";
     payload.amount = bookingAmount;
     payload.leadId = leadId;
+    payload.receiptDate = convertDateStringToMilliseconds(new Date());
 
     const finalPayload = [payload];
     dispatch(postBookingAmountApi(finalPayload));
@@ -3202,6 +3195,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
     dmsLeadDto.leadStage = "BOOKING";
     dmsLeadDto.referencenumber = refNumber;
+    dmsLeadDto.dmsAttachments = mapDmsAttachments([]);
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
@@ -3466,9 +3460,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       .then((response) => {
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = dataObj["receipt"]
-            ? { ...dataObj["receipt"], ...response }
-            : response;
+          dataObj[response.documentType] = response;
           setUploadedImagesDataObj({ ...dataObj });
           setIsReciptDocUpload(true);
         }
@@ -3895,12 +3887,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
           } else {
             dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-          }
-          if (selector.datePickerKeyId == "RECEIPT_DATE") {
-            const date = convertDateStringToMilliseconds(selectedDate);
-            const dataObj = { ...uploadedImagesDataObj };
-            dataObj["receipt"] = { ...dataObj["receipt"], receiptDate: date };
-            setUploadedImagesDataObj({ ...dataObj });
           }
         }}
         onRequestClose={() => dispatch(setDatePicker())}
@@ -6960,8 +6946,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <View>
                     <DateSelectItem
                       label={"Receipt Date*"}
-                      value={selector.receiptDate}
+                      value={moment().format("DD/MM/YYYY")}
                       onPress={() => dispatch(setDatePicker("RECEIPT_DATE"))}
+                      disabled={true}
                     />
                     <Text style={GlobalStyle.underline} />
                     <View style={styles.select_image_bck_vw}>
