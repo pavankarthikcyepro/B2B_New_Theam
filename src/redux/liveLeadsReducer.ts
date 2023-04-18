@@ -555,6 +555,14 @@ export const liveLeadsSlice = createSlice({
         updateLiveLeadObjectDataCRM: (state, action) => {
             state.saveLiveleadObjectCRM = action.payload;
         },
+        updateEmployeeDropdownData: (state, action) => {
+            state.employees_drop_down_data = {};
+        },
+        updateEmployeeDropdownDataCRMLiVeLeads: (state, action) => {
+           
+            
+            state.crm_employees_drop_down_data = {};
+        },
         clearState: (state, action) => {
             state.serchtext = ""
             state.employeeId = ""
@@ -1119,6 +1127,7 @@ export const liveLeadsSlice = createSlice({
 });
 
 export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData
-    , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM  } = liveLeadsSlice.actions;
+    , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM,
+    updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads  } = liveLeadsSlice.actions;
 export default liveLeadsSlice.reducer;
 
