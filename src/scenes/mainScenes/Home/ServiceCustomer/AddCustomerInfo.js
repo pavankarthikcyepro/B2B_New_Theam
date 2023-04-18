@@ -176,6 +176,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
 
           if (response?.payload?.statusCode == 200) {
             const { body } = response.payload;
+            let newArr = [];
             for (let i = 0; i < body.length; i++) {
               let data = { ...body[i], name: body[i].serviceName };
               newArr.push(Object.assign({}, data));
