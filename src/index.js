@@ -36,18 +36,20 @@ import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
 import Orientation from "react-native-orientation-locker";
+import { registerCrashListener } from "./CrashListener";
 
 enableScreens();
 
-const officeLocation = {
-  latitude: 37.33233141,
-  longitude: -122.0312186,
-};
-
 const AppScreen = () => {
+  
+  useEffect(() => {
+    registerCrashListener();
+  }, []);
+
   useEffect(() => {
     Orientation.lockToPortrait();
   }, []);
+
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {

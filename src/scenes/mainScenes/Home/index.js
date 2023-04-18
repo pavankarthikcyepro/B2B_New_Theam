@@ -1239,6 +1239,7 @@ const HomeScreen = ({ route, navigation }) => {
         notification={true}
         navigation={navigation}
       />
+      
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, paddingHorizontal: 10 }}

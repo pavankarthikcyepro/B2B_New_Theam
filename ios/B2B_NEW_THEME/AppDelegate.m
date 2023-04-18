@@ -14,6 +14,8 @@
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import <Firebase/Firebase.h>
+#import <FirebaseCrashlytics.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -57,7 +59,7 @@ static void InitializeFlipper(UIApplication *application) {
   
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
-
+  [FIRApp configure];
   return YES;
   return YES;
 }
