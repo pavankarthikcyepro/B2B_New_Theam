@@ -10,14 +10,18 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
-import { Colors } from "../../../styles";
+
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { getTargetParametersEmpDataInsights, updateDealerFilterData, updateReceptionistFilterids } from "../../../redux/homeReducer";
+// import { getTargetParametersEmpDataInsights } from "../../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
-import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
+import {
+  DateSelectItem,
+  DropDownSelectionItem,
+} from "../../../pureComponents";
 import moment from "moment";
+import _ from "lodash";
 import { Button } from "react-native-paper";
 import {
   updateFilterDropDownData,
@@ -30,69 +34,23 @@ import {
   getEmployeesDropDownData,
   getSalesData,
   getSalesComparisonData,
+  getCRMEmployeesDropDownData,
 } from "../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
-import AnimLoaderComp from "../../../components/AnimLoaderComp";
-import { detectIsOrientationLock } from "../../../utils/helperFunctions";
-import { useIsFocused } from "@react-navigation/native";
-import _ from "lodash";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
+
+import { updateDealerFilterData, updateFilterSelectedData, saveFilterPayload, updateFilterLevelSelectedData, updateLiveLeadObjectData, } from "../../../redux/homeReducer"
+import { useIsFocused } from "@react-navigation/native";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import { Colors } from "../../../styles";
+
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
-
-let data = {
-  "SELECT DESIGNATION": [
-    {
-      "code": "942",
-      "name": "CRE",
-      "parentId": "1",
-      "order": 1,
-      "designation": "CRE"
-    },
-    {
-      "code": "942",
-      "name": "Receptionist",
-      "parentId": "2",
-      "order": 1,
-      "designation": "Receptionist"
-    },
-    {
-      "code": "942",
-      "name": "Tele caller",
-      "parentId": "3",
-      "order": 1,
-      "designation": "Tele caller"
-    }
-  ],
-  "SELECT EMPLOYEEE": [
-    {
-      "code": "945",
-      "name": "Akash Gupta B S",
-      "parentId": "1",
-      "order": 2,
-      "designation": "CRE"
-    },
-    {
-      "code": "946",
-      "name": "Gladstone Gideon",
-      "parentId": "2",
-      "order": 2,
-      "designation": "Receptionist"
-    },
-    {
-      "code": "947",
-      "name": "Siddharth Shetty",
-      "parentId": "3",
-      "order": 2,
-      "designation": "Tele caller"
-    }
-  ],
-
-}
-
+const currentDateMain = moment().add(0, "day").format(dateFormat)
+const CurrentMonthFirstDate = moment(currentDateMain, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const AcitivityLoader = () => {
   return (
@@ -108,12 +66,13 @@ const AcitivityLoader = () => {
     </View>
   );
 };
-const currentDate = moment().add(0, "day").format(dateFormat)
-const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-const ReceptionistFilterScreen = ({ route, navigation }) => {
+ const data = [
+    "Select Designation","Select Employee"
+]
+const DigitalDashboardFilter = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-  const isFocused = useIsFocused();
+  // const targetSelector = useSelector((state) => state.liveLeadsReducer);
   const [totalDataObj, setTotalDataObj] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownData, setDropDownData] = useState([]);
@@ -123,13 +82,14 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [nameKeyList, setNameKeyList] = useState([]);
+  const [levelSelected, setLevelSelected] = useState([]);
+  const [selectedBranchName, setSelectedBranchName] = useState([]);
   const [userData, setUserData] = useState({
     branchId: "",
     orgId: "",
     employeeId: "",
     employeeName: "",
     primaryDesignation: "",
-    hrmsRole: "",
   });
   const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
   const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState(
@@ -137,35 +97,14 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
-  const [branches, setBranches] = useState([]);
+  const isFocused = useIsFocused();
+  const [selectDesignationsData, setSelectDesignationsData] = useState([]);
+  const [selectEmployeeData, setSelectEmployeeData] = useState([]);
   const [storeDropDownClickdata, setStoreDropDownClickdata] = useState([]);
   const [storeDropDownClickIndex, setStoreDropDownClickIndex] = useState(-1);
-  useEffect(async () => {
+  useEffect(() => {
     getAsyncData();
-    try {
-      const branchData = await AsyncStore.getData("BRANCHES_DATA");
-      if (branchData) {
-        const branchesList = JSON.parse(branchData);
-        setBranches([...branchesList]);
-      }
-    } catch (e) {
-      // Alert.alert('Error occurred - Employee total', `${JSON.stringify(e)}`);
-    }
   }, []);
-
-  const getBranchName = (branchId, isFull = false) => {
-    let branchName = "";
-    if (branches.length > 0) {
-      const branch = branches.find((x) => +x.branchId === +branchId);
-      if (branch) {
-        branchName = isFull
-          ? branch.branchName
-          : branch.branchName.split(" - ")[0];
-      }
-    }
-    return branchName;
-  };
 
   const getAsyncData = async (startDate, endDate) => {
     const employeeData = await AsyncStore.getData(
@@ -179,7 +118,6 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
         primaryDesignation: jsonObj.primaryDesignation,
-        hrmsRole: jsonObj.hrmsRole,
       });
     }
   };
@@ -204,26 +142,58 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       .endOf("month")
       .format(dateFormat);
     setFromDate(monthFirstDate);
-    setToDate(currentDate);
+    setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
-    if (nameKeyList.length > 0 && isFocused && selector.receptionistFilterIds?.levelSelected?.length > 4) {
-
-      // dropDownItemClicked(4, true);
-    }
-  }, [nameKeyList, userData, isFocused]);
+    // navigation.addListener("focus", () => {
+    // if (!isEmpty(targetSelector.filterSelectedData)) {
+    //   const temp = { ...targetSelector.filterSelectedData };
+    //   setEmployeeDropDownDataLocal(temp);
+    // }
+    // });
+    
+  }, [isFocused]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
-      if (!_.isEmpty(selector.dealerFilter)) {
+      if (!isEmpty(selector.dealerFilter)) {
         const temp = { ...selector.dealerFilter };
         setTotalDataObj(temp);
 
-
+         
       }
     });
   }, [navigation]);
+    useEffect(() => {
+      if (nameKeyList.length > 0) {
+        // dropDownItemClicked(4, true);
+        let i = 0;
+        const selectedIds = [];
+        const selectedDealerCodeName = [];
+        for (i; i < nameKeyList.length; i++) {
+          let key = nameKeyList[i];
+          const dataArray =  totalDataObj[key].sublevels;
+          if (dataArray.length > 0) {
+            dataArray.forEach((item, index) => {
+              if (item.selected != undefined && item.selected == true) {
+                selectedIds.push(item.id);
+                if (item.type === "Level5") {
+                  selectedDealerCodeName.push(item.name)
+
+                }
+              }
+            });
+          }
+        }
+        setLevelSelected(selectedIds);
+        setSelectedBranchName(selectedDealerCodeName);
+      }
+    }, [nameKeyList, userData]);
+  function isEmpty(obj = {}) {
+    return Object.keys(obj).length === 0;
+  }
+
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
     if (index > 0) {
@@ -264,34 +234,23 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         }
       }
     }
+
     if (index === 4) {
       setDropDownData([...newData]);
       if (initalCall) {
-        if (initalCall) {
-          let levelIds = selector.receptionistFilterIds?.levelSelected;
-          let updatedMultipleData = [...newData];
-          let nData = updatedMultipleData.map((val) => {
-            return {
-              ...val,
-              selected: levelIds.includes(val.id) ? true : false,
-            };
-          });
-          updatedMultipleData = nData;
-      
-          updateSelectedItems(updatedMultipleData, index, true);
+        let updatedMultipleData = [...newData];
+        const obj = { ...updatedMultipleData[0] };
+        if (obj.selected != undefined) {
+          obj.selected = !obj.selected;
+        } else {
+          obj.selected = true;
         }
-        // let updatedMultipleData = [...newData];
-        // const obj = { ...updatedMultipleData[0] };
-        // if (obj.selected != undefined) {
-        //   obj.selected = !obj.selected;
-        // } else {
-        //   obj.selected = true;
-        // }
-        // updatedMultipleData[0] = obj;
-        // updateSelectedItems(updatedMultipleData, index, true);
+        updatedMultipleData[0] = obj;
+        updateSelectedItems(updatedMultipleData, index, true);
       } else {
-        updateSelectedItemsForEmployeeDropDown(newData, index);
+        // updateSelectedItemsForEmployeeDropDown(newData, index);
       }
+      //   submitBtnClicked(null)
     } else {
       setDropDownData([...data]);
     }
@@ -301,182 +260,50 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   };
 
   const dropDownItemClicked2 = (index) => {
-    // const topRowSelectedIds = [];
-    // if (index > 0) {
-    //     const topRowData = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    //     topRowData.forEach((item) => {
-    //         if (item.selected != undefined && item.selected === true) {
-    //             topRowSelectedIds.push(Number(item.id));
-    //         }
-    //     })
-    // }
-
-    const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
-    setDropDownData([...data]);
-    setSelectedItemIndex(index);
-    setShowDropDownModel(true);
-    setDropDownFrom("EMPLOYEE_TABLE");
-  };
-
-  const updateSelectedItems = (data, index, initalCall = false) => {
-    // const totalDataObjLocal = { ...totalDataObj };
-    // if (index > 0) {
-    //   let selectedParendIds = [];
-    //   let unselectedParentIds = [];
-    //   data.forEach((item) => {
-    //     if (item.selected != undefined && item.selected == true) {
-    //       selectedParendIds.push(Number(item.parentId));
-    //     } else {
-    //       unselectedParentIds.push(Number(item.parentId));
-    //     }
-    //   });
-    //   let localIndex = index - 1;
-
-    //   for (localIndex; localIndex >= 0; localIndex--) {
-    //     let selectedNewParentIds = [];
-    //     let unselectedNewParentIds = [];
-
-    //     let key = nameKeyList[localIndex];
-    //     const dataArray = totalDataObjLocal[key].sublevels;
-
-    //     if (dataArray.length > 0) {
-    //       const newDataArry = dataArray.map((subItem, index) => {
-    //         const obj = { ...subItem };
-    //         if (selectedParendIds.includes(Number(obj.id))) {
-    //           obj.selected = true;
-    //           selectedNewParentIds.push(Number(obj.parentId));
-    //         } else if (unselectedParentIds.includes(Number(obj.id))) {
-    //           if (obj.selected == undefined) {
-    //             obj.selected = false;
-    //           }
-    //           unselectedNewParentIds.push(Number(obj.parentId));
-    //         }
-    //         return obj;
-    //       });
-    //       const newOBJ = {
-    //         sublevels: newDataArry,
-    //       };
-    //       totalDataObjLocal[key] = newOBJ;
-    //     }
-    //     selectedParendIds = selectedNewParentIds;
-    //     unselectedParentIds = unselectedNewParentIds;
-    //   }
-    // }
-
-    // let localIndex2 = index + 1;
-    // for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
-    //   let key = nameKeyList[localIndex2];
-    //   const dataArray = totalDataObjLocal[key].sublevels;
-    //   if (dataArray.length > 0) {
-    //     const newDataArry = dataArray.map((subItem, index) => {
-    //       const obj = { ...subItem };
-    //       obj.selected = true; // make it true for both ways auto fill top and bottom
-    //       return obj;
-    //     });
-    //     const newOBJ = {
-    //       sublevels: newDataArry,
-    //     };
-    //     totalDataObjLocal[key] = newOBJ;
-    //   }
-    // }
-
-    // let key = nameKeyList[index];
-    // const newOBJ = {
-    //   sublevels: data,
-    // };
-    // totalDataObjLocal[key] = newOBJ;
+    
+    if(index === 0){
+      const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
 
 
-    const totalDataObjLocal = { ...totalDataObj };
-    if (index > 0) {
-      let selectedParendIds = [];
-      let unselectedParentIds = [];
-      selectedParendIds.push(Number(data.parentId));
-      // data.forEach((item) => {
-      //   if (item.selected != undefined && item.selected == true) {
-      //     selectedParendIds.push(Number(item.parentId));
-      //   } else {
-      //     unselectedParentIds.push(Number(item.parentId));
-      //   }
-      // });
-
-      let localIndex = index - 1;
-
-      for (localIndex; localIndex >= 0; localIndex--) {
-        let selectedNewParentIds = [];
-        let unselectedNewParentIds = [];
-
-        let key = nameKeyList[localIndex];
-        const dataArray = totalDataObjLocal[key].sublevels;
-
-        if (dataArray.length > 0) {
-          const newDataArry = dataArray.map((subItem, index) => {
-            const obj = { ...subItem };
-            if (selectedParendIds.includes(Number(obj.id))) {
-              obj.selected = true;
-              selectedNewParentIds.push(Number(obj.parentId));
-            } else if (unselectedParentIds.includes(Number(obj.id))) {
-              if (obj.selected == undefined) {
-                obj.selected = false;
-              }
-              unselectedNewParentIds.push(Number(obj.parentId));
-            }
-            return obj;
-          });
-          const newOBJ = {
-            sublevels: newDataArry,
-          };
-          totalDataObjLocal[key] = newOBJ;
-        }
-        selectedParendIds = selectedNewParentIds;
-        unselectedParentIds = unselectedNewParentIds;
+      setDropDownData(data);
+      setSelectedItemIndex(index);
+      setShowDropDownModel(true);
+      setDropDownFrom("EMPLOYEE_TABLE");
+    }else{
+      // selectEmployeeData.filter(item => item.designation === data.name);
+      let tempFinal="";
+      let findEmployee = selectDesignationsData.filter(item => item.selected == true);
+      if(findEmployee.length >0){
+        // let ind = employeeDropDownDataLocal[employeeTitleNameList[index]]
+        findEmployee.map(item => {
+        
+          tempFinal = selectEmployeeData.filter(item2 => item2.designation === item.name);
+         
+        })
       }
-    }
+    
+      if (tempFinal.length > 0) {
+        setDropDownData(tempFinal);
 
-    let localIndex2 = index + 1;
-    for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
-      let key = nameKeyList[localIndex2];
-      const dataArray = totalDataObjLocal[key].sublevels;
-      if (dataArray.length > 0) {
-        const newDataArry = dataArray.map((subItem, index) => {
-          const obj = { ...subItem };
-          obj.selected = false;
-          return obj;
-        });
-        const newOBJ = {
-          sublevels: newDataArry,
-        };
-        totalDataObjLocal[key] = newOBJ;
-      }
-    }
-
-    let key = nameKeyList[index];
-    var newArr = totalDataObjLocal[key].sublevels;
-    const result = newArr.map((file) => {
-      return { ...file, selected: false };
-    });
-    let objIndex = result.findIndex((obj) => obj.id == data.id);
-    for (let i = 0; i < result.length; i++) {
-      if (objIndex === i) {
-        result[i].selected = true;
+        setSelectedItemIndex(index);
+        setShowDropDownModel(true);
+        setDropDownFrom("EMPLOYEE_TABLE");
       } else {
-        result[i].selected = false;
-      }
-    }
-    const newOBJ = {
-      sublevels: result,
-    };
-    totalDataObjLocal[key] = newOBJ;
+        setDropDownData(selectEmployeeData);
 
-    setTotalDataObj({ ...totalDataObjLocal });
-    dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
-    // initalCall && submitBtnClicked(totalDataObjLocal);
+        setSelectedItemIndex(index);
+        setShowDropDownModel(true);
+        setDropDownFrom("EMPLOYEE_TABLE");
+      }
+      
+    }
+   
   };
 
 
   const updateSelectedItemsSubmit = async (data, index, initalCall = false) => {
     const totalDataObjLocal = { ...totalDataObj };
-
+    
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
@@ -607,15 +434,178 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     }
   };
 
-  const updateSelectedItemsForEmployeeDropDown = (data, index) => {
-    let key = employeeTitleNameList[index];
-    const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
-    newTotalDataObjLocal[key] = data;
-    setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
+
+  const updateSelectedItems = (data, index, initalCall = false) => {
+    const totalDataObjLocal = { ...totalDataObj };
+    if (index > 0) {
+      let selectedParendIds = [];
+      let unselectedParentIds = [];
+      selectedParendIds.push(Number(data.parentId));
+      // data.forEach((item) => {
+      //   if (item.selected != undefined && item.selected == true) {
+      //     selectedParendIds.push(Number(item.parentId));
+      //   } else {
+      //     unselectedParentIds.push(Number(item.parentId));
+      //   }
+      // });
+
+      let localIndex = index - 1;
+
+      for (localIndex; localIndex >= 0; localIndex--) {
+        let selectedNewParentIds = [];
+        let unselectedNewParentIds = [];
+
+        let key = nameKeyList[localIndex];
+        const dataArray = totalDataObjLocal[key].sublevels;
+
+        if (dataArray.length > 0) {
+          const newDataArry = dataArray.map((subItem, index) => {
+            const obj = { ...subItem };
+            if (selectedParendIds.includes(Number(obj.id))) {
+              obj.selected = true;
+              selectedNewParentIds.push(Number(obj.parentId));
+            } else if (unselectedParentIds.includes(Number(obj.id))) {
+              if (obj.selected == undefined) {
+                obj.selected = false;
+              }
+              unselectedNewParentIds.push(Number(obj.parentId));
+            }
+            return obj;
+          });
+          const newOBJ = {
+            sublevels: newDataArry,
+          };
+          totalDataObjLocal[key] = newOBJ;
+        }
+        selectedParendIds = selectedNewParentIds;
+        unselectedParentIds = unselectedNewParentIds;
+      }
+    }
+
+    let localIndex2 = index + 1;
+    for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
+      let key = nameKeyList[localIndex2];
+      const dataArray = totalDataObjLocal[key].sublevels;
+      if (dataArray.length > 0) {
+        const newDataArry = dataArray.map((subItem, index) => {
+          const obj = { ...subItem };
+          obj.selected = false;
+          return obj;
+        });
+        const newOBJ = {
+          sublevels: newDataArry,
+        };
+        totalDataObjLocal[key] = newOBJ;
+      }
+    }
+
+    let key = nameKeyList[index];
+    var newArr = totalDataObjLocal[key].sublevels;
+    const result = newArr.map((file) => {
+      return { ...file, selected: false };
+    });
+    let objIndex = result.findIndex((obj) => obj.id == data.id);
+    for (let i = 0; i < result.length; i++) {
+      if (objIndex === i) {
+        result[i].selected = true;
+      } else {
+        result[i].selected = false;
+      }
+    }
+    const newOBJ = {
+      sublevels: result,
+    };
+    totalDataObjLocal[key] = newOBJ;
+
+    dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
+    setTotalDataObj({ ...totalDataObjLocal });
+    // index == 4 && submitBtnClicked(totalDataObjLocal,"");
+  };
+
+  
+
+  const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
+    let keyMain = employeeTitleNameList[index];
+    // clearBtnForEmployeeData();
+    // dispatch(updateFilterSelectedData({}))
+    // dispatch(updateLiveLeadObjectData({}))
+  
+  
+   
+    if(index === 0 ){ 
+      
+      let temparr = dropDownData.map((item,i) =>{
+         
+       index1===i? item.selected = true : item.selected = false
+      })
+      let temparr2 = selectEmployeeData.map((item, i) => {
+        
+        item.selected = false;
+      
+      })
+      // let arrayData = [];
+      // for (let key in employeeDropDownDataLocal) {
+      //   arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+      //     
+      //     element.name === data.name ? element.selected = true : element.selected = false;
+
+      //   });
+       
+      // }
+     
+
+      // setEmployeeDropDownDataLocal(newDataObj);
+    }else{
+       
+      let arrayData = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+          
+          element.name === data.designation ? element.selected = true : element.selected = false;
+
+        });
+       
+      }
+
+      let arrayData2 = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData2 = employeeDropDownDataLocal[key].map((element, i) => {
+         
+          element.name === data.name ? { ...element, selected : true } : { ...element,selected : false };
+
+        });
+
+      }
+      // setEmployeeDropDownDataLocal(arrayData2);
+      let temparr2 = dropDownData.map((item, i) => {
+        if (index1 === i) {
+          item.selected = true
+          // let findEmployee = selectDesignationsData.filter(item => item.selected = true);
+        } else {
+          item.selected = false
+          // let findEmployee = selectDesignationsData.filter(item => item.selected = false);
+        }
+
+        // setEmployeeDropDownDataLocal(arrayData);
+       
+      })
+      // working code
+      // let temparr2 = dropDownData.map((item, i) => {
+       
+        
+      //   index1 === i ? item.selected = true : item.selected = false
+      // })
+      // let temparr2 = dropDownData.map((item, i) => {
+       
+        
+      //   index1 === i ? item.selected = true : item.selected = false
+      // })
+    }
+    
+    // setEmployeeDropDownDataLocal(tempEmployeeArr);
   };
 
   const clearBtnClicked = () => {
-    dispatch(updateReceptionistFilterids({}))
     const totalDataObjLocal = { ...totalDataObj };
     let i = 0;
     for (i; i < nameKeyList.length; i++) {
@@ -634,19 +624,57 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
     }
     setTotalDataObj({ ...totalDataObjLocal });
+    dispatch(updateFilterLevelSelectedData({}))
+    let obj = {
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
+    dispatch(updateDealerFilterData({}))
+    // dispatch(updateFilterSelectedData({}))
+    dispatch(updateLiveLeadObjectData(obj))
+    clearBtnForEmployeeData();
+    
   };
 
-  const submitBtnClicked = async () => {
+  const submitBtnClicked =async (initialData,from) => {
+    // let i = 0;
+    // const selectedIds = [];
+    // const selectedDealerCodeName = [];
+    // for (i; i < nameKeyList.length; i++) {
+    //   let key = nameKeyList[i];
+    //   const dataArray = initialData
+    //     ? initialData[key].sublevels
+    //     : totalDataObj[key].sublevels;
+    //   if (dataArray.length > 0) {
+    //     dataArray.forEach((item, index) => {
+    //       if (item.selected != undefined && item.selected == true) {
+    //         selectedIds.push(item.id);
+    //         if (item.type === "Level5") {
+    //           selectedDealerCodeName.push(item.name)
+
+    //         }
+    //       }
+    //     });
+    //   }
+    // }
+    
     let i = 0;
     const selectedIds = [];
     const selectedDealerCodeName = [];
     if (!_.isEmpty(storeDropDownClickdata)) {
-
+   
       let temp = await updateSelectedItemsSubmit(storeDropDownClickdata, storeDropDownClickIndex)
+    
+
       if (temp) {
         for (i; i < nameKeyList.length; i++) {
           let key = nameKeyList[i];
-          const dataArray = temp[key].sublevels;
+          const dataArray = initialData
+            ? initialData[key].sublevels
+            : temp[key].sublevels;
           if (dataArray.length > 0) {
             dataArray.forEach((item, index) => {
               if (item.selected != undefined && item.selected == true) {
@@ -655,16 +683,18 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                   selectedDealerCodeName.push(item.name)
 
                 }
-
               }
             });
           }
         }
       }
-    } else {
+    }else{
+    
       for (i; i < nameKeyList.length; i++) {
         let key = nameKeyList[i];
-        const dataArray = totalDataObj[key].sublevels;
+        const dataArray = initialData
+          ? initialData[key].sublevels
+          : totalDataObj[key].sublevels;
         if (dataArray.length > 0) {
           dataArray.forEach((item, index) => {
             if (item.selected != undefined && item.selected == true) {
@@ -673,157 +703,154 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                 selectedDealerCodeName.push(item.name)
 
               }
-
             }
           });
         }
       }
-    } 
-  
-    if (selectedIds.length > 0 && !_.isEmpty(selectedDealerCodeName)) {
-   
-      // setIsLoading(true);
-      // setIsEmployeeLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "LEVEL", selectedDealerCodeName, true);
     }
-    else {
-      showToast("Please select Dealer Code");
+
+    
+
+    if (selectedIds.length > 0) {
+      // setIsLoading(true);
+      getDashboadTableDataFromServer(selectedIds, from, selectedDealerCodeName);
+    } else {
+      showToast("Please select any value");
     }
   };
 
-  const getDashboadTableDataFromServer = (selectedIds, from, selectedBranchName = "", initialCall = true) => {
+  const getDashboadTableDataFromServer = async (selectedIds, from, selectedBranchName = "") => {
     const payload = {
       startDate: fromDate,
       endDate: toDate,
       loggedInEmpId: userData.employeeId,
     };
-    if (from == "LEVEL") {
-      payload["levelSelected"] = selectedIds;
-    } else {
-      payload["empSelected"] = selectedIds;
-    }
+    // if (from == "LEVEL") {
+    //   payload["levelSelected"] = selectedIds;
+    // } else {
+    //   payload["empSelected"] = selectedIds;
+    // }
 
-    const payload2 = {
-      ...payload,
-      pageNo: 0,
-      size: 5,
-    };
+    // const payload2 = {
+    //   ...payload,
+    //   pageNo: 0,
+    //   size: 5,
+    // };
 
     const payload1 = {
       orgId: userData.orgId,
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
-
-    // uncomment once api for emp for crm ready
-    if (userData.hrmsRole == "CRM" && from !== "EMPLOYEE") {
-      Promise.all([dispatch(getEmployeesDropDownData(payload1))])
-        .then(() => {
-
-          //     Promise.all([
-          //     //   dispatch(getLeadSourceTableList(payload)),
-          //     //   dispatch(getVehicleModelTableList(payload)),
-          //     //   dispatch(getEventTableList(payload)),
-          //     //   dispatch(getLostDropChartData(payload)),
-          //     //   dispatch(updateFilterDropDownData(totalDataObj)),
-          //     //   // // Table Data
-          //     //   dispatch(getTaskTableList(payload2)),
-          //     //   dispatch(getSalesData(payload2)),
-          //     //   dispatch(getSalesComparisonData(payload2)),
-          //     //   // // Target Params Data
-          //     //   dispatch(getTargetParametersData(payload2)),
-          //     //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
-          //     ])
-          // .then(() => {})
-          // .catch(() => {
-          //   setIsLoading(false);
-          // });
-          setIsEmployeeLoading(false);
-        })
-        .catch(() => {
-          setIsEmployeeLoading(false);
-          setIsLoading(false);
-        });
-    }
-    if (from == "EMPLOYEE") {
-      let obj = {
-        startDate: fromDate,
-        endDate: toDate,
-        dealerCodes: selectedBranchName,
-        levelSelected: selectedIds
-      }
-      dispatch(updateReceptionistFilterids(obj))
-      navigation.navigate("Home");
-
-    } else {
-      // if (!userData.hrmsRole == "CRM") {}
-      // dispatch(updateReceptionistFilterids(selectedBranchName[selectedBranchName.length - 1]))
-      let obj = {
-        startDate: fromDate,
-        endDate: toDate,
-        dealerCodes: selectedBranchName,
-        levelSelected: selectedIds
-      }
-      dispatch(updateReceptionistFilterids(obj))
-      
-      if (userData.hrmsRole == "CRM") {
-
-        return;
-        // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-      }
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-
-      navigation.navigate("Home");
-    }
-  };
-
-  const getDashboadTableDataFromServerForEmp = (selectedIds, from, selectedBranchName = "", initialCall = true) => {
-    const payload = {
+    let obj = {
       startDate: fromDate,
       endDate: toDate,
-      loggedInEmpId: userData.employeeId,
-    };
+      dealerCodes: selectedBranchName,
+      levelSelected: selectedIds
+    }
+    setLevelSelected(selectedIds)
+    setSelectedBranchName(selectedBranchName)
+    let tempPayload = {
+      startDate: fromDate,
+      endDate: toDate,
+      levelSelected: selectedIds,
+      selectedempId: "",
+      dealerCodes: selectedBranchName,
+    }
+    dispatch(updateLiveLeadObjectData(tempPayload))
+    dispatch(updateFilterLevelSelectedData(selectedIds))
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    
+    if (!selector.isDSE){
+      Promise.all([dispatch(getCRMEmployeesDropDownData(payload1))])
+        .then(() => {
+          // Promise.all([
+          // //   dispatch(getLeadSourceTableList(payload)),
+          // //   dispatch(getVehicleModelTableList(payload)),
+          // //   dispatch(getEventTableList(payload)),
+          // //   dispatch(getLostDropChartData(payload)),
+          // //   dispatch(updateFilterDropDownData(totalDataObj)),
+          //   // // Table Data
+          // //   dispatch(getTaskTableList(payload2)),
+          // //   dispatch(getSalesData(payload2)),
+          // //   dispatch(getSalesComparisonData(payload2)),
+          //   // // Target Params Data
+          // //   dispatch(getTargetParametersData(payload2)),
+          // //   dispatch(getTargetParametersEmpDataInsights(payload2)), // Added to filter an Home Screen's INSIGHT
+          // ])
+          //   .then(() => {})
+          //   .catch(() => {
+          //     setIsLoading(false);
+          //   });
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+      
+    }else{
+      // if(from ==="submit"){
+      //   let tempPayload = {
+      //     startDate: fromDate,
+      //     endDate: toDate,
+      //     levelSelected: selectedIds,
+      //     // selectedempId: ""
+      //   }
+      //   dispatch(updateLiveLeadObjectData(tempPayload))
 
+      //   navigation.navigate("LIVE_LEADS", {
+      //     screenName: "LIVE_LEADS",
+      //     fromScreen: "Filter",
+      //     selectedID: [],
+      //     fromDate: fromDate,
+      //     toDate: toDate,
 
-    // if (from == "EMPLOYEE") {
-    // let obj = {
-    //   startDate: fromDate,
-    //   endDate: toDate,
-    //   dealerCodes: selectedBranchName,
-    //   levelSelected: selectedIds
-    // }
-    // dispatch(updateReceptionistFilterids(obj))
-    navigation.navigate("Home");
-
-    // } 
-
-
+      //   });
+      // }
+     
+    }
+    
   };
 
   useEffect(() => {
-    if (selector.employees_drop_down_data) {
+    if (selector.crm_employees_drop_down_data) {
       let names = [];
       let newDataObj = {};
-      for (let key in selector.employees_drop_down_data) {
-        names.push(key);
-        const arrayData = selector.employees_drop_down_data[key];
+      for (let key in selector.crm_employees_drop_down_data) {
+        const arrayData = selector.crm_employees_drop_down_data[key];
+        if (arrayData.length != 0) {
+          names.push(key);
+        }
         const newArray = [];
         if (arrayData.length > 0) {
           arrayData.forEach((element) => {
-            newArray.push({
-              ...element,
-              id: element.code,
-              selected: false,
-            });
+            if (key ==="Select Designation"){
+              newArray.push({
+                name:element,
+                selected: false,
+              });
+            }else{
+              newArray.push({
+                ...element,
+                // id: element.code,
+                selected: false,
+              });
+            }
+            
           });
         }
-
         newDataObj[key] = newArray;
-
+        if (key === "Select Designation") {
+          setSelectDesignationsData(newDataObj[key])
+        }else{
+          setSelectEmployeeData(newDataObj[key])
+        }
       }
+      // setEmloyeeTitleNameList(names);
+      // setEmployeeDropDownDataLocal(names)
       setName(names, newDataObj);
     }
-  }, [selector.employees_drop_down_data]);
+    
+  }, [selector.crm_employees_drop_down_data]);
 
   const setName = useCallback(
     (names, newDataObj) => {
@@ -832,7 +859,13 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       if (!isEmpty(names) && !isEmpty(newDataObj)) {
         setEmloyeeTitleNameList(names);
-        setEmployeeDropDownDataLocal(newDataObj);
+        if (!isEmpty(selector.filterSelectedData)) {
+          const temp = { ...selector.filterSelectedData };
+          setEmployeeDropDownDataLocal(temp);
+        } else {
+          
+          setEmployeeDropDownDataLocal(newDataObj);
+        }
         setIsLoading(false);
       }
     },
@@ -840,6 +873,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   );
 
   const clearBtnForEmployeeData = () => {
+    // clearBtnClicked();
     let newDataObj = {};
     for (let key in employeeDropDownDataLocal) {
       const arrayData = employeeDropDownDataLocal[key];
@@ -854,26 +888,94 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       newDataObj[key] = newArray;
     }
+    let obj ={
+      startDate: "",
+      endDate: "",
+      levelSelected: "",
+      selectedempId: "",
+      dealerCodes: "",
+    }
+    setEmloyeeTitleNameList([])
+  
+    dispatch(updateFilterSelectedData({}))
+    dispatch(updateLiveLeadObjectData(obj))
     setEmployeeDropDownDataLocal(newDataObj);
   };
 
+  
+
   const submitBtnForEmployeeData = () => {
-    let selectedIds = [];
-    for (let key in employeeDropDownDataLocal) {
-      const arrayData = employeeDropDownDataLocal[key];
-      arrayData.forEach((element) => {
-        if (element.selected === true) {
-          selectedIds.push(element.code);
+    if (!_.isEmpty(selector.dealerFilter)) {
+      let selectedIds = [];
+      for (let key in employeeDropDownDataLocal) {
+        const arrayData = employeeDropDownDataLocal[key];
+        if (arrayData.length != 0) {
+          arrayData.forEach((element) => {
+            if (element.selected === true) {
+              selectedIds.push(element.code);
+            }
+          });
         }
+      }
+
+      let x =
+        employeeDropDownDataLocal[
+        Object.keys(employeeDropDownDataLocal)[
+        Object.keys(employeeDropDownDataLocal).length - 1
+        ]
+        ];
+      let selectedID = x.filter((e) => e.selected == true);
+      let temp = [];
+      Object.keys(employeeDropDownDataLocal).map(function (key, index) {
+        Object.values(employeeDropDownDataLocal)[index].map(
+          (innerItem, innerIndex) => {
+            if (innerItem.selected == true) {
+              temp.push(innerItem);
+            }
+          }
+        );
       });
+     
+   
+      if (temp.length > 0) {
+        let tempArr = [];
+        let tempArrDesignation = [];
+        const selected_ids = temp.map(item => {
+          tempArr.push(parseInt(item.code))
+        })
+        const selected_designation = temp.map(item => {
+          
+          if(item.designation !== undefined){
+            tempArrDesignation.push(item.designation)
+          }
+          // tempArr.push(parseInt(item.code))
+        })
+        let tempPayload = {
+          startDate: fromDate,
+          endDate: toDate,
+          levelSelected: levelSelected,
+          selectedempId: [tempArr[tempArr.length - 1]],
+          dealerCodes: selectedBranchName,
+          selectedDesignation: tempArrDesignation
+        }
+        if ([tempArr[tempArr.length - 1]] > 0) {
+          dispatch(updateLiveLeadObjectData(tempPayload))
+          dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
+          navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalDashboard, {
+            screen: "Home",
+            params: { from: "Filter" },
+          });
+        } else {
+          showToast("Please select Employee");
+        }
+        
+      }
+
+      
+    } else {
+      showToast("Please select Dealer Code");
     }
-    if (selectedIds.length > 0) {
-      // getDashboadTableDataFromServer(selectedIds, "EMPLOYEE",false);
-      getDashboadTableDataFromServerForEmp(selectedIds, "EMPLOYEE", false)
-    }
-    // else {
-    //   showToast("Please select any value");
-    // }
+
   };
 
   const updateSelectedDate = (date, key) => {
@@ -901,13 +1003,17 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item) => {
+        selectedItems={(item, o, index) => {
           if (dropDownFrom === "ORG_TABLE") {
             setStoreDropDownClickdata(item)
             setStoreDropDownClickIndex(selectedItemIndex)
             updateSelectedItems(item, selectedItemIndex);
           } else {
-            updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
+            updateSelectedItemsForEmployeeDropDown(
+              item,
+              selectedItemIndex,
+              index
+            );
           }
           setShowDropDownModel(false);
         }}
@@ -916,7 +1022,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         visible={showDatePicker}
         mode={"date"}
         minimumDate={new Date(CurrentMonthFirstDate)}
-        maximumDate={new Date(currentDate)}
+        maximumDate={new Date(currentDateMain)}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           if (Platform.OS === "android") {
@@ -972,6 +1078,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                 </View>
               );
             } else if (index === 1) {
+              // todo country list
               return (
                 <View>
                   <View
@@ -984,13 +1091,19 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={({ item, index }) => {
                         const data = totalDataObj[item].sublevels;
+
                         let selectedNames = "";
+                        let disabletemp = false;
                         data.forEach((obj, index) => {
                           if (
                             obj.selected != undefined &&
                             obj.selected == true
                           ) {
                             selectedNames += obj.name + ", ";
+                          }
+
+                          if (obj.disabled === "Y") {
+                            disabletemp = true;
                           }
                         });
 
@@ -1000,31 +1113,18 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                             selectedNames.length - 1
                           );
                         }
-                        if (userData.hrmsRole === "Reception") {
-                          // if (item === "Dealer Code") {
-                          return (
-                            <View>
-                              <DropDownSelectionItem
-                                label={item}
-                                value={selectedNames}
-                                onPress={() => dropDownItemClicked(index)}
-                                takeMinHeight={true}
-                              />
-                            </View>
-                          );
-                          // }
-                        } else {
-                          return (
-                            <View>
-                              <DropDownSelectionItem
-                                label={item}
-                                value={selectedNames}
-                                onPress={() => dropDownItemClicked(index)}
-                                takeMinHeight={true}
-                              />
-                            </View>
-                          );
-                        }
+
+                        return (
+                          <View>
+                            <DropDownSelectionItem
+                              label={item}
+                              value={selectedNames}
+                              onPress={() => dropDownItemClicked(index)}
+                              takeMinHeight={true}
+                            // disabled={disabletemp}
+                            />
+                          </View>
+                        );
                       }}
                     />
                   </View>
@@ -1049,7 +1149,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                         style={{ width: buttonWidth }}
                         contentStyle={{ backgroundColor: Colors.BLACK }}
                         mode="contained"
-                        onPress={submitBtnClicked}
+                        onPress={()=>submitBtnClicked(null,"submit")}
                       >
                         Submit
                       </Button>
@@ -1078,8 +1178,49 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                           }
                           scrollEnabled={false}
                           renderItem={({ item, index }) => {
+                          
                             const data = employeeDropDownDataLocal[item];
+                         
                             let selectedNames = "";
+                            // if (item) {
+                            //   for (let i = 1; i < employeeTitleNameList.length; i++) {
+                            //     let notSelected =
+                            //       employeeTitleNameList[index - i];
+                            //     if (notSelected) {
+                            //       const data1 =
+                            //         employeeDropDownDataLocal[notSelected];
+                            //       const filterData = data1.filter(
+                            //         (e) => e.selected == true
+                            //       );
+                            //       if (filterData.length > 0) {
+                            //         const isAnyData = data.filter(
+                            //           (e) => e.parentId == filterData[0]?.code
+                            //         );
+                            //         if (isAnyData.length == 0) {
+                            //           return;
+                            //         }
+                            //       }
+                            //     }
+                            //   }
+                            //   // let notSelected =
+                            //   //   employeeTitleNameList[index - 1];
+                            //   // if (notSelected) {
+                            //   //   const data1 =
+                            //   //     employeeDropDownDataLocal[notSelected];
+                            //   //   const filterData = data1.filter(
+                            //   //     (e) => e.selected == true
+                            //   //   );
+                            //   //   if (filterData.length > 0) {
+                            //   //     const isAnyData = data.filter(
+                            //   //       (e) => e.parentId == filterData[0]?.code
+                            //   //     );
+                            //   //     if (isAnyData.length == 0) {
+                            //   //       return;
+                            //   //     }
+                            //   //   }
+                            //   // }
+                            // }
+                           
                             data.forEach((obj, index) => {
                               if (
                                 obj.selected != undefined &&
@@ -1095,7 +1236,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                                 selectedNames.length - 1
                               );
                             }
-
+                            
                             return (
                               <View>
                                 <DropDownSelectionItem
@@ -1109,7 +1250,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                           }}
                         />
                       </View>
-                      {!isEmployeeLoading ? (<View style={styles.submitBtnBckVw}>
+                      <View style={styles.submitBtnBckVw}>
                         <Button
                           labelStyle={{
                             color: Colors.RED,
@@ -1133,10 +1274,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                         >
                           Submit
                         </Button>
-                      </View>) : (
-                        <AcitivityLoader />
-                      )}
-
+                      </View>
                     </View>
                   )}
                 </View>
@@ -1149,7 +1287,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   );
 };
 
-export default ReceptionistFilterScreen;
+export default DigitalDashboardFilter;
 
 const styles = StyleSheet.create({
   container: {
@@ -1173,4 +1311,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-

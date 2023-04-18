@@ -50,7 +50,7 @@ import {
   GROUP_STR,
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
-import { clearState } from "../../redux/homeReducer";
+import { clearState, updatereceptionistDataObjectData, updateFilterLevelSelectedData as updateFilterLevelSelectedDataHome, updateDealerFilterData as updateDealerFilterDataHome, updateLiveLeadObjectData as updateLiveLeadObjectDataHOme, updateFilterSelectedData as updateFilterSelectedDataHome, updateDealerFilterData_Recep, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedDataReceptionist, updateReceptionistObjectData, updateCrm_employees_drop_down_data, updateFilterIds, updateEmpDropDown_Local } from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
@@ -60,16 +60,9 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
-import {
-  saveFilterPayload,
-  updateDealerFilterData,
-  updateFilterSelectedData,
-} from "../../redux/targetSettingsReducer";
-import {
-  updateFilterSelectedData as updateFilterSelectedDataV2,
-  updateFilterLevelSelectedData,
-  updateLiveLeadObjectData,
-} from "../../redux/liveLeadsReducer";
+import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
+import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM, updateDealerFilterData as updateDealerFilterDataLive } from "../../redux/liveLeadsReducer";
+import { updateFilterSelectedData as updateFilterSelectedDataV3, updateFilterLevelSelectedData as updateFilterLevelSelectedDatav2, updateLiveLeadObjectData as updateLiveLeadObjectDatav2, updateLiveLeadObjectDataCRM as updateLiveLeadObjectDataCRMv2, updateDealerFilterData as updateDealerFilterDataLivev2 } from "../../redux/liveLeadsReducerReceptionist";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -100,12 +93,21 @@ const receptionTelCallerMenu = [
   "Digital Payment",
   "Geolocation",
 ];
+const CRMMenu = [
+  ...commonMenu,
+  "Live Leads",
+  "Live Leads Receptionist",
+  "Receptionist Dashboard",
+  "Digital Payment",
+  "Geolocation",
+];
 const managerMenu = [
   ...commonMenu,
   "Live Leads",
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
+  "Receptionist Dashboard",
   "Target Planning",
   "Task Transfer",
   "Geolocation",
@@ -117,6 +119,7 @@ const mdMenu = [
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
+  "Receptionist Dashboard",
   "Target Planning",
   "Task Transfer",
   "Complaint Tracker",
@@ -277,14 +280,20 @@ const SideMenuScreen = ({ navigation }) => {
     let newFilterData = [];
     if (
       jsonObj.hrmsRole == "Reception" ||
-      jsonObj.hrmsRole == "CRM" ||
+      
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)
       );
-    } else if (
+    }
+    else if (jsonObj.hrmsRole == "CRM"){
+      newFilterData = selector.tableData.filter((item) =>
+        CRMMenu.includes(item.title)
+      );
+    }
+    else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
@@ -314,6 +323,18 @@ const SideMenuScreen = ({ navigation }) => {
       case 99:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
         navigation.navigate(managerMenu[0]);
+        dispatch(updateFilterLevelSelectedDataHome({}));
+        dispatch(updateDealerFilterDataHome({}));
+        dispatch(updateLiveLeadObjectDataHOme({}));
+        dispatch(updateFilterSelectedDataHome({}));
+        dispatch(updateCrm_employees_drop_down_data({}));
+        dispatch(updateFilterSelectedDataReceptionist({}));
+        dispatch(updateFilterLevelSelectedDataReceptionist({}));
+        dispatch(updateDealerFilterData_Recep({}));
+        dispatch(updateCrm_employees_drop_down_data({}))
+        dispatch(updateFilterIds({}))
+        dispatch(updateEmpDropDown_Local({}))
+        
         break;
       case 100:
         navigation.navigate(
@@ -373,6 +394,33 @@ const SideMenuScreen = ({ navigation }) => {
           fromDate: "",
           toDate: "",
         });
+        dispatch(updateFilterSelectedDataV2({}))
+        dispatch(updateFilterLevelSelectedData([]));
+        dispatch(updateLiveLeadObjectData({}));
+        dispatch(updateDealerFilterData({}));
+        dispatch(updateLiveLeadObjectDataCRM({}))
+        dispatch(updateDealerFilterDataLive({}))
+        break;
+      case 170:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist, {
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        });
+        dispatch(updateFilterSelectedDataV3({}))
+        dispatch(updateFilterLevelSelectedDatav2([]));
+        dispatch(updateLiveLeadObjectDatav2({}));
+        // dispatch(updateDealerFilterData({}));
+        dispatch(updateLiveLeadObjectDataCRMv2({}))
+        dispatch(updateDealerFilterDataLivev2({}))
+        break;
+      case 171:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard);
+        dispatch(updateDealerFilterData_Recep({}))
+        dispatch(updateFilterLevelSelectedDataReceptionist({}))
+        dispatch(updateFilterSelectedDataReceptionist({}))
+        dispatch(updateReceptionistObjectData({}))
         break;
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
@@ -387,6 +435,10 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.digitalDashboard
         );
+        dispatch(updateFilterLevelSelectedDataHome({}));
+        dispatch(updateDealerFilterDataHome({}));
+        dispatch(updateLiveLeadObjectDataHOme({}));
+        dispatch(updateFilterSelectedDataHome({}));
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
@@ -437,6 +489,21 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterLevelSelectedData({}));
     dispatch(updateLiveLeadObjectData({}));
     dispatch(updateDealerFilterData({}));
+    dispatch(updatereceptionistDataObjectData({}))
+    dispatch(updateDealerFilterData_Recep({}))
+    dispatch(updateFilterLevelSelectedDataReceptionist({}))
+    dispatch(updateFilterSelectedDataReceptionist({}))
+    dispatch(updateReceptionistObjectData({}))
+    
+    dispatch(updateFilterLevelSelectedDataHome({}));
+    dispatch(updateDealerFilterDataHome({}));
+    dispatch(updateLiveLeadObjectDataHOme({}));
+    dispatch(updateFilterSelectedDataHome({}));
+    dispatch(updateFilterSelectedDataReceptionist({}));
+    dispatch(updateCrm_employees_drop_down_data({}))
+    dispatch(updateFilterIds({}))
+    dispatch(updateEmpDropDown_Local({}))
+
     signOut();
   };
 

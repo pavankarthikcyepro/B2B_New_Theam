@@ -28,7 +28,11 @@ import {
   getEnquiryList,
   getLeadsListCRM,
   getLeadsListReceptionist,
+  getLeadsListXrole,
+  getLiveleadsReceptinoist,
+  getLiveleadsReceptinoistManager,
   getMoreEnquiryList,
+  getSalesHomeDashbaordRedirections,
   updateTheCount,
 } from "../../../redux/enquiryReducer";
 import moment from "moment";
@@ -44,7 +48,7 @@ import { getLeadsList } from "../../../redux/enquiryReducer";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
-
+import { EventRegister } from "react-native-event-listeners";
 const EmployeesRoles = [
   "Reception".toLowerCase(),
   "Tele Caller".toLowerCase(),
@@ -240,7 +244,13 @@ const LeadsScreen = ({ route, navigation }) => {
     [route?.params, leadsFilterData]
   );
 
-  useEffect(() => {
+  useEffect(async() => {
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+    
     if (route?.params) {
       const liveLeadsStartDate =
         route?.params?.moduleType === "live-leads"
@@ -370,18 +380,20 @@ const LeadsScreen = ({ route, navigation }) => {
       
       // setSearchedData([])
       let payloadReceptionist = {
-        "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : userData.empId  ,
+        "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : jsonObj.empId  ,
         "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
         "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-        "orgId": userData.orgId,
+        "orgId": jsonObj.orgId,
         "branchCodes": route.params.dealerCodes,
         "stageName": route?.params?.params,
         "selectedEmpId": route?.params?.ignoreSelectedId? [] :route?.params?.selectedEmpId,
         "limit": 1000,
         "offset": 0
       }
+      setTimeout(() => {
+        dispatch(getLeadsListReceptionist(payloadReceptionist))
+      }, 2000);
       
-      dispatch(getLeadsListReceptionist(payloadReceptionist))
      
     }
     if (route?.params?.screenName === "TargetScreenCRM") {
@@ -394,36 +406,185 @@ const LeadsScreen = ({ route, navigation }) => {
           "loggedInEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-          "orgId": userData.orgId,
+          "orgId": jsonObj.orgId,
           // "branchCodes": route.params.dealerCodes,
           "stageName": route?.params?.params,
           // "selectedEmpId": route?.params?.selectedEmpId,
           "limit": 1000,
-          "offset": 0
+          "offset": 0,
+          "self": route.params.self,
+          "dashboardType": route.params.dashboardType
         }
-
-        dispatch(getLeadsListCRM(payloadReceptionist))
+        setTimeout(() => {
+          dispatch(getLeadsListCRM(payloadReceptionist))
+        }, 2000);
+       
       }else{
         let payloadReceptionist = {
           "loginEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-          "orgId": userData.orgId,
+          "orgId": jsonObj.orgId,
           "branchCodes": route.params.dealerCodes,
           "stageName": route?.params?.params,
           "selectedEmpId": route?.params?.selectedEmpId,
           "limit": 1000,
           "offset": 0
         }
-
-        dispatch(getLeadsListReceptionist(payloadReceptionist))
+        setTimeout(() => {
+          dispatch(getLeadsListReceptionist(payloadReceptionist))
+        }, 2000);
+        
       }
       
 
     }
-   
 
+    if (route?.params?.screenName === "DigitalHome") {
+      //  todo call new api here 
+
+      // setSearchedData([])
+
+     
+        let payload = {
+          "orgId": jsonObj.orgId,
+          "loggedInEmpId": route?.params?.parentId,
+          "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate, 
+          "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+          "limit": 1000,
+          "offset": 0,
+          "stageName": route?.params?.params,
+          "dashboardType": "digital"
+        }
+        setTimeout(() => {
+          dispatch(getLeadsListXrole(payload));
+        }, 2000);
+       
+
+    }
+
+    if (route?.params?.screenName === "ReceptionistHome") {
+      //  todo call new api here 
+
+      // setSearchedData([])
+
+
+      let payload = {
+        "orgId": jsonObj.orgId,
+        "loggedInEmpId": route?.params?.parentId,
+        "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+        "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+        "limit": 1000,
+        "offset": 0,
+        "stageName": route?.params?.params,
+        "dashboardType": "reception"
+      }
+      setTimeout(() => {
+        dispatch(getLeadsListXrole(payload));
+      }, 2000);
+
+
+    }
+    
+    
+    if (route?.params?.screenName === "ParametersScreen") {
+      const liveLeadsStartDate =
+        route?.params?.moduleType === "live-leadsV2"
+          ? "2021-01-01"
+          : lastMonthFirstDate;
+      const liveLeadsEndDate =
+        route?.params?.moduleType === "live-leadsV2"
+          ? moment().format(dateFormat)
+          : currentDate;
+
+      setFromDateState(liveLeadsStartDate);
+      setToDateState(liveLeadsEndDate);
+
+
+      if (route.params.isCRMOwnDATA) {
+        if (route.params.isgetCRMTotalData) {
+          let payload = {
+            "loggedInEmpId": route?.params?.parentId,
+            "orgId": jsonObj.orgId,
+            "stageName": route?.params?.params,
+            "limit": 1000,
+            "offset": 0,
+            "self": route.params.isgetCRMTotalData
+          }
+
+          setTimeout(() => {
+            dispatch(getLiveleadsReceptinoistManager(payload))
+          }, 2000);
+        } else {
+          let payload = {
+            "loggedInEmpId": route?.params?.parentId,
+            "orgId": jsonObj.orgId,
+            "stageName": route?.params?.params,
+            "limit": 1000,
+            "offset": 0,
+            "self": route.params.isgetCRMTotalData
+          }
+
+          setTimeout(() => {
+            dispatch(getLiveleadsReceptinoistManager(payload))
+          }, 2000);
+        }
+
+      } else {
+
+        let payload = {
+          "loginEmpId": route?.params?.parentId,
+          // "startDate": liveLeadsStartDate,
+          // "endDate": liveLeadsEndDate,
+          "orgId": jsonObj.orgId,
+          "branchList": route.params.dealerCodes,
+          "stageName": route?.params?.params,
+          "selectedEmpId": route?.params?.selectedEmpId,
+          "limit": 1000,
+          "offset": 0
+        }
+        setTimeout(() => {
+          dispatch(getLiveleadsReceptinoist(payload))
+        }, 2000);
+      }
+    }
+
+
+    if (route?.params?.screenName === "TargetScreenSales") {
+      let payload = {
+        "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+        "loggedInEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
+        "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+        "selectedEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
+        "levelSelected": route.params.dealerCodes,
+        "pageNo": 0,
+        "size": 5000,
+        "filterValue": "",
+        "isSelf": route?.params?.self,
+        "stageName": route?.params?.params
+      }
+     
+      setTimeout(() => {
+        dispatch(getSalesHomeDashbaordRedirections(payload))
+      }, 2000);
+    }
+
+ 
+  }
   }, [route.params]);
+
+  useEffect(() => {
+    EventRegister.addEventListener("EMSBOTTOMTAB_CLICKED", (res) => {
+      if (res) {
+       onRefresh();
+      }
+    });
+   
+    return () => {
+      EventRegister.removeEventListener();
+    };
+  }, [])
+  
 
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
@@ -502,7 +663,7 @@ const LeadsScreen = ({ route, navigation }) => {
       empId: employeeId,
       status: "",
       offset: offSet,
-      limit: 50,
+      limit: route?.params?.moduleType === "live-leads" ? 50000 : 50,
       leadStage: defualtLeadStage,
       leadStatus: defualtLeadStatus,
     };
@@ -1005,7 +1166,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50,
+        limit: route?.params?.moduleType === "live-leads" ? 50000 : 50, 
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
@@ -1190,7 +1351,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50,
+        limit: route?.params?.moduleType === "live-leads" ? 50000 :50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
