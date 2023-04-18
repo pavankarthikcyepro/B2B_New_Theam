@@ -145,15 +145,15 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
     setToDate(monthLastDate);
   }, [selector.filter_drop_down_data]);
 
-  useEffect(() => {
-    // navigation.addListener("focus", () => {
-    // if (!isEmpty(targetSelector.filterSelectedData)) {
-    //   const temp = { ...targetSelector.filterSelectedData };
-    //   setEmployeeDropDownDataLocal(temp);
-    // }
-    // });
+  // useEffect(() => {
+  //   // navigation.addListener("focus", () => {
+  //   // if (!isEmpty(targetSelector.filterSelectedData)) {
+  //   //   const temp = { ...targetSelector.filterSelectedData };
+  //   //   setEmployeeDropDownDataLocal(temp);
+  //   // }
+  //   // });
     
-  }, [isFocused]);
+  // }, [isFocused]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -259,45 +259,86 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
     setDropDownFrom("ORG_TABLE");
   };
 
-  const dropDownItemClicked2 = (index) => {
+  // const dropDownItemClicked2 = (index) => {
     
-    if(index === 0){
-      const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
+  //   if(index === 0){
+  //     const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
 
 
-      setDropDownData(data);
-      setSelectedItemIndex(index);
-      setShowDropDownModel(true);
-      setDropDownFrom("EMPLOYEE_TABLE");
-    }else{
-      // selectEmployeeData.filter(item => item.designation === data.name);
-      let tempFinal="";
-      let findEmployee = selectDesignationsData.filter(item => item.selected == true);
-      if(findEmployee.length >0){
-        // let ind = employeeDropDownDataLocal[employeeTitleNameList[index]]
-        findEmployee.map(item => {
+  //     setDropDownData(data);
+  //     setSelectedItemIndex(index);
+  //     setShowDropDownModel(true);
+  //     setDropDownFrom("EMPLOYEE_TABLE");
+  //   }else{
+  //     // selectEmployeeData.filter(item => item.designation === data.name);
+  //     let tempFinal="";
+  //     let findEmployee = selectDesignationsData.filter(item => item.selected == true);
+  //     if(findEmployee.length >0){
+  //       // let ind = employeeDropDownDataLocal[employeeTitleNameList[index]]
+  //       findEmployee.map(item => {
         
-          tempFinal = selectEmployeeData.filter(item2 => item2.designation === item.name);
+  //         tempFinal = selectEmployeeData.filter(item2 => item2.designation === item.name);
          
-        })
-      }
+  //       })
+  //     }
     
-      if (tempFinal.length > 0) {
-        setDropDownData(tempFinal);
+  //     if (tempFinal.length > 0) {
+  //       setDropDownData(tempFinal);
 
-        setSelectedItemIndex(index);
-        setShowDropDownModel(true);
-        setDropDownFrom("EMPLOYEE_TABLE");
-      } else {
-        setDropDownData(selectEmployeeData);
+  //       setSelectedItemIndex(index);
+  //       setShowDropDownModel(true);
+  //       setDropDownFrom("EMPLOYEE_TABLE");
+  //     } else {
+  //       setDropDownData(selectEmployeeData);
 
-        setSelectedItemIndex(index);
-        setShowDropDownModel(true);
-        setDropDownFrom("EMPLOYEE_TABLE");
-      }
+  //       setSelectedItemIndex(index);
+  //       setShowDropDownModel(true);
+  //       setDropDownFrom("EMPLOYEE_TABLE");
+  //     }
       
-    }
+  //   }
    
+  // };
+
+
+  const dropDownItemClicked2 = (index) => {
+    let dropdownDatas = employeeDropDownDataLocal[employeeTitleNameList[index]];
+
+    if (index > 0) {
+      let localIndex = index - 1;
+      let selectedParentIds = [];
+      let localData =
+        employeeDropDownDataLocal[employeeTitleNameList[localIndex]];
+      localData?.length &&
+        localData.forEach((val) => {
+          if (val.selected !== undefined && val.selected === true)
+            selectedParentIds.push(val.designation);
+        });
+      if (selectedParentIds?.length > 0) {
+        let data = dropdownDatas.filter((item) =>
+          selectedParentIds.includes(item.designation)
+        );
+        dropdownDatas = [...data];
+      }
+    }
+    const arrayData = dropdownDatas;
+    const newArray = [];
+    if (arrayData.length > 0) {
+      arrayData.forEach((element) => {
+        newArray.push({
+          ...element,
+          selected: false,
+        });
+      });
+    }
+    // newDataObj[key] = newArray;
+
+
+    setDropDownData([...newArray]);
+    // setDropDownData([...dropdownDatas]);
+    setSelectedItemIndex(index);
+    setShowDropDownModel(true);
+    setDropDownFrom("EMPLOYEE_TABLE");
   };
 
 
@@ -522,88 +563,197 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
     // index == 4 && submitBtnClicked(totalDataObjLocal,"");
   };
 
-  
-
   const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
     let keyMain = employeeTitleNameList[index];
-    // clearBtnForEmployeeData();
-    // dispatch(updateFilterSelectedData({}))
-    // dispatch(updateLiveLeadObjectData({}))
+
+    if (index === 0) {
+
+      let key = employeeTitleNameList[index];
+
+      // const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
+      const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
+      let objIndex = newTotalDataObjLocal[key].findIndex(
+        (obj) => obj.name == data.name
+      );
+      const a = newTotalDataObjLocal[key].map((data, index) =>
+        index === objIndex
+          ? { ...newTotalDataObjLocal[key][index], selected: true }
+          : { ...newTotalDataObjLocal[key][index], selected: false }
+      );
+      newTotalDataObjLocal[key] = a;
+      let arrayData = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData = employeeDropDownDataLocal[key].map((element, i) => {
+
+          element.name === data.name ? element.selected = true : element.selected = false;
+
+        });
+
+      }
+
+
+      let key2 = employeeTitleNameList[index + 1];
+
+      // const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
+      const newTotalDataObjLocal2 = Object.assign(employeeDropDownDataLocal);
+      let objIndex2 = newTotalDataObjLocal2[key2].findIndex(
+        (obj) => obj.name == data.name
+      );
+      const a2 = newTotalDataObjLocal2[key2].map((data, index) =>
+        index === objIndex2
+          ? { ...newTotalDataObjLocal2[key2][index], selected: true }
+          : { ...newTotalDataObjLocal2[key2][index], selected: false }
+      );
+      newTotalDataObjLocal[key2] = a2;
+      let arrayData2 = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData = employeeDropDownDataLocal[key].map((element, i) => {
+
+          element.name === data.designation ? element.selected = true : null;
+
+        });
+
+      }
+
+    } else {
+
+
+      let key = employeeTitleNameList[index];
+
+      const newTotalDataObjLocal = Object.assign(employeeDropDownDataLocal);
+      let objIndex = newTotalDataObjLocal[key].findIndex(
+        (obj) => obj.name == data.name
+      );
+      const a = newTotalDataObjLocal[key].map((data, index) =>
+        index === objIndex
+          ? { ...newTotalDataObjLocal[key][index], selected: true }
+          : { ...newTotalDataObjLocal[key][index], selected: false }
+      );
+      newTotalDataObjLocal[key] = a;
+      let arrayData = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData = employeeDropDownDataLocal[key].map((element, i) => {
+
+          element.name === data.name ? element.selected = true : null;
+
+        });
+
+      }
+
+
+      let key2 = employeeTitleNameList[index - 1];
+
+      // const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
+      const newTotalDataObjLocal2 = Object.assign(employeeDropDownDataLocal);
+      let objIndex2 = newTotalDataObjLocal2[key2].findIndex(
+        (obj) => obj.name == data.name
+      );
+      const a2 = newTotalDataObjLocal2[key2].map((data, index) =>
+        index === objIndex2
+          ? { ...newTotalDataObjLocal2[key2][index], selected: true }
+          : { ...newTotalDataObjLocal2[key2][index], selected: false }
+      );
+      newTotalDataObjLocal[key2] = a2;
+      let arrayData2 = [];
+      for (let key in employeeDropDownDataLocal) {
+        arrayData = employeeDropDownDataLocal[key].map((element, i) => {
+
+          element.name === data.designation ? element.selected = true : null;
+
+        });
+
+      }
+
+
+
+
+    }
+
+
+    // setEmployeeDropDownDataLocal(tempEmployeeArr);
+  };
+  
+
+  // const updateSelectedItemsForEmployeeDropDown = (data, index, index1) => {
+  //   let keyMain = employeeTitleNameList[index];
+  //   // clearBtnForEmployeeData();
+  //   // dispatch(updateFilterSelectedData({}))
+  //   // dispatch(updateLiveLeadObjectData({}))
   
   
    
-    if(index === 0 ){ 
+  //   if(index === 0 ){ 
       
-      let temparr = dropDownData.map((item,i) =>{
+  //     let temparr = dropDownData.map((item,i) =>{
          
-       index1===i? item.selected = true : item.selected = false
-      })
-      let temparr2 = selectEmployeeData.map((item, i) => {
+  //      index1===i? item.selected = true : item.selected = false
+  //     })
+  //     let temparr2 = selectEmployeeData.map((item, i) => {
         
-        item.selected = false;
+  //       item.selected = false;
       
-      })
-      // let arrayData = [];
-      // for (let key in employeeDropDownDataLocal) {
-      //   arrayData = employeeDropDownDataLocal[key].map((element,i) => {
-      //     
-      //     element.name === data.name ? element.selected = true : element.selected = false;
+  //     })
+  //     // let arrayData = [];
+  //     // for (let key in employeeDropDownDataLocal) {
+  //     //   arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+  //     //     
+  //     //     element.name === data.name ? element.selected = true : element.selected = false;
 
-      //   });
+  //     //   });
        
-      // }
+  //     // }
      
 
-      // setEmployeeDropDownDataLocal(newDataObj);
-    }else{
+  //     // setEmployeeDropDownDataLocal(newDataObj);
+  //   }else{
        
-      let arrayData = [];
-      for (let key in employeeDropDownDataLocal) {
-        arrayData = employeeDropDownDataLocal[key].map((element,i) => {
+  //     let arrayData = [];
+  //     for (let key in employeeDropDownDataLocal) {
+  //       arrayData = employeeDropDownDataLocal[key].map((element,i) => {
           
-          element.name === data.designation ? element.selected = true : element.selected = false;
+  //         element.name === data.designation ? element.selected = true : element.selected = false;
 
-        });
+  //       });
        
-      }
+  //     }
 
-      let arrayData2 = [];
-      for (let key in employeeDropDownDataLocal) {
-        arrayData2 = employeeDropDownDataLocal[key].map((element, i) => {
+  //     let arrayData2 = [];
+  //     for (let key in employeeDropDownDataLocal) {
+  //       arrayData2 = employeeDropDownDataLocal[key].map((element, i) => {
          
-          element.name === data.name ? { ...element, selected : true } : { ...element,selected : false };
+  //         element.name === data.name ? { ...element, selected : true } : { ...element,selected : false };
 
-        });
+  //       });
 
-      }
-      // setEmployeeDropDownDataLocal(arrayData2);
-      let temparr2 = dropDownData.map((item, i) => {
-        if (index1 === i) {
-          item.selected = true
-          // let findEmployee = selectDesignationsData.filter(item => item.selected = true);
-        } else {
-          item.selected = false
-          // let findEmployee = selectDesignationsData.filter(item => item.selected = false);
-        }
+  //     }
+  //     // setEmployeeDropDownDataLocal(arrayData2);
+  //     let temparr2 = dropDownData.map((item, i) => {
+  //       if (index1 === i) {
+  //         item.selected = true
+  //         // let findEmployee = selectDesignationsData.filter(item => item.selected = true);
+  //       } else {
+  //         item.selected = false
+  //         // let findEmployee = selectDesignationsData.filter(item => item.selected = false);
+  //       }
 
-        // setEmployeeDropDownDataLocal(arrayData);
+  //       // setEmployeeDropDownDataLocal(arrayData);
        
-      })
-      // working code
-      // let temparr2 = dropDownData.map((item, i) => {
-       
-        
-      //   index1 === i ? item.selected = true : item.selected = false
-      // })
-      // let temparr2 = dropDownData.map((item, i) => {
+  //     })
+  //     // working code
+  //     // let temparr2 = dropDownData.map((item, i) => {
        
         
-      //   index1 === i ? item.selected = true : item.selected = false
-      // })
-    }
+  //     //   index1 === i ? item.selected = true : item.selected = false
+  //     // })
+  //     // let temparr2 = dropDownData.map((item, i) => {
+       
+        
+  //     //   index1 === i ? item.selected = true : item.selected = false
+  //     // })
+  //   }
     
-    // setEmployeeDropDownDataLocal(tempEmployeeArr);
-  };
+  //   // setEmployeeDropDownDataLocal(tempEmployeeArr);
+  // };
 
   const clearBtnClicked = () => {
     const totalDataObjLocal = { ...totalDataObj };
@@ -827,6 +977,7 @@ const DigitalDashboardFilter = ({ route, navigation }) => {
               newArray.push({
                 name:element,
                 selected: false,
+                designation: element
               });
             }else{
               newArray.push({

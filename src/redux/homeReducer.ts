@@ -1225,6 +1225,12 @@ export const homeSlice = createSlice({
     updateCrm_employees_drop_down_data: (state, action) => {
       state.crm_employees_drop_down_data = {};
     },
+    updateCRMRecepDashboard_employees_drop_down_data: (state, action) => {
+      state.crm_employees_drop_down_data_recep = {};
+    },
+    updateEmployeeDropdownData: (state, action) => {
+      state.employees_drop_down_data = {};
+    },
     clearState: (state, action) => {
       state.serchtext = "";
       state.employeeId = "";
@@ -2180,6 +2186,7 @@ export const {
   updateFilterIds,
   updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
   updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData,updateDealerFilterData_Recep,updateFilterLevelSelectedDataReceptionist,updateFilterSelectedDataReceptionist
-  ,updateReceptionistObjectData,updateEmpDropDown_Local,updateCrm_employees_drop_down_data
+  ,updateReceptionistObjectData,updateEmpDropDown_Local,updateCrm_employees_drop_down_data,
+  updateCRMRecepDashboard_employees_drop_down_data, updateEmployeeDropdownData
 } = homeSlice.actions;
 export default homeSlice.reducer;
