@@ -36,6 +36,7 @@ import {
   generateOtpApi,
   validateOtpApi,postReOpenTestDrive,getTestDriveHistoryCount,
   clearOTP,
+  PutUpdateListTestDriveHistory,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -1333,6 +1334,49 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
   
   }, [selector.test_drive_history_count_statu])
+
+
+  const reTestDrivePutCallupdateList = () =>{
+    let payload = {
+      "address": null,
+      "allotmentId": 0,
+      "branchId": 286,
+      "canceledBy": null,
+      "customerDropDatetime": null,
+      "customerId": "18-286-1372a4e0-d5bf-4337-a4ac-cdf481c98463",
+      "customerPickupDatetime": null,
+      "customerQuery": null,
+      "datetime": null,
+      "dlBackUrl": "",
+      "dlFrontUrl": "",
+      "dseId": "919",
+      "endTime": 1679362530742,
+      "latitude": null,
+      "location": "showroom",
+      "longitude": null,
+      "managerApprovedDatetime": null,
+      "managerId": null,
+      "orgId": 18,
+      "securityInId": null,
+      "securityOutId": null,
+      "source": "ShowroomWalkin",
+      "startTime": 1679351790742,
+      "status": "ASSIGNED",
+      "testDriveDatetime": 1679348070742,
+      "varientId": 901,
+      "vehicleId": 520,
+      "driverId": "919",
+      "testdriveId": 0,
+      "reTestdriveFlag": "ReTestDrive",
+      "customerHaveingDl": false
+    }
+
+    dispatch(PutUpdateListTestDriveHistory(payload));
+
+  }
+
+
+
    const TestDriveHistoryIcon = ({ navigation }) => {
     return (
 

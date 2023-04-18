@@ -407,6 +407,10 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
+
+  UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
+    return sales_url + `/task-history/updateList/${recordid}`;
+  },
   ORG_HIRARCHY: (orgId, empId) => {
     return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   },

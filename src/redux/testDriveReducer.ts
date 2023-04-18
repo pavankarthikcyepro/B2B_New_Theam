@@ -141,6 +141,16 @@ export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpen
 })
 
 
+export const PutUpdateListTestDriveHistory = createAsyncThunk("HOME_VISIT_SLICE/PutUpdateListTestDriveHistory", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.UPDATELIST_TESTDRIVE_HISTORY(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 
 export const getTestDriveHistoryCount = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryCount", async (universalId, { rejectWithValue }) => {
 
@@ -192,6 +202,7 @@ const testDriveSlice = createSlice({
     test_drive_history_count:0,
      test_drive_history_details_statu:"",
     test_drive_history_details:"",
+    test_drrive_history_updatelist:""
   },
   reducers: {
     clearState: (state, action) => {
@@ -218,6 +229,7 @@ const testDriveSlice = createSlice({
       state.test_drive_history_count=0;
      state.test_drive_history_details_statu= "";
         state.test_drive_history_details= "";
+      state.test_drrive_history_updatelist="";
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -536,6 +548,29 @@ const testDriveSlice = createSlice({
       state.isLoading = false;
       state.test_drive_history_details_statu = "failed";
       state.test_drive_history_details = "";
+    })
+
+
+    
+    builder.addCase(PutUpdateListTestDriveHistory.pending, (state, action) => {
+      state.isLoading = true;
+
+    
+      state.test_drrive_history_updatelist = "";
+    })
+    builder.addCase(PutUpdateListTestDriveHistory.fulfilled, (state, action) => {
+      if (action.payload) {
+
+        state.test_drrive_history_updatelist = action.payload;
+      }
+     
+      state.isLoading = false;
+    })
+    builder.addCase(PutUpdateListTestDriveHistory.rejected, (state, action) => {
+    
+      state.isLoading = false;
+     
+      state.test_drrive_history_updatelist = "";
     })
   }
 });
