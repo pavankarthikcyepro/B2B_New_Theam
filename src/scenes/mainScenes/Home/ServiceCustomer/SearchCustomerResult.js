@@ -76,7 +76,8 @@ const SearchCustomerResult = ({ navigation, route }) => {
               iconName={"format-list-bulleted-square"}
               onPress={() =>
                 navigation.navigate(HomeStackIdentifiers.addCustomerInfo, {
-                  fromScreen: "search"
+                  fromScreen: "search",
+                  vehicleRegNumber: item.vehicleRegNumber,
                 })
               }
             />

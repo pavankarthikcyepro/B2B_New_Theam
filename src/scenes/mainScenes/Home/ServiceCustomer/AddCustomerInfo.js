@@ -4,17 +4,18 @@ import { View, KeyboardAvoidingView, SafeAreaView, ScrollView, StyleSheet } from
 import { Button, IconButton, List } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { DatePickerComponent, DropDownComponant, LoaderComponent, TextinputComp } from '../../../../components';
-import { Gender_Types, Salutation_Types } from '../../../../jsonData/enquiryFormScreenJsonData';
+import { Salutation_Types } from '../../../../jsonData/enquiryFormScreenJsonData';
 import { DateSelectItem, DropDownSelectionItem, RadioTextItem, RadioTextItem2 } from '../../../../pureComponents';
-import { addCustomer, clearStateData, getComplaintReasonsApi, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../../redux/customerInfoReducer';
+import { addCustomer, clearStateData, editCustomer, getComplaintReasonsApi, getCustomerDetails, getCustomerTypesApi, getInsuranceCompanyApi, getServiceTypesApi, getSourceTypesApi, getSubServiceTypesApi, getVehicleInfo, setAmcInfo, setCommunicationAddress, setDatePicker, setDropDownData, setExWarrantyInfo, setInsuranceInfo, setOemWarrantyInfo, setPersonalIntro, setServiceInfo, setVehicleInformation, updateAddressByPincode, updateSelectedDate } from '../../../../redux/customerInfoReducer';
 import { Colors, GlobalStyle } from '../../../../styles';
 import * as AsyncStore from "../../../../asyncStore";
-import { showToast } from '../../../../utils/toast';
+import { showToast, showToastRedAlert } from '../../../../utils/toast';
 import { PincodeDetailsNew, isEmail } from '../../../../utils/helperFunctions';
 import {
   COMPLAINT_STATUS,
   EW_TYPE,
   FASTAG,
+  GENDER_TYPES,
   LAST_SERVICE_FEEDBACK,
   MONTH,
   OEM_PERIOD,
@@ -25,7 +26,7 @@ import { TextInputServices } from '../../../../components/textInputServices';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 
 const AddCustomerInfo = ({ navigation, route }) => {
-  const { fromScreen } = route.params;
+  const { fromScreen, vehicleRegNumber } = route.params;
   const dispatch = useDispatch();
   let scrollRef = useRef(null);
   const selector = useSelector((state) => state.customerInfoReducer);
@@ -49,6 +50,162 @@ const AddCustomerInfo = ({ navigation, route }) => {
     };
   }, []);
 
+  // Getting Source type from api
+  useEffect(() => {
+    if (
+      vehicleRegNumber &&
+      fromScreen == "search" &&
+      selector.customerDetailsResponse &&
+      selector.sourceTypesResponse.length > 0
+    ) {
+      const { customerDetail } = selector.customerDetailsResponse;
+      const { parentLeadSource, leadSource } = customerDetail;
+
+      let sourceIndex = selector.sourceTypesResponse.findIndex(
+        (item) => item.id == parentLeadSource
+      );
+      if (sourceIndex >= 0) {
+        dispatch(
+          setDropDownData({
+            key: "SOURCE_TYPE",
+            value: selector.sourceTypesResponse[sourceIndex].name,
+          })
+        );
+
+        const element = selector.sourceTypesResponse[sourceIndex];
+        if (element?.subtypeMap?.length > 0) {
+          dispatch(
+            setPersonalIntro({
+              key: "SUB_SOURCE_RES",
+              text: element.subtypeMap,
+            })
+          );
+
+          let subSourceIndex = element.subtypeMap.findIndex(
+            (item) => item.id == leadSource
+          );
+          if (subSourceIndex >= 0) {
+            dispatch(
+              setDropDownData({
+                key: "SUB_SOURCE_TYPE",
+                value: element.subtypeMap[subSourceIndex].name,
+              })
+            );
+          }
+        }
+      }
+    }
+  }, [selector.customerDetailsResponse, selector.sourceTypesResponse]);
+
+  // Getting Vehicle models from api
+  useEffect(() => {
+    if (
+      vehicleRegNumber &&
+      fromScreen == "search" &&
+      selector.customerDetailsResponse &&
+      selector.vehicleModelList.length > 0
+    ) {
+      const { vehicleDetail } = selector.customerDetailsResponse;
+      const { vehicleModel, variant } = vehicleDetail;
+
+      if (vehicleModel) {
+        let modelIndex = selector.vehicleModelList.findIndex(
+          (item) => item.model == vehicleModel
+        );
+
+        if (modelIndex >= 0) {
+          const variantList = selector.vehicleModelList[modelIndex].varients;
+          dispatch(
+            setVehicleInformation({
+              key: "VEHICLE_VARIANT_LIST",
+              text: variantList,
+            })
+          );
+          let variantIndex = variantList.findIndex(
+            (item) => item.name == variant
+          );
+
+          if (variantIndex >= 0) {
+            const selectedVariant = variantList[variantIndex];
+            let colors = [];
+            for (let i = 0; i < selectedVariant.vehicleImages.length; i++) {
+              let data = {
+                ...selectedVariant.vehicleImages[i],
+                name: selectedVariant.vehicleImages[i].color,
+              };
+              colors.push(Object.assign({}, data));
+            }
+            dispatch(
+              setVehicleInformation({ key: "VEHICLE_COLOR_LIST", text: colors })
+            );
+          }
+        }
+      }
+    }
+  }, [selector.customerDetailsResponse, selector.vehicleModelList]);
+
+  // Getting Service type from api
+  useEffect(async () => {
+    if (
+      vehicleRegNumber &&
+      fromScreen == "search" &&
+      selector.customerDetailsResponse &&
+      selector.serviceTypeResponse.length > 0
+    ) {
+      const { historyDetail } = selector.customerDetailsResponse;
+      const { serviceType, subServiceType } = historyDetail;
+      if (serviceType) {
+        let serviceTypeIndex = selector.serviceTypeResponse.findIndex(
+          (item) => item.id == serviceType
+        );
+        if (serviceTypeIndex >= 0) {
+          const selectedService =
+            selector.serviceTypeResponse[serviceTypeIndex];
+          dispatch(
+            setDropDownData({
+              key: "SERVICE_TYPE",
+              value: selectedService.name,
+            })
+          );
+
+          let payload = {
+            tenantId: userData?.branchId,
+            catId: selectedService.id,
+          };
+          const response = await dispatch(getSubServiceTypesApi(payload));
+
+          if (response?.payload?.statusCode == 200) {
+            const { body } = response.payload;
+            for (let i = 0; i < body.length; i++) {
+              let data = { ...body[i], name: body[i].serviceName };
+              newArr.push(Object.assign({}, data));
+            }
+            dispatch(
+              setDropDownData({
+                key: "SUB_SERVICE_TYPE_LIST",
+                value: [...newArr],
+              })
+            );
+
+            let subServiceTypeIndex = body.findIndex(
+              (item) => item.id == subServiceType
+            );
+
+            if (subServiceTypeIndex >= 0) {
+              const selectedSubService = body[subServiceTypeIndex];
+              dispatch(
+                setDropDownData({
+                  key: "SUB_SERVICE_TYPE",
+                  value: selectedSubService.serviceName,
+                })
+              );
+            }
+          }
+        }
+      }
+    }
+  }, [selector.customerDetailsResponse, selector.serviceTypeResponse]);
+
   const clearLocalData = () => {
     setOpenAccordion("0");
     setDropDownKey("");
@@ -69,6 +226,14 @@ const AddCustomerInfo = ({ navigation, route }) => {
       dispatch(getSourceTypesApi(jsonObj.branchId));
       dispatch(getServiceTypesApi(jsonObj.branchId));
 
+      if (vehicleRegNumber && fromScreen == "search") {
+        let customerDetailsPayload = {
+          tenantId: jsonObj.branchId,
+          vehicleRegNumber: vehicleRegNumber,
+        };
+        dispatch(getCustomerDetails(customerDetailsPayload));
+      }
+
       let complainReasonPayload = {
         menu: "Factor Type",
         orgId: jsonObj.orgId,
@@ -88,7 +253,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "GENDER":
-        setDataForDropDown([...Gender_Types]);
+        setDataForDropDown([...GENDER_TYPES]);
         break;
       case "RELATION":
         setDataForDropDown([...selector.relation_types_data]);
@@ -261,6 +426,11 @@ const AddCustomerInfo = ({ navigation, route }) => {
           (item) => item.name == value
         );
         return selector.serviceTypeResponse[index].id;
+      } else if (type == "subServiceType") {
+        let index = selector.subServiceTypeResponse.findIndex(
+          (item) => item.name == value
+        );
+        return selector.subServiceTypeResponse[index].id;
       } else if (type == "sourceType") {
         let index = selector.sourceTypesResponse.findIndex(
           (item) => item.name == value
@@ -381,9 +551,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
         kmReadingAtService: stringToNumber(selector.readingAtService),
         serviceCenter: selector.serviceCenter,
         serviceAmount: stringToNumber(selector.serviceAmount),
-        serviceType: 2,
         // serviceType: getPayloadId("serviceType", selector.serviceType),
-        // subServiceType: selector.subServiceType, (available in ui, need to add in api)
+        serviceType: getPayloadId("subServiceType", selector.subServiceType),
+        // subServiceType: getPayloadId("subServiceType", selector.subServiceType),
       },
       vehicleDetails: {
         vehicleRegNumber: selector.vehicleRegNo,
@@ -404,7 +574,7 @@ const AddCustomerInfo = ({ navigation, route }) => {
         chassisNumber: selector.chassisNumber,
         sellingLocation: selector.sellingLocation,
         sellingDealer: selector.sellingDealer,
-        isFastag: selector.fastag == "Available" ? true : false,
+        isFastag: selector.fastag == "Yes" ? true : false,
       },
       customer: {
         salutation: selector.salutation,
@@ -430,12 +600,12 @@ const AddCustomerInfo = ({ navigation, route }) => {
             district: selector.district,
           },
         ],
-        gender: selector.gender ? selector.gender.toUpperCase() : "",
+        gender: selector.gender,
         customerType: selector.customerTypes,
         occupation: selector.occupation,
         dateOfBirth: convertDateForPayload(selector.dateOfBirth),
+        dateOfArrival: convertDateForPayload(selector.anniversaryDate),
         // refered_by: "dsfsdf", (not in UI)
-        // dateOfArrival: "2023-03-22", (not in UI)
       },
       insuranceRequest: {
         insuranceAmount: stringToNumber(selector.insuranceAmount),
@@ -477,8 +647,46 @@ const AddCustomerInfo = ({ navigation, route }) => {
       customerData: newData,
     };
 
-    console.log("payload -> ", payload);
-    dispatch(addCustomer(payload));
+    if (fromScreen == "search") {
+      payload.customerData.vehicleHistoryRequest.id =
+        selector.customerDetailsResponse.historyDetail.id;
+      payload.customerData.vehicleDetails.id =
+        selector.customerDetailsResponse.vehicleDetail.id;
+      payload.customerData.customer.id =
+        selector.customerDetailsResponse.customerDetail.id;
+      payload.customerData.insuranceRequest.id =
+        selector.customerDetailsResponse.insuranceDetail.id;
+
+      let mcpId = "";
+      let ewId = "";
+      let oemId = "";
+
+      const element = selector.customerDetailsResponse.warrantyDetail;
+      for (let i = 0; i < element.length; i++) {
+        if (element[i].warrantyType == "MCP") {
+          mcpId = element[i].id;
+        } else if (element[i].warrantyType == "EW") {
+          ewId = element[i].id;
+        } else if (element[i].warrantyType == "OEM") {
+          oemId = element[i].id;
+        }
+      }
+
+      const newElement = payload.customerData.warrantyRequests;
+      for (let i = 0; i < element.length; i++) {
+        if (newElement[i].warrantyType == "MCP") {
+          payload.customerData.warrantyRequests[i].id = mcpId;
+        } else if (newElement[i].warrantyType == "EW") {
+          payload.customerData.warrantyRequests[i].id = ewId;
+        } else if (newElement[i].warrantyType == "OEM") {
+          payload.customerData.warrantyRequests[i].id = oemId;
+        }
+      }
+
+      dispatch(editCustomer(payload));
+    } else {
+      dispatch(addCustomer(payload));
+    }
   };
 
   const scrollToPos = (itemIndex) => {
@@ -487,12 +695,19 @@ const AddCustomerInfo = ({ navigation, route }) => {
 
   useEffect(() => {
     if (selector.addCustomerResponseStatus == "success") {
-      showToast("Customer Added Successfully");
+      showToastRedAlert("Customer Added Successfully");
       setTimeout(() => {
         navigation.popToTop();
       }, 500);
     }
   }, [selector.addCustomerResponseStatus]);
+
+  useEffect(() => {
+    if (selector.editCustomerResponseStatus == "success") {
+      showToastRedAlert("Information Updated Successfully");
+      setIsEditable(false);
+    }
+  }, [selector.editCustomerResponseStatus]);
 
   const isEditEnabled = () => {
     if (fromScreen == "search" && isEditable) {
@@ -672,6 +887,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     onPress={() => showDropDownModelMethod("GENDER", "Gender")}
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"GENDER"}
+                    onClear={onDropDownClear}
                   />
 
                   <DropDownServices
@@ -1062,6 +1280,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"VEHICLE_MAKER"}
+                    onClear={onDropDownClear}
                   />
                   <DropDownServices
                     label={"Model"}
@@ -1074,6 +1295,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"VEHICLE_MODEL"}
+                    onClear={onDropDownClear}
                   />
                 </View>
 
@@ -1089,6 +1313,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"VEHICLE_VARIANT"}
+                    onClear={onDropDownClear}
                   />
                   <DropDownServices
                     label={"Color"}
@@ -1101,6 +1328,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"VEHICLE_COLOR"}
+                    onClear={onDropDownClear}
                   />
                 </View>
 
@@ -1294,6 +1524,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"SERVICE_TYPE"}
+                    onClear={onDropDownClear}
                   />
                   <DropDownServices
                     label={"Sub Service Type"}
@@ -1306,6 +1539,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"SUB_SERVICE_TYPE"}
+                    onClear={onDropDownClear}
                   />
                 </View>
 
@@ -1405,6 +1641,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     )
                   }
                   disabled={!isEditEnabled()}
+                  clearOption={true}
+                  clearKey={"SERVICE_FEEDBACK"}
+                  onClear={onDropDownClear}
                 />
 
                 <View style={styles.inputRow}>
@@ -1419,6 +1658,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"COMPLAINT_REASON"}
+                    onClear={onDropDownClear}
                   />
                   <DropDownServices
                     label={"Complaint Status"}
@@ -1431,6 +1673,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     disabled={!isEditEnabled()}
+                    clearOption={true}
+                    clearKey={"COMPLAINT_STATUS"}
+                    onClear={onDropDownClear}
                   />
                 </View>
               </View>
@@ -1463,6 +1708,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     )
                   }
                   disabled={!isEditEnabled()}
+                  clearOption={true}
+                  clearKey={"INSURANCE_COMPANY"}
+                  onClear={onDropDownClear}
                 />
 
                 <TextInputServices
@@ -1542,6 +1790,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     showDropDownModelMethod("OEM_PERIOD", "Select OEM Period")
                   }
                   disabled={!isEditEnabled()}
+                  clearOption={true}
+                  clearKey={"OEM_PERIOD"}
+                  onClear={onDropDownClear}
                 />
 
                 <TextInputServices
@@ -1619,6 +1870,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     showDropDownModelMethod("EW_TYPE", "Select EW Type")
                   }
                   disabled={!isEditEnabled()}
+                  clearOption={true}
+                  clearKey={"EW_TYPE"}
+                  onClear={onDropDownClear}
                 />
 
                 <TextInputServices
@@ -1690,6 +1944,9 @@ const AddCustomerInfo = ({ navigation, route }) => {
                     showDropDownModelMethod("AMC_NAME", "Select AMC Name")
                   }
                   disabled={!isEditEnabled()}
+                  clearOption={true}
+                  clearKey={"AMC_NAME"}
+                  onClear={onDropDownClear}
                 />
 
                 <TextInputServices

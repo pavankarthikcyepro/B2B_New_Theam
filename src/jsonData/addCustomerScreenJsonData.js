@@ -44,6 +44,23 @@ export const EW_TYPE = [
 ];
 
 export const FASTAG = [
-  { id: "1", name: "Available" },
-  { id: "2", name: "Not Available" },
+  { id: "1", name: "Yes" },
+  { id: "2", name: "No" },
+];
+
+export const SALUTATIONS = {
+  mr: [{ id: "1", name: "MALE" }],
+  mrs: [{ id: "1", name: "FEMALE" }],
+  ms: [{ id: "1", name: "FEMALE" }],
+  mr: [
+    { id: "1", name: "MALE" },
+    { id: "2", name: "FEMALE" },
+    { id: "3", name: "TRANSGENDER" },
+  ],
+  "m/s": [{ id: "1", name: "FEMALE" }],
+};
+
+export const GENDER_TYPES = [
+  { id: "1", name: "MALE" },
+  { id: "2", name: "FEMALE" },
 ];

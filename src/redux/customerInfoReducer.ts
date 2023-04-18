@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import moment from "moment";
-import { Gender_Data_Obj, Relation_Data_Obj } from "../jsonData/enquiryFormScreenJsonData";
+import { Relation_Data_Obj } from "../jsonData/enquiryFormScreenJsonData";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import _ from "lodash";
+import { SALUTATIONS } from "../jsonData/addCustomerScreenJsonData";
+import { showToast } from "../utils/toast";
 
 const dateFormate = "YYYY/MM/DD"
 interface DropDownModelNew {
@@ -24,6 +26,34 @@ export const addCustomer = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const { tenantId, customerData } = payload;
     const response = await client.post(URL.ADD_CUSTOMER(tenantId), customerData);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const editCustomer = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/editCustomer",
+  async (payload, { rejectWithValue }) => {
+    const { tenantId, customerData } = payload;
+    const response = await client.put(URL.ADD_CUSTOMER(tenantId), customerData);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getCustomerDetails = createAsyncThunk(
+  "CUSTOMER_INFO_SLICE/getCustomerDetails",
+  async (payload, { rejectWithValue }) => {
+    const { tenantId, vehicleRegNumber } = payload;
+    const response = await client.get(
+      URL.GET_CUSTOMER_DETAILS(tenantId, vehicleRegNumber)
+    );
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -122,6 +152,9 @@ export const getInsuranceCompanyApi = createAsyncThunk(
 const initialState = {
   isLoading: false,
   addCustomerResponseStatus: "pending",
+  editCustomerResponseStatus: "pending",
+  customerDetailsResponse: "",
+  getCustomerDetailsResponseStatus: "pending",
   // Customer Info
   salutation: "",
   firstName: "",
@@ -233,7 +266,7 @@ const customerInfoReducer = createSlice({
         // Customer Info
         case "SALUTATION":
           if (state.salutation !== value) {
-            const genderData = Gender_Data_Obj[value.toLowerCase()];
+            const genderData = SALUTATIONS[value.toLowerCase()];
             state.gender = genderData?.length > 0 ? genderData[0].name : "";
             state.relation = "";
             state.gender_types_data = genderData;
@@ -298,6 +331,9 @@ const customerInfoReducer = createSlice({
           state.serviceType = value;
           state.subServiceType = "";
           break;
+        case "SUB_SERVICE_TYPE_LIST":
+          state.subServiceTypeResponse = value;
+          break;
         case "SUB_SERVICE_TYPE":
           state.subServiceType = value;
           break;
@@ -334,8 +370,8 @@ const customerInfoReducer = createSlice({
         case "LAST_NAME":
           state.lastName = text;
           break;
-        case "RELATION_NAME":
-          state.relationName = text;
+        case "RELATION":
+          state.relation = text;
           break;
         case "MOBILE":
           state.mobile = text;
@@ -553,8 +589,6 @@ const customerInfoReducer = createSlice({
       }
     },
     updateAddressByPincode: (state, action) => {
-      console.log("action -> ", action);
-      
       state.addressName = action.payload.Name || "";
       state.village = action.payload.Block || "";
       state.mandal = state.mandal ? state.mandal : action.payload.Mandal || "";
@@ -677,10 +711,10 @@ const customerInfoReducer = createSlice({
           state.amcAmountPaid = text;
           break;
       }
-    },
+    }
   },
   extraReducers: (builder) => {
-    // ADD Customer
+    // Add Customer
     builder
       .addCase(addCustomer.pending, (state, action) => {
         state.isLoading = true;
@@ -694,6 +728,156 @@ const customerInfoReducer = createSlice({
       })
       .addCase(addCustomer.rejected, (state, action) => {
         state.addCustomerResponseStatus = "failed";
+        state.isLoading = false;
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+      });
+   
+    // Edit Customer
+    builder
+      .addCase(editCustomer.pending, (state, action) => {
+        state.isLoading = true;
+        state.editCustomerResponseStatus = "pending";
+      })
+      .addCase(editCustomer.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.editCustomerResponseStatus = "success";
+        }
+      })
+      .addCase(editCustomer.rejected, (state, action) => {
+        state.editCustomerResponseStatus = "failed";
+        if (action.payload.message){
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+        state.isLoading = false;
+      });
+
+    // Get Customer Details
+    builder
+      .addCase(getCustomerDetails.pending, (state, action) => {
+        state.isLoading = true;
+        state.getCustomerDetailsResponseStatus = "pending";
+        state.customerDetailsResponse = "";
+      })
+      .addCase(getCustomerDetails.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.customerDetailsResponse = action.payload.body;
+        if (action.payload.body) {
+          const { customerDetail } = action.payload.body;
+          
+          if (customerDetail.addresses.length > 0) {
+            let details = customerDetail.addresses[0];
+            state.pincode = details.pin;
+            state.urban_or_rural = details.isUrban ? 1 : 2;
+            state.houseNum = details.houseNo;
+            state.streetName = details.street;
+            state.village = details.villageOrTown;
+            state.mandal = details.mandalOrTahasil;
+            state.city = details.city;
+            state.district = details.district;
+            state.state = details.state;
+          }
+          // state.leadSource = customerDetail.leadSource;
+          // state.parentLeadSource = customerDetail.parentLeadSource;
+          state.age = customerDetail.age;
+          state.alterMobile = customerDetail.alternateContactNumber;
+          state.mobile = customerDetail.contactNumber;
+          state.customerTypes = customerDetail.customerType;
+          state.anniversaryDate = customerDetail.dateOfArrival;
+          state.dateOfBirth = customerDetail.dateOfBirth;
+          state.email = customerDetail.email;
+          state.firstName = customerDetail.firstName;
+          state.gender = customerDetail.gender;
+          state.lastName = customerDetail.lastName;
+          state.occupation = customerDetail.occupation;
+          state.relation = customerDetail.relationName;
+          state.salutation = customerDetail.salutation;
+
+          const { historyDetail } = action.payload.body;
+          state.complaintStatus = historyDetail.complaintStatus;
+          state.serviceDealerLocation = historyDetail.dealerLocation;
+          state.serviceDealerName = historyDetail.dealerName;
+          state.readingAtService = `${historyDetail.kmReadingAtService}`;
+          state.serviceFeedback = historyDetail.lastServiceFeedback;
+          state.complaintReason = historyDetail.reasonForComplaint;
+          state.serviceAmount = historyDetail.serviceAmount
+            ? `${historyDetail.serviceAmount}`
+            : "";
+          state.serviceCenter = historyDetail.serviceCenter;
+          state.serviceDate = historyDetail.serviceDate;
+          state.serviceAdvisor = historyDetail.serviceManager;
+          // state.serviceType = historyDetail.serviceType;
+          // state.subServiceType = historyDetail.subServiceType;
+
+          const { insuranceDetail } = action.payload.body;
+          state.insuranceStartDate = insuranceDetail.startDate;
+          state.insuranceExpiryDate = insuranceDetail.endDate;
+          state.insuranceAmount = insuranceDetail.insuranceAmount
+            ? `${insuranceDetail.insuranceAmount}`
+            : "";
+          state.insurancePolicyNo = insuranceDetail.insuranceIdentifier;
+          state.insuranceCompany = insuranceDetail.vendor;
+
+          const { vehicleDetail } = action.payload.body;
+          state.chassisNumber = vehicleDetail.chassisNumber;
+          state.vehicleColor = vehicleDetail.color;
+          state.kmReading = `${vehicleDetail.currentKmReading}`;
+          state.engineNumber = vehicleDetail.engineNumber;
+          state.vehicleFuelType = vehicleDetail.fuelType;
+          state.fastag = vehicleDetail.isFastag ? "Yes" : "No";
+          state.makingMonth = vehicleDetail.makingMonth;
+          state.makingYear = `${vehicleDetail.makingYear}`;
+          state.saleDate = vehicleDetail.purchaseDate;
+          state.sellingDealer = vehicleDetail.sellingDealer;
+          state.sellingLocation = vehicleDetail.sellingLocation;
+          state.vehicleTransmissionType = vehicleDetail.transmisionType;
+          state.vehicleVariant = vehicleDetail.variant;
+          state.vehicleMaker = vehicleDetail.vehicleMake;
+          state.vehicleModel = vehicleDetail.vehicleModel;
+          state.vehicleRegNo = vehicleDetail.vehicleRegNumber;
+          state.vin = vehicleDetail.vin;
+
+          const { warrantyDetail } = action.payload.body;
+          for (let i = 0; i < warrantyDetail.length; i++) {
+            let item = warrantyDetail[i];
+            if (item.warrantyType == "MCP") {
+              state.amcName = item.amc_name;
+              state.amcAmountPaid = `${item.amountPaid}`;
+              state.amcPolicyNo = item.number;
+              state.amcExpiryDate = item.expiryDate;
+              state.amcStartDate = item.startDate;
+            } else if (item.warrantyType == "EW") {
+              state.ewType = item.ewName;
+              state.ewAmountPaid = `${item.amountPaid}`;
+              state.ewPolicyNo = item.number;
+              state.ewStartDate = item.expiryDate;
+              state.ewExpiryDate = item.startDate;
+            } else if (item.warrantyType == "OEM") {
+              state.oemPeriod = item.oemPeriod;
+              state.oemWarrantyAmount = `${item.amountPaid}`;
+              state.oemWarrantyNo = item.number;
+              state.oemStartDate = item.expiryDate;
+              state.oemEndDate = item.startDate;
+            }
+          }
+
+          state.getCustomerDetailsResponseStatus = "success";
+        }
+      })
+      .addCase(getCustomerDetails.rejected, (state, action) => {
+        state.getCustomerDetailsResponseStatus = "failed";
+        state.customerDetailsResponse = "";
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
         state.isLoading = false;
       });
 
@@ -850,16 +1034,22 @@ const customerInfoReducer = createSlice({
             let data = { ...sData[i], name: sData[i].model };
             newArr.push(Object.assign({}, data));
 
-            if (sData[i].maker){
+            if (sData[i].maker) {
               let payload = { id: i, name: sData[i].maker };
               newMakerArr.push(Object.assign({}, payload));
-            } 
+            }
           }
           state.vehicleModelList = [...newArr];
           state.vehicleMakerList = _.uniqBy(newMakerArr, "name");
         }
       })
-      .addCase(getVehicleInfo.rejected, (state, action) => {});
+      .addCase(getVehicleInfo.rejected, (state, action) => {
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Vehicle info not available`);
+        }
+      });
   },
 });
 
@@ -876,6 +1066,6 @@ export const {
   setInsuranceInfo,
   setOemWarrantyInfo,
   setExWarrantyInfo,
-  setAmcInfo,
+  setAmcInfo
 } = customerInfoReducer.actions;
 export default customerInfoReducer.reducer;

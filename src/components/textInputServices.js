@@ -33,7 +33,11 @@ const TextInputServices = ({
         maxLength={maxLength}
         multiline={multiline}
         autoCapitalize={autoCapitalize}
-        style={[styles.input, error ? styles.errorContainer : null]}
+        style={[
+          styles.input,
+          !editable ? styles.disabledInput : null,
+          error ? styles.errorContainer : null,
+        ]}
         selectionColor={Colors.BLACK}
         spellCheck={false}
       />
@@ -63,6 +67,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     fontSize: 14,
     height: 45,
+  },
+  disabledInput: {
+    color: Colors.LIGHT_GRAY2,
+    fontSize: 14,
   },
 });
 

@@ -264,6 +264,12 @@ const URL = {
   ADD_CUSTOMER: (tenantId) => {
     return baseUrl + `vehicle-services/api/tenant/1/v1/service-history`;
   },
+  GET_CUSTOMER_DETAILS: (tenantId, vehicleRegNumber) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/v1/service-history/get-all-details/${vehicleRegNumber}`
+    );
+  },
   GET_SOURCE_TYPE: (tenantId) => {
     return (
       baseUrl +
@@ -273,7 +279,7 @@ const URL = {
   GET_SEARCH_CUSTOMER: (tenantId, vehicleRegNo) => {
     return (
       baseUrl +
-      `vehicle-services/api/tenant/1/customer/search?page=0&size=10&vehicleRegNumber=${vehicleRegNo}`
+      `vehicle-services/api/tenant/1/customer/search?page=0&size=100&vehicleRegNumber=${vehicleRegNo}`
     );
   },
   GET_SERVICE_TYPE: (tenantId) => {
