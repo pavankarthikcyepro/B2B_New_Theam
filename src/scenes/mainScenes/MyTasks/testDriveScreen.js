@@ -37,6 +37,7 @@ import {
   validateOtpApi,postReOpenTestDrive,getTestDriveHistoryCount,
   clearOTP,
   PutUpdateListTestDriveHistory,
+  updateSelectedScheduledata,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -44,7 +45,7 @@ import {
   ImageSelectItem,
   DropDownSelectionItem,
 } from "../../../pureComponents";
-import { Dropdown } from "sharingan-rn-modal-dropdown";
+import { Dropdown } from 'react-native-element-dropdown';
 import { Button, IconButton, RadioButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import {
@@ -68,7 +69,9 @@ import {
 import { client } from "../../../networking/client";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import { convertDateStringToMillisecondsUsingMoment } from "./../../../utils/helperFunctions";
-
+import { getReasonList } from "../../../redux/enquiryFollowUpReducer";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as AsyncStorage from "../../../asyncStore";
 const LocalButtonComp = ({
   title,
   onPress,
@@ -144,6 +147,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     varientId: 0,
   });
   const [mobileNumber, setMobileNumber] = useState("");
+  const [customerRemarks, setCustomerRemarks] = useState("");
+  const [employeeRemarks, setEmployeeRemarks] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [selectedDseDetails, setSelectedDseDetails] = useState({
@@ -174,6 +179,10 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [isValuesEditable, setIsValuesEditable] = useState(true);
   const [isReopenSubmitVisible, setIsisReopenSubmitVisible] = useState(false);
   const [ischangeScreen, setIschangeScreen] = useState(false);
+  const [isRechduleModalVisible ,setIsRescheduleModalVisible]  = useState(false);
+  const [reasonList, setReasonList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
   let date = new Date();
   date.setDate(date.getDate() + 9);
 
@@ -199,6 +208,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       });
       getAsyncstoreData();
       getUserToken();
+      
     });
     navigation.addListener("blur", () => {
       dispatch(clearState());
@@ -207,7 +217,70 @@ const TestDriveScreen = ({ route, navigation }) => {
         id: "",
       });
     });
+    
   }, [navigation]);
+
+  useEffect(() => {
+    if (selector.isReasonUpdate && reasonList.length > 0) {
+      
+      let reason = selector.reason;
+      let findIndex = reasonList.findIndex((item) => {
+        return item.value === selector.reason
+      })
+      if (findIndex !== -1) {
+        setDefaultReasonIndex(reasonList[findIndex].value)
+      }
+      else if (reason) {
+        dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: "Other" }));
+        setDefaultReasonIndex("Other");
+        setOtherReason(reason);
+      }
+    }
+  }, [selector.isReasonUpdate, reasonList]);  
+
+
+  const getReasonListData = async (taskName) => {
+
+    setLoading(true)
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let payload = {
+        orgId: jsonObj.orgId,
+        taskName:
+          taskName == "Booking approval task"
+            ? "PreBooking FollowUp"
+            : taskName,
+      };
+      Promise.all([
+        dispatch(getReasonList(payload))
+      ]).then((res) => {
+        let tempReasonList = [];
+        let allReasons = res[0].payload;
+        if (allReasons.length > 0) {
+          for (let i = 0; i < allReasons.length; i++) {
+            allReasons[i].label = allReasons[i].reason;
+            allReasons[i].value = allReasons[i].reason;
+            if (i === allReasons.length - 1) {
+              setTimeout(() => {
+                setReasonList([
+                  ...allReasons,
+                  { label: "Other", value: "Other" },
+                ]);
+              }, 100);
+              
+              setLoading(false)
+            }
+          }
+        }
+        else {
+          setLoading(false)
+        }
+      }).catch(() => {
+        setLoading(false)
+      })
+    }
+  };
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -451,6 +524,9 @@ const TestDriveScreen = ({ route, navigation }) => {
         setHandleActionButtons(3);
       } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
         setHandleActionButtons(4); //
+        // todo manthan
+        getReasonListData("Enquiry Followup")
+        dispatch(getTestDriveHistoryCount(universalId))
       } else if (taskStatus === "CANCELLED") {
         //
         setHandleActionButtons(5);
@@ -822,7 +898,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       appointmentObjsavetestDrive.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
       appointmentObjsavetestDrive.dlFrontUrl = uploadedImagesDataObj.dlFrontUrl.documentPath;
     }
-    console.log("manthan ---> ", appointmentObjsavetestDrive);
+    
     const payload = {
       appointment: appointmentObj,
     };
@@ -830,7 +906,10 @@ const TestDriveScreen = ({ route, navigation }) => {
     //   appointment: appointmentObj,
     // };
     dispatch(bookTestDriveAppointmentApi(payload));
-    dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
+    if (status === "APPROVED"){
+      dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));    
+    }
+  
     // navigation.goBack()
   };
 
@@ -1351,7 +1430,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   }, [selector.reopen_test_drive_res_status])
   
   useEffect(() => {
-    if (route?.params?.taskStatus === "CLOSED"){
+    // if (route?.params?.taskStatus === "CLOSED"){
      
       if (selector.test_drive_history_count_statu === "successs"){
        
@@ -1361,7 +1440,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       }
      
     
-    }
+    // }
   
   }, [selector.test_drive_history_count_statu])
 
@@ -1434,6 +1513,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     );
   };
 
+
   const verifyClicked = async () => {
     if (otpValue.length != 4) {
       showToastRedAlert("Please enter valid OTP");
@@ -1494,6 +1574,175 @@ const TestDriveScreen = ({ route, navigation }) => {
       setSelectedDriverDetails({ name: "", id: "" });
     }
   };
+
+
+  const renderShowRecheduleModal = ()=>{
+    
+    return(<>
+      <Modal
+        animationType="fade"
+        visible={isRechduleModalVisible}
+        onRequestClose={() => {
+          setImagePath("");
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={{width: "90%",
+            backgroundColor: Colors.LIGHT_GRAY,
+          padding: 10,
+          borderWidth: 2,
+          borderColor: Colors.BLACK,
+          flexDirection: "column",
+            // height: 300
+          }}>
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 10,
+                    zIndex: 99,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    Reason*
+                  </Text>
+                </View>
+              )}
+              <Dropdown
+                disable={isViewMode()}
+                style={[styles.dropdownContainer]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={reasonList}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={"Reason*"}
+                searchPlaceholder="Search..."
+                value={defaultReasonIndex}
+                // onFocus={() => setIsFocus(true)}
+                // onBlur={() => setIsFocus(false)}
+                onChange={(val) => {
+                  dispatch(updateSelectedScheduledata({
+                    key: "REASON",
+                    text: val.value,
+                  }))
+                  // dispatch(
+                  //   setEnquiryFollowUpDetails({
+                  //     key: "REASON",
+                  //     text: val.value,
+                  //   })
+                  // );
+                }}
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.reason === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+            </View>
+            <TextinputComp
+              style={styles.textInputStyle}
+              value={customerRemarks}
+              label={"Customer Remarks*"}
+              maxLength={10}
+              keyboardType={"default"}
+              disabled={isValuesEditable}
+              onChangeText={(text) => setCustomerRemarks(text)}
+            />
+            <TextinputComp
+              style={styles.textInputStyle}
+              value={employeeRemarks}
+              label={"Employee Remarks*"}
+              maxLength={10}
+              keyboardType={"default"}
+              disabled={isValuesEditable}
+              onChangeText={(text) => setEmployeeRemarks(text)}
+            />
+            <View style={{flexDirection:"row",height:40,justifyContent:"space-between",marginTop:10}}>
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  height: 40,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // position: "absolute",
+                  // left: "37%",
+                  // bottom: "15%",
+                  borderRadius: 5,
+                  backgroundColor: Colors.BLACK,
+                }}
+                onPress={() => {
+                  setIsRescheduleModalVisible(false)
+                  setCustomerRemarks("")
+                  setEmployeeRemarks("")
+                  setDefaultReasonIndex(null)
+                  dispatch(updateSelectedScheduledata({
+                    key: "REASON",
+                    text: "",
+                  }))
+                }}
+              >
+                <Text
+                  style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+                >
+                  Close
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  height: 40,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // position: "absolute",
+                  // left: "37%",
+                  // bottom: "15%",
+                  borderRadius: 5,
+                  backgroundColor: Colors.RED,
+                }}
+                onPress={() => setIsRescheduleModalVisible(false)}
+              >
+                <Text
+                  style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+                >
+                  Submit
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+          </View>
+         
+        </View>
+      </Modal>
+
+
+    </>)
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -1579,6 +1828,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
+          {renderShowRecheduleModal()}
           <View style={styles.baseVw}>
             {/* // 1.Test Drive */}
             <View
@@ -1984,7 +2234,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           {handleActionButtons === 1 && !isViewMode() && (
             <View style={styles.view1}>
               <LocalButtonComp
-                title={"Close"}
+                title={"Back"}
                 // disabled={selector.isLoading}
                 onPress={() => navigation.goBack()}
               />
@@ -2037,7 +2287,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 title={"Reschedule"}
                 // disabled={selector.isLoading}
                 bgColor={Colors.GREEN}
-                onPress={() => submitClicked("RESCHEDULED", "Test Drive")}
+                onPress={() => setIsRescheduleModalVisible(true)}
+                // onPress={() => submitClicked("RESCHEDULED", "Test Drive")} // todo uncomment manthan
               />
             </View>
           )}
@@ -2299,6 +2550,40 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: Colors.GRAY
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 8,
+    // borderWidth: 1,
+    width: '100%',
+    height: 60,
+    // borderRadius: 5
   },
 });
 

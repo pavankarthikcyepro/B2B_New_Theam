@@ -202,7 +202,10 @@ const testDriveSlice = createSlice({
     test_drive_history_count:0,
      test_drive_history_details_statu:"",
     test_drive_history_details:"",
-    test_drrive_history_updatelist:""
+    test_drrive_history_updatelist:"",
+    isReasonUpdate: true,
+    reason: "",
+
   },
   reducers: {
     clearState: (state, action) => {
@@ -253,6 +256,15 @@ const testDriveSlice = createSlice({
       state.otp_session_key = "";
       state.validate_otp_response_status = "";
     },
+    updateSelectedScheduledata: (state, action: PayloadAction<CustomerDetailModel>)=>{
+      const { key, text } = action.payload;
+      switch (key) {
+        case "REASON":
+          state.reason = text;
+          break;
+        
+      }
+    }
   },
   extraReducers: (builder) => {
     // Get Task Details Api
@@ -578,6 +590,6 @@ const testDriveSlice = createSlice({
 export const {
   clearState,
   updateSelectedDate,
-  clearOTP,
+  clearOTP, updateSelectedScheduledata
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;
