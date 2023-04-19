@@ -90,6 +90,7 @@ export const RenderEmployeeParameters = (parameter) => {
           // param: param === "INVOICE" ? "Retail" : param,
           employeeDetail: employeeDetail,
           moduleType: "live-leads",
+          selectedEmpId: ""
         });
       }, 1000);
       // navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {

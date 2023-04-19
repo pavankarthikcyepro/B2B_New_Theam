@@ -158,7 +158,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           employeeId = empId;
         }
         let dashboardType = route?.params?.screenName
-        if (route && route.params && route.params.selectedEmpId !== "") {
+        if (route && route.params && route.params.selectedEmpId !== "" && route.params.selectedEmpId !== undefined) {
           employeeId = route.params.selectedEmpId
         }
         // setEmployeeId(jsonObj.empId);
