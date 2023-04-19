@@ -791,16 +791,46 @@ const TestDriveScreen = ({ route, navigation }) => {
       dlFrontUrl: "",
       vehicleInfo: vehicleDetails,
     };
+  
+    let appointmentObjsavetestDrive = {
+      address: customerAddress,
+      branchId: selectedBranchId,
+      customerHaveingDl: customerHavingDrivingLicense === 1,
+      customerId: universalId,
+      dseId: selectedDseDetails.id,
+      location: location,
+      orgId: userData.orgId,
+      source: "ShowroomWalkin",
+      startTime: moment.utc(startTime).format() ,
+      endTime: moment.utc(endTime).format() ,
+      testDriveDatetime: moment.utc(preferredTime).format() ,
+      testdriveId: 0,
+      status: "ASSIGNED",
+      varientId: varientId,
+      vehicleId: vehicleId,
+      driverId: selectedDriverDetails.id.toString(),
+      dlBackUrl: "",
+      dlFrontUrl: "",
+      vehicleInfo: vehicleDetails,
+      reTestdriveFlag: "Original"
+    };
 
     if (customerHavingDrivingLicense === 1) {
       appointmentObj.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
       appointmentObj.dlFrontUrl = uploadedImagesDataObj.dlFrontUrl.documentPath;
-    }
 
+      appointmentObjsavetestDrive.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
+      appointmentObjsavetestDrive.dlFrontUrl = uploadedImagesDataObj.dlFrontUrl.documentPath;
+    }
+    console.log("manthan ---> ", appointmentObjsavetestDrive);
     const payload = {
       appointment: appointmentObj,
     };
+    // const payloadForsubmitApi = {
+    //   appointment: appointmentObj,
+    // };
     dispatch(bookTestDriveAppointmentApi(payload));
+    dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     // navigation.goBack()
   };
 
