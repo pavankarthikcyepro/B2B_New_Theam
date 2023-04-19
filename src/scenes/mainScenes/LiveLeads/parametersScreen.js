@@ -1157,60 +1157,67 @@ const ParametersScreen = ({ route }) => {
 
 
   async function navigateToEmsScreen(item) {
-    
+
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-    const leads = ["enquiry", "booking", "invoice"];
-    const { paramName } = item;
-    const isContact = paramName.toLowerCase() === "preenquiry";
-    const isLead = leads.includes(paramName.toLowerCase());
-    // let makeparams = paramName
-    let employeeDetail;
-    // if(filterParameters.length>0){
-      if (filterParametersApplied) {
-       employeeDetail = {
-        empName: "",
-        empId: selector.saveLiveleadObject?.selectedempId[0],
-        orgId: "",
-        branchId: "",
-      };
-    }else{
-       employeeDetail = {
-        empName: "",
-        empId: jsonObj.empId,
-        orgId: "",
-        branchId: "",
-      };
+      const leads = ["enquiry", "booking", "invoice"];
+      const { paramName } = item;
+      const isContact = paramName.toLowerCase() === "preenquiry";
+      const isLead = leads.includes(paramName.toLowerCase());
+      // let makeparams = paramName
+      let employeeDetail;
+      let empIdLocal;
+      // if(filterParameters.length>0){
+      if (!_.isEmpty(selector.saveLiveleadObject)) {
+        if (selector.saveLiveleadObject.selectedempId !== undefined) {
+          employeeDetail = {
+            empName: "",
+            empId: selector.saveLiveleadObject?.selectedempId[0],
+            orgId: "",
+            branchId: "",
+          };
+          empIdLocal = selector.saveLiveleadObject?.selectedempId[0]
+        }
+
+      } else {
+        employeeDetail = {
+          empName: "",
+          empId: jsonObj.empId,
+          orgId: "",
+          branchId: "",
+        };
+        empIdLocal = jsonObj.empId
+      }
+
+      if (isLead) {
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            param: paramName === "INVOICE" ? "Retail" : paramName,
+            moduleType: "live-leads",
+            employeeDetail: employeeDetail,
+            // screenName: "",
+            // selectedEmpId: "",
+            // startDate: "",
+            // endDate: "",
+            // dealerCodes: "",
+            // fromScreen: ""
+          });
+        }, 1000);
+      } else if (isContact) {
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+        setTimeout(() => {
+          navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+            moduleType: "live-leads",
+            employeeDetail: employeeDetail,
+            selectedEmpId: empIdLocal
+          });
+        }, 1000);
+      }
     }
-    
-    if (isLead) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      setTimeout(() => {
-        navigation.navigate("LEADS", {
-          param: paramName === "INVOICE" ? "Retail" : paramName,
-          moduleType: "live-leads",
-          employeeDetail: employeeDetail,
-          // screenName: "",
-          // selectedEmpId: "",
-          // startDate: "",
-          // endDate: "",
-          // dealerCodes: "",
-          // fromScreen: ""
-        });
-      }, 1000);
-    } else if (isContact) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      setTimeout(() => {
-        navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-          moduleType: "live-leads",
-          employeeDetail: employeeDetail
-        });
-      }, 100);
-    }
-  }
   }
 
   const renderSelfInsightsView = (item, index) => {
