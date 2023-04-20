@@ -1106,7 +1106,7 @@ const TargetScreen = ({ route }) => {
                         {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
                         ></View> */}
-                          <View
+                          {/* <View
                             style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
                           >
                             <Text style={{
@@ -1116,8 +1116,40 @@ const TargetScreen = ({ route }) => {
                               alignSelf: "center",
                               textAlign: "center",
 
-                              marginTop: 10
-                            }}>Employee name</Text>
+                              // marginTop: 10
+                            }}>Employee</Text>
+
+                          </View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "flex-start", marginLeft: 10 }}
+                          >
+                            <View
+                              style={[
+                                styles.itemBox,
+                                {
+                                  width: 55,
+                                },
+                              ]}
+
+                            >
+                              <Text
+                                style={{
+                                  color: Colors.RED,
+                                  fontSize: 12,
+                                }}
+                              >
+                                Employee
+                              </Text>
+                            </View>
+                            {/* <Text style={{
+                            fontSize: 10,
+                            color: Colors.RED,
+                            fontWeight: "600",
+                            alignSelf: "center",
+                            textAlign: "center",
+                            height:30
+                            // marginTop: 10
+                          }}>Employee</Text> */}
 
                           </View>
                         <View style={styles.view4}>
@@ -1460,17 +1492,35 @@ const TargetScreen = ({ route }) => {
                         style={{ width: 100, height: 20, marginRight: 5 }}
                       ></View> */}
                         <View
-                          style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          style={{ width: 100, height: 20, marginRight: 5, alignItems: "flex-start", marginLeft: 10 }}
                         >
-                          <Text style={{
+                          <View
+                            style={[
+                              styles.itemBox,
+                              {
+                                width: 55,
+                              },
+                            ]}
+                         
+                          >
+                            <Text
+                              style={{
+                                color: Colors.RED,
+                                fontSize: 12,
+                              }}
+                            >
+                              Employee
+                            </Text>
+                          </View>
+                          {/* <Text style={{
                             fontSize: 10,
                             color: Colors.RED,
                             fontWeight: "600",
                             alignSelf: "center",
                             textAlign: "center",
-
-                            marginTop: 10
-                          }}>Employee name</Text>
+                            height:30
+                            // marginTop: 10
+                          }}>Employee</Text> */}
 
                         </View>
                       <View style={styles.view4}>
