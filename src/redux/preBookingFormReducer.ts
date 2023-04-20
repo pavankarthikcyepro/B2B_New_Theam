@@ -927,7 +927,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
-
           break;
         case "TRANSACTION_DATE":
           state.transaction_date = selectedDate;
@@ -1316,7 +1315,6 @@ const prebookingFormSlice = createSlice({
         tentativeDeliveryDate,
         "DD/MM/YYYY"
       );
-
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
     },

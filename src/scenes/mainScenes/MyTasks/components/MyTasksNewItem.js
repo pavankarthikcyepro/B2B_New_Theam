@@ -12,7 +12,13 @@ import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from "../../../../asyncStore";
 import { showToastRedAlert } from "../../../../utils/toast";
-import { VIP_ICON, VIP_ICON2, VIP_ICON3, VIP_ICON4 } from "../../../../assets/icon";
+import {
+  VIP_ICON,
+  VIP_ICON2,
+  VIP_ICON3,
+  VIP_ICON4,
+  VIP_ICON5,
+} from "../../../../assets/icon";
 
 const statusBgColors = {
   CANCELLED: {
@@ -118,8 +124,11 @@ export const MyTaskNewItem = ({
   EmployeesRoles,
   userData,
   tdflage = "",
+  hvflage = "",
+  showTdHvHighLight = false,
   updatedOn,
   IsVip = false,
+  IsHni = false,
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -177,7 +186,14 @@ export const MyTaskNewItem = ({
   };
 
   return (
-    <TouchableOpacity onPress={onItemPress} style={styles.section}>
+    <TouchableOpacity
+      onPress={onItemPress}
+      style={{
+        ...styles.section,
+        borderLeftWidth: IsVip || IsHni ? 3 : 0,
+        borderLeftColor: Colors.RED,
+      }}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -186,7 +202,7 @@ export const MyTaskNewItem = ({
           position: "relative",
         }}
       >
-        <View style={{ width: "60%" }}>
+        <View style={{ width: "65%" }}>
           <View style={{ flexDirection: "row" }}>
             <View
               style={{
@@ -216,10 +232,30 @@ export const MyTaskNewItem = ({
             </View>
             {/*<Text style={styles.catText}>{enqCat}</Text>*/}
           </View>
-          <Text style={styles.text2}>{date}</Text>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <View>
+              <Text style={styles.text2}>{date}</Text>
 
-          <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
-          <Text style={styles.text2}>{phone}</Text>
+              <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+              <Text style={styles.text2}>{phone}</Text>
+            </View>
+            <View>
+              {/* {true && (
+                <Image
+                  source={VIP_ICON5}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    marginRight: 5,
+                  }}
+                  resizeMode={"contain"}
+                />
+              )} */}
+            </View>
+          </View>
+
           <>
             {from !== "PRE_ENQUIRY" && (
               <View
@@ -229,13 +265,55 @@ export const MyTaskNewItem = ({
                   alignItems: "center",
                 }}
               >
-                {tdflage == "CLOSED" ? (
-                  <Image
-                    source={require("./../../../../assets/images/test_drive_icon.png")}
-                    style={styles.testDriveIconImage}
-                    resizeMode="contain"
-                  />
+                {/* {showTdHvHighLight ? (
+                  <View style={styles.tdHvRow}>
+                    <View style={styles.tdHvContainer}>
+                      {tdflage == "CLOSED" ? (
+                        <IconButton
+                          icon={"check-all"}
+                          size={12}
+                          color={Colors.PINK}
+                          style={{ margin: 0 }}
+                        />
+                      ) : null}
+                      <Text style={styles.tdHvText}>TD</Text>
+                    </View>
+                    <View style={styles.tdHvDivider} />
+                    <View style={styles.tdHvContainer}>
+                      {hvflage == "CLOSED" ? (
+                        <IconButton
+                          icon={"check-all"}
+                          size={12}
+                          color={Colors.PINK}
+                          style={{ margin: 0 }}
+                        />
+                      ) : null}
+                      <Text style={styles.tdHvText}>HV</Text>
+                    </View>
+                  </View>
+                ) : null} */}
+
+                {showTdHvHighLight &&
+                (tdflage == "CLOSED" || hvflage == "CLOSED") ? (
+                  <View style={styles.tdHvRow}>
+                    {tdflage == "CLOSED" ? (
+                      <View style={styles.tdHvContainer}>
+                        <Text style={styles.tdHvText}>TD</Text>
+                      </View>
+                    ) : null}
+
+                    {tdflage == "CLOSED" && hvflage == "CLOSED" ? (
+                      <View style={styles.tdHvDivider} />
+                    ) : null}
+
+                    {hvflage == "CLOSED" ? (
+                      <View style={styles.tdHvContainer}>
+                        <Text style={styles.tdHvText}>HV</Text>
+                      </View>
+                    ) : null}
+                  </View>
                 ) : null}
+
                 <>
                   {leadStage == "ENQUIRY" &&
                     enqCat !== "" &&
@@ -284,7 +362,14 @@ export const MyTaskNewItem = ({
             <Text style={[styles.text2, { color: bgColor }]}>{statusName}</Text>
           )}
         </View>
-        <View style={{ width: "40%", alignItems: "center", paddingTop: 10 }}>
+        <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
+          {(IsVip || IsHni) && (
+            <View style={styles.vipHniRow}>
+              {IsVip && <Text style={styles.badgeText}>{"VIP"}</Text>}
+              {IsVip && IsHni && <View style={styles.vipHniDivider} />}
+              {IsHni && <Text style={styles.badgeText}>{"HNI"}</Text>}
+            </View>
+          )}
           {uniqueId ? (
             <Text style={styles.leadIdText}>Lead ID : {uniqueId}</Text>
           ) : null}
@@ -301,17 +386,6 @@ export const MyTaskNewItem = ({
               alignItems: "center",
             }}
           >
-            {IsVip && (
-              <Image
-                source={VIP_ICON4}
-                style={{
-                  width: 32,
-                  height: 32,
-                  marginRight: 5,
-                }}
-                resizeMode={"contain"}
-              />
-            )}
             <IconComp
               iconName={"format-list-bulleted-square"}
               disabled={true}
@@ -459,7 +533,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     paddingHorizontal: 2,
-    width: "80%",
   },
   section: {
     // flex: 1,
@@ -490,6 +563,31 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     textTransform: "uppercase",
   },
+  tdHvRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 5,
+  },
+  tdHvContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 24,
+    width: 24,
+    borderRadius: 24 / 2,
+    borderColor: "#18a835",
+    // borderColor: Colors.DARK_GREEN,
+    borderWidth: 2,
+  },
+  tdHvText: {
+    fontSize: 10,
+    color: Colors.GRAY,
+  },
+  tdHvDivider: {
+    height: 12,
+    width: 1,
+    backgroundColor: Colors.PINK,
+    marginHorizontal: 5,
+  },
   testDriveIconImage: {
     height: 30,
     width: 30,
@@ -502,5 +600,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
+  badgeText: { fontSize: 15, color: Colors.PINK, fontWeight: "bold" },
+  vipHniRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  vipHniDivider: {
+    width: 1.5,
+    height: "80%",
+    backgroundColor: Colors.BLACK,
+    marginHorizontal: 5
+  },
 });

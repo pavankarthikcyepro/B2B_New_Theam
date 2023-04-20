@@ -351,6 +351,10 @@ const URL = {
 
   GET_DET_FROM_PHONE: (phone, orgId) =>
     sales_url + `/lead/phone/${phone}/${orgId}`,
+
+  GET_DET_COMPLAINT_EMP_DASHBOARD: (empid) =>
+    sales_url + `/complainttracker/getEmpComplaintDashboard/${empid}`,
+
   GET_COMPLAIN_FACTOR_DATA: (orgId) =>
     baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
 
@@ -417,7 +421,16 @@ const URL = {
   LEAD_DROPPED: () => sales_url + "/lead",
 
   DROP_ANALYSIS_LIST_FILTER: () => sales_url + "/lead-drop/leadlist",
-  DROP_ANALYSIS_LIST_REDIRECTIONS: () => sales_url + "/lead-drop/receptionist/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS: () =>
+    sales_url + "/lead-drop/receptionist/leadlist",
+  DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () =>
+    sales_url + "/lead-drop/receptionistManager/leadlist",
+
+  DROP_ANALYSIS_LIST_REDIRECTIONS_XROLE: () =>
+    sales_url + "/lead-drop/XRoleManager/leadlist",
+
+  DROP_ANALYSIS_LIST_REDIRECTIONS_SALESHOME: () =>
+    baseUrl + "dfd/dashboard/leads/redirection",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
@@ -484,6 +497,22 @@ const URL = {
   GET_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionist/allByDateNew";
   },
+  GET_LEAD_LIST_XROLE: () => {
+    return sales_url + "/lead/XRoleManager/allByDateNew";
+  },
+  GET_LIVE_LEAD_LIST_RECEPTINOST: () => {
+    return sales_url + "/lead/receptionistLiveLeads/allByDateNew";
+  },
+
+  GET_LIVE_LEAD_LIST_RECEPTINOST_MANAGER: () => {
+    return sales_url + "/lead/receptionistManagerLiveLeads/allByDateNew";
+  },
+  GET_SALES_DASHBOARD_LEADS: () => {
+    return baseUrl + "dfd/dashboard/ebrleads/redirection";
+  },
+  GET_LEAD_LIST_CRM: () => {
+    return sales_url + "/lead/receptionistManager/allByDateNew";
+  },
   GET_ALL_STATUS: () => {
     return sales_url + "/lead/alldatadropdown";
   },
@@ -492,6 +521,12 @@ const URL = {
   },
   GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`;
+  },
+  GET_CRM_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
+    return orgnaizationHirarchy + `/getcrmchild/digital/${orgId}/${employeeId}`;
+  },
+  GET_CRM_EMPLOYEES_DROP_DOWN_DATA_RECEP: (orgId, employeeId) => {
+    return orgnaizationHirarchy + `/getcrmchild/reception/${orgId}/${employeeId}`;
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
@@ -514,6 +549,9 @@ const URL = {
   },
   GET_ATTENDANCE_REPORT: () => {
     return sales_url + "/reports/attendance_report";
+  },
+  GET_NEW_ATTENDANCE_REPORT: () => {
+    return sales_url + "/reports/attendanceFilterNew";
   },
   GET_DOWNLOAD_URL: (file) => {
     return sales_url + `/reports/downloadFile/${file}`;
@@ -742,6 +780,13 @@ const URL = {
     `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
   GET_LIVE_LEADS_SELF: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
+    
+  GET_LIVE_LEADS_SELF_RECEPTIONIST: () =>
+    `${dashboard}/receptionistLiveLeads`,
+
+  GET_LIVE_LEADS_MANAGERDATA: () =>
+    `${dashboard}/managerLiveLeads`,
+
   GET_LIVE_LEADS_INSIGHTS: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () =>
@@ -821,12 +866,39 @@ const URL = {
   RECEPTIONIST_MANAGER_DASHBOARD: () => {
     return dashboard + "/receptionistManager";
   },
+  RECEPTIONIST_MANAGER_DASHBOARD_CRM: () => {
+    return dashboard + "/receptionistManagerTeam";
+  },
+  RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE: () => {
+    return dashboard + "/SalesManagerDigitalTeam";
+  },
   RECEPTIONIST_MANAGER_TEAM: () => {
     return dashboard + "/receptionistTeam";
   },
   RECEPTIONIST_SOURCE: () => {
     return dashboard + "/receptionist/source";
   },
+  RECEPTIONIST_SOURCE_LIVE: () => {
+    return dashboard + "/liveLeads/source";
+  },
+  RECEPTIONIST_MODEL_LIVE: () => {
+    return dashboard + "/liveLeads/model";
+  },
+
+  XROLE_MODEL_LIVE: () => {
+    return dashboard + "/xrole/model";
+  },
+  XROLE_SOURCE_LIVE: () => {
+    return dashboard + "/xrole/source";
+  },
+
+  CRM_SOURCE_LIVE: () => {
+    return dashboard + "/managerLiveLeads/source";
+  },
+  CRM_MODAL_LIVE: () => {
+    return dashboard + "/managerLiveLeads/model";
+  },
+
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";
   },

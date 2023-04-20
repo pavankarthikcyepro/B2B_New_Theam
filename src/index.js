@@ -87,10 +87,12 @@ const AppScreen = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const clearWatch = () => {
     subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
     setSubscriptionId(null);
   };
+
   const initialData = async () => {
     try {
       await AsyncStore.storeJsonData(
@@ -175,7 +177,6 @@ const AppScreen = () => {
                     lastPosition?.coords?.longitude
                   );
                   let distance = dist * 1000;
-
                   // if (newLatLng && parsedValue) {
                   //   // if (
                   //   //   objectsEqual(
@@ -303,7 +304,6 @@ const AppScreen = () => {
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
-        // console.log(i);
         var startDate = createDateTime("8:30");
         var startBetween = createDateTime("9:30");
         var endBetween = createDateTime("20:30");
@@ -376,13 +376,15 @@ const AppScreen = () => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
-          BackgroundService.stop();
-        } else {
-          if (userToken) {
-            startTracking();
+        if (jsonObj.isGeolocation === "Y") {
+          if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
+            BackgroundService.stop();
           } else {
-            await BackgroundService.stop();
+            if (userToken) {
+              startTracking();
+            } else {
+              await BackgroundService.stop();
+            }
           }
         }
       }

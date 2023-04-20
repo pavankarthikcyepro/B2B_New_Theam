@@ -25,7 +25,7 @@ import { Colors } from "../styles";
 //   SCHEDULE_FILL,
 //   SCHEDULE_LINE,
 // } from "../assets/svg";
-
+import { EventRegister } from 'react-native-event-listeners'
 import EMS_LINE from "../assets/images/ems_line.svg"; // import SVG
 import HOME_LINE from "../assets/images/home_line.svg"; // import SVG
 import HOME_FILL from "../assets/images/home_fill.svg"; // import SVG
@@ -124,6 +124,20 @@ import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditCompl
 import ClosedComplaintList from "../scenes/mainScenes/ComplaintTracker/ClosedComplaintList";
 import * as AsyncStore from "../asyncStore";
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
+import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
+import CRMLiveleadsFilterscreen from "../scenes/mainScenes/LiveLeads/CRMLiveleadsFilterscreen";
+import RecepSourceModelCRM from "../scenes/mainScenes/LiveLeads/RecepSourceModelCRM";
+import LiveLeadsScreenReceptionist from "../scenes/mainScenes/LiveLeadsReceptionist";
+import LiveLeadsfilterScreen_receptionist from "../scenes/mainScenes/LiveLeadsReceptionist/LiveLeadsfilterScreen_receptionist";
+import CRMLiveleadsFilterscreen_recep from "../scenes/mainScenes/LiveLeadsReceptionist/CRMLiveleadsFilterscreen_recep";
+import RecepSourceModelCRM_Recep from "../scenes/mainScenes/LiveLeadsReceptionist/RecepSourceModelCRM_Recep";
+import DigitalDashBoardTargetScreen from "../scenes/mainScenes/DigitalDashboard/targetScreen";
+import DigitalDashboardFilter from "../scenes/mainScenes/DigitalDashboard/DigitalDashboardFilter";
+import DigitalRecepSourceModel from "../scenes/mainScenes/DigitalDashboard/DigitalRecepSourceModel";
+import ReceptionistDashboardScreen from "../scenes/mainScenes/ReceptionistDashboard";
+import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashbordSourceModel";
+import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
+import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -382,13 +396,15 @@ export const DrawerStackIdentifiers = {
   evtbrlReport: "EVTBRL_REPORT",
   dropAnalysis: "DROP_ANALYSIS",
   liveLeads: "LIVE_LEADS",
+  liveLeadsReceptionist: "LIVE_LEADS_RECEPTIONIST",
   dropLostCancel: "DROP_LOST_CANCEL",
   eventDashboard: "EVENT_DASHBOARD",
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
   reportDownload:"REPORT_DOWNLOAD",
-  complaintTracker:"COMPLAINT_TRACKER"
+  complaintTracker:"COMPLAINT_TRACKER",
+  receptionistDashboard: "RECEPTIONIST_DASHBOARD",
 };
 
 export const TabStackIdentifiers = {
@@ -410,6 +426,7 @@ export const HomeStackIdentifiers = {
   location: "MAP_TRACKER",
   receptionistFilter: "REECEPTION_FILTER",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
+  crmFilter:"CRM_FILTER"
 };
 
 export const EmsStackIdentifiers = {
@@ -546,6 +563,11 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name={HomeStackIdentifiers.receptionistFilter}
         component={ReceptionistFilterScreen}
+        options={{ title: "Filters" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.crmFilter}
+        component={CRMFilterscreen}
         options={{ title: "Filters" }}
       />
       <MainDrawerNavigator.Screen
@@ -837,7 +859,7 @@ const TabNavigator = ({ navigation, route }) => {
   const nav = useRoute();
   // let routeName = getFocusedRouteNameFromRoute(route);
   let routeName = nav.params.screen;
-
+  const dispatch = useDispatch();
   return (
     <Tab.Navigator
       // initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}
@@ -895,6 +917,30 @@ const TabNavigator = ({ navigation, route }) => {
         name={TabStackIdentifiers.home}
         component={HomeStackNavigator}
         options={{ title: "Home" }}
+        listeners={({ navigation, route }) => ({
+          tabPress: e => {
+            // todo manthan 
+            let obj = {
+              startDate: "",
+              endDate: "",
+              levelSelected: "",
+              selectedempId: "",
+              dealerCodes: "",
+            }
+            dispatch(updateDealerFilterData({}))
+            // dispatch(updateFilterSelectedData({}))
+            dispatch(updateLiveLeadObjectData(obj))
+            dispatch(updateFilterSelectedData({}));
+            dispatch(updateReceptionistObjectData({}));
+            dispatch(updateFilterSelectedDataReceptionist({}));
+            dispatch(updateFilterLevelSelectedDataReceptionist({}));
+            dispatch(updateDealerFilterData_Recep({}));
+            dispatch(updateCrm_employees_drop_down_data({}))
+            dispatch(updateFilterIds({}))
+            dispatch(updateEmpDropDown_Local({}))
+            
+          },
+        })}
       />
       <Tab.Screen
         name={TabStackIdentifiers.ems}
@@ -902,6 +948,8 @@ const TabNavigator = ({ navigation, route }) => {
         options={{ title: "EMS" }}
         listeners={({ navigation, route }) => ({
           tabPress: e => {
+            // todo manthan 
+            EventRegister.emit("EMSBOTTOMTAB_CLICKED", true)
             navigation.setParams(
               {
                 screenName: "DEFAULT",
@@ -912,7 +960,8 @@ const TabNavigator = ({ navigation, route }) => {
                 startDate: "",
                 endDate: "",
                 dealerCodes: "",
-                fromScreen: "DEFAULT"
+                fromScreen: "DEFAULT",
+                ignoreSelectedId: false
               })
           },
         })}
@@ -1040,6 +1089,75 @@ const DigitalPaymentStackNavigator = ({ navigation }) => {
   );
 };
 
+
+const DigitalDashboardStack = createStackNavigator();
+
+const DigitalDashboardStackNavigator = ({ navigation }) => {
+  return (
+    <DigitalDashboardStack.Navigator screenOptions={screeOptionStyle}>
+      <DigitalDashboardStack.Screen
+        name={DrawerStackIdentifiers.digitalDashboard}
+        component={DigitalDashBoardScreen}
+        options={{
+          headerShown:false
+          // title: "QR Code",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <DigitalDashboardStack.Screen
+        name={"DIGITAL_DASHBOARD_FILTER"}
+        component={DigitalDashboardFilter}
+        options={{
+          // headerShown: false
+          title: "Filter",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <DigitalDashboardStack.Screen
+        name={"RECEP_SOURCE_MODEL_DEGITAL"}
+        component={DigitalRecepSourceModel}
+        options={{
+          title: "Source/Model",
+        }}
+      />
+    </DigitalDashboardStack.Navigator>
+  );
+};
+
+const ReceptionistDashboardStack = createStackNavigator();
+
+const ReceptionistDashboardNavigator = ({ navigation }) => {
+  return (
+    <ReceptionistDashboardStack.Navigator screenOptions={screeOptionStyle}>
+      <ReceptionistDashboardStack.Screen
+        name={DrawerStackIdentifiers.receptionistDashboard}
+        component={ReceptionistDashboardScreen}
+        options={{
+          headerShown: false
+          // title: "QR Code",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ReceptionistDashboardStack.Screen
+        name={"RECEPTIONIST_DASHBOARD_FILTER"}
+        component={ReceptionistDashboardFilter}
+        options={{
+          // headerShown: false
+          title: "Filter",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ReceptionistDashboardStack.Screen
+        name={"RECEP_SOURCE_MODEL_RECEPTIONIST"}
+        component={ReceptionistDashbordSourceModel}
+        options={{
+          title: "Source/Model",
+        }}
+      />
+    </ReceptionistDashboardStack.Navigator>
+  );
+};
+
 const MonthlyTargetStack = createStackNavigator();
 
 const MonthlyTargetStackNavigator = ({ navigation }) => {
@@ -1147,7 +1265,70 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
           // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
+
+      <LiveLeadsStack.Screen
+        name={"CRM_LIVE_FILTERS"}
+        component={CRMLiveleadsFilterscreen}
+        options={{ title: "Filters" }}
+      />
+
+      <LiveLeadsStack.Screen
+        name={"RECEP_SOURCE_MODEL_CRM"}
+        component={RecepSourceModelCRM}
+        options={{
+          title: "Source/Model",
+        }}
+      />
     </LiveLeadsStack.Navigator>
+  );
+};
+
+
+const LiveLeadsStackReceptionist = createStackNavigator();
+
+const LiveLeadsStackNavigatorReceptionist = ({ navigation }) => {
+  return (
+    <LiveLeadsStackReceptionist.Navigator
+      initialRouteName={"LIVE_LEADS_RECEPTIONIST"}
+      screenOptions={screeOptionStyle}
+    >
+      <LiveLeadsStackReceptionist.Screen
+        name={"LIVE_LEADS_RECEPTIONIST"}
+        component={LiveLeadsScreenReceptionist}
+        options={{
+          title: "Live Leads Receptionist",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+        initialParams={{
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        }}
+      />
+      <LiveLeadsStackReceptionist.Screen
+        name={"LIVE_LEADS_FILTERS_RECEP"}
+        component={LiveLeadsfilterScreen_receptionist}
+        options={{
+          title: "Live Leads Filters",
+          // headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+
+      <LiveLeadsStackReceptionist.Screen
+        name={"CRM_LIVE_FILTERS_RECEP"}
+        component={CRMLiveleadsFilterscreen_recep}
+        options={{ title: "Filters" }}
+      />
+
+      <LiveLeadsStackReceptionist.Screen
+        name={"RECEP_SOURCE_MODEL_CRM_RECEP"}
+        component={RecepSourceModelCRM_Recep}
+        options={{
+          title: "Source/Model",
+        }}
+      />
+    </LiveLeadsStackReceptionist.Navigator>
   );
 };
 
@@ -1361,6 +1542,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         component={LiveLeadsStackNavigator}
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.liveLeadsReceptionist}
+        component={LiveLeadsStackNavigatorReceptionist}
+      />
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.complaintTracker}
         component={ComplainTrackgerStackNavigator}
       />
@@ -1442,7 +1627,11 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.digitalDashboard}
-        component={DigitalDashBoardScreen}
+        component={DigitalDashboardStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.receptionistDashboard}
+        component={ReceptionistDashboardNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.reportDownload}

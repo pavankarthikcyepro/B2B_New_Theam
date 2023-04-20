@@ -301,6 +301,8 @@ export const mytaskSlice = createSlice({
     currentScreen: "",
     filter_drop_down_data: {},
     employees_drop_down_data: {},
+    employees_drop_down_data_Local: {},
+    filterSelectedData: {},
     filterIds: {
       dealerCodes: [],
       levelSelectedIds: [],
@@ -324,9 +326,16 @@ export const mytaskSlice = createSlice({
     updateEmpDropDown: (state, action) => {
       state.employees_drop_down_data = {};
     },
+    updateEmpDropDown_local: (state, action) => {
+      state.employees_drop_down_data_Local = {};
+    },
+    updateFilterSelectedData: (state, action) => {
+      state.filterSelectedData = action.payload;
+    },
     myTaskClearState: (state, action) => {
       state.filter_drop_down_data = {};
       state.employees_drop_down_data = {};
+      state.employees_drop_down_data_Local = {};
       state.filterIds = {
         dealerCodes: [],
         levelSelectedIds: [],
@@ -589,14 +598,17 @@ export const mytaskSlice = createSlice({
     builder
       .addCase(getEmployeesDropDownData.pending, (state, action) => {
         state.employees_drop_down_data = {};
+        state.employees_drop_down_data_Local = {};
       })
       .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
         if (action.payload) {
           state.employees_drop_down_data = action.payload;
+          state.employees_drop_down_data_Local = action.payload;
         }
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
         state.employees_drop_down_data = {};
+        state.employees_drop_down_data_Local = {};
       });
 
     // Task History rescheduled today
@@ -611,6 +623,6 @@ export const {
   updateFilterIds,
   updateCurrentScreen,
   updateEmpDropDown,
-  myTaskClearState,
+  myTaskClearState, updateEmpDropDown_local,updateFilterSelectedData
 } = mytaskSlice.actions;
 export default mytaskSlice.reducer;

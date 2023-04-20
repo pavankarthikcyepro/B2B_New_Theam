@@ -476,13 +476,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
           }}
           style={{ flexDirection: "row", alignItems: "center" }}
         >
-          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.RED} />
-          <Text style={{ color: Colors.RED }}>
+          <MaterialIcons name="arrow-back-ios" size={20} color={Colors.GRAY} />
+          <Text style={{ color: Colors.GRAY, fontSize: 15, fontWeight: "600" }}>
             {previousMonth(currentMonth)}
           </Text>
         </TouchableOpacity>
 
-        <Text style={{ color: Colors.RED }}>{selectedMonth(currentMonth)}</Text>
+        <Text style={{ color: Colors.RED, fontSize: 15, fontWeight: "600" }}>
+          {selectedMonth(currentMonth)}
+        </Text>
         {currentMonth.getMonth() !== new Date().getMonth() ? (
           <TouchableOpacity
             onPress={() => {
@@ -492,11 +494,15 @@ const AttendanceTopTabScreen = ({ route, navigation }) => {
             }}
             style={{ flexDirection: "row", alignItems: "center" }}
           >
-            <Text style={{ color: Colors.RED }}>{nextMonth(currentMonth)}</Text>
+            <Text
+              style={{ color: Colors.GRAY, fontSize: 15, fontWeight: "600" }}
+            >
+              {nextMonth(currentMonth)}
+            </Text>
             <MaterialIcons
               name="arrow-forward-ios"
               size={20}
-              color={Colors.RED}
+              color={Colors.GRAY}
             />
           </TouchableOpacity>
         ) : (

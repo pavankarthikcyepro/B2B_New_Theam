@@ -143,15 +143,24 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const enquiryResponse = selector.enquiry_details_response;
-    if (enquiryResponse && identifier === 'ENQUIRY_FOLLOW_UP') {
+    if (enquiryResponse && identifier === "ENQUIRY_FOLLOW_UP") {
       const dmsLeadDto = enquiryResponse.dmsLeadDto;
       const dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
       if (dmsLeadProducts && dmsLeadProducts.length) {
         const selectedModelData = dmsLeadProducts[0];
         const { model, variant } = selectedModelData;
         updateModelVarientsData(model, false);
+      } else {
+        if(carModelsData.length > 0){
+          dispatch(
+            setEnquiryFollowUpDetails({
+              key: "MODEL",
+              text: carModelsData[0].model,
+            })
+          );
+          updateModelVarientsData(carModelsData[0].model, false);
+        }
       }
-
     }
   }, [selector.enquiry_details_response]);
 
@@ -233,6 +242,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
+
+
 
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
@@ -462,7 +473,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Model"}
                     disabled={isViewMode()}
-                    value={selector.enquiry_details_response?.dmsLeadDto?.model}
+                    value={selector.model}
                     onPress={() =>
                       setDropDownDataForModel("MODEL", "Select Model")
                     }

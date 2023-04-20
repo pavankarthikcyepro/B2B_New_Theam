@@ -470,8 +470,8 @@ const AttendanceFromSelf = ({
                   onChange={(item) => {
                     setSelectedLocation(item);
                   }}
-                  data={location || []}
-                  value={selectedLocation ? selectedLocation.name : ""}
+                  data={location}
+                  value={selectedLocation}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Location"}
@@ -479,20 +479,19 @@ const AttendanceFromSelf = ({
                   placeholderStyle={{
                     color: Colors.GRAY,
                   }}
+                  selectedTextStyle={styles.selectedTextStyle}
                 />
                 <Dropdown
                   label={"Dealer Code"}
-                  value={selectedDealerCode ? selectedDealerCode.name : ""}
+                  value={selectedDealerCode}
                   visible={true}
                   underLine
                   onChange={(item) => {
                     setSelectedDealerCode(item);
                   }}
-                  data={
-                    DealerCodes.filter(
-                      (i) => i.refParentId == selectedLocation.id
-                    ) || []
-                  }
+                  data={DealerCodes.filter(
+                    (i) => i?.refParentId == selectedLocation?.id
+                  )}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Dealer Code"}
@@ -500,6 +499,7 @@ const AttendanceFromSelf = ({
                   placeholderStyle={{
                     color: Colors.GRAY,
                   }}
+                  selectedTextStyle={styles.selectedTextStyle}
                 />
               </View>
             )}
@@ -844,13 +844,15 @@ const styles = StyleSheet.create({
     height: 50,
     width: "40%",
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: "500",
     backgroundColor: Colors.WHITE,
     marginTop: 10,
     borderRadius: 6,
-    padding: 15,
+    paddingVertical: 15,
+    paddingHorizontal:15,
     color: Colors.BLACK,
     borderBottomColor: Colors.BLACK,
     borderBottomWidth: 1,
+    zIndex:1555
   },
 });

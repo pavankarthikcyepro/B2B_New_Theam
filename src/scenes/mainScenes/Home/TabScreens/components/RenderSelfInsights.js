@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AppNavigator } from "../../../../../navigations";
-import {IconButton, ProgressBar} from "react-native-paper";
-import {Colors} from "../../../../../styles";
+import { IconButton, ProgressBar } from "react-native-paper";
+import { Colors } from "../../../../../styles";
 import moment from "moment/moment";
 import TextTicker from "react-native-text-ticker";
 import { achievementPercentage } from "../../../../../utils/helperFunctions";
+import { useSelector } from "react-redux";
+import _ from "lodash";
 
 export const RenderSelfInsights = (args) => {
+  const selector = useSelector((state) => state.homeReducer);
   const color = [
     "#9f31bf",
     "#00b1ff",
@@ -28,8 +31,9 @@ export const RenderSelfInsights = (args) => {
     .format(dateFormat);
   const dateDiff =
     (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-    (1000 * 60 * 60 * 24);
-  const { data, type, navigation } = args;
+      (1000 * 60 * 60 * 24) +
+    1;
+  const { data, type, navigation, userData ="" } = args;
 
   const enq = data && data.find((x) => x && x.paramName === "Enquiry");
   const ret = data && data.find((x) => x && x.paramName == "INVOICE");
@@ -61,6 +65,7 @@ export const RenderSelfInsights = (args) => {
 
   return getRearrangeArray().map((item, index) => {
     if (item) {
+      
       return (
         <View
           style={{ flexDirection: "row", marginLeft: 8 }}
@@ -75,34 +80,76 @@ export const RenderSelfInsights = (args) => {
                 param === "Booking" ||
                 param === "INVOICE"
               ) {
+                
                 navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
                 setTimeout(() => {
                   navigation.navigate("LEADS", {
-                    param: param === "INVOICE" ? "Retail" : param,
-                    moduleType: "home",
+                    screenName: "TargetScreenSales",
+                    params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
+                    moduleType: "",
                     employeeDetail: "",
+                    selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : "",
+                    startDate: "",
+                    endDate: "",
+                    dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected: [],
+                    ignoreSelectedId: false,
+                    parentId: "",
+                    istotalClick: true,
+                    self: false
                   });
                 }, 1000);
+                // setTimeout(() => {
+                //   navigation.navigate("LEADS", {
+                //     param: param === "INVOICE" ? "Retail" : param,
+                //     moduleType: "home",
+                //     employeeDetail: "",
+                //   });
+                // }, 1000);
               } else if (param == "Home Visit" || param == "Test Drive") {
-                navigation.jumpTo(AppNavigator.TabStackIdentifiers.myTask, {
-                  screen: "CLOSED",
-                });
-                setTimeout(() => {
-                  navigation.navigate("CLOSED");
-                }, 500);
-              } else if (param === "DROPPED") {
-                // navigation.navigate(
-                //   AppNavigator.DrawerStackIdentifiers.dropAnalysis
-                // );
-                navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-                  screen: "DROP_ANALYSIS",
-                  params: { emp_id: "", fromScreen: "" },
-                });
-              } else if (param === "Test Drive" || param === "Home Visit") {
+                
                 navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
                 setTimeout(() => {
-                  navigation.navigate("CLOSED");
-                }, 750);
+                  navigation.navigate("CLOSED", {
+                    screenName: "TargetScreenSales",
+                    selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : "",
+                    startDate: "",
+                    endDate: "",
+                    dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+                    isself: false,
+                    isTeam:true
+                  });
+                }, 700);
+              } else if (param === "DROPPED") {
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+                  screen: "DROP_ANALYSIS",
+                  params: {
+                    emp_id: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : userData !== ""  ? userData.empId : "",
+                    fromScreen: "targetSaleshome",
+                    dealercodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+                    isFilterApplied: true,
+                    parentId: "",
+                    isSelf: ""
+                  },
+                });
+                // navigation.navigate(
+                //   AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+                //   {
+                //     screen: "DROP_ANALYSIS",
+                //     params: { emp_id: "", fromScreen: "" },
+                //   }
+                // );
+              } else if (param === "Test Drive" || param === "Home Visit") {
+                // navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
+                // setTimeout(() => {
+                //   navigation.navigate("CLOSED",{
+                //     screenName: "TargetScreenSales",
+                //     selectedEmpId: selector.filterIds?.empSelected ? selector.filterIds?.empSelected[0] : "",
+                //     startDate: "",
+                //     endDate: "",
+                //     dealerCodes: [],
+                  
+                //   });
+                // }, 750);
               }
             }}
           >
@@ -154,6 +201,8 @@ export const RenderSelfInsights = (args) => {
                   }}
                 >
                   {type === 0
+                    ? item.achievment
+                    : item.paramName === "Accessories"
                     ? item.achievment
                     : `${achievementPercentage(
                         item.achievment,
