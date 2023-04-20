@@ -408,6 +408,15 @@ const URL = {
     return sales_url + "/task-history/savetestDrive";
   },
 
+  SAVE_RECHEDULE_REMARKS: () => {
+    return sales_url + "/task-history/saveReScheduleRemark";
+  },
+
+  GET_RECHEDULE_REMARKS: (universalId) => {
+    return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+  },
+
+
   UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
     return sales_url + `/task-history/updateList/${recordid}`;
   },

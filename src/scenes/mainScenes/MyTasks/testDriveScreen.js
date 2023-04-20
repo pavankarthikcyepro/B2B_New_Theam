@@ -34,10 +34,12 @@ import {
   getTestDriveAppointmentDetailsApi,
   validateTestDriveApi,
   generateOtpApi,
-  validateOtpApi,postReOpenTestDrive,getTestDriveHistoryCount,
+  validateOtpApi, postReOpenTestDrive, getTestDriveHistoryCount,
   clearOTP,
   PutUpdateListTestDriveHistory,
   updateSelectedScheduledata,
+  getTestDriveHistoryDetails,
+  saveReScheduleRemark,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -175,14 +177,16 @@ const TestDriveScreen = ({ route, navigation }) => {
     setValue: setOtpValue,
   });
   const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isSubmitPressRescheduleModal, setIsSubmitPressRescheduleModal] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState({});
   const [isValuesEditable, setIsValuesEditable] = useState(true);
   const [isReopenSubmitVisible, setIsisReopenSubmitVisible] = useState(false);
   const [ischangeScreen, setIschangeScreen] = useState(false);
-  const [isRechduleModalVisible ,setIsRescheduleModalVisible]  = useState(false);
+  const [isRechduleModalVisible, setIsRescheduleModalVisible] = useState(false);
   const [reasonList, setReasonList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
+  const [storeLastupdatedTestDriveId, setStoreLastupdatedTestDriveId] = useState("");
   let date = new Date();
   date.setDate(date.getDate() + 9);
 
@@ -196,6 +200,9 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (route?.params?.taskStatus === "CLOSED") {
       dispatch(getTestDriveHistoryCount(universalId))
     }
+    if (universalId) {
+      dispatch(getTestDriveHistoryDetails(universalId))
+    }
   }, []);
 
   useEffect(() => {
@@ -208,7 +215,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       });
       getAsyncstoreData();
       getUserToken();
-      
+
     });
     navigation.addListener("blur", () => {
       dispatch(clearState());
@@ -217,16 +224,31 @@ const TestDriveScreen = ({ route, navigation }) => {
         id: "",
       });
     });
-    
+
   }, [navigation]);
 
   useEffect(() => {
+    if (selector.test_drive_history_details_statu === "successs") {
+      let response = selector.test_drive_history_details;
+      let tempData;
+      if(response.length >0){
+       tempData= response[response.length - 1]
+      }
+      console.log("manthan >> ",response[response.length -1]);
+      setStoreLastupdatedTestDriveId(tempData.id)
+    }
+
+
+  }, [selector.test_drive_history_details_statu])
+
+  useEffect(() => {
     if (selector.isReasonUpdate && reasonList.length > 0) {
-      
+
       let reason = selector.reason;
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
+      console.log("manthan reasn findIndex ", selector.reason);
       if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
@@ -236,7 +258,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         setOtherReason(reason);
       }
     }
-  }, [selector.isReasonUpdate, reasonList]);  
+  }, [selector.isReasonUpdate, reasonList]);
 
 
   const getReasonListData = async (taskName) => {
@@ -268,7 +290,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   { label: "Other", value: "Other" },
                 ]);
               }, 100);
-              
+
               setLoading(false)
             }
           }
@@ -316,7 +338,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               dispatch(getTestDriveVehicleListApi(payload)),
               dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
               dispatch(getDriversListApi(jsonObj.orgId)),
-            ]).then(() => {});
+            ]).then(() => { });
           }
         );
       } else {
@@ -430,7 +452,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           ) {
             const varientsData =
               selector.test_drive_varients_obj_for_drop_down[
-                findModel[0].model
+              findModel[0].model
               ];
             setVarientListForDropDown(varientsData);
           }
@@ -527,6 +549,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         // todo manthan
         getReasonListData("Enquiry Followup")
         dispatch(getTestDriveHistoryCount(universalId))
+        
       } else if (taskStatus === "CANCELLED") {
         //
         setHandleActionButtons(5);
@@ -534,7 +557,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         setHandleActionButtons(1);
       } if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
         setHandleActionButtons(4);
-      } 
+      }
 
       setSelectedDseDetails({
         name: selector.task_details_response.assignee?.empName,
@@ -867,7 +890,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       dlFrontUrl: "",
       vehicleInfo: vehicleDetails,
     };
-  
+
     let appointmentObjsavetestDrive = {
       address: customerAddress,
       branchId: selectedBranchId,
@@ -877,9 +900,9 @@ const TestDriveScreen = ({ route, navigation }) => {
       location: location,
       orgId: userData.orgId,
       source: "ShowroomWalkin",
-      startTime: moment.utc(startTime).format() ,
-      endTime: moment.utc(endTime).format() ,
-      testDriveDatetime: moment.utc(preferredTime).format() ,
+      startTime: moment.utc(startTime).format(),
+      endTime: moment.utc(endTime).format(),
+      testDriveDatetime: moment.utc(preferredTime).format(),
       testdriveId: 0,
       status: "ASSIGNED",
       varientId: varientId,
@@ -888,7 +911,8 @@ const TestDriveScreen = ({ route, navigation }) => {
       dlBackUrl: "",
       dlFrontUrl: "",
       vehicleInfo: vehicleDetails,
-      reTestdriveFlag: "Original"
+      reTestdriveFlag: "Original",
+      mobileNumber:mobileNumber
     };
 
     if (customerHavingDrivingLicense === 1) {
@@ -898,7 +922,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       appointmentObjsavetestDrive.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
       appointmentObjsavetestDrive.dlFrontUrl = uploadedImagesDataObj.dlFrontUrl.documentPath;
     }
-    
+
     const payload = {
       appointment: appointmentObj,
     };
@@ -906,10 +930,13 @@ const TestDriveScreen = ({ route, navigation }) => {
     //   appointment: appointmentObj,
     // };
     dispatch(bookTestDriveAppointmentApi(payload));
-    if (status === "APPROVED"){
-      dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));    
+    if (status === "APPROVED") {
+      dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     }
-  
+    if (status === "APPROVRESCHEDULEDED")
+    submitRescheduleRemarks()
+    reTestDrivePutCallupdateList();
+
     // navigation.goBack()
   };
 
@@ -979,31 +1006,31 @@ const TestDriveScreen = ({ route, navigation }) => {
         return;
       }
     }
-    
+
     if (userData.isOtp === "Y") {
       generateOtpToCloseTask();
       if (from === "reopen") {
         setIschangeScreen(false)
         reSubmitClick("ASSIGNED", "Test Drive Approval")
-      }else{
+      } else {
         setIschangeScreen(true)
       }
     } else {
-    
-      if(from==="reopen"){
-      
+
+      if (from === "reopen") {
+
         setIschangeScreen(true)
-       
+
         reSubmitClick("ASSIGNED", "Test Drive Approval")
         setIsCloseSelected(false);
         isViewMode2("reopen")
         setIsisReopenSubmitVisible(true)
         return;
-      }else{
-      
+      } else {
+
         submitClicked("CLOSED", "Test Drive");
       }
-    
+
     }
     setIsCloseSelected(true);
   };
@@ -1227,7 +1254,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const resendClicked = () => {
     generateOtpToCloseTask();
   };
-  
+
   function compare(dateTimeA, dateTimeB) {
     var momentA = moment(dateTimeA, "DD/MM/YYYY");
     var momentB = moment(dateTimeB, "DD/MM/YYYY");
@@ -1235,16 +1262,16 @@ const TestDriveScreen = ({ route, navigation }) => {
     else if (momentA < momentB) return -1;
     else return 0;
   }
-  const reSubmitClick = (status,taskName)=>{
+  const reSubmitClick = (status, taskName) => {
     // call API here 
-  
+
     setIsisReopenSubmitVisible(false)
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {
       showToast("Please enter mobile number");
       return;
     }
-    
+
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -1271,11 +1298,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select customer preferred date");
       return;
     }
-      const dateFormat = "DD/MM/YYYY";
-      const currentDate = moment().add(0, "day").format(dateFormat)
-    
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+
     // conditon to show error for date older then today 
-    if (compare(selector.customer_preferred_date, currentDate) === -1){
+    if (compare(selector.customer_preferred_date, currentDate) === -1) {
       showToast("Please select customer preferred date greater than today's date");
       return;
     }
@@ -1298,7 +1325,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select time");
       return;
     }
-   
+
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1321,7 +1348,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Actual End Time Should not be less than Actual Start Time");
       return;
     }
-   
+
     if (
       selectedVehicleDetails.vehicleId === 0 ||
       selectedVehicleDetails.varientId === 0
@@ -1354,10 +1381,10 @@ const TestDriveScreen = ({ route, navigation }) => {
     const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
       "DD-MM-YYYY"
     );
-    let prefferedTime ;
-    let actualStartTime ;
-    let actualEndTime ;
-    
+    let prefferedTime;
+    let actualStartTime;
+    let actualEndTime;
+
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
@@ -1381,7 +1408,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
 
-    
+
     let reopenSubmitObj = {
       id: taskId,
       address: customerAddress,
@@ -1413,103 +1440,133 @@ const TestDriveScreen = ({ route, navigation }) => {
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
       testdriveId: 0,
-      customerHaveingDl: customerHavingDrivingLicense === 1
+      customerHaveingDl: customerHavingDrivingLicense === 1,
+      reTestdriveFlag: "ReTestDrive",
+      mobileNumber: mobileNumber
     }
-  
+
     dispatch(postReOpenTestDrive(reopenSubmitObj));
-    
+    setIschangeScreen(true)
+
   }
   useEffect(() => {
-   
-    if (selector.reopen_test_drive_res_status ==="successs"){
-      if(ischangeScreen){
+
+    if (selector.reopen_test_drive_res_status === "successs") {
+      if (ischangeScreen) {
         navigation.pop(2);
       }
     }
-  
+
   }, [selector.reopen_test_drive_res_status])
-  
+
   useEffect(() => {
     // if (route?.params?.taskStatus === "CLOSED"){
-     
-      if (selector.test_drive_history_count_statu === "successs"){
-       
-        navigation.setOptions({
-          headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
-        })
-      }
-     
-    
+
+    if (selector.test_drive_history_count_statu === "successs") {
+
+      navigation.setOptions({
+        headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+      })
+    }
+
+
     // }
-  
+
   }, [selector.test_drive_history_count_statu])
 
 
-  const reTestDrivePutCallupdateList = () =>{
+  // useEffect(() => {
+  //   if (route?.params?.taskStatus === "CLOSED" &&
+  //     !isReopenSubmitVisible &&
+  //     !isCloseSelected) {
+  //         if (universalId) {
+  //           dispatch(getTestDriveHistoryDetails(universalId))
+  //         }
+  //       // todo manthan
+  //     }
+  
+  // }, [isCloseSelected, isReopenSubmitVisible, route?.params?.taskStatus])
+  
+
+  const reTestDrivePutCallupdateList = () => {
+    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+    const startTime = moment(selector.actual_start_time, "HH:mm");
+    const endTime = moment(selector.actual_end_time, "HH:mm");
+    const location = addressType === 1 ? "showroom" : "customer";
+    let varientId = selectedVehicleDetails.varientId;
+    let vehicleId = selectedVehicleDetails.vehicleId;
+    
+    if (!varientId || !vehicleId) return;
+
     let payload = {
-      "address": null,
+      "address": customerAddress,
       "allotmentId": 0,
-      "branchId": 286,
+      "branchId": selectedBranchId,
       "canceledBy": null,
       "customerDropDatetime": null,
-      "customerId": "18-286-1372a4e0-d5bf-4337-a4ac-cdf481c98463",
+      "customerId": universalId,
       "customerPickupDatetime": null,
       "customerQuery": null,
       "datetime": null,
       "dlBackUrl": "",
       "dlFrontUrl": "",
-      "dseId": "919",
-      "endTime": 1679362530742,
+      "dseId": selectedDseDetails.id,
+      "endTime": moment(endTime).valueOf(),
       "latitude": null,
-      "location": "showroom",
+      "location": location,
       "longitude": null,
       "managerApprovedDatetime": null,
       "managerId": null,
-      "orgId": 18,
+      "orgId": userData.orgId,
       "securityInId": null,
       "securityOutId": null,
       "source": "ShowroomWalkin",
-      "startTime": 1679351790742,
-      "status": "ASSIGNED",
-      "testDriveDatetime": 1679348070742,
-      "varientId": 901,
-      "vehicleId": 520,
-      "driverId": "919",
+      "startTime": moment(startTime).valueOf(),
+      "status": "RESCHEDULE",
+      "testDriveDatetime": moment(preferredTime).valueOf(),
+      "varientId": varientId,
+      "vehicleId": vehicleId,
+      "driverId": selectedDriverDetails.id.toString(),
       "testdriveId": 0,
       "reTestdriveFlag": "ReTestDrive",
-      "customerHaveingDl": false
+      "customerHaveingDl": customerHavingDrivingLicense === 1
     }
+    console.log("manthan jjjdddd ", payload);
 
-    dispatch(PutUpdateListTestDriveHistory(payload));
+    let masterPayload ={
+      body: payload,
+      recordid:storeLastupdatedTestDriveId
+    }
+    dispatch(PutUpdateListTestDriveHistory(masterPayload)); // need to add recordid
 
   }
 
 
 
-   const TestDriveHistoryIcon = ({ navigation }) => {
+  const TestDriveHistoryIcon = ({ navigation }) => {
     return (
 
-     
-      <View style={{flexDirection:'row',alignItems:"center"}}>
-       
-          <IconButton
-          style={{marginEnd:15}}
-            icon="history"
-            color={Colors.WHITE}
-            size={30}
-            onPress={() =>
-              navigation.navigate("TEST_HISTORY", {
-                universalId: universalId,
 
-              })
+      <View style={{ flexDirection: 'row', alignItems: "center" }}>
 
-            }
-          />
-       
-        
+        <IconButton
+          style={{ marginEnd: 15 }}
+          icon="history"
+          color={Colors.WHITE}
+          size={30}
+          onPress={() =>
+            navigation.navigate("TEST_HISTORY", {
+              universalId: universalId,
+
+            })
+
+          }
+        />
+
+
         <Text style={{ fontSize: 16, color: Colors.PINK, fontWeight: "bold", position: "absolute", top: 9, right: 10, }}>{selector.test_drive_history_count}</Text>
       </View>
-      
+
     );
   };
 
@@ -1553,20 +1610,20 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   const isViewMode2 = (from) => {
     // todo 
-   
-    if(from ==="reopen"){
-      setIsValuesEditable(false)
-      
-      
-    }else{
-      if (route?.params?.taskStatus === "CLOSED") {
-        setIsValuesEditable(true)
-        // return true;
-      } else {
-        setIsValuesEditable(false)
-      }
-    }
-    
+    setIsValuesEditable(false)
+    // if(from ==="reopen"){
+    //   setIsValuesEditable(false)
+
+
+    // }else{
+    //   if (route?.params?.taskStatus === "CLOSED") {
+    //     setIsValuesEditable(true)
+    //     // return true;
+    //   } else {
+    //     setIsValuesEditable(false)
+    //   }
+    // }
+
   };
 
   const onDropDownClear = (key) => {
@@ -1575,10 +1632,28 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
   };
 
+  const submitRescheduleRemarks = () =>{
 
-  const renderShowRecheduleModal = ()=>{
-    
-    return(<>
+    if (employeeRemarks === "" || selector.reason === "" || customerRemarks === "") {
+      setIsSubmitPressRescheduleModal(true)
+      return
+    }
+
+    let payload = {
+      "orgId": userData.orgId,
+      "customerId":universalId,
+      "customerRemarks": customerRemarks,
+      "employeeRemarks": employeeRemarks,
+      "reason": selector.reason,
+      "createdBy": userData.employeeId
+    }
+    console.log("manthan ->>> ", payload);
+    dispatch(saveReScheduleRemark(payload))
+  }
+
+  const renderShowRecheduleModal = () => {
+
+    return (<>
       <Modal
         animationType="fade"
         visible={isRechduleModalVisible}
@@ -1595,12 +1670,13 @@ const TestDriveScreen = ({ route, navigation }) => {
             backgroundColor: "rgba(0,0,0,0.7)",
           }}
         >
-          <View style={{width: "90%",
+          <View style={{
+            width: "90%",
             backgroundColor: Colors.LIGHT_GRAY,
-          padding: 10,
-          borderWidth: 2,
-          borderColor: Colors.BLACK,
-          flexDirection: "column",
+            padding: 10,
+            borderWidth: 2,
+            borderColor: Colors.BLACK,
+            flexDirection: "column",
             // height: 300
           }}>
             <View style={{ position: "relative" }}>
@@ -1658,7 +1734,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   GlobalStyle.underline,
                   {
                     backgroundColor:
-                      isSubmitPress && selector.reason === ""
+                      isSubmitPressRescheduleModal && selector.reason === ""
                         ? "red"
                         : "rgba(208, 212, 214, 0.7)",
                   },
@@ -1669,21 +1745,43 @@ const TestDriveScreen = ({ route, navigation }) => {
               style={styles.textInputStyle}
               value={customerRemarks}
               label={"Customer Remarks*"}
-              maxLength={10}
+              // maxLength={10}
               keyboardType={"default"}
               disabled={isValuesEditable}
               onChangeText={(text) => setCustomerRemarks(text)}
             />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPressRescheduleModal && customerRemarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <TextinputComp
               style={styles.textInputStyle}
               value={employeeRemarks}
               label={"Employee Remarks*"}
-              maxLength={10}
+              // maxLength={10}
               keyboardType={"default"}
               disabled={isValuesEditable}
               onChangeText={(text) => setEmployeeRemarks(text)}
             />
-            <View style={{flexDirection:"row",height:40,justifyContent:"space-between",marginTop:10}}>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPressRescheduleModal && employeeRemarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            <View style={{ flexDirection: "row", height: 40, justifyContent: "space-between", marginTop: 10 }}>
               <TouchableOpacity
                 style={{
                   width: 100,
@@ -1725,7 +1823,18 @@ const TestDriveScreen = ({ route, navigation }) => {
                   borderRadius: 5,
                   backgroundColor: Colors.RED,
                 }}
-                onPress={() => setIsRescheduleModalVisible(false)}
+                onPress={() => {
+                  if (selector.task_details_response.taskStatus === "APPROVED" || selector.task_details_response.taskStatus === "ASSIGNED"){
+                    // todo manthan
+                    submitClicked("RESCHEDULED", "Test Drive") // API for reschdule existing flow
+                    
+                  }else{
+                    // submitRescheduleRemarks()
+                  }
+                  console.log("manthan---> ", route?.params?.taskStatus);
+                  setIsRescheduleModalVisible(false)
+                }
+                }
               >
                 <Text
                   style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
@@ -1734,9 +1843,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 </Text>
               </TouchableOpacity>
             </View>
-            
+
           </View>
-         
+
         </View>
       </Modal>
 
@@ -1945,8 +2054,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   userData.isSelfManager == "Y"
                     ? "Battery Type"
                     : userData.isTracker == "Y"
-                    ? "Clutch Type"
-                    : "Transmission Type"
+                      ? "Clutch Type"
+                      : "Transmission Type"
                 }
                 value={selectedVehicleDetails.transType}
                 editable={false}
@@ -2288,7 +2397,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.isLoading}
                 bgColor={Colors.GREEN}
                 onPress={() => setIsRescheduleModalVisible(true)}
-                // onPress={() => submitClicked("RESCHEDULED", "Test Drive")} // todo uncomment manthan
+              // onPress={() => submitClicked("RESCHEDULED", "Test Drive")} // todo uncomment manthan
               />
             </View>
           )}
@@ -2375,16 +2484,32 @@ const TestDriveScreen = ({ route, navigation }) => {
           ) : null}
 
           {route?.params?.taskStatus === "CLOSED" &&
-          !isReopenSubmitVisible &&
-          !isCloseSelected ? (
+            !isReopenSubmitVisible &&
+            !isCloseSelected ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
+                <Button
+                  mode="contained"
+                  style={{ width: "45%" }}
+                  color={Colors.GRAY}
+                  // disabled={selector.is_loading_for_task_update}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                >
+                  Back
+                </Button>
               <Button
                 mode="contained"
                 style={{ width: "45%" }}
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
-                onPress={reOpenTask}
+                // onPress={reOpenTask}
+                  onPress={()=>{
+                    reSubmitClick("ASSIGNED", "Test Drive Approval")
+                  }}
+                  // todo manthan 
               >
                 {/* todo */}
                 Re Testdrive
@@ -2413,8 +2538,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
                 onPress={() => {
+                  submitClicked("SENT_FOR_APPROVAL", "Test Drive")
+                  setIsisReopenSubmitVisible(false)
                   // reSubmitClick("ASSIGNED","Test Drive Approval")
-                  closeTask("reopen");
+                  // closeTask("reopen");
                 }}
               >
                 Submit
@@ -2607,7 +2734,7 @@ const otpStyles = StyleSheet.create({
   titleText: {
     fontSize: 12,
     fontWeight: "600",
-    color:Colors.PINK
+    color: Colors.PINK
   },
   badgeContainer: {
     marginLeft: 3,

@@ -51,7 +51,7 @@ const TestDriveHistory = ({ route, navigation }) => {
     }
 
     const renderItem = ({ item, index }) => {
-
+       
         const date = moment(item.testDriveDatetime).format("DD/MM/YY h:mm a").split(" ");
         let topBcgColor = Colors.LIGHT_GRAY;
         let bottomBcgColor = Colors.LIGHT_GRAY;
@@ -209,7 +209,76 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     </Text>
 
                                 </View>  
-                              
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Mobile No: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.mobileNumber)}
+                                    </Text>
+
+                                </View>  
+                                {item.reason && <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Reason: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.reason)}
+                                    </Text>
+
+                                </View>} 
+                                {item.customerRemarks && <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Customer Remarks: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.customerRemarks)}
+                                    </Text>
+
+                                </View>} 
+                                {item.employeeRemarks && <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Employee remarks: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.employeeRemarks)}
+                                    </Text>
+
+                                </View>} 
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Status: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.status)}
+                                    </Text>
+
+                                </View>  
                             </View>
 
 

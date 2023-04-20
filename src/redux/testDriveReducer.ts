@@ -130,6 +130,26 @@ export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi"
 
 
 
+export const saveReScheduleRemark = createAsyncThunk("HOME_VISIT_SLICE/saveReScheduleRemark", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.SAVE_RECHEDULE_REMARKS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getReScheduleRemark = createAsyncThunk("HOME_VISIT_SLICE/getReScheduleRemark", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_RECHEDULE_REMARKS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.SAVETESTDRIVE(), payload);
@@ -141,9 +161,9 @@ export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpen
 })
 
 
-export const PutUpdateListTestDriveHistory = createAsyncThunk("HOME_VISIT_SLICE/PutUpdateListTestDriveHistory", async (payload, { rejectWithValue }) => {
+export const PutUpdateListTestDriveHistory = createAsyncThunk("HOME_VISIT_SLICE/PutUpdateListTestDriveHistory", async (payload,{ rejectWithValue }) => {
 
-  const response = await client.post(URL.UPDATELIST_TESTDRIVE_HISTORY(), payload);
+  const response = await client.put(URL.UPDATELIST_TESTDRIVE_HISTORY(payload["recordid"]), payload["body"]);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -205,6 +225,7 @@ const testDriveSlice = createSlice({
     test_drrive_history_updatelist:"",
     isReasonUpdate: true,
     reason: "",
+    save_test_drive_rescheduleRemarks_status: "",
 
   },
   reducers: {
@@ -233,6 +254,7 @@ const testDriveSlice = createSlice({
      state.test_drive_history_details_statu= "";
         state.test_drive_history_details= "";
       state.test_drrive_history_updatelist="";
+      state.reason = ""
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -583,6 +605,30 @@ const testDriveSlice = createSlice({
       state.isLoading = false;
      
       state.test_drrive_history_updatelist = "";
+    })
+
+
+    // saveReScheduleRemark test drive
+    builder.addCase(saveReScheduleRemark.pending, (state, action) => {
+      state.isLoading = true;
+      state.save_test_drive_rescheduleRemarks_status = "pending";
+    })
+    builder.addCase(saveReScheduleRemark.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.save_test_drive_rescheduleRemarks_status = "successs";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(saveReScheduleRemark.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.save_test_drive_rescheduleRemarks_status = "failed";
     })
   }
 });
