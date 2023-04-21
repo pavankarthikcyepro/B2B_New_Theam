@@ -261,39 +261,6 @@ const URL = {
   GET_CUSTOMER_TYPES: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/costomerType`;
   },
-  ADD_CUSTOMER: (tenantId) => {
-    return baseUrl + `vehicle-services/api/tenant/1/v1/service-history`;
-  },
-  GET_CUSTOMER_DETAILS: (tenantId, vehicleRegNumber) => {
-    return (
-      baseUrl +
-      `vehicle-services/api/tenant/1/v1/service-history/get-all-details/${vehicleRegNumber}`
-    );
-  },
-  GET_SOURCE_TYPE: (tenantId) => {
-    return (
-      baseUrl +
-      `vehicle-services/api/tenant/1/master-data/lead-source/all-by-hierarchy`
-    );
-  },
-  GET_SEARCH_CUSTOMER: (tenantId, vehicleRegNo) => {
-    return (
-      baseUrl +
-      `vehicle-services/api/tenant/1/customer/search?page=0&size=100&vehicleRegNumber=${vehicleRegNo}`
-    );
-  },
-  GET_SERVICE_TYPE: (tenantId) => {
-    return baseUrl + `vehicle-services/api/tenant/1/service-categories`;
-  },
-  GET_SUB_SERVICE_TYPE: (tenantId, catId) => {
-    return (
-      baseUrl +
-      `vehicle-services/api/tenant/1/master-data/service-category/${catId}/service-types`
-    );
-  },
-  GET_VEHICLE_INFO: (orgId) => {
-    return vehicleInfoService_url + `/api/vehicle_details?organizationId=${orgId}`;
-  },
   GET_ENQUIRY_TYPE: (orgId) => {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
@@ -901,6 +868,61 @@ const URL = {
   },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
+  },
+
+  // ==================== SERVICES ======================= //
+  ADD_CUSTOMER: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/v1/service-history`;
+  },
+  CREATE_CUSTOMER_BOOKING: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/appointment`;
+  },
+  GET_CUSTOMER_DETAILS: (tenantId, vehicleRegNumber) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/v1/service-history/get-all-details/${vehicleRegNumber}`
+    );
+  },
+  GET_SERVICE_BOOKING_LIST: (tenantId, vehicleRegNumber) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?page=0&size=20`
+    );
+  },
+  GET_SOURCE_TYPE: (tenantId) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/master-data/lead-source/all-by-hierarchy`
+    );
+  },
+  GET_SEARCH_CUSTOMER: (tenantId, vehicleRegNo) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/customer/search?page=0&size=100&vehicleRegNumber=${vehicleRegNo}`
+    );
+  },
+  GET_CITIES: (tenantId) => {
+    return baseUrl + `vehicle-services/api/org/1/cities`;
+  },
+  GET_SERVICE_TYPE: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/service-categories`;
+  },
+  GET_SUB_SERVICE_TYPE: (tenantId, catId) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/master-data/service-category/${catId}/service-types`
+    );
+  },
+  GET_BOOKING_TIME_SLOTS: (tenantId, serviceDate) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/time-slots/service-date?date=${serviceDate}`
+    );
+  },
+  GET_VEHICLE_INFO: (orgId) => {
+    return (
+      vehicleInfoService_url + `/api/vehicle_details?organizationId=${orgId}`
+    );
   },
 };
 

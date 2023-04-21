@@ -10,7 +10,7 @@ const TextInputServices = ({
   onChangeText,
   containerStyle,
   numberOfLines,
-  editable,
+  editable = true,
   maxLength,
   multiline,
   autoCapitalize = "none",

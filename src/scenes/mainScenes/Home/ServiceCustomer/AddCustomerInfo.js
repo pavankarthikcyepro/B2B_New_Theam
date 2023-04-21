@@ -24,6 +24,7 @@ import moment from 'moment';
 import { DropDownServices } from '../../../../pureComponents/dropDownServices';
 import { TextInputServices } from '../../../../components/textInputServices';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
+import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
 
 const AddCustomerInfo = ({ navigation, route }) => {
   const { fromScreen, vehicleRegNumber } = route.params;
@@ -1993,12 +1994,39 @@ const AddCustomerInfo = ({ navigation, route }) => {
           </List.AccordionGroup>
 
           {fromScreen == "search" && !isEditable && (
-            <TouchableOpacity
-              style={styles.editBtnContainer}
-              onPress={() => setIsEditable(true)}
-            >
-              <Text style={styles.editBtnText}>EDIT DETAILS</Text>
-            </TouchableOpacity>
+            <>
+              <View style={styles.buttonListRow}>
+                <TouchableOpacity
+                  style={styles.rsaQueryBtnContainer}
+                  onPress={() => {}}
+                >
+                  <Text style={styles.editBtnText}>QUERY</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.rsaQueryBtnContainer}
+                  onPress={() => {}}
+                >
+                  <Text style={styles.editBtnText}>RSA</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.editBtnContainer}
+                onPress={() =>
+                  navigation.navigate(
+                    HomeStackIdentifiers.editCustomerBookingList,
+                    { vehicleRegNumber, currentUserData: userData }
+                  )
+                }
+              >
+                <Text style={styles.editBtnText}>{`BOOKING LIST >`}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.editBtnContainer}
+                onPress={() => setIsEditable(true)}
+              >
+                <Text style={styles.editBtnText}>EDIT DETAILS</Text>
+              </TouchableOpacity>
+            </>
           )}
 
           {(fromScreen == "search" && isEditable) ||
@@ -2062,6 +2090,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 5,
   },
+  buttonListRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  rsaQueryBtnContainer: {
+    width: "48%",
+    paddingVertical: 14,
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+    backgroundColor: Colors.PINK,
+    paddingVertical: 14,
+  },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -2075,7 +2119,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 5,
     backgroundColor: Colors.PINK,
-    marginTop: 20,
+    marginTop: 10,
     paddingVertical: 14,
   },
   editBtnText: {

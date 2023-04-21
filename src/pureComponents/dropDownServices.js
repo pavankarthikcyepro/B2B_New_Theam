@@ -101,18 +101,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-
-  view3: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: Colors.WHITE,
-  },
-  text3: {
-    paddingLeft: 12,
-    fontSize: 16,
-    fontWeight: "400",
-    color: Colors.GRAY,
-  },
 });

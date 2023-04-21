@@ -128,6 +128,8 @@ import SearchCustomerResult from "../scenes/mainScenes/Home/ServiceCustomer/Sear
 import AddCustomerInfo from "../scenes/mainScenes/Home/ServiceCustomer/AddCustomerInfo";
 import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilterScreen";
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
+import EditCustomerBookingList from "../scenes/mainScenes/Home/ServiceCustomer/EditCustomerBookingList";
+import CreateCustomerBooking from "../scenes/mainScenes/Home/ServiceCustomer/CreateCustomerBooking";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -416,6 +418,8 @@ export const HomeStackIdentifiers = {
   searchCustomer: "SEARCH_CUSTOMER",
   addCustomerInfo: "ADD_CUSTOMER_INFO",
   searchCustomerResult: "SEARCH_CUSTOMER_RESULT",
+  editCustomerBookingList: "EDIT_CUSTOMER_BOOKING_LIST",
+  createCustomerBooking: "CREATE_CUSTOMER_BOOKING",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
   crmFilter: "CRM_FILTER",
 };
@@ -570,6 +574,16 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.addCustomerInfo}
         component={AddCustomerInfo}
         options={{ title: "Customer Information" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.editCustomerBookingList}
+        component={EditCustomerBookingList}
+        options={{ title: "Booking List" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.createCustomerBooking}
+        component={CreateCustomerBooking}
+        options={{ title: "Create Booking" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.crmFilter}

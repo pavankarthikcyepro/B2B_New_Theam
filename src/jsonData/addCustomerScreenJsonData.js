@@ -64,3 +64,17 @@ export const GENDER_TYPES = [
   { id: "1", name: "MALE" },
   { id: "2", name: "FEMALE" },
 ];
+
+export const BOOKING_FACILITIES = [
+  { id: "1", name: "Pick & Drop" },
+  { id: "2", name: "Only Pick" },
+  { id: "3", name: "Door Step Service" },
+  { id: "4", name: "Self Drive" },
+];
+
+export const NAME_LIST = [
+  { id: "1", name: "Name01" },
+  { id: "2", name: "Name02" },
+  { id: "3", name: "Name03" },
+];
+
