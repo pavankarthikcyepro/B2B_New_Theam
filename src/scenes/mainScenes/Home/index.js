@@ -951,7 +951,9 @@ const HomeScreen = ({ route, navigation }) => {
                 if (res[0]?.payload?.downloadUrl) {
                   let path = res[0]?.payload;
                   if (Platform.OS === "android") {
+                    console.log("LLLL",path)
                     for (const property in path) {
+                      console.log("sssss", path[property]);
                       downloadInLocal(path[property]);
                     }
                   }
