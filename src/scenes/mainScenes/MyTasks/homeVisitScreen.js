@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, LoaderComponent, DatePickerComponent } from "../../../components";
-import { Button } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { Dropdown } from 'react-native-element-dropdown';
 import Geolocation from '@react-native-community/geolocation';
@@ -15,7 +15,9 @@ import {
   validateOtpApi,
   setDatePicker,
   updateSelectedDate,
-  updateHomeVisit
+  updateHomeVisit,
+  getHomeVisitCounts,
+  savehomevisit
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -27,7 +29,7 @@ import {
   getCurrentTasksListApi,
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
-import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, convertToTime, detectIsOrientationLock } from "../../../utils/helperFunctions";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import {
   CodeField,
@@ -103,6 +105,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
+  const [datePickerKey, setDatePickerKey] = useState("");
+  const [datePickerMode, setDatePickerMode] = useState("date");
+  const [showDatePickerModel, setShowDatePickerModel] = useState(false);
 
   useEffect(() => {
     getAsyncStorageData();
@@ -204,10 +209,39 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
   }, [selector.update_task_response_status]);
 
+  useEffect(() => {
+  
+    if (selector.task_details_response){
+      const universalID = selector.task_details_response?.universalId;
+      console.log("manthan ", universalID);
+      if(universalID){
+        dispatch(getHomeVisitCounts(universalID))
+      }
+      
+    }
+  
+    
+  }, [selector.task_details_response])
+  
+  useEffect(() => {
+
+    if (selector.homeVisit_history_counts && selector.homeVisit_history_counts.count > 0) {
+
+      navigation.setOptions({
+        headerRight: () => <HomeVisitHistoryIcon navigation={navigation} />,
+      })
+    }
+  }, [selector.homeVisit_history_counts])
+  
+
+
   const updateTask = () => {
     changeStatusForTask("UPDATE_TASK");
   };
 
+  const submitTask = () => {
+    changeStatusForTask("SUBMIT_TASK");
+  };
   const closeTask = () => {
     setIsSubmitPress(true)
     if (selector.reason.length === 0) {
@@ -280,6 +314,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
       updateTime = `${selector.actual_start_time} ${moment().format("HH:mm")}`;
     }
 
+    // let updateTime2 = moment(defaultDate).format("DD/MM/YYYY HH:mm");
+    // if (selector.next_follow_up_Time != "") {
+    //   updateTime2 = `${selector.next_follow_up_Time} ${moment().format("HH:mm")}`;
+    // }
+    const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
+
+
     newTaskObj.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
       updateTime,
       "DD/MM/YYYY HH:mm"
@@ -290,11 +331,16 @@ const HomeVisitScreen = ({ route, navigation }) => {
       "DD/MM/YYYY HH:mm"
     );
 
+    newTaskObj.taskActualNextFollowupTime = moment(nextFollowuptime).valueOf();
+
     if (actionType === "CLOSE_TASK") {
       newTaskObj.taskStatus = "CLOSED";
     }
     if (actionType === "CANCEL") {
       newTaskObj.taskStatus = "CANCELLED";
+    }
+    if (actionType === "SUBMIT_TASK"){
+      newTaskObj.taskStatus = "IN_PROGRESS";
     }
     if (actionType === "RESCHEDULE") {
       var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
@@ -310,6 +356,71 @@ const HomeVisitScreen = ({ route, navigation }) => {
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
+
+  const saveHomeVisitApiCall = async (fromWhere)=>{
+    if (selector.task_details_response?.taskId !== taskId) {
+      return;
+    }
+
+    if (selector.reason.length === 0) {
+      showToast("Please Select Reason");
+      return;
+    }
+
+    if (selector.reason === 'Others' && otherReason.length === 0) {
+      showToast("Please Enter Other Reason");
+      return;
+    }
+
+    if (selector.customer_remarks.trim().length === 0) {
+      showToast("Please enter customer remarks");
+      return;
+    }
+
+    if (selector.employee_remarks.trim().length === 0) {
+      showToast("Please Enter employee remarks");
+      return;
+    }
+
+    var defaultDate = moment();
+    let updateTime = moment(defaultDate).format("DD/MM/YYYY HH:mm");
+    if (selector.actual_start_time != "") {
+      updateTime = `${selector.actual_start_time} ${moment().format("HH:mm")}`;
+    }
+   
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+       let branchId =   await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+            return branchId
+        });
+      let payload = {
+        "address": null,
+        "reason": selector.reason === 'Others' ? otherReason : selector.reason,
+        "location": "",
+        "orgId": jsonObj.orgId,
+        "branchId": branchId,
+        "customerRemarks": selector.customer_remarks,
+        "employeeRemarks": selector.employee_remarks,
+        "actualStartTime": convertDateStringToMillisecondsUsingMoment(
+          updateTime,
+          "DD/MM/YYYY HH:mm"
+        ),
+        "actualEndTime": convertDateStringToMillisecondsUsingMoment(
+          selector.actual_end_time
+        ),
+        "status": "Assigned",
+        "customerId": selector.task_details_response?.universalId,
+        "entityId": selector.task_details_response?.entityId,
+        "reHomevisitFlag": fromWhere,
+        // "reHomevisitFlag": "Original"
+        // "reHomevisitFlag": "ReHomevisit"
+      }
+      dispatch(savehomevisit(payload));
+    }
+  }
+
+  
 
   const generateOtpToCloseTask = () => {
 
@@ -359,9 +470,37 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const isViewMode = () => {
     if (route?.params?.taskStatus === "CLOSED") {
-      return true;
+      return false;
     }
     return false;
+  };
+
+
+  const HomeVisitHistoryIcon = ({ navigation }) => {
+    return (
+
+
+      <View style={{ flexDirection: 'row', alignItems: "center" }}>
+
+        <IconButton
+          style={{ marginEnd: 15 }}
+          icon="history"
+          color={Colors.WHITE}
+          size={30}
+          onPress={() =>
+            navigation.navigate("HOME_VISIT_HISTORY", {
+              universalId: selector.task_details_response?.universalId,
+
+            })
+
+          }
+        />
+
+
+        <Text style={{ fontSize: 16, color: Colors.PINK, fontWeight: "bold", position: "absolute", top: 9, right: 10, }}>{selector.homeVisit_history_counts.count}</Text>
+      </View>
+
+    );
   };
 
   return (
@@ -374,7 +513,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       <ScrollView style={[styles.container]}>
         <DatePickerComponent
           visible={selector.showDatepicker}
-          mode={"date"}
+          mode={selector.datePickerKey}
           minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
           value={new Date(Date.now())}
@@ -382,10 +521,25 @@ const HomeVisitScreen = ({ route, navigation }) => {
             if (Platform.OS === "android") {
               //setDatePickerVisible(false);
             }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+            let formatDate = "";
+            if (selectedDate) {
+              if (selector.datePickerKey == "date"){
+                formatDate = selectedDate;
+              }else{
+                if (Platform.OS === "ios") {
+                  formatDate = convertToTime(selectedDate);
+                } else {
+                  formatDate = convertToTime(selectedDate);
+                }
+              }
+              
+            }
+            dispatch(updateSelectedDate({ key: "", text: formatDate }));
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
+      
+        
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
             {/* <TextinputComp
@@ -562,13 +716,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 },
               ]}
             ></Text>
-            {/* <DateSelectItem
+            <DateSelectItem
               disabled={isViewMode()}
-              label={"Actual End Date"}
-              value={selector.actual_end_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
+              label={"Next Followup Time"}
+              value={selector.next_follow_up_Time}
+              onPress={() => dispatch(setDatePicker("NEEXT_FOLLOWUP_TIME"))}
+              iconsName={"clock-time-eight-outline"}
             />
-            <Text style={GlobalStyle.underline}></Text> */}
+            <Text style={GlobalStyle.underline}></Text>
           </View>
 
           {isCloseSelected ? (
@@ -613,7 +768,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
           ) : null}
         </View>
 
-        {!isCloseSelected && !isViewMode() ? (
+        {!isCloseSelected && route?.params?.taskStatus !== "CLOSED" ? (
           // <View style={styles.view1}>
           //   <Button
           //     mode="contained"
@@ -658,32 +813,54 @@ const HomeVisitScreen = ({ route, navigation }) => {
           //   </Button>
           // </View>
 
-          <View>
-            <View style={styles.view1}>
-              <LocalButtonComp
-                title={"Update"}
-                onPress={updateTask}
-                disabled={selector.is_loading_for_task_update}
-              />
-              <LocalButtonComp
-                title={"Close"}
-                onPress={closeTask}
-                disabled={selector.is_loading_for_task_update}
-              />
-            </View>
+          
 
-            <View style={styles.view1}>
+          <View>
+            {selector.task_details_response?.taskStatus === "ASSIGNED" ? <View style={styles.view1}>
               <LocalButtonComp
-                title={"Cancel"}
-                onPress={cancelTask}
+                title={"Back"}
+                onPress={() => { navigation.goBack(); }}
                 disabled={selector.is_loading_for_task_update}
               />
               <LocalButtonComp
-                title={"Reschedule"}
-                onPress={rescheduleTask}
+                title={"Submit"}
+                onPress={()=>{
+                  submitTask()
+                  saveHomeVisitApiCall("Original")
+                }}
                 disabled={selector.is_loading_for_task_update}
               />
-            </View>
+
+
+            </View> : <>
+                <View style={styles.view1}>
+                  <LocalButtonComp
+                    title={"Update"}
+                    onPress={updateTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                  <LocalButtonComp
+                    title={"Close"}
+                    onPress={closeTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                </View>
+
+                <View style={styles.view1}>
+                  <LocalButtonComp
+                    title={"Cancel"}
+                    onPress={cancelTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                  <LocalButtonComp
+                    title={"Reschedule"}
+                    onPress={rescheduleTask}
+                    disabled={selector.is_loading_for_task_update}
+                  />
+                </View>
+            </>}
+            
+            
           </View>
         ) : null}
 
@@ -711,6 +888,36 @@ const HomeVisitScreen = ({ route, navigation }) => {
             </Button>
           </View>
         ) : null}
+
+        {route?.params?.taskStatus === "CLOSED" ? <>
+          <View style={styles.view1}>
+            
+            <Button
+              style={{ width: 120 }}
+              mode="contained"
+              color={Colors.RED}
+              // disabled={disabled}
+              labelStyle={{ textTransform: "none", fontSize: 10 }}
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              {"Back"}
+            </Button>
+
+            <Button
+              style={{ width: 120 }}
+              mode="contained"
+              color={Colors.RED}
+              // disabled={disabled}
+              labelStyle={{ textTransform: "none", fontSize: 10 }}
+              onPress={() => {
+                saveHomeVisitApiCall("ReHomevisit")
+              }}
+            >
+              {"Re Home Visit"}
+            </Button>
+          </View></> : null}
       </ScrollView>
       <LoaderComponent visible={loading} />
     </KeyboardAvoidingView>

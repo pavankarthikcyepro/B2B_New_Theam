@@ -56,6 +56,61 @@ export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi"
     return json;
 })
 
+
+// save home visit
+export const savehomevisit = createAsyncThunk("HOME_VISIT_SLICE/savehomevisit", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.SAVEHOMEVISIT(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+// get home visit counts
+export const getHomeVisitCounts = createAsyncThunk("HOME_VISIT_SLICE/getHomeVisitCounts", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_HOME_HISTORY_COUNT(payload));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+// put home visit For update and reschedule
+export const updateListHV = createAsyncThunk("HOME_VISIT_SLICE/updateListHV", async (payload, { rejectWithValue }) => {
+
+    const response = await client.put(URL.UPDATELIST_HOME_VISIT(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+// get home visit audit list 
+export const getHomeVisitAuditDetails = createAsyncThunk("HOME_VISIT_SLICE/getHomeVisitAuditDetails", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.UPDATELIST_HOME_VISIT(payload) );
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const putworkFlowUpdateHomeVisit = createAsyncThunk("HOME_VISIT_SLICE/putworkFlowUpdateHomeVisit", async (payload, { rejectWithValue }) => {
+
+    const response = await client.put(URL.UPDATE_HOMEVISIT_WORKFLOW(payload));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 const slice = createSlice({
     name: "HOME_VISIT_SLICE",
     initialState: {
@@ -76,6 +131,12 @@ const slice = createSlice({
         showDatepicker: false,
         datePickerKeyId: "",
         actual_start_time: "",
+        datePickerKey:"",
+        next_follow_up_Time: "",
+        homeVisit_history_counts :"",
+        home_visit_History_listing:"",
+        putworkFlowUpdateHomeVisitRes:""
+
     },
     reducers: {
         clearState: (state, action) => {
@@ -84,6 +145,11 @@ const slice = createSlice({
             state.generate_otp_response_status = "";
             state.otp_session_key = "";
             state.validate_otp_response_status = "";
+            state.datePickerKey = "",
+            state.next_follow_up_Time="",
+            state.homeVisit_history_counts = "",
+            state.home_visit_History_listing = "",
+            state.putworkFlowUpdateHomeVisitRes = ""
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -106,10 +172,16 @@ const slice = createSlice({
                 case "ACTUAL_START_TIME":
                     state.minDate = new Date();
                     state.maxDate = date;
+                    state.datePickerKey = "date"
                     break;
                 case "ACTUAL_END_TIME":
                     state.minDate = new Date();
                     state.maxDate = date;
+                    break;
+                case "NEEXT_FOLLOWUP_TIME":
+                    state.minDate = new Date();
+                    state.maxDate = date;
+                    state.datePickerKey = "time"
                     break;
             }
             state.datePickerKeyId = action.payload;
@@ -126,6 +198,9 @@ const slice = createSlice({
                     break;
                 case "ACTUAL_END_TIME":
                     state.actual_end_time = selectedDate;
+                    break;
+                case "NEEXT_FOLLOWUP_TIME":
+                    state.next_follow_up_Time = text;
                     break;
             }
             state.showDatepicker = !state.showDatepicker;
@@ -148,6 +223,7 @@ const slice = createSlice({
                 const startDate = taskObj.taskActualStartTime
                     ? taskObj.taskActualStartTime
                     : "";
+                    
                 state.actual_start_time = convertTimeStampToDateString(
                     startDate,
                     "DD/MM/YYYY"
@@ -159,6 +235,13 @@ const slice = createSlice({
                     endDate,
                     "DD/MM/YYYY"
                 );
+
+                const nextFollowuptime = taskObj.taskActualNextFollowupTime
+                    ? taskObj.taskActualNextFollowupTime
+                    : "";
+                
+                    
+                state.next_follow_up_Time = nextFollowuptime!== "" ? convertToTime(nextFollowuptime) :""
             }
         })
         builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
@@ -221,6 +304,73 @@ const slice = createSlice({
             }
             state.isLoading = false;
             state.validate_otp_response_status = "failed";
+        })
+
+
+        // home visit history count
+        builder.addCase(getHomeVisitCounts.pending, (state, action) => {
+            state.isLoading = true;
+            state.homeVisit_history_counts = "pending";
+        })
+        builder.addCase(getHomeVisitCounts.fulfilled, (state, action) => {
+            if (action.payload) {
+                state.homeVisit_history_counts = action.payload;
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getHomeVisitCounts.rejected, (state, action) => {
+          
+            state.isLoading = false;
+            state.homeVisit_history_counts = "failed";
+        })
+
+
+        // home visit history count
+        builder.addCase(updateListHV.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(updateListHV.fulfilled, (state, action) => {
+            state.isLoading = false;
+        })
+        builder.addCase(updateListHV.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+
+
+        // home visit history count
+        builder.addCase(getHomeVisitAuditDetails.pending, (state, action) => {
+            state.isLoading = true;
+            state.home_visit_History_listing = ""
+
+        })
+        builder.addCase(getHomeVisitAuditDetails.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if(action.payload){
+                state.home_visit_History_listing = action.payload;
+            }
+            
+        })
+        builder.addCase(getHomeVisitAuditDetails.rejected, (state, action) => {
+            state.isLoading = false;
+            state.home_visit_History_listing = "";
+        })
+
+        // home visit workflow update
+        builder.addCase(putworkFlowUpdateHomeVisit.pending, (state, action) => {
+            state.isLoading = true;
+            state.putworkFlowUpdateHomeVisitRes = ""
+
+        })
+        builder.addCase(putworkFlowUpdateHomeVisit.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.putworkFlowUpdateHomeVisitRes = action.payload;
+            }
+
+        })
+        builder.addCase(putworkFlowUpdateHomeVisit.rejected, (state, action) => {
+            state.isLoading = false;
+            state.putworkFlowUpdateHomeVisitRes = "";
         })
     }
 });

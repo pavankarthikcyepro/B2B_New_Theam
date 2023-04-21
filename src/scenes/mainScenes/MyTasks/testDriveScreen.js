@@ -200,9 +200,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (route?.params?.taskStatus === "CLOSED") {
       dispatch(getTestDriveHistoryCount(universalId))
     }
-    if (universalId) {
-      dispatch(getTestDriveHistoryDetails(universalId))
-    }
+   
   }, []);
 
   useEffect(() => {
@@ -234,8 +232,8 @@ const TestDriveScreen = ({ route, navigation }) => {
       if(response.length >0){
        tempData= response[response.length - 1]
       }
-      console.log("manthan >> ",response[response.length -1]);
-      setStoreLastupdatedTestDriveId(tempData.id)
+      
+      setStoreLastupdatedTestDriveId(tempData?.id)
     }
 
 
@@ -248,7 +246,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
-      console.log("manthan reasn findIndex ", selector.reason);
+      
       if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
@@ -537,6 +535,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (selector.task_details_response) {
       const taskStatus = selector.task_details_response.taskStatus;
       const taskName = selector.task_details_response.taskName;
+      
       if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
         setHandleActionButtons(4);
       } else if (
@@ -547,16 +546,26 @@ const TestDriveScreen = ({ route, navigation }) => {
       } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
         setHandleActionButtons(4); //
         // todo manthan
-        getReasonListData("Enquiry Followup")
-        dispatch(getTestDriveHistoryCount(universalId))
+      
         
       } else if (taskStatus === "CANCELLED") {
         //
         setHandleActionButtons(5);
       } else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
         setHandleActionButtons(1);
-      } if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
+      } 
+      
+      if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
         setHandleActionButtons(4);
+      } 
+      
+      if (taskStatus !== "ASSIGNED" && taskName === "Test Drive") {
+        // call history counts and reasons API
+        getReasonListData("Enquiry Followup")
+        dispatch(getTestDriveHistoryCount(universalId))
+        if (universalId) {
+          dispatch(getTestDriveHistoryDetails(universalId)) // history listing API 
+        }
       }
 
       setSelectedDseDetails({
@@ -933,9 +942,11 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (status === "APPROVED") {
       dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     }
-    if (status === "APPROVRESCHEDULEDED")
-    submitRescheduleRemarks()
-    reTestDrivePutCallupdateList();
+    if (status === "RESCHEDULED"){
+      submitRescheduleRemarks()
+      // reTestDrivePutCallupdateList();
+    }
+   
 
     // navigation.goBack()
   };
@@ -1531,7 +1542,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       "reTestdriveFlag": "ReTestDrive",
       "customerHaveingDl": customerHavingDrivingLicense === 1
     }
-    console.log("manthan jjjdddd ", payload);
+    
 
     let masterPayload ={
       body: payload,
@@ -1647,7 +1658,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       "reason": selector.reason,
       "createdBy": userData.employeeId
     }
-    console.log("manthan ->>> ", payload);
+    
     dispatch(saveReScheduleRemark(payload))
   }
 
@@ -1831,7 +1842,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   }else{
                     // submitRescheduleRemarks()
                   }
-                  console.log("manthan---> ", route?.params?.taskStatus);
+                  
                   setIsRescheduleModalVisible(false)
                 }
                 }

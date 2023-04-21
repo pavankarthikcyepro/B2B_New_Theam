@@ -408,6 +408,31 @@ const URL = {
     return sales_url + "/task-history/savetestDrive";
   },
 
+  SAVEHOMEVISIT: () => {
+    return sales_url + "/task-history/savehomevisit";
+  },
+
+  UPDATELIST_HOME_VISIT: (recordid) => {
+    return sales_url + `/task-history/updateListHV/${recordid}`;
+  },
+
+  UPDATE_HOMEVISIT_WORKFLOW: (recordid) => {
+    return sales_url + `/workflow/updateHomeVisit/${recordid}`;
+  },
+
+  GET_HOME_HISTORY_COUNT: (universalId) => {
+    return (
+      sales_url + `/task-history/get-count-auditHV?customerId=${universalId}`
+    );
+  },
+
+  GET_HOME_VISIT_COUNT_DETAILS: (universalId) => {
+    return (
+      sales_url +
+      `/task-history/get-homevisit-histor?customerId=${universalId}`
+    );
+  },
+
   SAVE_RECHEDULE_REMARKS: () => {
     return sales_url + "/task-history/saveReScheduleRemark";
   },
