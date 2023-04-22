@@ -73,7 +73,6 @@ const CreateCustomerBooking = ({ navigation, route }) => {
   }, []);
 
   const isEditEnabled = () => {
-    console.log("existingBookingData -> ", existingBookingData);
     if (fromType && fromType == "editBooking") {
       if (existingBookingData?.serviceAppointmentStatus == "BOOKED") {
         return true;

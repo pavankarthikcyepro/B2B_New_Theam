@@ -170,7 +170,6 @@ const serviceBookingReducer = createSlice({
   reducers: {
     clearStateData: () => JSON.parse(JSON.stringify(initialState)),
     setExistingBookingData: (state, action) => {
-      console.log("action -> ", action.payload);
       const {
         categoryName,
         city,
