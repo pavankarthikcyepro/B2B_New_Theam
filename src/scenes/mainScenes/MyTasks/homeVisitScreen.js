@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView, Platform } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, LoaderComponent, DatePickerComponent } from "../../../components";
 import { Button, IconButton } from "react-native-paper";
@@ -29,7 +29,7 @@ import {
   getCurrentTasksListApi,
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
-import { convertDateStringToMillisecondsUsingMoment, convertToTime, detectIsOrientationLock } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, convertTimeStampToDateString, convertToDate, convertToTime, detectIsOrientationLock } from "../../../utils/helperFunctions";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import {
   CodeField,
@@ -105,9 +105,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
-  const [datePickerKey, setDatePickerKey] = useState("");
-  const [datePickerMode, setDatePickerMode] = useState("date");
-  const [showDatePickerModel, setShowDatePickerModel] = useState(false);
+
+  const [manageUpdateBtn, setManageUpdateBtn] = useState(false);
+
 
   useEffect(() => {
     getAsyncStorageData();
@@ -213,7 +213,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
   
     if (selector.task_details_response){
       const universalID = selector.task_details_response?.universalId;
-      console.log("manthan ", universalID);
       if(universalID){
         dispatch(getHomeVisitCounts(universalID))
       }
@@ -320,6 +319,21 @@ const HomeVisitScreen = ({ route, navigation }) => {
     // }
     const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
 
+    // let temp = moment(`${updateTime} ${selector.next_follow_up_Time}`, "DD/MM/YYYY");
+    // console.log("manthan obj ", convertDateStringToMillisecondsUsingMoment(
+    //   temp,
+    //   "DD/MM/YYYY HH:mm"
+    // ));
+
+    // newTaskObj.taskUpdatedTime = updateTime
+    // let updateTimeDate = moment(defaultDate).format("YYYY-MM-DD");
+    // let updateTimeDate;
+    // if (selector.actual_start_time != "") {
+     
+    //    updateTimeDate = convertDateStringToMillisecondsUsingMoment(selector.actual_start_time, "DD/MM/YYYY");
+    // }
+    // newTaskObj.taskUpdatedTime = convertTimeStampToDateString(updateTimeDate, "YYYY-MM-DD") + " " + selector.next_follow_up_Time+":00";
+   
 
     newTaskObj.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
       updateTime,
@@ -342,6 +356,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
     if (actionType === "SUBMIT_TASK"){
       newTaskObj.taskStatus = "IN_PROGRESS";
     }
+    if (actionType === "UPDATE_TASK") {
+      newTaskObj.taskStatus = "IN_PROGRESS";
+    }
     if (actionType === "RESCHEDULE") {
       var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
       var momentB = moment(); // current date
@@ -352,7 +369,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       newTaskObj.taskStatus = "RESCHEDULED";
     }
-
+    console.log("manthan hhh ",newTaskObj);
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
@@ -816,7 +833,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
           
 
           <View>
-            {selector.task_details_response?.taskStatus === "ASSIGNED" ? <View style={styles.view1}>
+            {selector.task_details_response?.taskStatus === "ASSIGNED" ?
+             <View style={styles.view1}>
               <LocalButtonComp
                 title={"Back"}
                 onPress={() => { navigation.goBack(); }}
@@ -832,24 +850,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
               />
 
 
-            </View> : <>
+            </View> :
+             <>
                 <View style={styles.view1}>
-                  <LocalButtonComp
-                    title={"Update"}
-                    onPress={updateTask}
-                    disabled={selector.is_loading_for_task_update}
-                  />
                   <LocalButtonComp
                     title={"Close"}
                     onPress={closeTask}
                     disabled={selector.is_loading_for_task_update}
                   />
-                </View>
-
-                <View style={styles.view1}>
                   <LocalButtonComp
-                    title={"Cancel"}
-                    onPress={cancelTask}
+                    title={"Update"}
+                    onPress={updateTask}
                     disabled={selector.is_loading_for_task_update}
                   />
                   <LocalButtonComp
@@ -857,6 +868,16 @@ const HomeVisitScreen = ({ route, navigation }) => {
                     onPress={rescheduleTask}
                     disabled={selector.is_loading_for_task_update}
                   />
+                
+                </View>
+
+                <View style={styles.view1}>
+                  {/* <LocalButtonComp
+                    title={"Cancel"}
+                    onPress={cancelTask}
+                    disabled={selector.is_loading_for_task_update}
+                  /> */}
+               
                 </View>
             </>}
             

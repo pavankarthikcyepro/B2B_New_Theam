@@ -93,7 +93,7 @@ export const updateListHV = createAsyncThunk("HOME_VISIT_SLICE/updateListHV", as
 // get home visit audit list 
 export const getHomeVisitAuditDetails = createAsyncThunk("HOME_VISIT_SLICE/getHomeVisitAuditDetails", async (payload, { rejectWithValue }) => {
 
-    const response = await client.get(URL.UPDATELIST_HOME_VISIT(payload) );
+    const response = await client.get(URL.GET_HOME_VISIT_COUNT_DETAILS(payload) );
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -220,10 +220,11 @@ const slice = createSlice({
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
                 state.task_details_response = taskObj;
+
                 const startDate = taskObj.taskActualStartTime
                     ? taskObj.taskActualStartTime
                     : "";
-                    
+
                 state.actual_start_time = convertTimeStampToDateString(
                     startDate,
                     "DD/MM/YYYY"
@@ -239,9 +240,35 @@ const slice = createSlice({
                 const nextFollowuptime = taskObj.taskActualNextFollowupTime
                     ? taskObj.taskActualNextFollowupTime
                     : "";
+
+
+                state.next_follow_up_Time = nextFollowuptime !== "" ? convertToTime(nextFollowuptime) : ""
+
+
+                // use of taskUpdatedTime changes backup
+                // const startDate = taskObj.taskUpdatedTime
+                //     ? taskObj.taskUpdatedTime
+                //     : "";
+                    
+                // state.actual_start_time = convertTimeStampToDateString(
+                //     startDate,
+                //     "DD/MM/YYYY"
+                // );
+                // const endDate = taskObj.taskActualEndTime
+                //     ? taskObj.taskActualEndTime
+                //     : "";
+                // state.actual_end_time = convertTimeStampToDateString(
+                //     endDate,
+                //     "DD/MM/YYYY"
+                // );
+
+                // const nextFollowuptime = taskObj.taskUpdatedTime
+                //     ? taskObj.taskUpdatedTime
+                //     : "";
+               
                 
                     
-                state.next_follow_up_Time = nextFollowuptime!== "" ? convertToTime(nextFollowuptime) :""
+                // state.next_follow_up_Time = nextFollowuptime!== "" ? convertToTime(nextFollowuptime) :""
             }
         })
         builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
