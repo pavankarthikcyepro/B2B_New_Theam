@@ -58,12 +58,12 @@ console.log("OOOOO",token);
       // (required) Called when a remote is received or opened, or local notification is opened
       onNotification: function (notification) {
         console.log("NOTI", notification);
-        if (notification.foreground) {
-          PushNotification.localNotification({
-            title: notification.title,
-            message: notification.message,
-          });
-        }
+        // if (notification.foreground) {
+        //   PushNotification.localNotification({
+        //     title: notification.title,
+        //     message: notification.message,
+        //   });
+        // }
         // PushNotification.localNotification({
         //   channelId: notification.channelId,
         //   autoCancel: true,
