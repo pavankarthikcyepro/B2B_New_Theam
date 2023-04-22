@@ -169,6 +169,7 @@ const EditCustomerBookingList = ({ navigation, route }) => {
           navigation.navigate(HomeStackIdentifiers.createCustomerBooking, {
             currentUserData: userData,
             isRefreshList: () => getListing(),
+            fromType: "createBooking",
           });
         }}
       >

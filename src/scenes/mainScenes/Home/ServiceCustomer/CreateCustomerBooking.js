@@ -72,6 +72,19 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     };
   }, []);
 
+  const isEditEnabled = () => {
+    console.log("existingBookingData -> ", existingBookingData);
+    if (fromType && fromType == "editBooking") {
+      if (existingBookingData?.serviceAppointmentStatus == "BOOKED") {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
+
   const setExistingData = () => {
     dispatch(setExistingBookingData(existingBookingData));
   };
@@ -127,7 +140,11 @@ const CreateCustomerBooking = ({ navigation, route }) => {
 
   useEffect(() => {
     if (selector.createCustomerBookingResponseStatus == "success") {
-      showToastRedAlert("Booking Created Successfully");
+      if (existingBookingData?.serviceAppointmentStatus == "BOOKED") {
+        showToastRedAlert("Booking Reschedule Successfully");
+      } else {
+        showToastRedAlert("Booking Created Successfully");
+      }
       isRefreshList();
       setTimeout(() => {
         navigation.goBack();
@@ -262,20 +279,26 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         onPress={() => onClickTimeSlot(item, index)}
         key={index}
         style={styles.itemContainer}
+        disabled={!isEditEnabled()}
       >
         <Fontisto
           name={
             selectedIndex == index ? "radio-btn-active" : "radio-btn-passive"
           }
           size={12}
-          color={Colors.RED}
+          color={isEditEnabled() ? Colors.RED : Colors.LIGHT_GRAY2}
           style={{ marginEnd: 10 }}
         />
-        <Text style={styles.timeText}>
+        <Text
+          style={[
+            styles.timeText,
+            isEditEnabled() ? { color: Colors.BLACK } : styles.disableValueText,
+          ]}
+        >
           {item.fromTime} - {item.toTime}
         </Text>
         <TouchableOpacity
-          disabled={item.booked <= 0}
+          disabled={item.booked <= 0 || !isEditEnabled()}
           onPress={() => onClickBookedTimeSlot(item, index)}
         >
           <Text
@@ -370,7 +393,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     }
   };
 
-  const saveBooking = () => {
+  const saveBooking = (submitType = "create") => {
     setIsSubmitPress(true);
 
     if (!selector.location) {
@@ -400,6 +423,13 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     if (!selector.bookingFacility) {
       showToast("Please Select Booking Facility's");
       return;
+    }
+
+    if (submitType == "cancel"){
+      if (!selector.cancelReason) {
+        showToast("Please Select Cancel Reason");
+        return;
+      }
     }
 
     let pickupRequired = false;
@@ -468,6 +498,10 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         dateOfBirth: customerDetail.dateOfBirth,
       },
     };
+
+    if (submitType == "reschedule") {
+      data.id = existingBookingData.responseId;
+    }
 
     if (pickupRequired || dropRequired) {
       if (!selector.driverName) {
@@ -643,6 +677,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
             onPress={() =>
               showDropDownModelMethod("LOCATION", "Select Location")
             }
+            disabled={!isEditEnabled()}
             clearOption={true}
             clearKey={"LOCATION"}
             onClear={onDropDownClear}
@@ -657,6 +692,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                 "Select Service Center Code"
               )
             }
+            disabled={!isEditEnabled()}
             clearOption={true}
             clearKey={"SERVICE_CENTER_CODE"}
             onClear={onDropDownClear}
@@ -671,6 +707,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                 "Select Service Advisor Name"
               )
             }
+            disabled={!isEditEnabled()}
             clearOption={true}
             clearKey={"SERVICE_ADVISOR_NAME"}
             onClear={onDropDownClear}
@@ -683,6 +720,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
             onPress={() =>
               showDropDownModelMethod("SERVICE_TYPE", "Select Service Type")
             }
+            disabled={!isEditEnabled()}
             clearOption={true}
             clearKey={"SERVICE_TYPE"}
             onClear={onDropDownClear}
@@ -698,6 +736,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                 "Select Sub Service Type"
               )
             }
+            disabled={!isEditEnabled()}
             clearOption={true}
             clearKey={"SUB_SERVICE_TYPE"}
             onClear={onDropDownClear}
@@ -709,6 +748,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
             value={selector.serviceReqDate}
             onPress={() => showDatePickerModelMethod("SERVICE_REQ_DATE")}
             error={isSubmitPress && selector.serviceReqDate === ""}
+            disabled={!isEditEnabled()}
           />
           {selector.bookingTimeSlotsList.length > 0 ? (
             <>
@@ -720,6 +760,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     ? styles.errorContainer
                     : "",
                 ]}
+                disabled={!isEditEnabled()}
                 onPress={() => setTimeSlotListVisible(!timeSlotListVisible)}
               >
                 <Text
@@ -769,6 +810,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                 "Select Booking Facility's"
               )
             }
+            disabled={!isEditEnabled()}
             clearOption={true}
             clearKey={"BOOKING_FACILITIES"}
             onClear={onDropDownClear}
@@ -820,6 +862,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                 onPress={() =>
                   showDropDownModelMethod("DRIVER_NAME", "Select Driver Name")
                 }
+                disabled={!isEditEnabled()}
                 clearOption={true}
                 clearKey={"DRIVER_NAME"}
                 onClear={onDropDownClear}
@@ -843,6 +886,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     )
                   }
                   error={isSubmitPress && selector.pickAddress.trim() === ""}
+                  editable={isEditEnabled()}
                 />
 
                 <View style={styles.inputRow}>
@@ -862,6 +906,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     error={isSubmitPress && selector.pickCity.trim() === ""}
+                    editable={isEditEnabled()}
                   />
                   <TextInputServices
                     value={selector.pickState}
@@ -879,6 +924,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     error={isSubmitPress && selector.pickState.trim() === ""}
+                    editable={isEditEnabled()}
                   />
                 </View>
                 <View style={styles.inputRow}>
@@ -898,6 +944,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     error={isSubmitPress && selector.pickPinCode.trim() === ""}
+                    editable={isEditEnabled()}
                   />
                   <DateSelectServices
                     label={"Pickup Time"}
@@ -907,6 +954,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     }
                     containerStyle={styles.rowInputBox}
                     error={isSubmitPress && selector.pickUpTime === ""}
+                    disabled={!isEditEnabled()}
                   />
                 </View>
               </View>
@@ -919,6 +967,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                       status={sameAddress}
                       color={Colors.PINK}
                       uncheckedColor={Colors.PINK}
+                      disabled={!isEditEnabled()}
                     />
                     <Text style={styles.pickUpTitleText}>Drop Address</Text>
                   </View>
@@ -940,6 +989,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                       error={
                         isSubmitPress && selector.dropAddress.trim() === ""
                       }
+                      editable={isEditEnabled()}
                     />
 
                     <View style={styles.inputRow}>
@@ -959,6 +1009,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                         }
                         containerStyle={styles.rowInputBox}
                         error={isSubmitPress && selector.dropCity.trim() === ""}
+                        editable={isEditEnabled()}
                       />
                       <TextInputServices
                         value={selector.dropState}
@@ -978,6 +1029,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                         error={
                           isSubmitPress && selector.dropState.trim() === ""
                         }
+                        editable={isEditEnabled()}
                       />
                     </View>
                     <View style={styles.inputRow}>
@@ -999,6 +1051,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                         error={
                           isSubmitPress && selector.dropPinCode.trim() === ""
                         }
+                        editable={isEditEnabled()}
                       />
                       <DateSelectServices
                         label={"Dropup Time"}
@@ -1008,6 +1061,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                         }
                         containerStyle={styles.rowInputBox}
                         error={isSubmitPress && selector.dropUpTime === ""}
+                        disabled={!isEditEnabled()}
                       />
                     </View>
                   </View>
@@ -1016,20 +1070,41 @@ const CreateCustomerBooking = ({ navigation, route }) => {
             </>
           )}
 
-          <View style={styles.buttonListRow}>
-            <TouchableOpacity
-              style={styles.btnContainer}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.btnText}>CANCEL</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.btnContainer}
-              onPress={() => saveBooking()}
-            >
-              <Text style={styles.btnText}>SAVE</Text>
-            </TouchableOpacity>
-          </View>
+          {fromType && fromType == "createBooking" && (
+            <View style={styles.buttonListRow}>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={styles.btnText}>BACK</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={() => saveBooking("create")}
+              >
+                <Text style={styles.btnText}>CREATE</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {fromType &&
+            fromType == "editBooking" &&
+            existingBookingData?.serviceAppointmentStatus == "BOOKED" && (
+              <View style={styles.buttonListRow}>
+                <TouchableOpacity
+                  style={styles.btnContainer}
+                  onPress={() => navigation.goBack()}
+                >
+                  <Text style={styles.btnText}>CANCEL</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.btnContainer}
+                  onPress={() => saveBooking("reschedule")}
+                >
+                  <Text style={styles.btnText}>RESCHEDULE</Text>
+                </TouchableOpacity>
+              </View>
+            )}
         </ScrollView>
       </KeyboardAvoidingView>
       <BookedSlotsListModel
@@ -1130,23 +1205,26 @@ const styles = StyleSheet.create({
   },
   buttonListRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
     marginTop: 10,
   },
   btnContainer: {
-    width: "48%",
+    width: "40%",
     paddingVertical: 14,
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
     backgroundColor: Colors.PINK,
-    paddingVertical: 14,
+    paddingVertical: 10,
   },
   btnText: {
     color: Colors.WHITE,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "bold",
+  },
+  disableValueText: {
+    color: Colors.LIGHT_GRAY2,
   },
 });

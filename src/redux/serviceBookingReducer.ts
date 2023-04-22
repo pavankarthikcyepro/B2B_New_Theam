@@ -160,6 +160,8 @@ const initialState = {
   dropUpTime: "",
   doorKm: "",
   doorAddress: "",
+  // Reschedule
+  cancelReason: "",
 };
 
 const serviceBookingReducer = createSlice({
@@ -201,7 +203,6 @@ const serviceBookingReducer = createSlice({
       state.dropPinCode = dropAddress?.pin;
       state.dropUpTime = dropTime ? moment(dropTime).format("HH:MM") : "";
       
-
       if (doorStepService) {
         state.bookingFacility = "Door Step Service";
       } else if (isSelfDrive) {
