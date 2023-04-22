@@ -16,6 +16,10 @@ import {
   clearStateData,
   getCities,
   createCustomerBooking,
+  getDrivers,
+  getBookedSlotsList,
+  getCenterCodes,
+  setExistingBookingData,
 } from "../../../../redux/serviceBookingReducer";
 import { BOOKING_FACILITIES, NAME_LIST } from '../../../../jsonData/addCustomerScreenJsonData';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
@@ -26,9 +30,11 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import { TextInputServices } from '../../../../components/textInputServices';
 import { convertTimeStampToDateString, convertToTime } from '../../../../utils/helperFunctions';
 import { showToast, showToastRedAlert } from '../../../../utils/toast';
+import BookedSlotsListModel from './BookedSlotsListModel';
 
 const CreateCustomerBooking = ({ navigation, route }) => {
-  const { currentUserData, isRefreshList } = route.params;
+  const { currentUserData, isRefreshList, fromType, existingBookingData } =
+    route.params;
   const dispatch = useDispatch();
   let scrollRef = useRef(null);
   const selector = useSelector((state) => state.serviceBookingReducer);
@@ -46,6 +52,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [sameAddress, setSameAddress] = useState("unchecked");
   const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [bookedSlotsModal, setBookedSlotsModal] = useState(false);
 
   useEffect(() => {
     if (currentUserData?.branchId) {
@@ -55,11 +62,19 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       getCurrentUser();
     }
 
+    if (fromType && fromType == "editBooking") {
+      setExistingData();
+    }
+
     return () => {
       dispatch(clearStateData());
       clearLocalStorage();
     };
   }, []);
+
+  const setExistingData = () => {
+    dispatch(setExistingBookingData(existingBookingData));
+  };
 
   const clearLocalStorage = () => {
     setDropDownKey("");
@@ -72,6 +87,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     setSelectedIndex(null);
     setSameAddress("unchecked");
     setIsSubmitPress(false);
+    setBookedSlotsModal(false);
   }
 
   const getCurrentUser = async () => {
@@ -84,18 +100,19 @@ const CreateCustomerBooking = ({ navigation, route }) => {
   };
 
   const initialCall = (data) => {
-    const { branchId } = data;
+    const { branchId, orgId } = data;
     dispatch(getServiceTypesApi(branchId));
-    dispatch(getCities(branchId));
+    dispatch(getCities(orgId));
+    dispatch(getCenterCodes(orgId));
   };
 
   useEffect(() => {
-    if (selector.location) {
-      const { branchs } = userData;
+    if (selector.location && selector.centerCodes.length > 0) {
       let arr = [];
-      for (let i = 0; i < branchs.length; i++) {
-        if (selector.location == branchs[i].location) {
-          arr.push({ ...branchs[i], name: branchs[i].branchName });
+      let cityId = getPayloadId("cities", selector.location);
+      for (let i = 0; i < selector.centerCodes.length; i++) {
+        if (cityId == selector.centerCodes[i].parentId) {
+          arr.push(selector.centerCodes[i]);
         }
       }
       dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE", value: "" }));
@@ -117,6 +134,32 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       }, 500);
     }
   }, [selector.createCustomerBookingResponseStatus]);
+
+  useEffect(() => {
+    if (selector.serviceReqDate) {
+      let payload = {
+        tenantId: userData.branchId,
+        date: moment(selector.serviceReqDate).format("YYYY-MM-DD"),
+      };
+      setSelectedIndex(null);
+      dispatch(getTimeSlots(payload));
+    }
+  }, [selector.serviceReqDate]);
+  
+  useEffect(() => {
+    if (selector.selectedTimeSlot && selector.bookingTimeSlotsList.length > 0) {
+      for (let i = 0; i < selector.bookingTimeSlotsList.length; i++) {
+        if (
+          selector.selectedTimeSlot == selector.bookingTimeSlotsList[i].slotId
+        ) {
+          setSelectedIndex(i);
+          setTimeSlotListVisible(true);
+          break;
+        }
+      }
+    }
+  }, [selector.selectedTimeSlot, selector.bookingTimeSlotsList]);
+  
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -140,7 +183,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         setDataForDropDown([...NAME_LIST]);
         break;
       case "DRIVER_NAME":
-        setDataForDropDown([...NAME_LIST]);
+        setDataForDropDown([...selector.drivers]);
         break;
       default:
         setDataForDropDown([]);
@@ -180,15 +223,43 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     );
   };
 
+  const onClickTimeSlot = (item, index) => {
+    setSelectedIndex(index);
+    dispatch(setDropDownData({ key: "TIME_SLOT_ID", value: item.slotId }));
+    let payload = {
+      address: "",
+      customerId:
+        customerInfoSelector?.customerDetailsResponse?.customerDetail?.id,
+      distance: 0,
+      serviceAppointmentId: 0,
+      endTimeSlot: `${convertDateForPayload(
+        selector.serviceReqDate
+      )} ${getSelectedTimeSlotDetail("toTime", index)}`,
+      startTimeSlot: `${convertDateForPayload(
+        selector.serviceReqDate
+      )} ${getSelectedTimeSlotDetail("fromTime", index)}`,
+      typeOfService: selector.bookingFacility,
+    };
+
+    dispatch(getDrivers(payload));
+  };
+  
+  const onClickBookedTimeSlot = (item, index) => {
+    const { vehicleDetail } = customerInfoSelector?.customerDetailsResponse;
+    let payload = {
+      tenantId: userData.branchId,
+      vehicleRegNumber: 9080989080,
+      slotId: item.slotId,
+      // vehicleRegNumber: vehicleDetail.vehicleRegNumber,
+    };
+    setBookedSlotsModal(true);
+    dispatch(getBookedSlotsList(payload));
+  };
+
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
-        onPress={() => {
-          setSelectedIndex(index);
-          dispatch(
-            setDropDownData({ key: "TIME_SLOT_ID", value: item.slotId })
-          );
-        }}
+        onPress={() => onClickTimeSlot(item, index)}
         key={index}
         style={styles.itemContainer}
       >
@@ -203,20 +274,36 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         <Text style={styles.timeText}>
           {item.fromTime} - {item.toTime}
         </Text>
-        <Text style={styles.slotBookText}>{item.booked}</Text>
+        <TouchableOpacity
+          disabled={item.booked <= 0}
+          onPress={() => onClickBookedTimeSlot(item, index)}
+        >
+          <Text
+            style={[
+              styles.slotBookText,
+              item.booked <= 0 ? { textDecorationLine: "none" } : "",
+            ]}
+          >
+            {item.booked}
+          </Text>
+        </TouchableOpacity>
       </TouchableOpacity>
     );
   };
 
-  const getSelectedTimeSlotDetail = (type = "") => {
-    if (selector.bookingTimeSlotsList.length > 0 && selectedIndex != null) {
+  const getSelectedTimeSlotDetail = (type = "", index = selectedIndex) => {
+    if (selector.bookingTimeSlotsList.length > 0 && index != null) {
       if (type == "slotTime") {
-        let data = selector.bookingTimeSlotsList[selectedIndex];
+        let data = selector.bookingTimeSlotsList[index];
         return `${data.fromTime} - ${data.toTime}`;
       }
       if (type == "fromTime") {
-        let data = selector.bookingTimeSlotsList[selectedIndex];
+        let data = selector.bookingTimeSlotsList[index];
         return data.fromTime;
+      }
+      if (type == "toTime") {
+        let data = selector.bookingTimeSlotsList[index];
+        return data.toTime;
       }
     }
     return "";
@@ -258,6 +345,18 @@ const CreateCustomerBooking = ({ navigation, route }) => {
           (item) => item.name == value
         );
         return selector.subServiceTypeResponse[index].id;
+      }
+      if (type == "driver") {
+        let index = selector.drivers.findIndex(
+          (item) => item.name == value
+        );
+        return selector.drivers[index].id;
+      }
+      if (type == "cities") {
+        let index = selector.cities.findIndex(
+          (item) => item.name == value
+        );
+        return selector.cities[index].id;
       }
     }
     return "";
@@ -340,7 +439,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       serviceCategoryId: getPayloadId("serviceType", selector.serviceType),
       subServiceId: getPayloadId("subServiceType", selector.subServiceType),
       vehicleDetails: {
-        vehicleRegNumber: 8125702404,
+        vehicleRegNumber: 9080989080,
         // vehicleRegNumber: vehicleDetail.vehicleRegNumber,
         vin: vehicleDetail.vin,
         chassisNumber: vehicleDetail.chassisNumber,
@@ -370,9 +469,14 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       },
     };
 
-    // if (pickupRequired && dropRequired) {
-    //   payload.driverId = "";
-    // }
+    if (pickupRequired || dropRequired) {
+      if (!selector.driverName) {
+        showToast("Please Select Driver");
+        return;
+      }
+      data.driverId = getPayloadId("driver", selector.driverName);
+    }
+
     if (pickupRequired) {
       if (!selector.driverName) {
         showToast("Please Select Driver Name");
@@ -489,6 +593,15 @@ const CreateCustomerBooking = ({ navigation, route }) => {
             onChange={(event, selectedDate) => {
               let formatDate = "";
               if (selectedDate) {
+                // if (selector.datePickerKeyId == "SERVICE_REQ_DATE") {
+                //   let payload = {
+                //     tenantId: userData.branchId,
+                //     date: moment(selectedDate).format("YYYY-MM-DD"),
+                //   };
+                //   setSelectedIndex(null);
+                //   dispatch(getTimeSlots(payload));
+                // }
+
                 if (datePickerMode === "date") {
                   formatDate = convertTimeStampToDateString(
                     selectedDate,
@@ -519,15 +632,6 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                     text: formatDate,
                   })
                 );
-              }
-
-              if (selector.datePickerKeyId == "SERVICE_REQ_DATE") {
-                let payload = {
-                  tenantId: userData.branchId,
-                  date: moment(selectedDate).format("YYYY-MM-DD"),
-                };
-                setSelectedIndex(null);
-                dispatch(getTimeSlots(payload));
               }
             }}
             onRequestClose={() => dispatch(setDatePicker())}
@@ -928,6 +1032,10 @@ const CreateCustomerBooking = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <BookedSlotsListModel
+        bookedSlotsModal={bookedSlotsModal}
+        onRequestClose={() => setBookedSlotsModal(false)}
+      />
     </SafeAreaView>
   );
 };

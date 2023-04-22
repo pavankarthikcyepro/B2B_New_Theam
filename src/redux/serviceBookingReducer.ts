@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import { showToast } from "../utils/toast";
-import { convertTimeStampToDateString } from "../utils/helperFunctions";
+import moment from "moment";
 
 interface DropDownModelNew {
   key: string;
@@ -16,13 +16,10 @@ interface PersonalIntroModel {
   text: string;
 }
 
-export const getBookingList = createAsyncThunk(
-  "SERVICE_BOOKING_SLICE/getBookingList",
-  async (payload, { rejectWithValue }) => {
-    const { tenantId, vehicleRegNumber } = payload;
-    const response = await client.get(
-      URL.GET_SERVICE_BOOKING_LIST(tenantId, vehicleRegNumber)
-    );
+export const getCities = createAsyncThunk(
+  "SERVICE_BOOKING_SLICE/getCities",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.LOCATION_LIST(orgId));
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -31,10 +28,10 @@ export const getBookingList = createAsyncThunk(
   }
 );
 
-export const getCities = createAsyncThunk(
-  "SERVICE_BOOKING_SLICE/getCities",
-  async (tenantId, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_CITIES(tenantId));
+export const getCenterCodes = createAsyncThunk(
+  "SERVICE_BOOKING_SLICE/getCenterCodes",
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.DEALER_CODE_LIST1(orgId));
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -101,13 +98,42 @@ export const createCustomerBooking = createAsyncThunk(
   }
 );
 
+export const getDrivers = createAsyncThunk(
+  "SERVICE_BOOKING_SLICE/getDrivers",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_DRIVERS(payload));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getBookedSlotsList = createAsyncThunk(
+  "SERVICE_BOOKING_SLICE/getBookedSlotsList",
+  async (payload, { rejectWithValue }) => {
+    const { tenantId, vehicleRegNumber, slotId } = payload;
+    const response = await client.get(
+      URL.GET_BOOKED_SLOTS_LIST(tenantId, vehicleRegNumber, slotId)
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const initialState = {
   isLoading: false,
   showDatepicker: false,
   createCustomerBookingResponseStatus: "pending",
   datePickerKeyId: "",
-  bookingList: [],
+  bookedSlotsList: [],
+  drivers: [],
   cities: [],
+  centerCodes: [],
   serviceType: "",
   subServiceType: "",
   serviceTypeResponse: [],
@@ -140,40 +166,51 @@ const serviceBookingReducer = createSlice({
   name: "SERVICE_BOOKING_SLICE",
   initialState: JSON.parse(JSON.stringify(initialState)),
   reducers: {
-    clearStateData: (state, action) => {
-      state.isLoading = false;
-      state.showDatepicker = false;
-      state.createCustomerBookingResponseStatus = "pending";
-      state.datePickerKeyId = "";
-      state.cities = [];
-      state.serviceType = "";
-      state.subServiceType = "";
-      state.serviceTypeResponse = [];
-      state.subServiceTypeResponse = [];
-      state.serviceReqDate = "";
-      state.bookingTimeSlotsList = [];
-      state.selectedTimeSlot = "";
-      state.bookingFacility = "";
-      state.location = "";
-      state.serviceCenterCode = "";
-      state.serviceCenterCodeList = [];
-      state.serviceAdvisorName = "";
-      state.driverName = "";
-      state.pickAddress = "";
-      state.pickCity = "";
-      state.pickState = "";
-      state.pickPinCode = "";
-      state.pickUpTime = "";
-      state.dropAddress = "";
-      state.dropCity = "";
-      state.dropState = "";
-      state.dropPinCode = "";
-      state.dropUpTime = "";
-      state.doorKm = "";
-      state.doorAddress = "";
-    },
-    clearBookingStateData: (state, action) => {
-      state.bookingList = [];
+    clearStateData: () => JSON.parse(JSON.stringify(initialState)),
+    setExistingBookingData: (state, action) => {
+      console.log("action -> ", action.payload);
+      const {
+        categoryName,
+        city,
+        serviceDate,
+        doorStepService,
+        isSelfDrive,
+        dropTime,
+        pickupTime,
+        driverDetails,
+        pickupAddress,
+        dropAddress,
+        slot
+      } = action.payload;
+
+      state.serviceType = categoryName;
+      state.location = city;
+      state.serviceReqDate = moment(serviceDate).format("YYYY/MM/DD");
+      state.driverName = driverDetails?.name;
+      state.selectedTimeSlot = slot?.id;
+
+      state.pickAddress = pickupAddress?.address;
+      state.pickCity = pickupAddress?.city;
+      state.pickState = pickupAddress?.state;
+      state.pickPinCode = pickupAddress?.pin;
+      state.pickUpTime = pickupTime ? moment(pickupTime).format("HH:MM") : "";
+      
+      state.dropAddress = dropAddress?.address;
+      state.dropCity = dropAddress?.city;
+      state.dropState = dropAddress?.state;
+      state.dropPinCode = dropAddress?.pin;
+      state.dropUpTime = dropTime ? moment(dropTime).format("HH:MM") : "";
+      
+
+      if (doorStepService) {
+        state.bookingFacility = "Door Step Service";
+      } else if (isSelfDrive) {
+        state.bookingFacility = "Self Drive";
+      } else if (dropTime && pickupTime) {
+        state.bookingFacility = "Pick & Drop";
+      } else if (pickupTime) {
+        state.bookingFacility = "Only Pick";
+      }
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -286,46 +323,32 @@ const serviceBookingReducer = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Get Booking List
-    builder
-      .addCase(getBookingList.pending, (state, action) => {
-        state.isLoading = true;
-      })
-      .addCase(getBookingList.fulfilled, (state, action) => {
-        state.isLoading = false;
-        if (action.payload) {
-          state.bookingList = action.payload.body.content;
-        }
-      })
-      .addCase(getBookingList.rejected, (state, action) => {
-        state.addCustomerResponseStatus = "failed";
-        state.isLoading = false;
-        if (action.payload.message) {
-          showToast(`${action.payload.message}`);
-        } else {
-          showToast(`Something went wrong`);
-        }
-      });
-
-    // Get Service Types
+    // Get Cities Types
     builder
       .addCase(getCities.pending, (state, action) => {
         state.cities = [];
       })
       .addCase(getCities.fulfilled, (state, action) => {
         if (action.payload) {
-          let sData = action.payload.body;
-          let newArr = [];
-
-          for (let i = 0; i < sData.length; i++) {
-            let data = { id: i, name: sData[i] };
-            newArr.push(Object.assign({}, data));
-          }
-          state.cities = [...newArr];
+          state.cities = [...action.payload];
         }
       })
       .addCase(getCities.rejected, (state, action) => {
         state.cities = [];
+      });
+
+    // Get Center codes
+    builder
+      .addCase(getCenterCodes.pending, (state, action) => {
+        state.centerCodes = [];
+      })
+      .addCase(getCenterCodes.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.centerCodes = [...action.payload];
+        }
+      })
+      .addCase(getCenterCodes.rejected, (state, action) => {
+        state.centerCodes = [];
       });
 
     // Get Service Types
@@ -386,6 +409,28 @@ const serviceBookingReducer = createSlice({
         state.bookingTimeSlotsList = [];
       });
 
+    // Get Drivers
+    builder
+      .addCase(getDrivers.pending, (state, action) => {
+        state.drivers = [];
+      })
+      .addCase(getDrivers.fulfilled, (state, action) => {
+        if (action.payload) {
+          let sData = action.payload.body;
+          let newArr = [];
+
+          for (let i = 0; i < sData.length; i++) {
+            let data = { ...sData[i], name: sData[i].driverName };
+            newArr.push(Object.assign({}, data));
+          }
+
+          state.drivers = [...newArr];
+        }
+      })
+      .addCase(getDrivers.rejected, (state, action) => {
+        state.drivers = [];
+      });
+
     // Create Customer Booking
     builder
       .addCase(createCustomerBooking.pending, (state, action) => {
@@ -404,12 +449,31 @@ const serviceBookingReducer = createSlice({
           showToast(`Something went wrong`);
         }
       });
+
+    // Create Customer Booking
+    builder
+      .addCase(getBookedSlotsList.pending, (state, action) => {
+        state.bookedSlotsList = [];
+      })
+      .addCase(getBookedSlotsList.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.bookedSlotsList = action.payload.body;
+        }
+      })
+      .addCase(getBookedSlotsList.rejected, (state, action) => {
+        state.bookedSlotsList = [];
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+      });
   },
 });
 
 export const {
   clearStateData,
-  clearBookingStateData,
+  setExistingBookingData,
   setDropDownData,
   setDatePicker,
   updateSelectedDate,

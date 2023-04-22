@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     fontSize: 14,
     height: 45,
+    color: Colors.BLACK,
   },
   disabledInput: {
     color: Colors.LIGHT_GRAY2,

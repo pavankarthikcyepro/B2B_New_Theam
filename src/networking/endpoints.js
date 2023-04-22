@@ -889,6 +889,12 @@ const URL = {
       `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?page=0&size=20`
     );
   },
+  GET_BOOKED_SLOTS_LIST: (tenantId, vehicleRegNumber, slotId) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?slotId=${slotId}&page=0&size=20`
+    );
+  },
   GET_SOURCE_TYPE: (tenantId) => {
     return (
       baseUrl +
@@ -917,6 +923,20 @@ const URL = {
     return (
       baseUrl +
       `vehicle-services/api/tenant/1/time-slots/service-date?date=${serviceDate}`
+    );
+  },
+  GET_DRIVERS: ({
+    address,
+    customerId,
+    distance,
+    serviceAppointmentId,
+    startTimeSlot,
+    endTimeSlot,
+    typeOfService,
+  }) => {
+    return (
+      baseUrl +
+      `vehicle-services/drivers/by-time-slot?address=${address}&customerId=${customerId}&distance=${distance}&serviceAppointmentId=${serviceAppointmentId}&startTimeSlot=${startTimeSlot}&endTimeSlot=${endTimeSlot}&typeOfService=${typeOfService}`
     );
   },
   GET_VEHICLE_INFO: (orgId) => {

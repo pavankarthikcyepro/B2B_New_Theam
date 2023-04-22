@@ -13,9 +13,12 @@ import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
 import CREATE_NEW from '../../../../assets/images/create_new.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoaderComponent } from '../../../../components';
-import { clearBookingStateData, getBookingList } from '../../../../redux/serviceBookingReducer';
 import * as AsyncStore from "../../../../asyncStore";
 import moment from 'moment';
+import {
+  clearStateData,
+  getBookingList,
+} from "../../../../redux/serviceBookingCrudReducer";
 
 const dateFormat = "YYYY-MM-DD";
 const timeFormat = "HH:MM a";
@@ -24,13 +27,13 @@ const timeSecFormat = "HH:MM:AA";
 const EditCustomerBookingList = ({ navigation, route }) => {
   const { vehicleRegNumber, currentUserData } = route.params;
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.serviceBookingReducer);
+  const selector = useSelector((state) => state.serviceBookingCrudReducer);
   const [userData, setUserData] = useState("");
 
   useEffect(() => {
     getListing();
     return () => {
-      dispatch(clearBookingStateData());
+      dispatch(clearStateData());
     };
   }, []);
 
@@ -40,7 +43,7 @@ const EditCustomerBookingList = ({ navigation, route }) => {
       let payload = {
         tenantId: currentUserData.branchId,
         // vehicleRegNumber: vehicleRegNumber,
-        vehicleRegNumber: 8125702404,
+        vehicleRegNumber: 9080989080,
       };
       dispatch(getBookingList(payload));
     } else {
@@ -56,7 +59,7 @@ const EditCustomerBookingList = ({ navigation, route }) => {
 
       let payload = {
         tenantId: jsonObj.branchId,
-        vehicleRegNumber: 8125702404,
+        vehicleRegNumber: 9080989080,
       };
       dispatch(getBookingList(payload));
     }
@@ -84,7 +87,19 @@ const EditCustomerBookingList = ({ navigation, route }) => {
 
   const renderItem = ({ item, index }) => {
     return (
-      <View key={index} style={styles.itemContainer}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate(HomeStackIdentifiers.createCustomerBooking, {
+            existingBookingData: item,
+            currentUserData: userData,
+            isRefreshList: () => getListing(),
+            fromType: "editBooking",
+          });
+        }}
+        activeOpacity={0.9}
+        key={index}
+        style={styles.itemContainer}
+      >
         <View style={styles.topRow}>
           <Text style={styles.vehicleRegNumberText}>
             {item.vehicleRegNumber}
@@ -134,7 +149,7 @@ const EditCustomerBookingList = ({ navigation, route }) => {
         >
           {item.serviceAppointmentStatus}
         </Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -144,6 +159,7 @@ const EditCustomerBookingList = ({ navigation, route }) => {
         data={selector.bookingList}
         ListEmptyComponent={noData}
         renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 10 }}
       />
 
       <TouchableOpacity

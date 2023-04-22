@@ -21,7 +21,7 @@ export const DropDownServices = ({
         {label}
       </Text>
       <Pressable
-        style={[styles.valueContainer, error ? styles.errorContainer : null]}
+        style={[styles.valueContainer, error ? styles.errorContainer : ""]}
         onPress={onPress}
         disabled={disabled}
       >
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     flex: 1,
+    color: Colors.BLACK
   },
   disableValueText: {
     color: Colors.LIGHT_GRAY2,

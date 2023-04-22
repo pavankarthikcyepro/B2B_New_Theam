@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     flex: 1,
+    color: Colors.BLACK,
   },
   disableValueText: {
     color: Colors.LIGHT_GRAY2,
