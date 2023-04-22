@@ -3011,7 +3011,7 @@ const TargetScreenCRM = ({ route }) => {
                   >
                     <View >
                       <View key={"headers"} style={styles.view3}>
-                        <View
+                        {/* <View
                           style={{ width: 100, height: 20, marginRight: 5,alignItems:"center" }}
                         >
                           <Text style={{
@@ -3022,9 +3022,31 @@ const TargetScreenCRM = ({ route }) => {
                             textAlign:"center",
 
                             marginTop:6
-                            }}>Employee name</Text>
+                            }}>Employee</Text>
 
-                        </View>
+                        </View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "flex-start",marginLeft:10 }}
+                          >
+                            <View
+                              style={[
+                                styles.itemBox,
+                                {
+                                  width: 55,
+                                },
+                              ]}
+
+                            >
+                              <Text
+                                style={{
+                                  color: Colors.RED,
+                                  fontSize: 12,
+                                }}
+                              >
+                                Employee
+                              </Text>
+                            </View>
+                          </View>
                             <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
