@@ -10,6 +10,7 @@ import ArrowIcon from "react-native-vector-icons/FontAwesome";
 import { DropDownSelectionItemV3 } from '../../../pureComponents';
 import { IconButton, Searchbar } from "react-native-paper";
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
+import _ from 'lodash';
 
 const dropdownDataV2 = [
   { name: 'Top 5', id: 1 },
@@ -58,14 +59,21 @@ export default function branchRankingScreen(props) {
 
   useEffect(() => {
   
-    if (props?.route?.params) {
+    // if (props?.route?.params) {
     
-      let selectedid = props.route.params.params.selectedID
-      let deladerID = props.route.params.params.dealeid
-      getBranchRankListFromServer(selectedid,deladerID)
+    //   let selectedid = props.route.params.params.selectedID
+    //   let deladerID = props.route.params.params.dealeid
+    //   getBranchRankListFromServer(selectedid,deladerID)
+    // }
+    if (!_.isEmpty(selector.filter_leadership_selectedDesignation_name)) {
+      let selectedid = selector.filter_leadership_selectedDesignation_name.selectedID;
+      let deladerID = selector.filter_leadership_selectedDesignation_name.dealeid;
+      getBranchRankListFromServer(selectedid, deladerID)
+    } else {
+      getBranchRankListFromServerWithoutFilter();
     }
    
-  }, [props.route.params])
+  }, [selector.filter_leadership_selectedDesignation_name])
 
   useEffect(() => {
     getUserData();
@@ -167,7 +175,7 @@ export default function branchRankingScreen(props) {
         size={25}
         onPress={() => {
           
-          navigation.navigate(HomeStackIdentifiers.laderfilterScreen, {
+          navigation.navigate(HomeStackIdentifiers.laderfilterScreen_new, {
             isFromLogin: false,
             fromScreen: "BRANCH_RANK",
           });
@@ -206,13 +214,15 @@ export default function branchRankingScreen(props) {
         let payload = {
           "endDate": endOfMonth,
             "levelSelected": null,
-          "loggedInEmpId": selectedid ? selectedid : jsonObj.empId,
+          // "loggedInEmpId": selectedid ? selectedid : jsonObj.empId,
+          "loggedInEmpId": jsonObj.empId,
             "pageNo": 1,
             "size": 50,
           "startDate": startOfMonth,
             //not for payload, just to add in params
             "orgId":jsonObj.orgId,
-          "branchId": deladerID ? deladerID[0] : branName
+          "branchId": deladerID ? deladerID[0] : branName,
+          "designationNames": selectedid ? selectedid : []
 
         };
         dispatch(getBranchRanksList(payload));
@@ -263,7 +273,7 @@ export default function branchRankingScreen(props) {
     useEffect(async () => {
       LogBox.ignoreAllLogs();
       // getBranchRankListFromServer();
-      getBranchRankListFromServerWithoutFilter();
+      // getBranchRankListFromServerWithoutFilter();
       setTimeout(() => {
         setBranchList(selector.branchrank_list);
       }, 1000);

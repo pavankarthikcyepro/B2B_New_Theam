@@ -12,6 +12,7 @@ import { showToast } from '../../../utils/toast';
 import { DropDownSelectionItem, DropDownSelectionItemV3 } from '../../../pureComponents';
 import { IconButton, Searchbar } from "react-native-paper";
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
+import _ from 'lodash';
 
 const dropdownData = [
   { label: 'Item 1', value: '1' },
@@ -75,15 +76,24 @@ export default function leaderBoardScreen(props) {
   }, [])
 
   useEffect(() => {
-   
-    if(props?.route?.params){
+    // props.navigation.addListener("focus", () => {
+    // if(props?.route?.params){
     
-      let selectedid = props.route.params.params.selectedID
-      let deladerID = props.route.params.params.dealeid
-      getLeaderboardListFromServer(selectedid, deladerID)
-    }
+    //   let selectedid = props.route.params.params.selectedID
+    //   let deladerID = props.route.params.params.dealeid
+    //   getLeaderboardListFromServer(selectedid, deladerID)
+    // }
+      
+      if (!_.isEmpty(selector.filter_leadership_selectedDesignation_name)){
+        let selectedid = selector.filter_leadership_selectedDesignation_name.selectedID;
+        let deladerID = selector.filter_leadership_selectedDesignation_name.dealeid;
+        getLeaderboardListFromServer(selectedid, deladerID)
+      }else{
+        getLeaderboardListFromServerWithoutFilter();
+      }
+    // })
 
-  }, [props.route])
+  }, [selector.filter_leadership_selectedDesignation_name])
 
   const getUserData = async () => {
     try {
@@ -180,7 +190,7 @@ export default function leaderBoardScreen(props) {
         color={Colors.WHITE}
         size={25}
         onPress={() => {
-          navigation.navigate(HomeStackIdentifiers.laderfilterScreen, {
+          navigation.navigate(HomeStackIdentifiers.laderfilterScreen_new, {
             isFromLogin: false,
             fromScreen: "DEALER_RANK",
           });
@@ -285,12 +295,14 @@ export default function leaderBoardScreen(props) {
     let payload = {
       "endDate": endOfMonth,
       "levelSelected": null,
-      "loggedInEmpId": loogedInid ? loogedInid :jsonObj.empId,
+      // "loggedInEmpId": loogedInid ? loogedInid :jsonObj.empId,
+      "loggedInEmpId":  jsonObj.empId,
       "pageNo": 0,
       "size": 50,
       "startDate": startOfMonth,
       "orgId": jsonObj.orgId,
-      "branchId": deladerID ? deladerID[0] : branName
+      "branchId": deladerID ? deladerID[0] : branName,
+      "designationNames": loogedInid ? loogedInid: []
     };
     // alert(JSON.stringify(payload))
     dispatch(getLeaderBoardList(payload));
@@ -301,7 +313,7 @@ export default function leaderBoardScreen(props) {
     // alert(JSON.stringify(topRankList))
     // if(topRankList && topRankList.length > 1)
     // getLeaderboardListFromServer();
-    getLeaderboardListFromServerWithoutFilter();
+    // getLeaderboardListFromServerWithoutFilter();
 
     let top = selector.leaderboard_list;
     let bottom = [];
