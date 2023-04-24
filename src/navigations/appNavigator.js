@@ -139,6 +139,8 @@ import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDa
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
+import ComplaintTrackerMaster from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMaster";
+import ComplaintTrackerBasicFilter from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerBasicFilter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -496,7 +498,9 @@ export const ComplainTrackerIdentifires = {
   complainTrackerList: "COMPLAINT_LIST",
   complainTrackerTop:"COMPLAINT_TRACKER_TOP",
   closedComplainTeackerList:"CLOCSED_LIST",
-  addEditComplaint:"ADD_EDIT_COMPLAINT"
+  addEditComplaint:"ADD_EDIT_COMPLAINT",
+  complaintTrackerMaster:"COMLAINT_TRACKER_MASTER",
+  complaintTrackerBasicFilter: "COMLAINT_TRACKER_BASIC_FILTER"
   
 };
 
@@ -1352,6 +1356,22 @@ const ComplainTrackgerStackNavigator = ({ navigation }) => {
         component={ComplaintTrackerMain}
         options={{
           title: "Complaint Tracker",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complaintTrackerMaster}
+        component={ComplaintTrackerMaster}
+        options={{
+          title: "Complaint Tracker",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complaintTrackerBasicFilter}
+        component={ComplaintTrackerBasicFilter}
+        options={{
+          title: "Filter",
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />

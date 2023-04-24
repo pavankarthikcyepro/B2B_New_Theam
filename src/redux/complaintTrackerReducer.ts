@@ -46,6 +46,18 @@ export const getEmpComplaintDashboard = createAsyncThunk("COMPLAINTS_TRACKER/get
     return json;
 })
 
+
+export const getEmpComplaintMaster = createAsyncThunk("COMPLAINTS_TRACKER/getEmpComplaintMaster", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_COMPLAINT_TRACKER_MASTER(payload["empId"]),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
 export const getComplainFactorDropDownData = createAsyncThunk("COMPLAINTS_TRACKER/getComplainFactorDropDownData", async (orgid, { rejectWithValue }) => {
 
     const response = await client.get(URL.GET_COMPLAIN_FACTOR_DATA(orgid),);
@@ -186,6 +198,18 @@ export const getComplaintListFilter = createAsyncThunk("COMPLAINTS_TRACKER/getCo
     }
     return json;
 })
+
+export const getComplaintTrackerDashboardFiltered = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintTrackerDashboardFiltered", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_COMPLAINT_TRACKER_MAIN_FILTERAPPLIED(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
 export const getComplaintListFilterClosed = createAsyncThunk("COMPLAINTS_TRACKER/getComplaintListFilterClosed", async (payload, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_COMPLAINT_LIST(), payload);
@@ -319,7 +343,14 @@ export const complaintsSlice = createSlice({
         complaintRegisterBranchDropDown:[],
         complaintEmployees:[],
         complaintManagers: [],
-        complaintTrackerDashboardData:[]
+        complaintTrackerDashboardData:[],
+        stage_wise_checkbox:true,
+        complaintFacoty_wise_checkbox: false,
+        department_wise_checkbox: false,
+        complaintTrackerDashboardData_Master: [],
+        dealerFilter:{},
+        receptionistFilterIds: [],
+        complaintDashboardFilterData_CRE:[]
     },
     reducers: {
         clearState: (state, action) => {
@@ -372,7 +403,14 @@ export const complaintsSlice = createSlice({
                 state.complaintSubFilterData = "",
                 state.complaintEmployees = [],
                 state.complaintManagers = [],
-                state.complaintTrackerDashboardData = []
+                state.complaintTrackerDashboardData = [],
+                state.stage_wise_checkbox = false,
+                state.complaintFacoty_wise_checkbox = false,
+                state.department_wise_checkbox = false,
+                state.complaintTrackerDashboardData_Master = [],
+                state.dealerFilter = {},
+                state.receptionistFilterIds= [],
+                state.complaintDashboardFilterData_CRE= []
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -459,6 +497,12 @@ export const complaintsSlice = createSlice({
             state.complainCloserDoc = "",
                 state.postComplaintFirstTimeRes = "",
                 state.postComplaintCloseRes = ""
+        },
+        updateDealerFilterData: (state, action) => {
+            state.dealerFilter = action.payload;
+        },
+        updateReceptionistFilterids: (state, action) => {
+            state.receptionistFilterIds = action.payload;
         },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
@@ -584,6 +628,33 @@ export const complaintsSlice = createSlice({
                     break;
             }
         },
+        setCheckboxStatus: (state, action: PayloadAction<DropDownModel>) => {
+            const { key, value, id, orgId } = action.payload;
+
+
+            switch (key) {
+
+                case "STAGE_WISE_CHECKBOX":
+                    state.stage_wise_checkbox = !state.stage_wise_checkbox;
+                    state.complaintFacoty_wise_checkbox = false;
+                    state.department_wise_checkbox =false;
+                    break;
+                case "COMPLAINT_FACTOR_CHECKBOX":
+                    state.complaintFacoty_wise_checkbox = !state.complaintFacoty_wise_checkbox;
+                    state.stage_wise_checkbox = false;
+                    state.department_wise_checkbox = false;
+                    break;
+
+                case "DEPARTMENT_CHECKBOX":
+                    state.department_wise_checkbox = !state.department_wise_checkbox;
+                    state.complaintFacoty_wise_checkbox = false;
+                    state.stage_wise_checkbox = false;
+                    break;
+
+        
+           
+            }
+        },
     },
 
     extraReducers: (builder) => {
@@ -665,6 +736,26 @@ export const complaintsSlice = createSlice({
         builder.addCase(getEmpComplaintDashboard.rejected, (state, action) => {
             state.isLoading = false;
             state.complaintTrackerDashboardData = [];
+
+
+        })
+
+
+        // Get data from phone number
+        builder.addCase(getEmpComplaintMaster.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintTrackerDashboardData_Master = [];
+        })
+        builder.addCase(getEmpComplaintMaster.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintTrackerDashboardData_Master = action.payload;
+            }
+        })
+        builder.addCase(getEmpComplaintMaster.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintTrackerDashboardData_Master = [];
 
 
         })
@@ -991,10 +1082,32 @@ export const complaintsSlice = createSlice({
             state.isLoading = false;
             state.complaintManagers = []
         })
+
+
+
+        builder.addCase(getComplaintTrackerDashboardFiltered.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintDashboardFilterData_CRE = []
+        })
+        builder.addCase(getComplaintTrackerDashboardFiltered.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintDashboardFilterData_CRE = action.payload;
+
+            }
+        })
+        builder.addCase(getComplaintTrackerDashboardFiltered.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintDashboardFilterData_CRE = []
+        })
+
+        
     }
 });
 
 export const { clearState, setCustomerDetails, setDatePicker,
     setDropDownData, clearStateFormDataBtnClick,
-     setImagePicker, updateSelectedDate,clearStateFormData } = complaintsSlice.actions;
+    setImagePicker, updateSelectedDate, clearStateFormData,
+     setCheckboxStatus,updateDealerFilterData,updateReceptionistFilterids } = complaintsSlice.actions;
 export default complaintsSlice.reducer;

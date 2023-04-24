@@ -355,6 +355,15 @@ const URL = {
   GET_DET_COMPLAINT_EMP_DASHBOARD: (empid) =>
     sales_url + `/complainttracker/getEmpComplaintDashboard/${empid}`,
 
+
+  GET_COMPLAINT_TRACKER_MASTER: (empid) =>
+    sales_url + `/complainttracker/getComplaintMaster/${empid}`,
+
+
+  GET_COMPLAINT_TRACKER_MAIN_FILTERAPPLIED: () =>
+    sales_url + `/complainttracker/dashboardfilter`,
+
+
   GET_COMPLAIN_FACTOR_DATA: (orgId) =>
     baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
 

@@ -36,6 +36,7 @@ const ComplaintList = (props) => {
     const toDateRef = React.useRef(selectedToDate);
     const [searchQuery, setSearchQuery] = useState("");
     const appSelector = useSelector((state) => state.appReducer);
+    const { params } = props.route.params;
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -70,8 +71,8 @@ const ComplaintList = (props) => {
             // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
             // setFromDateState(CurrentMonthFirstDate);
             // setToDateState(currentMonthLastDate);
-            getUserData()
-            
+
+            // getUserData()
             setLeadsFilterDropDownText("All")
             setLeadsSubMenuFilterDropDownText("All");
             setFromDateState("");
@@ -79,6 +80,15 @@ const ComplaintList = (props) => {
         });
     }, [props.navigation]);
 
+    useEffect(() => {
+      
+        if (params.employeeName){
+            getUserData(params.employeeName)
+        }
+       
+    }, [props.route.params])
+    
+    
     useEffect(() => {
 
         if (selector.complaintListRes) {
@@ -160,7 +170,7 @@ const ComplaintList = (props) => {
 
         const payload = {
             "orgId": userData.orgId,
-            "loginUser": userData.employeeName,
+            "loginUser": params.employeeName,
             "startDate": startdate,
             "endDate": toDate,
             "status": "Active",
@@ -203,7 +213,7 @@ const ComplaintList = (props) => {
         return name?.charAt(0).toUpperCase() + name?.slice(1);
     };
 
-    const getUserData = async () => {
+    const getUserData = async (empNAme) => {
         try {
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -264,7 +274,7 @@ const ComplaintList = (props) => {
                 // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                 const payload = {
                     "orgId": jsonObj.orgId,
-                    "loginUser": jsonObj.empName,
+                    "loginUser": empNAme,
                     // "startDate": CurrentMonthFirstDate,
                     // "endDate": currentMonthLastDate,
                     "status": "Active",
@@ -276,7 +286,7 @@ const ComplaintList = (props) => {
              
                 const payload2 = {
                     "orgId": jsonObj.orgId,
-                    "loginUser": jsonObj.empName,
+                    "loginUser": empNAme,
                     // "startDate": CurrentMonthFirstDate,
                     // "endDate": currentMonthLastDate,
                     "status": "Closed",
@@ -313,7 +323,7 @@ const ComplaintList = (props) => {
 
         const payload = {
             "orgId": userData.orgId,
-            "loginUser": userData.employeeName,
+            "loginUser": params.employeeName,
             // "startDate": CurrentMonthFirstDate,
             // "endDate": currentMonthLastDate,
             "status": "Active",
@@ -372,7 +382,7 @@ const ComplaintList = (props) => {
         const tempPayload = {
             "menu": name,
             "orgId": userData.orgId,
-            "userId": userData.employeeId
+            "userId": params.employeeId
 
         }
         dispatch(postDropComplaintSubMenu(tempPayload))
