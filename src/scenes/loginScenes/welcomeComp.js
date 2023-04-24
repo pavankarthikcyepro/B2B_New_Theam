@@ -52,7 +52,7 @@ console.log("OOOOO",token);
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
         console.log(token);
-        Clipboard.setString(token.token);
+        // Clipboard.setString(token.token);
         dispatch(updateToken(token.token));
       },
       // (required) Called when a remote is received or opened, or local notification is opened
