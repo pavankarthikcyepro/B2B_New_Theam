@@ -113,6 +113,7 @@ import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import { set } from "immer/dist/internal";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import moment from "moment";
 
 const rupeeSymbol = "\u20B9";
 
@@ -4353,22 +4354,37 @@ const BookingFormScreen = ({ route, navigation }) => {
                       styles.accordianBorder,
                     ]}
                   >
-                    {/* <View>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Receipt Doc"}
-                                                disabled={true}
-                                                onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.receipt ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.receipt.fileName}
-                                                from={"RECEIPT"}
-                                            />
-                                        ) : null}
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View> */}
+                    <View>
+                      <DateSelectItem
+                        label={"Receipt Date*"}
+                        value={
+                          uploadedImagesDataObj?.receipt
+                            ? moment(
+                                uploadedImagesDataObj.receipt.receiptDate
+                              ).format("DD/MM/YYYY")
+                            : moment().format("DD/MM/YYYY")
+                        }
+                        onPress={() => dispatch(setDatePicker("RECEIPT_DATE"))}
+                        disabled={true}
+                      />
+                      <Text style={GlobalStyle.underline} />
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Receipt Doc"}
+                          disabled={true}
+                          onPress={() =>
+                            dispatch(setImagePicker("RECEIPT_DOC"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.receipt ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.receipt.fileName}
+                          from={"RECEIPT"}
+                        />
+                      ) : null}
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
                     {selector.booking_payment_mode === "UPI" && (
                       <View>
                         <TextinputComp
