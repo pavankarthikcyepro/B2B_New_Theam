@@ -130,6 +130,7 @@ import LiveLeadsfilterScreen from "../scenes/mainScenes/LiveLeads/LiveLeadsfilte
 import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 import EditCustomerBookingList from "../scenes/mainScenes/Home/ServiceCustomer/EditCustomerBookingList";
 import CreateCustomerBooking from "../scenes/mainScenes/Home/ServiceCustomer/CreateCustomerBooking";
+import QueryList from "../scenes/mainScenes/Home/ServiceCustomer/QueryList";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -419,6 +420,7 @@ export const HomeStackIdentifiers = {
   addCustomerInfo: "ADD_CUSTOMER_INFO",
   searchCustomerResult: "SEARCH_CUSTOMER_RESULT",
   editCustomerBookingList: "EDIT_CUSTOMER_BOOKING_LIST",
+  queryList: "QUERY_LIST",
   createCustomerBooking: "CREATE_CUSTOMER_BOOKING",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
   crmFilter: "CRM_FILTER",
@@ -584,6 +586,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.createCustomerBooking}
         component={CreateCustomerBooking}
         options={{ title: "Create Booking" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.queryList}
+        component={QueryList}
+        options={{ title: "Query List" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.crmFilter}

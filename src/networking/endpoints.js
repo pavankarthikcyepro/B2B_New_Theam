@@ -889,6 +889,12 @@ const URL = {
       `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?page=0&size=20`
     );
   },
+  GET_SERVICE_QUERY_LIST: (tenantId, vehicleRegNumber) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/customer-query/search?size=0&page=10&assignedTo=1&createdBy=1`
+    );
+  },
   GET_BOOKED_SLOTS_LIST: (tenantId, vehicleRegNumber, slotId) => {
     return (
       baseUrl +
