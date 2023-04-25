@@ -15,6 +15,7 @@ import { updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const ClosedComplaintList = (props) => {
     const selector = useSelector((state) => state.complaintTrackerReducer);
     const dispatch = useDispatch();
@@ -46,8 +47,8 @@ const ClosedComplaintList = (props) => {
     const [leadsFilterDropDownText, setLeadsFilterDropDownText] = useState("All");
     const [leadsSubMenuFilterDropDownText, setLeadsSubMenuFilterDropDownText] =
         useState("All");
-
-
+    // const { params } = props.route?.params;
+    const [params ,setParams] = useState("")
     
     useEffect(() => {
         props.navigation.addListener("focus", () => {
@@ -57,15 +58,26 @@ const ClosedComplaintList = (props) => {
         // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         // setFromDateState(CurrentMonthFirstDate);
         // setToDateState(currentMonthLastDate);
-        getUserData()
-        
+
+
+        // getUserData()
+
             setLeadsFilterDropDownText("All")
             setLeadsSubMenuFilterDropDownText("All");
             setFromDateState("");
             setToDateState("");
         });
     }, [props.navigation]);
-    
+
+    useEffect(() => {
+
+        if (props.route.params?.params) {
+           
+            setParams(props.route.params.params)
+            getUserData(props.route.params.params.employeeName)
+        }
+
+    }, [props.route.params])
     useEffect(() => {
 
         if (selector.closeComplainListres) {
@@ -139,7 +151,7 @@ const ClosedComplaintList = (props) => {
         setSelectedToDate(date);
     }
 
-    const getUserData = async () => {
+    const getUserData = async (empNAme) => {
         try {
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -167,14 +179,14 @@ const ClosedComplaintList = (props) => {
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRE"
+                    jsonObj.hrmsRole === "CRE" || receptionistRole.includes(jsonObj.hrmsRole)
 
                 ) {
                     isCRE = true;
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRM"
+                    jsonObj.hrmsRole === "CRM" || jsonObj?.isTeam.toLowerCase().includes("y")
 
                 ) {
                     isCRM = true;
@@ -200,7 +212,7 @@ const ClosedComplaintList = (props) => {
                 // const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                 const payload = {
                     "orgId": jsonObj.orgId,
-                    "loginUser": jsonObj.empName,
+                    "loginUser": empNAme,
                     // "startDate": CurrentMonthFirstDate,
                     // "endDate": currentMonthLastDate,
                     "status": "Closed",
@@ -257,7 +269,7 @@ const ClosedComplaintList = (props) => {
 
         const payload = {
             "orgId": userData.orgId,
-            "loginUser": userData.employeeName,
+            "loginUser": params.employeeName,
             "startDate": startdate,
             "endDate": toDate,
             "status": "Closed",
@@ -287,7 +299,7 @@ const ClosedComplaintList = (props) => {
         setLeadsFilterData(newArr);
         const payload = {
             "orgId": userData.orgId,
-            "loginUser": userData.employeeName,
+            "loginUser": params.employeeName,
             // "startDate": CurrentMonthFirstDate,
             // "endDate": currentMonthLastDate,
             "status": "Closed",

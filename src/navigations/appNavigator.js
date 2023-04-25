@@ -141,6 +141,7 @@ import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDeale
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 import ComplaintTrackerMaster from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMaster";
 import ComplaintTrackerBasicFilter from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerBasicFilter";
+import CRMFilterscreenComplaintTracker from "../scenes/mainScenes/ComplaintTracker/CRMFilterscreenComplaintTracker";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -500,7 +501,8 @@ export const ComplainTrackerIdentifires = {
   closedComplainTeackerList:"CLOCSED_LIST",
   addEditComplaint:"ADD_EDIT_COMPLAINT",
   complaintTrackerMaster:"COMLAINT_TRACKER_MASTER",
-  complaintTrackerBasicFilter: "COMLAINT_TRACKER_BASIC_FILTER"
+  complaintTrackerBasicFilter: "COMLAINT_TRACKER_BASIC_FILTER",
+  complaintTrackerCRMFilter: "COMLAINT_TRACKER_CRM_FILTER"
   
 };
 
@@ -1370,6 +1372,14 @@ const ComplainTrackgerStackNavigator = ({ navigation }) => {
       <ComplainTrackgerStack.Screen
         name={ComplainTrackerIdentifires.complaintTrackerBasicFilter}
         component={ComplaintTrackerBasicFilter}
+        options={{
+          title: "Filter",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <ComplainTrackgerStack.Screen
+        name={ComplainTrackerIdentifires.complaintTrackerCRMFilter}
+        component={CRMFilterscreenComplaintTracker}
         options={{
           title: "Filter",
           headerLeft: () => <MenuIcon navigation={navigation} />,

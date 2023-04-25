@@ -107,6 +107,7 @@ export const ComplaintsTrackerTopTabNavigator = () => {
     );
 };
 
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const ComplaintTrackerMain = ({ route, navigation }) => {
     const selector = useSelector((state) => state.complaintTrackerReducer);
     const dispatch = useDispatch();
@@ -129,7 +130,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
         // navigation.addListener("focus", () => {
             getUserData()
         // });
-    }, [selector.receptionistFilterIds]);
+    }, [selector.receptionistFilterIds, selector.postComplaintFirstTimeRes, selector.postComplaintCloseRes, selector.saveCRMfilterObj]);
 
     useEffect(() => {
         if (!_.isEmpty(selector.complaintTrackerDashboardData.dropDownData)){
@@ -176,20 +177,20 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRE"
+                    jsonObj.hrmsRole === "CRE" || receptionistRole.includes(jsonObj.hrmsRole)
 
                 ) {
                     isCRE = true;
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRM"
+                    jsonObj.hrmsRole === "CRM" || jsonObj?.isTeam.toLowerCase().includes("y")
 
                 ) {
                     isCRM = true;
                 }
 
-
+               
                 setUserData({
                     orgId: jsonObj.orgId,
                     employeeId: jsonObj.empId,
@@ -223,6 +224,20 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                     }
                     dispatch(getComplaintTrackerDashboardFiltered(payload))
                     
+                } else if (!_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)) {
+                    let payload =
+                    {
+                        "orgId": jsonObj.orgId,
+                        "startDate": selector.saveCRMfilterObj?.startDate,
+                        "endDate": selector.saveCRMfilterObj?.endDate,
+                        "loginEmpName": jsonObj.empName,
+                        "dealerName": selector.saveCRMfilterObj?.dealerCodes,
+                        "designation": selector.saveCRMfilterObj?.selectedDesignation,
+                        "selectedEmpName": selector.saveCRMfilterObj?.selectedEmpNAme,
+                        "locationName": []
+                    }
+                    dispatch(getComplaintTrackerDashboardFiltered(payload))
+
                 }else{
                     
                     dispatch(getEmpComplaintDashboard(payload));
@@ -247,8 +262,22 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                         headerRight: () => (
                             <View style={{ flexDirection: "row", alignItems: "center" }}>
                                 {/* <SearchIcon /> */}
-                                <MyTaskFilter navigation={navigation} />
+                                {/* <MyTaskFilter navigation={navigation} /> */}
+                                <IconButton
+                                    icon="filter-outline"
+                                    style={{ paddingHorizontal: 0, marginHorizontal: 0 }}
+                                    color={Colors.WHITE}
+                                    size={25}
+                                    onPress={() => {
+                                        if (jsonObj.hrmsRole == "CRM" || jsonObj?.isTeam.toLowerCase().includes("y")) {
+                                            navigation.navigate(ComplainTrackerIdentifires.complaintTrackerCRMFilter);
+                                        } else {
+                                            navigation.navigate(ComplainTrackerIdentifires.complaintTrackerBasicFilter);
+                                        }
 
+                                    }
+                                    }
+                                />
                             </View>
                         ),
                     });
@@ -268,7 +297,12 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 color={Colors.WHITE}
                 size={25}
                 onPress={() => {
-                    navigation.navigate(ComplainTrackerIdentifires.complaintTrackerBasicFilter);
+                    if(userData.hrmsRole == "CRM"){
+                        navigation.navigate(ComplainTrackerIdentifires.complaintTrackerCRMFilter);       
+                    }else{
+                        navigation.navigate(ComplainTrackerIdentifires.complaintTrackerBasicFilter);
+                    }
+                  
                 }
                 }
             />

@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { DatePickerComponent, DropDownComponant, ImagePickerComponent, TextinputComp } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCustomerDetails, updateSelectedDate,clearState,setDatePicker,
-    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick, getBranchDataForRegister, getComplaintEmployees, getComplaintManager
+    setDropDownData, setImagePicker, getDetailsFromPoneNumber, getComplainFactorDropDownData, getLocationList, getBranchData, getDepartment, getDesignation, getEmployeeDetails, postComplaintFirstTime, clearStateFormData, getComplaitDetailsfromId, postComplaintClose, clearStateFormDataBtnClick, getBranchDataForRegister, getComplaintEmployees, getComplaintManager, getAssignToComplaintInfo
 } from '../../../redux/complaintTrackerReducer';
 import { DateSelectItem, DropDownSelectionItem, ImageSelectItem } from '../../../pureComponents';
 import { UserState } from 'realm';
@@ -19,7 +19,7 @@ import { showToast } from '../../../utils/toast';
 import { useRef } from 'react';
 import { GetCarModelList, isEmail } from '../../../utils/helperFunctions';
 import _ from "lodash";
-
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const dateFormat = "DD/MM/YYYY";
 const currentDate = moment().add(0, "day").format(dateFormat)
 let deptId_local, branchid_local="";
@@ -72,10 +72,12 @@ const AddEditComplaint = (props) => {
         isCRM: false,
         isCRE: false,
         isCRMorCRE:false,
+        hrmsRole:""
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     const [carModelsList, setCarModelsList] = useState([]);
     const [selectedRegLocationid, setSelectedRegLocationid] = useState("")
+    const [isAssigntoDisabled, setIsAssigntoDisabled] = useState(false);
     useEffect(() => {
         getUserData()
         setcomplaintDate(currentDate);
@@ -111,10 +113,24 @@ const AddEditComplaint = (props) => {
     }, [selector.postComplaintFirstTimeRes, selector.postComplaintCloseRes])
     
     useEffect(() => {
-      
-        
-    }, [selector.complaintDetailsFromIdRes])
+        setAssignTobasedOnLogin();
+    }, [userData])
     
+
+    const setAssignTobasedOnLogin = ()=>{
+
+        if(receptionistRole.includes(userData.hrmsRole)){
+            setIsAssigntoDisabled(true)
+            dispatch(
+                setDropDownData({
+                    key: "COMPLAINT_ASSIGN_TO",
+                    value: userData.employeeName,
+                    id: "",
+                    orgId: userData.orgId,
+                })
+            );
+        }
+    }
 
     const getUserData = async () => {
         try {
@@ -152,7 +168,7 @@ const AddEditComplaint = (props) => {
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRM"
+                    jsonObj.hrmsRole === "CRM" || jsonObj?.isTeam.toLowerCase().includes("y")
 
                 ) {
                     isCRM = true;
@@ -170,14 +186,16 @@ const AddEditComplaint = (props) => {
                     branchId: jsonObj.branchId, 
                      isCRM: isCRM,
                     isCRE: isCRE,
-                    isCRMorCRE:iscrmOrcre
+                    isCRMorCRE:iscrmOrcre,
+                    hrmsRole:jsonObj.hrmsRole
                 });
 
-               
+              
                 // todo
                 dispatch(getComplainFactorDropDownData(jsonObj.orgId))
                 dispatch(getLocationList(jsonObj.orgId))
                 getCarModelListFromServer(jsonObj.orgId)
+                dispatch(getAssignToComplaintInfo(jsonObj.orgId));
                
             }
         } catch (error) {
@@ -308,6 +326,13 @@ const AddEditComplaint = (props) => {
             showToast("Please select complaint description");
             return;
         }
+
+        if (selector.complaint_assignTo.length == 0) {
+            scrollToPos(1);
+            setOpenAccordian("2");
+            showToast("Please select complaint Assign to");
+            return;
+        }
         if (status ==="Closed"){
           
             if (selector.closeComplaintSource.length == 0) {
@@ -354,7 +379,8 @@ const AddEditComplaint = (props) => {
                 "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
                 "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
                 "aging": null,
-                "status": status
+                "status": status,
+                "assigneeTo": selector.complaint_assignTo,
             }
 
             dispatch(postComplaintFirstTime(payload));
@@ -390,6 +416,7 @@ const AddEditComplaint = (props) => {
                 "status": status,
                 "rating": selector.closeComplaintFinalRate,
                 "remarks": selector.closeComplaintRemarks,
+                "assigneeTo": selector.complaint_assignTo,
             }
             
             dispatch(postComplaintClose(payload));
@@ -422,7 +449,8 @@ const AddEditComplaint = (props) => {
                 "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
                 "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
                 "aging": null,
-                "status": "Active"
+                "status": "Active",
+                "assigneeTo": selector.complaint_assignTo,
             }
 
             dispatch(postComplaintClose(payload));
@@ -717,6 +745,21 @@ const AddEditComplaint = (props) => {
                 
                 setDataForDropDown(obj)
                 break;
+
+
+            case "COMPLAINT_ASSIGN_TO":
+
+                let objData12 = selector.complaint_assignTo_dropdown;
+                let newObjData12 = objData12.map((item) => {
+
+                    let obj = {
+                        id: item.id,
+                        name: item.empName
+                    }
+                    return obj
+                })
+                setDataForDropDown([...newObjData12])
+                break;
            
         }
         setDropDownKey(key);
@@ -1003,6 +1046,7 @@ const AddEditComplaint = (props) => {
                           orgId: userData.orgId,
                       }))
                   }
+                
                   setShowDropDownModel(false);
                   dispatch(
                       setDropDownData({
@@ -1483,6 +1527,16 @@ const AddEditComplaint = (props) => {
                                           showDropDownModelMethod("COMPLAINT_EMPLOYEE", "Please Select")
                                       }
                                   />
+
+                                  <DropDownSelectionItem
+                                      disabled={isEditable() || isAssigntoDisabled}
+                                      label={"Assign to*"}
+                                      value={selector.complaint_assignTo}
+                                      onPress={() =>
+                                          showDropDownModelMethod("COMPLAINT_ASSIGN_TO", "Please Select")
+                                      }
+                                  />
+
                                   <Text
                                       style={[
                                           GlobalStyle.underline,

@@ -352,6 +352,10 @@ const URL = {
   GET_DET_FROM_PHONE: (phone, orgId) =>
     sales_url + `/lead/phone/${phone}/${orgId}`,
 
+  GET_ASSIGN_TO_NAME_COMPLAINT_INFO: (orgid) =>
+    sales_url + `/complainttracker/getAssigneeName/${orgid}`,
+
+
   GET_DET_COMPLAINT_EMP_DASHBOARD: (empid) =>
     sales_url + `/complainttracker/getEmpComplaintDashboard/${empid}`,
 

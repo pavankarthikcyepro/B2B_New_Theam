@@ -123,7 +123,7 @@ const ComplaintTrackerMaster = ({ route, navigation }) => {
     useEffect(() => {
         navigation.addListener("focus", () => {
             getUserData()
-            console.log("manthan checkdata ", dataObject);
+          
         });
     }, [navigation]);
 
@@ -405,7 +405,10 @@ const ComplaintTrackerMaster = ({ route, navigation }) => {
                  </View>
 
                  <View style={{justifyContent:"center",padding:10}}>
-                        {eventListTableRow("", "Active", "Closed")}
+                        {
+                            selector.stage_wise_checkbox || selector.complaintFacoty_wise_checkbox 
+                            || selector.department_wise_checkbox
+                             ? eventListTableRow("", "Active", "Closed"): null }
 
                         {selector.stage_wise_checkbox ?
                             <FlatList
@@ -497,7 +500,7 @@ const ComplaintTrackerMaster = ({ route, navigation }) => {
                     renderItem={({ item, index }) => renderItem(item, index)}
                 />
             </View> */}
-            {userData.isCRE || userData.isCRM ? <TouchableOpacity
+            {/* {userData.isCRE || userData.isCRM ? <TouchableOpacity
                 onPress={() => {
                     navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
                         from: "ADD_NEW"
@@ -506,7 +509,7 @@ const ComplaintTrackerMaster = ({ route, navigation }) => {
                 style={[GlobalStyle.shadow, styles.floatingBtn]}
             >
                 <Entypo size={25} name="plus" color={Colors.WHITE} />
-            </TouchableOpacity> : null}
+            </TouchableOpacity> : null} */}
 
 
         </SafeAreaView>

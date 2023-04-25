@@ -63,7 +63,7 @@ import { notificationClearState } from "../../redux/notificationReducer";
 import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM, updateDealerFilterData as updateDealerFilterDataLive, updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads } from "../../redux/liveLeadsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV3, updateFilterLevelSelectedData as updateFilterLevelSelectedDatav2, updateLiveLeadObjectData as updateLiveLeadObjectDatav2, updateLiveLeadObjectDataCRM as updateLiveLeadObjectDataCRMv2, updateDealerFilterData as updateDealerFilterDataLivev2, updateEmployeeDropdownLiveleadReceptionist } from "../../redux/liveLeadsReducerReceptionist";
-import { updateReceptionistFilterids, updateDealerFilterData as updateDealerFilterDataComplaintBAsic } from "../../redux/complaintTrackerReducer";
+import { updateReceptionistFilterids, updateDealerFilterData as updateDealerFilterDataComplaintBAsic, updateFilterSelectedData as updateFilterSelectedData_complaintTracker, updateLiveLeadObjectData as updateLiveLeadObjectDataComplaintTracker } from "../../redux/complaintTrackerReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -458,8 +458,10 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.complaintTracker
         );
-        dispatch(updateReceptionistFilterids({}))
-        dispatch(updateDealerFilterDataComplaintBAsic({}))
+        dispatch(updateReceptionistFilterids({}));
+        dispatch(updateDealerFilterDataComplaintBAsic({}));
+        dispatch(updateFilterSelectedData_complaintTracker({}));
+        dispatch(updateLiveLeadObjectDataComplaintTracker({}));
         break;
       case 112:
         signOutClicked();

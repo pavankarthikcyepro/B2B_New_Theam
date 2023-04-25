@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import moment from "moment";
+import { stat } from "react-native-fs";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
@@ -25,6 +26,18 @@ export const getMoreComplaintsListApi = createAsyncThunk("COMPLAINTS_TRACKER/get
     }
     return json;
 })
+
+
+export const getAssignToComplaintInfo = createAsyncThunk("COMPLAINTS_TRACKER/getAssignToComplaintInfo", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_ASSIGN_TO_NAME_COMPLAINT_INFO(payload) );
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 
 export const getDetailsFromPoneNumber = createAsyncThunk("COMPLAINTS_TRACKER/getDetailsFromPoneNumber", async (payload, { rejectWithValue }) => {
 
@@ -350,7 +363,20 @@ export const complaintsSlice = createSlice({
         complaintTrackerDashboardData_Master: [],
         dealerFilter:{},
         receptionistFilterIds: [],
-        complaintDashboardFilterData_CRE:[]
+        complaintDashboardFilterData_CRE:[],
+        complaint_assignTo_dropdown:[],
+        complaint_assignTo :"",
+        filterSelectedData: {},
+        levelSelected: [],
+        saveCRMfilterObj: {
+            startDate: "",
+            endDate: "",
+            levelSelected: "",
+            selectedempId: "",
+            dealerCodes: "",
+            selectedDesignation: "",
+            selectedEmpNAme:""
+        },
     },
     reducers: {
         clearState: (state, action) => {
@@ -410,7 +436,20 @@ export const complaintsSlice = createSlice({
                 state.complaintTrackerDashboardData_Master = [],
                 state.dealerFilter = {},
                 state.receptionistFilterIds= [],
-                state.complaintDashboardFilterData_CRE= []
+                state.complaintDashboardFilterData_CRE= [],
+                state.complaint_assignTo_dropdown = [],
+                state.complaint_assignTo = "",
+                state.filterSelectedData= { },
+                state.levelSelected= [],
+                state.saveCRMfilterObj = {
+                    startDate: "",
+                    endDate: "",
+                    levelSelected: "",
+                    selectedempId: "",
+                    dealerCodes: "",
+                    selectedDesignation: "",
+                    selectedEmpNAme: ""
+                }
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -453,7 +492,19 @@ export const complaintsSlice = createSlice({
                 state.complaintdoc = ""
             state.complainCloserDoc = "",
              state.postComplaintFirstTimeRes = "",
-                state.postComplaintCloseRes=""
+                state.postComplaintCloseRes="",
+                state.complaint_assignTo= "",
+                state.filterSelectedData = {},
+                state.levelSelected = [],
+                state.saveCRMfilterObj = {
+                    startDate: "",
+                    endDate: "",
+                    levelSelected: "",
+                    selectedempId: "",
+                    dealerCodes: "",
+                    selectedDesignation: "",
+                    selectedEmpNAme: ""
+                }
         },
         clearStateFormDataBtnClick: (state, action) => {
             state.mobile = "";
@@ -496,13 +547,34 @@ export const complaintsSlice = createSlice({
                 state.complaintdoc = ""
             state.complainCloserDoc = "",
                 state.postComplaintFirstTimeRes = "",
-                state.postComplaintCloseRes = ""
+                state.postComplaintCloseRes = "",
+                state.complaint_assignTo = "",
+                state.filterSelectedData = {},
+                state.levelSelected = [],
+                state.saveCRMfilterObj = {
+                    startDate: "",
+                    endDate: "",
+                    levelSelected: "",
+                    selectedempId: "",
+                    dealerCodes: "",
+                    selectedDesignation: "",
+                    selectedEmpNAme: ""
+                }
         },
         updateDealerFilterData: (state, action) => {
             state.dealerFilter = action.payload;
         },
         updateReceptionistFilterids: (state, action) => {
             state.receptionistFilterIds = action.payload;
+        },
+        updateFilterSelectedData: (state, action) => {
+            state.filterSelectedData = action.payload;
+        },
+        updateFilterLevelSelectedData: (state, action) => {
+            state.levelSelected = action.payload;
+        },
+        updateLiveLeadObjectData: (state, action) => {
+            state.saveCRMfilterObj = action.payload;
         },
         setImagePicker: (state, action) => {
             state.imagePickerKeyId = action.payload;
@@ -626,6 +698,9 @@ export const complaintsSlice = createSlice({
                 case "REG_MANAGER":
                     state.reporting_manager = value;
                     break;
+                case "COMPLAINT_ASSIGN_TO":
+                    state.complaint_assignTo = value;
+                    break;
             }
         },
         setCheckboxStatus: (state, action: PayloadAction<DropDownModel>) => {
@@ -635,18 +710,18 @@ export const complaintsSlice = createSlice({
             switch (key) {
 
                 case "STAGE_WISE_CHECKBOX":
-                    state.stage_wise_checkbox = !state.stage_wise_checkbox;
+                    state.stage_wise_checkbox = true;
                     state.complaintFacoty_wise_checkbox = false;
                     state.department_wise_checkbox =false;
                     break;
                 case "COMPLAINT_FACTOR_CHECKBOX":
-                    state.complaintFacoty_wise_checkbox = !state.complaintFacoty_wise_checkbox;
+                    state.complaintFacoty_wise_checkbox = true;
                     state.stage_wise_checkbox = false;
                     state.department_wise_checkbox = false;
                     break;
 
                 case "DEPARTMENT_CHECKBOX":
-                    state.department_wise_checkbox = !state.department_wise_checkbox;
+                    state.department_wise_checkbox = true;
                     state.complaintFacoty_wise_checkbox = false;
                     state.stage_wise_checkbox = false;
                     break;
@@ -1005,6 +1080,7 @@ export const complaintsSlice = createSlice({
                 state.closeComplaintSource = response.closingSource?.toString();
                 state.closeComplaintFinalRate = response.rating?.toString();
                 state.closeComplaintRemarks = response.remarks?.toString();
+                state.complaint_assignTo = response.assigneeTo?.toString();
             }
         })
         builder.addCase(getComplaitDetailsfromId.rejected, (state, action) => {
@@ -1102,6 +1178,24 @@ export const complaintsSlice = createSlice({
             state.complaintDashboardFilterData_CRE = []
         })
 
+
+        builder.addCase(getAssignToComplaintInfo.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaint_assignTo_dropdown = []
+        })
+        builder.addCase(getAssignToComplaintInfo.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaint_assignTo_dropdown = action.payload;
+
+            }
+        })
+        builder.addCase(getAssignToComplaintInfo.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaint_assignTo_dropdown = []
+        })
+
         
     }
 });
@@ -1109,5 +1203,6 @@ export const complaintsSlice = createSlice({
 export const { clearState, setCustomerDetails, setDatePicker,
     setDropDownData, clearStateFormDataBtnClick,
     setImagePicker, updateSelectedDate, clearStateFormData,
-     setCheckboxStatus,updateDealerFilterData,updateReceptionistFilterids } = complaintsSlice.actions;
+     setCheckboxStatus,updateDealerFilterData,updateReceptionistFilterids,
+    updateFilterLevelSelectedData,updateFilterSelectedData,updateLiveLeadObjectData } = complaintsSlice.actions;
 export default complaintsSlice.reducer;

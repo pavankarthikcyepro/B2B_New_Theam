@@ -23,7 +23,7 @@ const data = [{
     mobileNo: "9978948079",
     model: "Jeep compas"
 }]
-
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const ComplaintList = (props) => {
     const selector = useSelector((state) => state.complaintTrackerReducer);
     const dispatch = useDispatch();
@@ -241,14 +241,14 @@ const ComplaintList = (props) => {
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRE"
+                    jsonObj.hrmsRole === "CRE" || receptionistRole.includes(jsonObj.hrmsRole)
 
                 ) {
                     isCRE = true;
                 }
 
                 if (
-                    jsonObj.hrmsRole === "CRM"
+                    jsonObj.hrmsRole === "CRM" || jsonObj?.isTeam.toLowerCase().includes("y")
 
                 ) {
                     isCRM = true;
