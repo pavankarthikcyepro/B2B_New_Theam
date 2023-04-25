@@ -547,6 +547,11 @@ const URL = {
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/getcrmchild/digital/${orgId}/${employeeId}`;
   },
+
+  GET_CRM_EMPLOYEES_DROP_DOWN_DATA_COPMLAINT_CRM_ETC: (orgId, employeeId) => {
+    return orgnaizationHirarchy + `/getRoleBasedEmployee/${orgId}/${employeeId}`;
+  },
+
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA_RECEP: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/getcrmchild/reception/${orgId}/${employeeId}`;
   },

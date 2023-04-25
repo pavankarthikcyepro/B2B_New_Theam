@@ -35,6 +35,7 @@ import {
   getSalesData,
   getSalesComparisonData,
   getCRMEmployeesDropDownData,
+  getCRMEmployeesDropDownDataComplaintTrack,
 } from "../../../redux/homeReducer";
 import { showAlertMessage, showToast } from "../../../utils/toast";
 import { AppNavigator } from "../../../navigations";
@@ -1088,7 +1089,7 @@ const CRMFilterscreenComplaintTracker = ({ route, navigation }) => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     
     if (!selector.isDSE){
-      Promise.all([dispatch(getCRMEmployeesDropDownData(payload1))])
+      Promise.all([dispatch(getCRMEmployeesDropDownDataComplaintTrack(payload1))])
         .then(() => {
           // Promise.all([
           // //   dispatch(getLeadSourceTableList(payload)),

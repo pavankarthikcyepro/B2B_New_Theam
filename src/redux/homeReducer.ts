@@ -392,6 +392,25 @@ export const getCRMEmployeesDropDownData = createAsyncThunk(
   }
 );
 
+// complaint tracker crm dashboard and sales managers 
+export const getCRMEmployeesDropDownDataComplaintTrack = createAsyncThunk(
+  "HOME/getCRMEmployeesDropDownDataComplaintTrack",
+  async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_CRM_EMPLOYEES_DROP_DOWN_DATA_COPMLAINT_CRM_ETC(payload.orgId, payload.empId),
+      payload.selectedIds
+    );
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+
 export const getReceptionistEmployeesDropDownData = createAsyncThunk(
   "HOME/getReceptionistEmployeesDropDownData",
   async (payload: any, { rejectWithValue }) => {
@@ -1652,6 +1671,19 @@ export const homeSlice = createSlice({
         }
       })
       .addCase(getCRMEmployeesDropDownData.rejected, (state, action) => {
+        state.crm_employees_drop_down_data = {};
+      })
+
+      // Get  CRM Employees Drop Down Data
+      .addCase(getCRMEmployeesDropDownDataComplaintTrack.pending, (state, action) => {
+        state.crm_employees_drop_down_data = {};
+      })
+      .addCase(getCRMEmployeesDropDownDataComplaintTrack.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.crm_employees_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getCRMEmployeesDropDownDataComplaintTrack.rejected, (state, action) => {
         state.crm_employees_drop_down_data = {};
       })
 
