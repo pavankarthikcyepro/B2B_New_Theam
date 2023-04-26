@@ -921,8 +921,17 @@ const TestDriveScreen = ({ route, navigation }) => {
       dlFrontUrl: "",
       vehicleInfo: vehicleDetails,
       reTestdriveFlag: "Original",
-      mobileNumber:mobileNumber
+      mobileNumber:mobileNumber,
+      name: name,
+      emailId: email,
+      model: selectedVehicleDetails.model,
+      variant: selectedVehicleDetails.varient,
+      fuelType: selectedVehicleDetails.fuelType,
+      transmissionType: selectedVehicleDetails.transType,
+      driver:selectedDriverDetails.name,
+      employee: selectedDseDetails.name
     };
+    // todo manthan
 
     if (customerHavingDrivingLicense === 1) {
       appointmentObj.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
@@ -1453,7 +1462,15 @@ const TestDriveScreen = ({ route, navigation }) => {
       testdriveId: 0,
       customerHaveingDl: customerHavingDrivingLicense === 1,
       reTestdriveFlag: "ReTestDrive",
-      mobileNumber: mobileNumber
+      mobileNumber: mobileNumber,
+      name: name,
+      emailId: email,
+      model: selectedVehicleDetails.model,
+      variant: selectedVehicleDetails.varient,
+      fuelType: selectedVehicleDetails.fuelType,
+      transmissionType: selectedVehicleDetails.transType,
+      driver: selectedDriverDetails.name,
+      employee: selectedDseDetails.name
     }
 
     dispatch(postReOpenTestDrive(reopenSubmitObj));
