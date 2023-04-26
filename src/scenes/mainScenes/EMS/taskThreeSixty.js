@@ -27,6 +27,7 @@ import { showToast } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import { IconButton } from "react-native-paper";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -494,7 +495,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                           style={{ flex: 1 }}
                           onPress={() => itemClicked(item)}
                         >
-                          <View style={[styles.view1]}>
+                          <View style={styles.view1}>
                             <View
                               style={{
                                 flexDirection: "row",
@@ -507,14 +508,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                               {/* Bubble count UI  */}
 
                               {isDotVisibleForClosed && !isHistory && (
-                                <View
-                                  style={[
-                                    styles.btn4,
-                                    {
-                                      marginEnd: item.lat && item.lon ? 10 : 0,
-                                    },
-                                  ]}
-                                >
+                                <View style={styles.btn4}>
                                   <Image
                                     source={require("./../../../assets/images/check-list.png")}
                                     resizeMode="contain"
@@ -559,14 +553,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                 // </View>
                               )}
                               {isDotVisible && isHistory && (
-                                <View
-                                  style={[
-                                    styles.btn4,
-                                    {
-                                      marginEnd: item.lat && item.lon ? 10 : 0,
-                                    },
-                                  ]}
-                                >
+                                <View style={styles.btn4}>
                                   <Image
                                     source={require("./../../../assets/images/check-list.png")}
                                     resizeMode="contain"
@@ -624,86 +611,137 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                 </TouchableOpacity>
                               )}
                             </View>
-                            <Text style={styles.txt3}>
-                              {"Assignee: " + item.assignee?.empName}
-                            </Text>
-                            {item?.taskUpdatedBy?.empName ? (
-                              <Text style={styles.followUpText}>
-                                Follow-up by: {item.taskUpdatedBy.empName}
-                              </Text>
-                            ) : null}
                             <View
                               style={{
                                 flexDirection: "row",
                                 justifyContent: "space-between",
                               }}
                             >
-                              <Text
+                              <View style={{ flex: 1 }}>
+                                <Text style={styles.txt3}>
+                                  {"Assignee: " + item.assignee?.empName}
+                                </Text>
+                                {item?.taskUpdatedBy?.empName ? (
+                                  <Text style={styles.followUpText}>
+                                    Follow-up by: {item.taskUpdatedBy.empName}
+                                  </Text>
+                                ) : null}
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      fontWeight: "400",
+                                      color: Colors.GRAY,
+                                      flex: 1,
+                                    }}
+                                  >
+                                    {"Remarks: " +
+                                      (item.employeeRemarks
+                                        ? item.employeeRemarks
+                                        : "")}
+                                  </Text>
+                                </View>
+                              </View>
+                              <View
                                 style={{
-                                  fontSize: 14,
-                                  fontWeight: "400",
-                                  color: Colors.GRAY,
-                                  flex: 1,
+                                  flexDirection: "row",
+                                  justifyContent: "flex-end",
                                 }}
                               >
-                                {"Remarks: " +
-                                  (item.employeeRemarks
-                                    ? item.employeeRemarks
-                                    : "")}
-                              </Text>
+                                <IconButton
+                                  icon={"play"}
+                                  size={20}
+                                  style={styles.playIcon}
+                                  color={Colors.PINK}
+                                  onPress={() => {
+                                    navigation.navigate(
+                                      AppNavigator.EmsStackIdentifiers
+                                        .recordedCalls,
+                                      {
+                                        taskId: item.taskId,
+                                      }
+                                    );
+                                  }}
+                                />
+                                <IconButton
+                                  icon={"phone"}
+                                  size={20}
+                                  style={[
+                                    styles.playIcon,
+                                    { backgroundColor: Colors.PINK },
+                                  ]}
+                                  color={Colors.WHITE}
+                                  onPress={() => {
+                                    navigation.navigate(
+                                      AppNavigator.MyTasksStackIdentifiers
+                                        .webCallScreen,
+                                      {
+                                        phone: mobileNo,
+                                        uniqueId: item.taskId,
+                                      }
+                                    );
+                                  }}
+                                />
+
+                                {isHistory && isDotVisible ? (
+                                  <TouchableOpacity
+                                    style={{ justifyContent: "flex-end" }}
+                                    onPress={() =>
+                                      navigation.navigate(
+                                        EmsStackIdentifiers.task360History,
+                                        {
+                                          identifier:
+                                            mytasksIdentifires.task360History,
+                                          title: item.taskName,
+                                          universalId: item.universalId,
+                                        }
+                                      )
+                                    }
+                                  >
+                                    <Image
+                                      source={require("./../../../assets/images/dots_sixty.png")}
+                                      resizeMode="contain"
+                                      style={styles.dotContainer}
+                                    />
+                                  </TouchableOpacity>
+                                ) : null}
+                                {!isHistory && isDotVisibleForClosed ? (
+                                  <TouchableOpacity
+                                    style={{ justifyContent: "flex-end" }}
+                                    onPress={() => {
+                                      if (item.taskName !== "Test Drive") {
+                                        navigation.navigate(
+                                          EmsStackIdentifiers.task360History,
+                                          {
+                                            identifier:
+                                              mytasksIdentifires.task360History,
+                                            title: item.taskName,
+                                            universalId: item.universalId,
+                                          }
+                                        );
+                                      } else {
+                                        navigation.navigate("TEST_HISTORY", {
+                                          universalId: universalId,
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    <Image
+                                      source={require("./../../../assets/images/dots_sixty.png")}
+                                      resizeMode="contain"
+                                      style={styles.dotContainer}
+                                    />
+                                  </TouchableOpacity>
+                                ) : null}
+                              </View>
                             </View>
                           </View>
                         </TouchableOpacity>
-
-                        {isHistory && isDotVisible ? (
-                          <TouchableOpacity
-                            style={{ justifyContent: "center" }}
-                            onPress={() =>
-                              navigation.navigate(
-                                EmsStackIdentifiers.task360History,
-                                {
-                                  identifier: mytasksIdentifires.task360History,
-                                  title: item.taskName,
-                                  universalId: item.universalId,
-                                }
-                              )
-                            }
-                          >
-                            <Image
-                              source={require("./../../../assets/images/dots.png")}
-                              resizeMode="contain"
-                              style={styles.dotContainer}
-                            />
-                          </TouchableOpacity>
-                        ) : null}
-                        {!isHistory && isDotVisibleForClosed ? (
-                          <TouchableOpacity
-                            style={{ justifyContent: "center" }}
-                            onPress={() => {
-                              if (item.taskName !== "Test Drive") {
-                                navigation.navigate(
-                                  EmsStackIdentifiers.task360History,
-                                  {
-                                    identifier:
-                                      mytasksIdentifires.task360History,
-                                    title: item.taskName,
-                                    universalId: item.universalId,
-                                  }
-                                );
-                              } else {
-                                navigation.navigate("TEST_HISTORY", {
-                                  universalId: universalId,
-                                });
-                              }
-                            }}
-                          >
-                            <Image
-                              source={require("./../../../assets/images/dots.png")}
-                              resizeMode="contain"
-                              style={styles.dotContainer}
-                            />
-                          </TouchableOpacity>
-                        ) : null}
                       </View>
                     </View>
                   </View>
@@ -742,10 +780,8 @@ const styles = StyleSheet.create({
   },
 
   dotContainer: {
-    height: 55,
-    width: 30,
-    // backgroundColor:"red",
-    marginTop: 40,
+    height: 30,
+    width: 20,
   },
   view1: {
     paddingVertical: 5,
@@ -781,6 +817,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   txt3: {
+    flex: 1,
     fontSize: 14,
     fontWeight: "400",
   },
@@ -857,13 +894,17 @@ const styles = StyleSheet.create({
   },
   btn4: {
     alignSelf: "flex-start",
-    // marginTop: -5,
     width: 35,
     height: 35,
     justifyContent: "center",
     alignItems: "center",
-    // borderWidth: 1,
-    // borderColor: "#d1d1d1",
-    // borderRadius: 5,
+    marginEnd: 10,
+  },
+  playIcon: {
+    margin: 0,
+    marginHorizontal: 2,
+    alignSelf: "flex-end",
+    borderWidth: 1,
+    borderColor: Colors.PINK,
   },
 });

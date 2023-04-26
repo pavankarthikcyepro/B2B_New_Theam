@@ -390,6 +390,9 @@ const URL = {
   GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
     return sales_url + `/booking-amount/lead/${leadId}`;
   },
+  GET_RECORDED_CALLS: (taskId) => {
+    return sales_url + `/callrecording/getCallHistory-urls?recordId=${taskId}`;
+  },
   GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
     return sales_url + `/workflow/lead/stage/${universalId}`;
   },

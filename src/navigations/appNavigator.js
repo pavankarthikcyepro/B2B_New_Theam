@@ -140,6 +140,7 @@ import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashbo
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
+import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -454,6 +455,7 @@ export const EmsStackIdentifiers = {
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
   testDriveHistory: "TEST_HISTORY",
+  recordedCalls: "RECORDED_CALLS",
   task360HistoryFilter: "TASK_360_HISTORY_FILTER",
 };
 
@@ -682,6 +684,11 @@ const EmsStackNavigator = ({ navigation }) => {
             return <LeadAge />;
           },
         }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.recordedCalls}
+        component={RecordedCalls}
+        options={{ title: "Recorded Calls" }}
       />
 
       <EmsStack.Screen
