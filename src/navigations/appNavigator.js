@@ -139,6 +139,7 @@ import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDa
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
+import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -478,6 +479,7 @@ export const MyTasksStackIdentifiers = {
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN",
   myTaskFilterScreen: "MYTASK_FILTER",
+  webCallScreen: "WEB_CALL",
   testDriveHistory: "TEST_HISTORY",
 };
 
@@ -1750,6 +1752,15 @@ const MainStackNavigator = ({ navigation }) => {
         name={"NOTIF_1"}
         component={NotificationScreen}
         options={{ title: "Notifications" }}
+      />
+      <MainStack.Screen
+        name={MyTasksStackIdentifiers.webCallScreen}
+        component={WebCallScreen}
+        options={{
+          headerTransparent: true,
+          headerTitle: "",
+          headerTintColor: Colors.BLACK,
+        }}
       />
     </MainStack.Navigator>
   );

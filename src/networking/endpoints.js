@@ -197,6 +197,7 @@ const URL = {
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },
+  GET_CALL_URI : () => sales_url + `/callrecording/saveCallRecordings`,
   GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
     return (
       sales_url +
