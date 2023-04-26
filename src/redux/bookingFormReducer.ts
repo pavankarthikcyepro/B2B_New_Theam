@@ -516,6 +516,10 @@ const bookingFormSlice = createSlice({
     addOnPrice: 0,
     accessories_discount: "",
     insurance_discount: "",
+
+    cancel_reason_dropdown_value:"",
+    cancel_reason_remarks:"",
+    cancel_reason_attachmet:""
   },
   reducers: {
     clearState: (state, action) => {
@@ -643,6 +647,10 @@ const bookingFormSlice = createSlice({
       state.addOnPrice = 0;
       state.accessories_discount = "";
       state.insurance_discount = "";
+
+      state.cancel_reason_attachmet="";
+      state.cancel_reason_dropdown_value="";
+      state.cancel_reason_remarks = ""
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -724,6 +732,14 @@ const bookingFormSlice = createSlice({
           break;
         case "VEHICLE_TYPE":
           state.vehicle_type = value;
+          break;
+
+        case "BOOKING_CANCEL_REASONS":
+          state.cancel_reason_dropdown_value = value;
+          break;
+
+        case "CANCEL_REMARKS":
+          state.cancel_reason_remarks = value;
           break;
       }
     },

@@ -114,6 +114,8 @@ import { DropComponent } from "./components/dropComp";
 import { set } from "immer/dist/internal";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import moment from "moment";
+import { UserState } from "realm";
+import { useCallback } from "react";
 
 const rupeeSymbol = "\u20B9";
 
@@ -268,6 +270,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         useState(false);
     const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
     const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+  const [uploadedAttachementsObj, setuploadedAttachementsObj] = useState([]);
     const [isRejectSelected, setIsRejectSelected] = useState(false);
     const [userToken, setUserToken] = useState("");
 
@@ -302,6 +305,18 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [addNewInput, setAddNewInput] = useState([]);
     const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
     const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
+
+  const [addAttachmentInput, setAddAttachmentInput] = useState([{
+    "url": "",
+    "fileType": "",
+    "fileName": "",
+    "desc": null
+  }]);
+  const [addAttachmentErrorNameIndex, setAddAttachmentErrorNameIndex] = useState(null);
+  const [addAttachmentErrorAmountIndexInput, setAddAttachmentErrorAmountIndex] = useState(null);
+
+  const [isCancleClicked, setIsCancelClicked] = useState(false);
+
     const clearLocalData = () => {
         setOpenAccordian(0);
         setComponentAppear(false);
@@ -993,6 +1008,10 @@ const BookingFormScreen = ({ route, navigation }) => {
             case "CUSTOMER_TYPE_CATEGORY":
                 setDataForDropDown([...Customer_Category_Types]);
                 break;
+
+          case "BOOKING_CANCEL_REASONS":
+            setDataForDropDown([...dropData]);
+            break;
         }
         setDropDownKey(key);
         setDropDownTitle(headerText);
@@ -1834,6 +1853,121 @@ const BookingFormScreen = ({ route, navigation }) => {
         }
     };
 
+  const uploadSelectedImageAttachment = async (selectedPhoto, keyId) => {
+    const photoUri = selectedPhoto.uri;
+    if (!photoUri) {
+      return;
+    }
+
+    const formData = new FormData();
+    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
+    // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    const fileName = uuid.v4();
+  
+  
+    formData.append("uploadFiles", {
+      name: `${fileName}-.${fileType}`,
+      type: `image/${fileType}`,
+      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
+    });
+    
+
+    let tempToken1 = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+    await fetch(URL.UPLOAD_ATTACHMENTS(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Authorization": "Bearer " + tempToken1,
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response) {
+          const dataObj = response;
+
+          if (addAttachmentInput[0].url == "") {
+            let newArr = Object.assign([], addAttachmentInput);
+            newArr[0].url = response.uploadFiles[0].url;
+            newArr[0].fileType = response.uploadFiles[0].fileType;
+            newArr[0].fileName = response.uploadFiles[0].fileName;
+            newArr[0].desc = null;
+          
+            setAddAttachmentInput(Object.assign([], newArr));
+          } else {
+            // let temparr = addAttachmentInput;
+            
+            // if (temparr.length > 0) {
+            //   temparr.push({
+            //     "url": response.uploadFiles[0].url,
+            //     "fileType": response.uploadFiles[0].fileType,
+            //     "fileName": response.uploadFiles[0].fileName,
+            //     "desc": null
+            //   })
+            //   // temparr.push(response.uploadFiles[0])
+           
+            //   setAddAttachmentInput([...temparr]);
+            // }  
+            let newArr = Object.assign([], addAttachmentInput);
+            newArr[addAttachmentInput.length - 1].url = response.uploadFiles[0].url;
+            newArr[addAttachmentInput.length - 1].fileType = response.uploadFiles[0].fileType;
+            newArr[addAttachmentInput.length-1].fileName = response.uploadFiles[0].fileName;
+            newArr[addAttachmentInput.length-1].desc = null;
+           
+            setAddAttachmentInput(Object.assign([], newArr));
+          }
+          
+          
+          // if (addAttachmentInput.url !== ""){
+          //   let newArr = Object.assign([], addAttachmentInput);
+          //   newArr[0].url = response.uploadFiles[0].url;
+          //   newArr[0].fileType = response.uploadFiles[0].fileType;
+          //   newArr[0].fileName = response.uploadFiles[0].fileName;
+          //   newArr[0].desc = null;
+         
+          //   setAddAttachmentInput(Object.assign([], newArr));
+          // }else{
+         
+          //   let newArr = Object.assign([], addAttachmentInput);
+          //   newArr[addAttachmentInput.length + 1].url = response.uploadFiles[0].url;
+          //   newArr[addAttachmentInput.length + 1].fileType = response.uploadFiles[0].fileType;
+          //   newArr[addAttachmentInput.length + 1].fileName = response.uploadFiles[0].fileName;
+          //   newArr[addAttachmentInput.length+1].desc = null;
+         
+          //   setAddAttachmentInput(Object.assign([], newArr));
+          // }
+         
+          let temparr = uploadedAttachementsObj;
+          if(temparr.length>0){
+          
+            temparr.push(response.uploadFiles[0])
+            
+              setuploadedAttachementsObj([...temparr]);  
+          
+            
+          }else{
+            
+             
+              setuploadedAttachementsObj(response.uploadFiles);
+        
+           
+          }
+          
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(
+          error.message ? error.message : "Something went wrong"
+        );
+      });
+  };
+
+
+
+
     const uploadSelectedImage = async (selectedPhoto, keyId) => {
         const photoUri = selectedPhoto.uri;
         if (!photoUri) {
@@ -2054,6 +2188,54 @@ const BookingFormScreen = ({ route, navigation }) => {
       setOtherPriceErrorNameIndex(null);
       setAddNewInput([...addNewInput, { name: "", amount: "" }]);
     };
+
+  const addHandlerAttachments = () => {
+    let isEmpty = false;
+    let toast = "please enter name";
+    
+    // if (addAttachmentInput.fileName == "") {
+      // for (let i = 0; i < addAttachmentInput.length; i++) {
+      //   if (addAttachmentInput[i].fileName == "") {
+      //     setAddAttachmentErrorAmountIndex(null);
+      //     setAddAttachmentErrorNameIndex(i);
+      //     isEmpty = true;
+      //     break;
+      //   } else if (addAttachmentInput[i].url == "") {
+      //     setAddAttachmentErrorNameIndex(null);
+      //     setAddAttachmentErrorAmountIndex(i);
+      //     toast = "please enter amount";
+      //     isEmpty = true;
+      //     break;
+      //   }
+      // }
+    // }
+
+    // if (isEmpty) {
+    //   showToast(toast);
+    //   return;
+    // }
+    
+    setAddAttachmentErrorAmountIndex(null);
+    setAddAttachmentErrorNameIndex(null);
+    setAddAttachmentInput([...addAttachmentInput, {
+      "url": "",
+      "fileType": "",
+      "fileName": "",
+      "desc": null
+    }]);
+  };
+
+  const deleteHandlerAttachemnt = (index) => {
+    let newArr = Object.assign([], addAttachmentInput);
+    let newArr22 = Object.assign([], uploadedAttachementsObj);
+   
+    newArr.splice(index, 1);
+    newArr22.splice(index, 1);
+    
+    setuploadedAttachementsObj(Object.assign([], newArr22));
+    setAddAttachmentInput(Object.assign([], newArr));
+  };
+
    
     const deleteHandler = (index) => {
      let newArr = Object.assign([], addNewInput);
@@ -2107,6 +2289,8 @@ const BookingFormScreen = ({ route, navigation }) => {
       return isError;
     };
 
+    
+
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -2114,7 +2298,14 @@ const BookingFormScreen = ({ route, navigation }) => {
           keyId={selector.imagePickerKeyId}
           onDismiss={() => dispatch(setImagePicker(""))}
           selectedImage={(data, keyId) => {
-            uploadSelectedImage(data, keyId);
+            if (keyId == "UPLOAD_ATTACHMENTS"){
+            
+              uploadSelectedImageAttachment(data, keyId);
+            }else{
+              uploadSelectedImage(data, keyId);
+            }
+            
+            
           }}
           // onDismiss={() => dispatch(setImagePicker(""))}
         />
@@ -4533,7 +4724,170 @@ const BookingFormScreen = ({ route, navigation }) => {
                     )}
                   </List.Accordion>
                 ) : null}
+                <View style={styles.space}></View>
+                {/* 13 cancalation reasons  */}
+                
+                {isCancleClicked ? <List.Accordion
+                  id={"13"}
+                  title={"Booking Cancel Section"}
+                  titleStyle={{
+                    color: openAccordian === "13" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "13" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <DropDownSelectionItem
+                    label={"Cancel Reasons*"}
+                    value={selector.cancel_reason_dropdown_value}
+                    disabled={false}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "BOOKING_CANCEL_REASONS",
+                        "Cancel Reasons"
+                      )
+                    }
+                  />
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.cancel_reason_remarks}
+                    label={"Remarks"}
+                    disabled={false}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "CANCEL_REMARKS",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <View style={{}}>
+                    <View style={styles.otherPriceTitleRow}>
+                      <Text style={styles.otherPriceTextStyle}>
+                        Attachments
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.addIcon}
+                        disabled={false}
+                        onPress={() => addHandlerAttachments()}
+                      >
+                        <Text
+                          style={{
+                            color: Colors.WHITE,
+                            fontSize: 13,
+                          }}
+                        >
+                          +
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <View
+                      style={{
+                        backgroundColor: Colors.WHITE,
+                        paddingTop: 5,
+                      }}
+                    >
+                      
+                      <FlatList
+                        data={addAttachmentInput}
+                        extraData={[
+                          addAttachmentInput,
+                          addAttachmentErrorAmountIndexInput,
+                          addAttachmentErrorNameIndex,
+                          uploadedAttachementsObj
+                        ]}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item, index }) => {
+                          return (
+                            <View
+                              key={index}
+                              style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                paddingHorizontal: 10,
+                              }}
+                            >
+                              <View>
+                                <View style={styles.select_image_bck_vw}>
+                                  <ImageSelectItem
+                                    name={"Attachment"}
+                                    disabled={false}
+                                    onPress={() =>
+                                      dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
+                                    }
+                                  />
+                                </View>
+                           
+                                {uploadedAttachementsObj.length > 0 && uploadedAttachementsObj[index]?.fileName !== undefined ? (
+                                  <View style={styles.selectedImageBckVw}>
+                              
+                                    <Text style={styles.selectedImageTextStyle} disabled={true} numberOfLines={1}>
+                                      { uploadedAttachementsObj[index].fileName }
+                                    </Text>
+                                    
+                                  </View>
+                                ) : null}
+                                <Text style={GlobalStyle.underline}></Text>
+                              </View>
+                              <TouchableOpacity
+                                onPress={() => deleteHandlerAttachemnt(index)}
+                                style={{ marginLeft: 10 }}
+                              >
+                                <IconButton
+                                  icon="trash-can-outline"
+                                  color={Colors.PINK}
+                                  size={25}
+                                  disabled={false}
+                                />
+                              </TouchableOpacity>
+                            </View>
+                          );
+                        }}
+                      />
+                    </View>
+                  </View>
+                  
+
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion> : null }
+               
+
               </List.AccordionGroup>
+
+              <View style={{justifyContent:"center",width:'100%', alignItems:"center",marginVertical:10}}>
+                
+                {isCancleClicked ? <Button
+                  mode="contained"
+                  // style={{ flex: 1, marginRight: 10 }}
+                  style={{ flex:1, marginRight: 10, }}
+                  color={Colors.GRAY}
+                  labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                  onPress={() => { }}
+                >
+                  Proceed To Cancellation
+                </Button> : <Button
+                  mode="contained"
+                  // style={{ flex: 1, marginRight: 10 }}
+                  style={{ width: '30%', marginRight: 10, }}
+                  color={Colors.GRAY}
+                  labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                  onPress={() => { setIsCancelClicked(true) }}
+                >
+                  Cancel
+                </Button>}
+                
+                </View>            
+             
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
