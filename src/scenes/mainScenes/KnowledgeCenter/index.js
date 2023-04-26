@@ -8,10 +8,8 @@ import {
   Platform,
   Image,
   ScrollView,
-  Share as tempShare,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Share from "react-native-share";
 
 import { LoaderComponent } from "../../../components";
 import { Colors } from "../../../styles";
@@ -28,6 +26,7 @@ import {
   shareFileVideo,
   shareFileXlx,
 } from "../../../service/ShareDoc";
+import * as AsyncStore from "../../../asyncStore";
 
 const OPTIONS = ["Images", "Brochures", "Video", "Compare Doc"];
 
@@ -40,21 +39,36 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
   const [selectedOption, setSelectedOption] = useState("Images");
   const [mainList, setMainList] = useState([]);
   const [carList, setCarList] = useState([]);
+  const [errorView, setErrorView] = useState(false);
 
   useEffect(() => {
-    getData();
+    navigation.addListener("focus", () => {
+      getData();
+    });
   }, []);
 
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await client.get(URL.KNOWLEGDE_CENTER());
-      const json = await response.json();
-      setMainList(json);
-      onChangeOption("Images", json);
-      setLoading(false);
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(URL.KNOWLEGDE_CENTER(jsonObj.orgId));
+        const json = await response.json();
+        if (json.length > 0) {
+          setMainList(json);
+          onChangeOption("Images", json);
+          setErrorView(false);
+        } else {
+          setErrorView(true);
+        }
+        setLoading(false);
+      }
     } catch (error) {
       setLoading(false);
+      setErrorView(true);
     }
   };
 
@@ -225,7 +239,13 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         });
       }
     } else {
-      multipleDownload(params);
+      if (video) {
+        setLoading(true);
+        downloadInLocal(params[0]);
+        setLoading(false);
+      } else {
+        multipleDownload(params);
+      }
     }
   }
 
@@ -270,7 +290,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
           notification: true,
           path:
             downloadDir +
-            "file" +
+            "/file" +
             Math.floor(date.getTime() + date.getSeconds() / 2) +
             file_ext, // this is the path where your downloaded file will live in
           description: "Downloading image.",
@@ -279,8 +299,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
       config(options)
         .fetch("GET", url)
         .then((res) => {
-          console.log("sssss", res);
-          setLoading(false);
+          // setLoading(false);
           RNFetchBlob.android.actionViewIntent(res.path());
           // do some magic here
         })
@@ -294,7 +313,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         fileCache: true,
         path:
           downloadDir +
-          "File" +
+          "/File" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
         mime: "application/xlsx",
@@ -306,7 +325,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
       config(options)
         .get("GET", url)
         .then((res) => {
-          setLoading(false);
+          // setLoading(false);
           setTimeout(() => {
             // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
             RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
@@ -364,64 +383,73 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
           />
         ))}
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {carList.map((item) => {
-          return (
-            <View style={styles.ElementView}>
-              <View style={{ flex: 1 }}>
-                {item.imageUrl ? (
-                  <Image
-                    source={{ uri: item.imageUrl }}
-                    resizeMode="contain"
-                    style={{ width: 100, height: 80 }}
-                  />
-                ) : (
-                  <Image
-                    source={require("../../../assets/images/loginCar.jpg")}
-                    resizeMode="contain"
-                    style={{ width: 100, height: 80 }}
-                  />
-                )}
-              </View>
-              <View
-                style={{
-                  alignItems: "center",
-                  flex: 1,
-                }}
-              >
-                <Text>{item.model}</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    onDownload(item);
-                  }}
-                  style={{ marginHorizontal: 10 }}
-                >
-                  <IconButton
-                    icon={"download"}
-                    size={24}
-                    color={Colors.RED}
-                    style={{ margin: 0, padding: 0 }}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    onShare(item);
+      {!errorView && (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {carList.map((item) => {
+            return (
+              <View style={styles.ElementView}>
+                <View style={{ flex: 1 }}>
+                  {item.imageUrl ? (
+                    <Image
+                      source={{ uri: item.imageUrl }}
+                      resizeMode="contain"
+                      style={{ width: 100, height: 80 }}
+                    />
+                  ) : (
+                    <Image
+                      source={require("../../../assets/images/loginCar.jpg")}
+                      resizeMode="contain"
+                      style={{ width: 100, height: 80 }}
+                    />
+                  )}
+                </View>
+                <View
+                  style={{
+                    alignItems: "center",
+                    flex: 1,
                   }}
                 >
-                  <IconButton
-                    icon={"share"}
-                    size={24}
-                    color={Colors.RED}
-                    style={{ margin: 0, padding: 0 }}
-                  />
-                </TouchableOpacity>
+                  <Text>{item.model}</Text>
+                </View>
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onDownload(item);
+                    }}
+                    style={{ marginHorizontal: 10 }}
+                  >
+                    <IconButton
+                      icon={"download"}
+                      size={24}
+                      color={Colors.RED}
+                      style={{ margin: 0, padding: 0 }}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onShare(item);
+                    }}
+                  >
+                    <IconButton
+                      icon={"share"}
+                      size={24}
+                      color={Colors.RED}
+                      style={{ margin: 0, padding: 0 }}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          );
-        })}
-      </ScrollView>
+            );
+          })}
+        </ScrollView>
+      )}
+      {errorView && (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text style={styles.txt}>{"No Data Found"}</Text>
+        </View>
+      )}
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
@@ -442,5 +470,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     padding: 10,
     justifyContent: "space-between",
+  },
+  txt: {
+    color: Colors.RED,
+    fontSize: 22,
+    fontWeight: "600",
   },
 });

@@ -44,7 +44,6 @@ export const shareFileXlx = async (url) => {
 
 export const shareFileVideo = async (url) => {
   try {
-    console.log(url);
     RNFetchBlob.fetch("GET", url)
       .then((response) => {
         const base64Data = response.base64();
