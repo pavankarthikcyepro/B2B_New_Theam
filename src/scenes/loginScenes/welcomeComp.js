@@ -18,24 +18,16 @@ import crashlytics from "@react-native-firebase/crashlytics";
 import { firebase } from "@react-native-firebase/app";
 
 const WelcomeScreen = ({ navigation }) => {
-
   const loginButtonClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
   };
-  // useEffect(() => {
-  //   crashlytics().log("App mounted.");
-  // }, []);
 
   useEffect(() => {
     firebase.initializeApp({
-      // Your Firebase config object
     });
-
-    // Initialize Crashlytics
     crashlytics().setCrashlyticsCollectionEnabled(true);
-  }, [])
-  
-  // return null
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -65,7 +57,6 @@ const WelcomeScreen = ({ navigation }) => {
         onPress={loginButtonClicked}
         color={Colors.PINK}
       />
-      <Button title="Test Crash" onPress={() => crashlytics().crash()} />
       <View style={styles.bottomViewStyle}>
         <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
         <Text style={styles.textTwoStyle}>

@@ -104,6 +104,8 @@ import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { isReceptionist } from "../../../utils/helperFunctions";
 import { ScrollView } from "react-native-gesture-handler";
 import _ from "lodash";
+import crashlytics from "@react-native-firebase/crashlytics";
+
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -157,6 +159,7 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
+      setAttributes();
       getCurrentLocation();
       setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
@@ -194,6 +197,31 @@ const HomeScreen = ({ route, navigation }) => {
 
   function isEmpty(obj) {
     return Object.keys(obj).length === 0;
+  }
+
+  const setAttributes = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        onSignIn(jsonObj);
+      }
+    } catch (error) {}
+  };
+
+  async function onSignIn(user) {
+    crashlytics().log("User signed in.");
+    await Promise.all([
+      crashlytics().setUserId(user.empId.toString()),
+      crashlytics().setAttribute("credits", "Crash User"),
+      crashlytics().setAttributes({
+        role: user.primaryDesignation,
+        email: user.email,
+        username: user.empName,
+      }),
+    ]);
   }
 
   const getDetails = async () => {
@@ -268,7 +296,7 @@ const HomeScreen = ({ route, navigation }) => {
       }
       dispatch(updateIsModalVisible(false));
     } catch (error) {
-      console.error(error);
+      console.error("SAGAR", error);
     }
   };
 

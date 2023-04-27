@@ -46,6 +46,7 @@ import {
 } from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
 import Geolocation from "react-native-geolocation-service";
+import crashlytics from "@react-native-firebase/crashlytics";
 import {
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
@@ -168,8 +169,9 @@ const LoginScreen = ({ navigation }) => {
           dispatch(getEmpId(selector.userData.userName)),
         ])
           .then((res) => {
+            onSignIn(res[0].payload.dmsEntity.loginEmployee);
             const condition =
-              res[0].payload.loginEmployee.isGeolocation === "Y";
+              res[0].payload.dmsEntity.loginEmployee.isGeolocation === "Y";
             if (condition) {
               startTracking();
             }
@@ -232,6 +234,19 @@ const LoginScreen = ({ navigation }) => {
     AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
     getCoordinates();
   };
+
+  async function onSignIn(user) {
+    crashlytics().log("User signed in.");
+    await Promise.all([
+      crashlytics().setUserId(user.empId.toString()),
+      crashlytics().setAttribute("credits", "Crash User"),
+      crashlytics().setAttributes({
+        role: user.primaryDesignation,
+        email: user.email,
+        username: user.empName,
+      }),
+    ]);
+  }
 
   function createDateTime(time) {
     var splitted = time.split(":");

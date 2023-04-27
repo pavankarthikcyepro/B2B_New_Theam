@@ -35,7 +35,9 @@
 		0A42AF7A24EC43728963CA34 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		0F06DD2B2930A0150070A45E /* B2B_NEW_THEME.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = B2B_NEW_THEME.entitlements; path = B2B_NEW_THEME/B2B_NEW_THEME.entitlements; sourceTree = "<group>"; };
 		0F06DD2C2930A0280070A45E /* B2B_NEW_THEMERelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = B2B_NEW_THEMERelease.entitlements; path = B2B_NEW_THEME/B2B_NEW_THEMERelease.entitlements; sourceTree = "<group>"; };
+		0F6155D329FA99A0001D189A /* libFirebaseCrashlytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCrashlytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FEB4DAA29ED7D750075C4B5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0FF1CDE529FA9A4600A8DC96 /* libRNFBCrashlytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNFBCrashlytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1238F572D46A9CBA9B440279 /* Pods-B2B_NEW_THEME-B2B_NEW_THEMETests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-B2B_NEW_THEME-B2B_NEW_THEMETests.release.xcconfig"; path = "Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* B2B_NEW_THEME.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = B2B_NEW_THEME.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = B2B_NEW_THEME/AppDelegate.h; sourceTree = "<group>"; };
@@ -125,6 +127,8 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0FF1CDE529FA9A4600A8DC96 /* libRNFBCrashlytics.a */,
+				0F6155D329FA99A0001D189A /* libFirebaseCrashlytics.a */,
 				BDAE9778297657E900F6B56E /* libswiftWebKit.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				214902D7051F1FD0500A5835 /* libPods-B2B_NEW_THEME.a */,
@@ -273,6 +277,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				0F6155D229FA9968001D189A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -772,6 +779,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0F6155D229FA9968001D189A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
