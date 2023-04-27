@@ -11,7 +11,8 @@ import {
     Pressable,
     BackHandler,
     TextInput,
-    FlatList
+    FlatList,
+    Alert
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,6 +60,11 @@ import {
     getBookingAmountDetailsApi,
     getAssignedTasksApi,
     updateAddressByPincode,
+    saveReceiptdocApiCall,
+    updateRef,
+    updateSingleApproval,
+    getLeadDropDetailsFOrBooking,
+    getReceiptDocCancelBooking,
 } from "../../../redux/bookingFormReducer";
 import {
     RadioTextItem,
@@ -116,6 +122,8 @@ import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import moment from "moment";
 import { UserState } from "realm";
 import { useCallback } from "react";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import RNFetchBlob from "rn-fetch-blob";
 
 const rupeeSymbol = "\u20B9";
 
@@ -210,7 +218,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     const forceUpdate = React.useCallback(() => updateState({}), []);
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.bookingFormReducer);
-    const { universalId, accessoriesList } = route.params;
+  const { universalId, accessoriesList, fromScreen } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
     const [componentAppear, setComponentAppear] = useState(false);
     const [otherPrices, setOtherPrices] = useState(0);
@@ -223,6 +231,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       isPreBookingApprover: false,
       isSelfManager: "",
       isTracker: "",
+      hrmsRole:""
     });
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -329,6 +338,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           isPreBookingApprover: false,
           isSelfManager: "",
           isTracker: "",
+          hrmsRole:""
         });
         setShowDropDownModel(false);
         setShowMultipleDropDownData(false);
@@ -422,6 +432,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             getAsyncstoreData();
             getBranchId();
             getCustomerType();
+            
         })
         // return () => {
         //     BackHandler.removeEventListener(
@@ -437,6 +448,33 @@ const BookingFormScreen = ({ route, navigation }) => {
         //     );
         // })
     }, [navigation]);
+
+    useEffect(() => {
+      
+    
+      if (selector.cancel_Receipt_details_status == "success"){
+       
+        // let newArr = Object.assign([], addAttachmentInput);
+        
+        let storeDataLocal =[];
+        let iterator = selector.cancel_Receipt_details.map((item,index) =>{
+         
+          storeDataLocal.push({
+            "url": item.path,
+            "fileType": item.path,
+            "fileName": item.path,
+            "desc": null
+          })
+    
+        })
+        
+        
+        setuploadedAttachementsObj(storeDataLocal);
+        setAddAttachmentInput(Object.assign([], storeDataLocal));
+      }
+    }, [selector.cancel_Receipt_details])
+    
+    
 
     const getCustomerType = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -561,6 +599,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 isPreBookingApprover: isPreBookingApprover,
                 isSelfManager: jsonObj.isSelfManager,
                 isTracker: jsonObj.isTracker,
+                hrmsRole: jsonObj.hrmsRole,
             });
 
             const payload = {
@@ -699,6 +738,13 @@ const BookingFormScreen = ({ route, navigation }) => {
                 setSelectedPaidAccessoriesPrice(totalPrice);
             }
             setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
+          if (route.params.fromScreen == "DROP_ANALYSIS") {
+            // selector.pre_booking_details_response.dmsLeadDto.id
+            let leadid = selector.pre_booking_details_response.dmsLeadDto.id;
+            dispatch(getLeadDropDetailsFOrBooking(leadid));
+            dispatch(getReceiptDocCancelBooking(leadid));
+          }
+
         }
     }, [selector.pre_booking_details_response]);
 
@@ -720,6 +766,39 @@ const BookingFormScreen = ({ route, navigation }) => {
         }
     };
 
+    useEffect(() => {
+      if (selector.cancel_updateSingleApproval_response == "success"){
+        displayBookingCancelPopup(selector.pre_booking_details_response.dmsLeadDto.referencenumber)
+      }
+    
+     
+    }, [selector.cancel_updateSingleApproval_response])
+    
+  const displayBookingCancelPopup = async (data) => {
+    Alert.alert(
+      "Sent For Approval",
+      "Booking Number: " + data,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // navigation.goBack();
+            goToParentScreen();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const goToParentScreen = () => {
+    navigation.popToTop();
+    navigation.navigate("EMS_TAB");
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+      fromScreen: "booking",
+    });
+    
+  };
     useEffect(() => {
         if (selector.model_drop_down_data_update_status === "update") {
             updateVariantModelsData(selector.model, true, selector.varient);
@@ -1592,6 +1671,82 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     };
 
+    const proceedToCancelBooking = async ()=>{
+
+      if (!selector.cancel_reason_dropdown_value) {
+        showToast("Please Select Cancel Reasons");
+        return;
+      }
+      let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+      if (!leadId) {
+        showToast("lead id not found");
+        return;
+      }
+      //1. save the uploaded attachments sections 
+      if (uploadedAttachementsObj.length > 0) {
+        let tempArr = [];
+        let objPayload = uploadedAttachementsObj.map(item => {
+          tempArr.push({
+            "id": 0,
+            "leadId": leadId,
+            "orgId": userData.orgId,
+            "crmuniversalId": universalId,
+            "path": item.url,
+            "type": "ReceiptDocument"
+          })
+        })
+        if (tempArr.length > 0) {
+          dispatch(saveReceiptdocApiCall(tempArr))
+        }
+      }
+      //1. save the uploaded attachments sections end
+
+      //2. lead-drop API call sections 
+      const payload = {
+        dmsLeadDropInfo: {
+          additionalRemarks: selector.cancel_reason_remarks,
+          branchId: selectedBranchId,
+          brandName: "",
+          dealerName: "",
+          location: "",
+          model: "",
+          leadId: leadId,
+          crmUniversalId: universalId,
+          lostReason: selector.cancel_reason_dropdown_value,
+          organizationId: userData.orgId,
+          otherReason: "",
+          droppedBy: userData.employeeId,
+          lostSubReason: "",
+          stage: "BOOKING",
+          status: "BOOKING",
+        },
+      };
+      
+      dispatch(updateSingleApproval(payload))
+      //2. lead-drop API call sections end
+
+
+      //3. enquiry/lead
+      let enquiryDetailsObj = { ...selector.pre_booking_details_response };
+      let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+      dmsLeadDto.leadStage = "DROPPED";
+      enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+      dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
+      //3. enquiry/lead end
+
+
+      //4. lead-customer-reference/update
+
+      let payloadForupdate = {
+        "refNo": selector.pre_booking_details_response.dmsLeadDto.referencenumber,
+        "orgId": userData.orgId,
+        "stageCompleted": "DROPPED"
+      }
+      dispatch(updateRef(payloadForupdate));
+      
+    }
+
+
     const proceedToCancelPreBooking = async () => {
         if (dropRemarks.length === 0 || dropReason.length === 0) {
             showToastRedAlert("Please enter details for drop");
@@ -2189,6 +2344,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       setAddNewInput([...addNewInput, { name: "", amount: "" }]);
     };
 
+
   const addHandlerAttachments = () => {
     let isEmpty = false;
     let toast = "please enter name";
@@ -2235,6 +2391,92 @@ const BookingFormScreen = ({ route, navigation }) => {
     setuploadedAttachementsObj(Object.assign([], newArr22));
     setAddAttachmentInput(Object.assign([], newArr));
   };
+
+  const getFileExtention = (fileUrl) => {
+    // To get the file extension
+    return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
+  };
+  const downloadInLocal = async (url) => {
+    let iOSUrl = url.replace("https", "http");
+    const { config, fs } = RNFetchBlob;
+    let downloadDir = Platform.select({
+      ios: fs.dirs.PictureDir,
+      android: fs.dirs.PictureDir,
+    });
+    let date = new Date();
+    let file_ext = getFileExtention(url);
+    console.log("manthan extex ",file_ext);
+    file_ext = "." + file_ext[0];
+    let options = {};
+    
+    if (Platform.OS === "android") {
+      options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
+          notification: true,
+          path:
+            downloadDir +
+            "/BOOKING_" +
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            file_ext, // this is the path where your downloaded file will live in
+          description: "Downloading image.",
+        },
+      };
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", url, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            // setLoading(false);
+            RNFetchBlob.android.actionViewIntent(res.path());
+            // do some magic here
+          })
+          .catch((err) => {
+            console.error(err);
+            // setLoading(false);
+          });
+      });
+    }
+    if (Platform.OS === "ios") {
+      options = {
+        fileCache: true,
+        path:
+          downloadDir +
+          "/BOOKING_" +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          file_ext,
+        // mime: 'application/xlsx',
+        // appendExt: 'xlsx',
+        //path: filePath,
+        //appendExt: fileExt,
+        notification: true,
+      };
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
+        config(options)
+          .fetch("GET", iOSUrl, {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          })
+          .then((res) => {
+            // setLoading(false);
+            setTimeout(() => {
+              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+            }, 300);
+          })
+          .catch((errorMessage) => {
+            // setLoading(false);
+          });
+      });
+    }
+  };
+
 
    
     const deleteHandler = (index) => {
@@ -4727,7 +4969,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <View style={styles.space}></View>
                 {/* 13 cancalation reasons  */}
                 
-                {isCancleClicked ? <List.Accordion
+                {isCancleClicked ||  fromScreen != undefined && fromScreen == "DROP_ANALYSIS" ? <List.Accordion
                   id={"13"}
                   title={"Booking Cancel Section"}
                   titleStyle={{
@@ -4746,7 +4988,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Cancel Reasons*"}
                     value={selector.cancel_reason_dropdown_value}
-                    disabled={false}
+                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
                     onPress={() =>
                       showDropDownModelMethod(
                         "BOOKING_CANCEL_REASONS",
@@ -4759,14 +5001,17 @@ const BookingFormScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.cancel_reason_remarks}
                     label={"Remarks"}
-                    disabled={false}
+                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
                     onChangeText={(text) =>
+                      
                       dispatch(
                         setDropDownData({
                           key: "CANCEL_REMARKS",
-                          text: text,
+                          value: text,
+                          id:""
                         })
                       )
+                      
                     }
                   />
                   <View style={{}}>
@@ -4776,7 +5021,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       </Text>
                       <TouchableOpacity
                         style={styles.addIcon}
-                        disabled={false}
+                        disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
                         onPress={() => addHandlerAttachments()}
                       >
                         <Text
@@ -4821,9 +5066,17 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <View style={styles.select_image_bck_vw}>
                                   <ImageSelectItem
                                     name={"Attachment"}
-                                    disabled={false}
-                                    onPress={() =>
-                                      dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
+                                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
+                                    // disabled={false}
+                                    onPress={() =>{
+                                      // if (fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"){
+                                        dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
+                                      // }else{
+                                      //   downloadInLocal(uploadedAttachementsObj[index]?.fileName)
+                                      // }
+                                  
+                                    }
+                                     
                                     }
                                   />
                                 </View>
@@ -4842,12 +5095,13 @@ const BookingFormScreen = ({ route, navigation }) => {
                               <TouchableOpacity
                                 onPress={() => deleteHandlerAttachemnt(index)}
                                 style={{ marginLeft: 10 }}
+                                disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
                               >
                                 <IconButton
                                   icon="trash-can-outline"
                                   color={Colors.PINK}
                                   size={25}
-                                  disabled={false}
+                                  disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
                                 />
                               </TouchableOpacity>
                             </View>
@@ -4863,31 +5117,35 @@ const BookingFormScreen = ({ route, navigation }) => {
                
 
               </List.AccordionGroup>
+              
+              {userData.hrmsRole.includes("DSE") && fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"  ?
+                <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
 
-              <View style={{justifyContent:"center",width:'100%', alignItems:"center",marginVertical:10}}>
-                
-                {isCancleClicked ? <Button
-                  mode="contained"
-                  // style={{ flex: 1, marginRight: 10 }}
-                  style={{ flex:1, marginRight: 10, }}
-                  color={Colors.GRAY}
-                  labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                  onPress={() => { }}
-                >
-                  Proceed To Cancellation
-                </Button> : <Button
-                  mode="contained"
-                  // style={{ flex: 1, marginRight: 10 }}
-                  style={{ width: '30%', marginRight: 10, }}
-                  color={Colors.GRAY}
-                  labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                  onPress={() => { setIsCancelClicked(true) }}
-                >
-                  Cancel
-                </Button>}
-                
+                  {isCancleClicked ? <Button
+                    mode="contained"
+                    // style={{ flex: 1, marginRight: 10 }}
+                    style={{ flex: 1, marginRight: 10, }}
+                    color={Colors.GRAY}
+                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                    onPress={() => proceedToCancelBooking()}
+                  >
+                    Proceed To Cancellation
+                  </Button> : <Button
+                    mode="contained"
+                    // style={{ flex: 1, marginRight: 10 }}
+                    style={{ width: '30%', marginRight: 10, }}
+                    color={Colors.GRAY}
+                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                    onPress={() => { 
+                      setIsCancelClicked(true)
+                     }}
+                  >
+                    Cancel
+                  </Button>}
+
                 </View>            
-             
+             :null }
+              
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
