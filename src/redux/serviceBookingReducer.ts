@@ -98,6 +98,18 @@ export const createCustomerBooking = createAsyncThunk(
   }
 );
 
+export const cancelCustomerBooking = createAsyncThunk(
+  "SERVICE_BOOKING_SLICE/cancelCustomerBooking",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.delete(URL.CANCEL_CUSTOMER_BOOKING(payload));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getDrivers = createAsyncThunk(
   "SERVICE_BOOKING_SLICE/getDrivers",
   async (payload, { rejectWithValue }) => {
@@ -129,6 +141,7 @@ const initialState = {
   isLoading: false,
   showDatepicker: false,
   createCustomerBookingResponseStatus: "pending",
+  cancelCustomerBookingResponseStatus: "pending",
   datePickerKeyId: "",
   bookedSlotsList: [],
   drivers: [],
@@ -162,6 +175,7 @@ const initialState = {
   doorAddress: "",
   // Reschedule
   cancelReason: "",
+  cancelRemarks: "",
 };
 
 const serviceBookingReducer = createSlice({
@@ -247,6 +261,9 @@ const serviceBookingReducer = createSlice({
         case "DRIVER_NAME":
           state.driverName = value;
           break;
+        case "CANCEL_REASON":
+          state.cancelReason = value;
+          break;
       }
     },
     setDatePicker: (state, action) => {
@@ -318,6 +335,9 @@ const serviceBookingReducer = createSlice({
           break;
         case "DOOR_KM":
           state.doorKm = text;
+          break;
+        case "CANCEL_REMARKS":
+          state.cancelRemarks = text;
           break;
       }
     },
@@ -434,14 +454,17 @@ const serviceBookingReducer = createSlice({
     // Create Customer Booking
     builder
       .addCase(createCustomerBooking.pending, (state, action) => {
+        state.isLoading = true;
         state.createCustomerBookingResponseStatus = "pending";
       })
       .addCase(createCustomerBooking.fulfilled, (state, action) => {
+        state.isLoading = false;
         if (action.payload) {
           state.createCustomerBookingResponseStatus = "success";
         }
       })
       .addCase(createCustomerBooking.rejected, (state, action) => {
+        state.isLoading = false;
         state.createCustomerBookingResponseStatus = "failed";
         if (action.payload.message) {
           showToast(`${action.payload.message}`);
@@ -449,8 +472,30 @@ const serviceBookingReducer = createSlice({
           showToast(`Something went wrong`);
         }
       });
+    
+    // Cancel Customer Booking
+    builder
+      .addCase(cancelCustomerBooking.pending, (state, action) => {
+        state.isLoading = true;
+        state.cancelCustomerBookingResponseStatus = "pending";
+      })
+      .addCase(cancelCustomerBooking.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.cancelCustomerBookingResponseStatus = "success";
+        }
+      })
+      .addCase(cancelCustomerBooking.rejected, (state, action) => {
+        state.isLoading = false;
+        state.cancelCustomerBookingResponseStatus = "failed";
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+      });
 
-    // Create Customer Booking
+    // Get Booked Slot List
     builder
       .addCase(getBookedSlotsList.pending, (state, action) => {
         state.bookedSlotsList = [];

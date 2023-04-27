@@ -180,6 +180,11 @@ client.put = async function (endpoint, body, customConfig = {}, isValidate = tru
     return client(token, endpoint, "PUT", body, customConfig,isValidate)
 }
 
+client.delete = async function (endpoint, body, customConfig = {}, isValidate = true) {
+    let token = await AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN);
+    return client(token, endpoint, "DELETE", body, customConfig,isValidate)
+}
+
 export const parseAPIResponse = response => {
     return new Promise(resolve => resolve(response.text()))
         .catch(err =>

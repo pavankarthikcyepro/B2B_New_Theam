@@ -20,8 +20,9 @@ import {
   getBookedSlotsList,
   getCenterCodes,
   setExistingBookingData,
+  cancelCustomerBooking,
 } from "../../../../redux/serviceBookingReducer";
-import { BOOKING_FACILITIES, NAME_LIST } from '../../../../jsonData/addCustomerScreenJsonData';
+import { BOOKING_FACILITIES, NAME_LIST, REASON_LIST } from '../../../../jsonData/addCustomerScreenJsonData';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 import moment from 'moment';
 import { Checkbox, IconButton } from 'react-native-paper';
@@ -53,6 +54,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
   const [sameAddress, setSameAddress] = useState("unchecked");
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [bookedSlotsModal, setBookedSlotsModal] = useState(false);
+  const [isCancel, setIsCancel] = useState(false);
 
   useEffect(() => {
     if (currentUserData?.branchId) {
@@ -72,9 +74,18 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     };
   }, []);
 
-  const isEditEnabled = () => {
-    if (fromType && fromType == "editBooking") {
+  const isEditEnabled = (type) => {
+    if (type && type == "cancel") {
       if (existingBookingData?.serviceAppointmentStatus == "BOOKED") {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (fromType && fromType == "editBooking") {
+      if (
+        existingBookingData?.serviceAppointmentStatus == "BOOKED" &&
+        !isCancel
+      ) {
         return true;
       } else {
         return false;
@@ -150,6 +161,16 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       }, 500);
     }
   }, [selector.createCustomerBookingResponseStatus]);
+  
+  useEffect(() => {
+    if (selector.cancelCustomerBookingResponseStatus == "success") {
+      showToastRedAlert("Booking Cancel Successfully");
+      isRefreshList();
+      setTimeout(() => {
+        navigation.goBack();
+      }, 500);
+    }
+  }, [selector.cancelCustomerBookingResponseStatus]);
 
   useEffect(() => {
     if (selector.serviceReqDate) {
@@ -200,6 +221,9 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         break;
       case "DRIVER_NAME":
         setDataForDropDown([...selector.drivers]);
+        break;
+      case "CANCEL_REASON":
+        setDataForDropDown([...REASON_LIST]);
         break;
       default:
         setDataForDropDown([]);
@@ -392,6 +416,21 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     }
   };
 
+  const proceedToCancel = () => {
+    if (!selector.cancelReason) {
+      showToast("Please Select Cancel Reason");
+      return;
+    }
+
+    let payload = {
+      id: existingBookingData.responseId,
+      tenantId: userData.branchId,
+      reason: selector.cancelReason,
+      remark: selector.cancelRemarks,
+    };
+    dispatch(cancelCustomerBooking(payload));
+  }; 
+
   const saveBooking = (submitType = "create") => {
     setIsSubmitPress(true);
 
@@ -422,13 +461,6 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     if (!selector.bookingFacility) {
       showToast("Please Select Booking Facility's");
       return;
-    }
-
-    if (submitType == "cancel"){
-      if (!selector.cancelReason) {
-        showToast("Please Select Cancel Reason");
-        return;
-      }
     }
 
     let pickupRequired = false;
@@ -501,7 +533,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     if (submitType == "reschedule") {
       data.id = existingBookingData.responseId;
     }
-
+    
     if (pickupRequired || dropRequired) {
       if (!selector.driverName) {
         showToast("Please Select Driver");
@@ -1069,6 +1101,41 @@ const CreateCustomerBooking = ({ navigation, route }) => {
             </>
           )}
 
+          {isCancel && (
+            <View>
+              <DropDownServices
+                label={"Cancel Reason*"}
+                placeHolder={"Cancel Reason"}
+                value={selector.cancelReason}
+                onPress={() =>
+                  showDropDownModelMethod(
+                    "CANCEL_REASON",
+                    "Select Cancel Reason"
+                  )
+                }
+                disabled={!isEditEnabled("cancel")}
+                clearOption={true}
+                clearKey={"CANCEL_REASON"}
+                onClear={onDropDownClear}
+                error={isSubmitPress && selector.cancelReason === ""}
+              />
+              <TextInputServices
+                value={selector.cancelRemarks}
+                label={"Remarks"}
+                autoCapitalize="words"
+                onChangeText={(text) =>
+                  dispatch(
+                    setInputInfo({
+                      key: "CANCEL_REMARKS",
+                      text: text,
+                    })
+                  )
+                }
+                editable={isEditEnabled("cancel")}
+              />
+            </View>
+          )}
+
           {fromType && fromType == "createBooking" && (
             <View style={styles.buttonListRow}>
               <TouchableOpacity
@@ -1088,11 +1155,12 @@ const CreateCustomerBooking = ({ navigation, route }) => {
 
           {fromType &&
             fromType == "editBooking" &&
+            !isCancel &&
             existingBookingData?.serviceAppointmentStatus == "BOOKED" && (
               <View style={styles.buttonListRow}>
                 <TouchableOpacity
                   style={styles.btnContainer}
-                  onPress={() => navigation.goBack()}
+                  onPress={() => setIsCancel(true)}
                 >
                   <Text style={styles.btnText}>CANCEL</Text>
                 </TouchableOpacity>
@@ -1104,6 +1172,23 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                 </TouchableOpacity>
               </View>
             )}
+
+          {isCancel && (
+            <View style={styles.buttonListRow}>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={() => setIsCancel(false)}
+              >
+                <Text style={styles.btnText}>Back</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={() => proceedToCancel()}
+              >
+                <Text style={styles.btnText}>Proceed To Cancellation</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
       <BookedSlotsListModel
@@ -1210,13 +1295,12 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     width: "40%",
-    paddingVertical: 14,
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
     backgroundColor: Colors.PINK,
-    paddingVertical: 10,
+    height: 45
   },
   btnText: {
     color: Colors.WHITE,

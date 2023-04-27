@@ -78,3 +78,8 @@ export const NAME_LIST = [
   { id: "3", name: "Name03" },
 ];
 
+export const REASON_LIST = [
+  { id: "1", name: "Reason 1" },
+  { id: "2", name: "Reason 2" },
+  { id: "3", name: "Reason 3" },
+];
