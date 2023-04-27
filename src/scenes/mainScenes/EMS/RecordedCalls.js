@@ -57,8 +57,7 @@ const RecordedCalls = ({ navigation, route }) => {
           currentDuration: 0,
           duration: element[i].duration ? Number(element[i].duration) : 0,
           isPlay: false,
-          isPause: false,
-          isComplete: false,
+          isMute: false,
         };
         currentTrackArr.push(Object.assign({}, currentTrackObj));
       }
@@ -70,8 +69,8 @@ const RecordedCalls = ({ navigation, route }) => {
   
 
   useEffect(() => {
-    // dispatch(getRecordedCallList(1600453));
-    dispatch(getRecordedCallList(taskId));
+    dispatch(getRecordedCallList(1600453));
+    // dispatch(getRecordedCallList(taskId));
     return () => {
       dispatch(clearRecordedCallsData());
       TrackPlayer.reset();
@@ -95,9 +94,28 @@ const RecordedCalls = ({ navigation, route }) => {
     return <View style={styles.itemDivider} />;
   };
 
+  const onVolume = async (item, index) => {
+    let element = recordingList;
+    element[index].isMute = !element[index].isMute;
+    setRecordingList([...element]);
+
+    if (item.isPlay) {
+      await TrackPlayer.pause();
+      await TrackPlayer.skip(index);
+      await TrackPlayer.seekTo(item.currentDuration);
+
+      if (item.isMute) {
+        TrackPlayer.setVolume(0);
+      } else {
+        TrackPlayer.setVolume(1);
+      }
+      await TrackPlayer.play();
+    }
+  };
+
   const onPlayerEvents = async (item, index) => {
     if (item.duration <= 0) {
-      showToast("Not Available");
+      showToast("Recording Not Available");
       return;
     }
 
@@ -124,6 +142,11 @@ const RecordedCalls = ({ navigation, route }) => {
     }
 
     if (isPlay) {
+      if (item.isMute) {
+        TrackPlayer.setVolume(0);
+      } else {
+        TrackPlayer.setVolume(1);
+      }
       await TrackPlayer.play();
     } else {
       await TrackPlayer.pause();
@@ -152,10 +175,19 @@ const RecordedCalls = ({ navigation, route }) => {
   const renderItem = ({ item, index }) => {
     return (
       <View key={index} style={styles.itemContainer}>
-        <Text style={styles.mobileNumberText}>{item.mobileNo}</Text>
-        <Text style={styles.timeText}>
-          {moment(item.start).format("DD/MM/YYYY HH:MM a")}
-        </Text>
+        <View style={styles.numberRow}>
+          <View>
+            <Text style={styles.mobileNumberText}>{item.mobileNo}</Text>
+            <Text style={styles.timeText}>
+              {moment(item.start).format("DD/MM/YYYY HH:MM a")}
+            </Text>
+          </View>
+          <IconButton
+            icon={item.isMute ? "volume-off" : "volume-high"}
+            size={25}
+            onPress={() => onVolume(item, index)}
+          />
+        </View>
         <View style={styles.row1}>
           <IconButton
             icon={item.isPlay ? "pause-circle-outline" : "play-circle-outline"}
@@ -227,6 +259,11 @@ const styles = StyleSheet.create({
   playIcon: {
     margin: -10,
   },
+  numberRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
   mobileNumberText: {
     fontWeight: "600",
     fontSize: 14,
@@ -234,7 +271,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 13,
     marginTop: 3,
-    marginBottom: 3
+    marginBottom: 3,
   },
   currentDurationText: {
     fontSize: 12,
@@ -247,12 +284,12 @@ const styles = StyleSheet.create({
   timeRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   durationTimeText: {
     fontWeight: "500",
     fontSize: 13,
-    color: Colors.DARK_GRAY
+    color: Colors.DARK_GRAY,
   },
 
   noDataView: {
