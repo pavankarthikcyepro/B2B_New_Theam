@@ -98,6 +98,23 @@ export const createCustomerBooking = createAsyncThunk(
   }
 );
 
+export const rescheduleCustomerBooking = createAsyncThunk(
+  "SERVICE_BOOKING_SLICE/rescheduleCustomerBooking",
+  async (payload, { rejectWithValue }) => {
+    const { tenantId, bookingData, id } = payload;
+    const response = await client.post(
+      URL.RESCHEDULE_CUSTOMER_BOOKING(tenantId, id),
+      bookingData
+    );
+
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const cancelCustomerBooking = createAsyncThunk(
   "SERVICE_BOOKING_SLICE/cancelCustomerBooking",
   async (payload, { rejectWithValue }) => {
@@ -141,6 +158,7 @@ const initialState = {
   isLoading: false,
   showDatepicker: false,
   createCustomerBookingResponseStatus: "pending",
+  rescheduleCustomerBookingResponseStatus: "pending",
   cancelCustomerBookingResponseStatus: "pending",
   datePickerKeyId: "",
   bookedSlotsList: [],
@@ -473,6 +491,28 @@ const serviceBookingReducer = createSlice({
         }
       });
     
+    // Reschedule Customer Booking
+    builder
+      .addCase(rescheduleCustomerBooking.pending, (state, action) => {
+        state.isLoading = true;
+        state.rescheduleCustomerBookingResponseStatus = "pending";
+      })
+      .addCase(rescheduleCustomerBooking.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.rescheduleCustomerBookingResponseStatus = "success";
+        }
+      })
+      .addCase(rescheduleCustomerBooking.rejected, (state, action) => {
+        state.isLoading = false;
+        state.rescheduleCustomerBookingResponseStatus = "failed";
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+      });
+    
     // Cancel Customer Booking
     builder
       .addCase(cancelCustomerBooking.pending, (state, action) => {
@@ -501,8 +541,8 @@ const serviceBookingReducer = createSlice({
         state.bookedSlotsList = [];
       })
       .addCase(getBookedSlotsList.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.bookedSlotsList = action.payload.body;
+        if (action?.payload?.body) {
+          state.bookedSlotsList = action.payload.body.content;
         }
       })
       .addCase(getBookedSlotsList.rejected, (state, action) => {

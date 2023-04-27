@@ -962,8 +962,13 @@ const URL = {
   ADD_CUSTOMER: (tenantId) => {
     return baseUrl + `vehicle-services/api/tenant/1/v1/service-history`;
   },
-  CREATE_CUSTOMER_BOOKING: (tenantId) => {
+  CREATE_CUSTOMER_BOOKING: (tenantId, id) => {
     return baseUrl + `vehicle-services/api/tenant/1/appointment`;
+  },
+  RESCHEDULE_CUSTOMER_BOOKING: (tenantId, id) => {
+    return (
+      baseUrl + `vehicle-services/api/tenant/1/appointment/${id}/reschedule`
+    );
   },
   CANCEL_CUSTOMER_BOOKING: ({ id, tenantId, reason, remark }) => {
     return (

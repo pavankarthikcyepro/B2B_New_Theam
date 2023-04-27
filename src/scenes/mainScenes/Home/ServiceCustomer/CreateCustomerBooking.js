@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, View, Text, ScrollView,KeyboardAvoidingView, 
 import { Colors } from '../../../../styles';
 import { DropDownServices } from '../../../../pureComponents/dropDownServices';
 import { useDispatch, useSelector } from 'react-redux';
-import { DatePickerComponent, DropDownComponant } from '../../../../components';
+import { DatePickerComponent, DropDownComponant, LoaderComponent } from '../../../../components';
 import * as AsyncStore from "../../../../asyncStore";
 import {
   setDropDownData,
@@ -21,6 +21,7 @@ import {
   getCenterCodes,
   setExistingBookingData,
   cancelCustomerBooking,
+  rescheduleCustomerBooking,
 } from "../../../../redux/serviceBookingReducer";
 import { BOOKING_FACILITIES, NAME_LIST, REASON_LIST } from '../../../../jsonData/addCustomerScreenJsonData';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
@@ -150,17 +151,23 @@ const CreateCustomerBooking = ({ navigation, route }) => {
 
   useEffect(() => {
     if (selector.createCustomerBookingResponseStatus == "success") {
-      if (existingBookingData?.serviceAppointmentStatus == "BOOKED") {
-        showToastRedAlert("Booking Reschedule Successfully");
-      } else {
-        showToastRedAlert("Booking Created Successfully");
-      }
+      showToastRedAlert("Booking Created Successfully");
       isRefreshList();
       setTimeout(() => {
         navigation.goBack();
       }, 500);
     }
   }, [selector.createCustomerBookingResponseStatus]);
+  
+  useEffect(() => {
+    if (selector.rescheduleCustomerBookingResponseStatus == "success") {
+      showToastRedAlert("Booking Rescheduled Successfully");
+      isRefreshList();
+      setTimeout(() => {
+        navigation.goBack();
+      }, 500);
+    }
+  }, [selector.rescheduleCustomerBookingResponseStatus]);
   
   useEffect(() => {
     if (selector.cancelCustomerBookingResponseStatus == "success") {
@@ -529,10 +536,6 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         dateOfBirth: customerDetail.dateOfBirth,
       },
     };
-
-    if (submitType == "reschedule") {
-      data.id = existingBookingData.responseId;
-    }
     
     if (pickupRequired || dropRequired) {
       if (!selector.driverName) {
@@ -601,11 +604,18 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         state: selector.dropState,
       };
     }
+
+    
     let payload = {
       tenantId: userData.branchId,
       bookingData: data,
     };
-    dispatch(createCustomerBooking(payload));
+    if (submitType == "reschedule") {
+      payload.id = existingBookingData.responseId;
+      dispatch(rescheduleCustomerBooking(payload));
+    }else{
+      dispatch(createCustomerBooking(payload));
+    }
   };
 
   return (
@@ -1194,7 +1204,9 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       <BookedSlotsListModel
         bookedSlotsModal={bookedSlotsModal}
         onRequestClose={() => setBookedSlotsModal(false)}
+        slotList={selector.bookedSlotsList}
       />
+      <LoaderComponent visible={selector.isLoading} />
     </SafeAreaView>
   );
 };

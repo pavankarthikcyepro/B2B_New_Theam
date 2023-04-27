@@ -5,7 +5,11 @@ import { Colors, GlobalStyle } from '../../../../styles';
 import { ScrollView } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
-const BookedSlotsListModel = ({ bookedSlotsModal, onRequestClose }) => {
+const BookedSlotsListModel = ({
+  bookedSlotsModal,
+  onRequestClose,
+  slotList,
+}) => {
   const listTop = () => {
     return (
       <View>
@@ -42,25 +46,25 @@ const BookedSlotsListModel = ({ bookedSlotsModal, onRequestClose }) => {
     return (
       <View key={index} style={styles.tableRow}>
         <Text numberOfLines={1} style={styles.rowText}>
-          TS656767GG
+          {item.vehicleRegNumber}
         </Text>
         <Text numberOfLines={1} style={styles.rowText}>
-          BKG-877879
+          {item.bookingNumber}
         </Text>
         <Text numberOfLines={1} style={styles.rowText}>
-          Free Service
+          {item.categoryName}
         </Text>
         <Text numberOfLines={1} style={styles.rowText}>
-          1st Free Service
+          -
         </Text>
         <Text numberOfLines={1} style={styles.rowText}>
-          12-12-2023
+          {item.serviceDate}
         </Text>
         <Text numberOfLines={1} style={[styles.rowText, { width: 150 }]}>
-          08:00:00-12:00:00
+          {item?.slot?.from ? `${item.slot.from}-${item.slot.to}` : "-"}
         </Text>
         <Text numberOfLines={1} style={styles.rowText}>
-          BOOKED
+          {item.serviceAppointmentStatus}
         </Text>
       </View>
     );
@@ -93,25 +97,7 @@ const BookedSlotsListModel = ({ bookedSlotsModal, onRequestClose }) => {
             <View style={{ flexDirection: "column" }}>
               <FlatList
                 ListHeaderComponent={listTop}
-                data={[
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                ]}
+                data={slotList}
                 renderItem={renderItem}
               />
             </View>
