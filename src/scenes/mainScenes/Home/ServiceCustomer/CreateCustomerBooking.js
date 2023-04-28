@@ -147,7 +147,22 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE", value: "" }));
       dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE_LIST", value: [] }));
     }
-  }, [selector.location]);
+  }, [selector.location, selector.centerCodes]);
+  
+  useEffect(() => {
+    if (selector.serviceType && selector.serviceTypeResponse.length > 0) {
+      let serviceIndex = selector.serviceTypeResponse.findIndex(
+        (item) => item.name == selector.serviceType
+      );
+      if (serviceIndex >= 0) {
+        let payload = {
+          tenantId: userData?.branchId,
+          catId: selector.serviceTypeResponse[serviceIndex].id,
+        };
+        dispatch(getSubServiceTypesApi(payload));
+      }
+    }
+  }, [selector.serviceType, selector.serviceTypeResponse]);
 
   useEffect(() => {
     if (selector.createCustomerBookingResponseStatus == "success") {
@@ -391,25 +406,25 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         let index = selector.serviceTypeResponse.findIndex(
           (item) => item.name == value
         );
-        return selector.serviceTypeResponse[index].id;
+        return selector.serviceTypeResponse[index]?.id;
       }
       if (type == "subServiceType") {
         let index = selector.subServiceTypeResponse.findIndex(
           (item) => item.name == value
         );
-        return selector.subServiceTypeResponse[index].id;
+        return selector.subServiceTypeResponse[index]?.id;
       }
       if (type == "driver") {
         let index = selector.drivers.findIndex(
           (item) => item.name == value
         );
-        return selector.drivers[index].id;
+        return selector.drivers[index]?.id;
       }
       if (type == "cities") {
         let index = selector.cities.findIndex(
           (item) => item.name == value
         );
-        return selector.cities[index].id;
+        return selector.cities[index]?.id;
       }
     }
     return "";
