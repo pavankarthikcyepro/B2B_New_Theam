@@ -131,6 +131,7 @@ import CRMFilterscreen from "../scenes/mainScenes/Home/CRMFilterscreen";
 import EditCustomerBookingList from "../scenes/mainScenes/Home/ServiceCustomer/EditCustomerBookingList";
 import CreateCustomerBooking from "../scenes/mainScenes/Home/ServiceCustomer/CreateCustomerBooking";
 import QueryList from "../scenes/mainScenes/Home/ServiceCustomer/QueryList";
+import CreateQuery from "../scenes/mainScenes/Home/ServiceCustomer/CreateQuery";
 import CRMLiveleadsFilterscreen from "../scenes/mainScenes/LiveLeads/CRMLiveleadsFilterscreen";
 import RecepSourceModelCRM from "../scenes/mainScenes/LiveLeads/RecepSourceModelCRM";
 import LiveLeadsScreenReceptionist from "../scenes/mainScenes/LiveLeadsReceptionist";
@@ -437,6 +438,7 @@ export const HomeStackIdentifiers = {
   searchCustomerResult: "SEARCH_CUSTOMER_RESULT",
   editCustomerBookingList: "EDIT_CUSTOMER_BOOKING_LIST",
   queryList: "QUERY_LIST",
+  createQuery: "CREATE_QUERY",
   createCustomerBooking: "CREATE_CUSTOMER_BOOKING",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
   crmFilter: "CRM_FILTER",
@@ -613,6 +615,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.queryList}
         component={QueryList}
         options={{ title: "Query List" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.createQuery}
+        component={CreateQuery}
+        options={{ title: "Query" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.crmFilter}

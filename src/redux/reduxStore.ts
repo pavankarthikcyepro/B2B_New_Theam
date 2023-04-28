@@ -40,6 +40,7 @@ import searchCustomerReducer from "./searchCustomerReducer";
 import serviceBookingReducer from "./serviceBookingReducer";
 import serviceBookingCrudReducer from "./serviceBookingCrudReducer";
 import queryListReducer from "./queryListReducer";
+import queryCrudReducer from "./queryCrudReducer";
 
 import liveLeadsReducerReceptionist from "./liveLeadsReducerReceptionist";
 import digitalDashboardReducer from "./digitalDashboardReducer";
@@ -84,8 +85,9 @@ const reducer = combineReducers({
   serviceBookingReducer,
   serviceBookingCrudReducer,
   queryListReducer,
+  queryCrudReducer,
   liveLeadsReducerReceptionist,
-  digitalDashboardReducer
+  digitalDashboardReducer,
 });
 
 const createDebugger = require("redux-flipper").default;

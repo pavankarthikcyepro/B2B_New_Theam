@@ -34,8 +34,6 @@ const queryListReducer = createSlice({
       .addCase(getQueryList.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
-          console.log(" -> ", action.payload.body.content);
-          
           state.queryList = action.payload.body.content;
         }
       })

@@ -976,6 +976,14 @@ const URL = {
       `vehicle-services/api/tenant/1/appointment/${id}?reason=${reason}&remark=${remark}`
     );
   },
+  CREATE_QUERY: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/customer-query`;
+  },
+  UPDATE_QUERY: (tenantId, queryId) => {
+    return (
+      baseUrl + `vehicle-services/api/tenant/1/customer-query/id/${queryId}`
+    );
+  },
   GET_CUSTOMER_DETAILS: (tenantId, vehicleRegNumber) => {
     return (
       baseUrl +

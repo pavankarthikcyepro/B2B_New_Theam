@@ -7,9 +7,10 @@ import { LoaderComponent } from '../../../../components';
 import { Colors, GlobalStyle } from '../../../../styles';
 import moment from 'moment';
 import CREATE_NEW from "../../../../assets/images/create_new.svg";
+import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
 
 const QueryList = ({ navigation, route }) => {
-  const { currentUserData } = route.params;
+  const { currentUserData, vehicleRegNumber, customerDetail } = route.params;
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.queryListReducer);
   const [userData, setUserData] = useState("");
@@ -58,12 +59,14 @@ const QueryList = ({ navigation, route }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          //   navigation.navigate(HomeStackIdentifiers.createCustomerBooking, {
-          //     existingBookingData: item,
-          //     currentUserData: userData,
-          //     isRefreshList: () => getListing(),
-          //     fromType: "editBooking",
-          //   });
+          navigation.navigate(HomeStackIdentifiers.createQuery, {
+            currentUserData: userData,
+            isRefreshList: () => getListing(),
+            fromType: "editQuery",
+            vehicleRegNumber,
+            customerDetail,
+            existingQueryData: item,
+          });
         }}
         activeOpacity={0.9}
         key={index}
@@ -89,7 +92,9 @@ const QueryList = ({ navigation, route }) => {
         <View style={styles.itemRow}>
           <Text style={styles.rowLabel}>Customer Created Date: </Text>
           <Text style={styles.rowValue}>
-            {moment(item.createdDate).format("YYYY-MM-DD HH:MM a")}
+            {item.createdDate
+              ? moment(item.createdDate).format("YYYY-MM-DD HH:MM a")
+              : ""}
           </Text>
         </View>
         <View style={styles.itemRow}>
@@ -127,11 +132,13 @@ const QueryList = ({ navigation, route }) => {
         style={[GlobalStyle.shadow, styles.addView]}
         activeOpacity={0.8}
         onPress={() => {
-          //   navigation.navigate(HomeStackIdentifiers.createCustomerBooking, {
-          //     currentUserData: userData,
-          //     isRefreshList: () => getListing(),
-          //     fromType: "createBooking",
-          //   });
+          navigation.navigate(HomeStackIdentifiers.createQuery, {
+            currentUserData: userData,
+            isRefreshList: () => getListing(),
+            fromType: "createQuery",
+            vehicleRegNumber,
+            customerDetail,
+          });
         }}
       >
         <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />

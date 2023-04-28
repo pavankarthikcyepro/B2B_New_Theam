@@ -1998,11 +1998,14 @@ const AddCustomerInfo = ({ navigation, route }) => {
               <View style={styles.buttonListRow}>
                 <TouchableOpacity
                   style={styles.rsaQueryBtnContainer}
-                  onPress={() =>
+                  onPress={() => {
+                    const { customerDetail } = selector.customerDetailsResponse;
                     navigation.navigate(HomeStackIdentifiers.queryList, {
+                      vehicleRegNumber,
+                      customerDetail,
                       currentUserData: userData,
-                    })
-                  }
+                    });
+                  }}
                 >
                   <Text style={styles.editBtnText}>QUERY</Text>
                 </TouchableOpacity>
