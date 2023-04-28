@@ -12,7 +12,9 @@ import {
     BackHandler,
     TextInput,
     FlatList,
-    Alert
+    Alert,
+    Modal,
+    Image
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -314,7 +316,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [addNewInput, setAddNewInput] = useState([]);
     const [otherPriceErrorNameIndex, setOtherPriceErrorNameIndex] = useState(null);
     const [otherPriceErrorAmountIndexInput, setOtherPriceErrorAmountIndex] = useState(null);
-
+  const [imagePath, setImagePath] = useState("");
   const [addAttachmentInput, setAddAttachmentInput] = useState([{
     "url": "",
     "fileType": "",
@@ -2397,6 +2399,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
   const downloadInLocal = async (url) => {
+    setImagePath("")
     let iOSUrl = url.replace("https", "http");
     const { config, fs } = RNFetchBlob;
     let downloadDir = Platform.select({
@@ -2531,10 +2534,57 @@ const BookingFormScreen = ({ route, navigation }) => {
       return isError;
     };
 
+
+  const ImageViewModal = () => {
+    return (
+      <Modal
+        animationType="fade"
+        visible={imagePath !== ""}
+        onRequestClose={() => {
+          setImagePath("");
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={{ width: "90%" }}>
+            <Image
+              style={{ width: "100%", height: 300, borderRadius: 4 }}
+              resizeMode="contain"
+              source={{ uri: imagePath }}
+            />
+          </View>
+          <View style={{flexDirection:"row"}}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setImagePath("")}
+            >
+              <Text style={styles.closeButtonTxt}>Close</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => downloadInLocal(imagePath)}
+            >
+              <Text style={styles.closeButtonTxt}>Download</Text>
+            </TouchableOpacity>
+          </View>
+         
+        </View>
+      </Modal>
+    );
+  };
+
     
 
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+        <ImageViewModal />
         <ImagePickerComponent
           visible={selector.showImagePicker}
           keyId={selector.imagePickerKeyId}
@@ -5066,14 +5116,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <View style={styles.select_image_bck_vw}>
                                   <ImageSelectItem
                                     name={"Attachment"}
-                                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                                    // disabled={false}
+                                    // disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
+                                    disabled={false}
                                     onPress={() =>{
-                                      // if (fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"){
+                                      if (fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"){
                                         dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
-                                      // }else{
-                                      //   downloadInLocal(uploadedAttachementsObj[index]?.fileName)
-                                      // }
+                                      }else{
+                                        // downloadInLocal(uploadedAttachementsObj[index]?.fileName)
+                                        setImagePath(uploadedAttachementsObj[index]?.fileName)
+                                      }
                                   
                                     }
                                      
@@ -5347,5 +5398,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 5,
     marginRight: 20,
+  },
+  closeButton: {
+    width: 100,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    // position: "absolute",
+    // left: "37%",
+    // bottom: "15%",
+    borderRadius: 5,
+    backgroundColor: Colors.RED,
+    margin:10
+  },
+  closeButtonTxt: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.WHITE,
   },
 });
