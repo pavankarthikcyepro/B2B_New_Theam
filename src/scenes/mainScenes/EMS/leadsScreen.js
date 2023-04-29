@@ -1521,6 +1521,7 @@ const LeadsScreen = ({ route, navigation }) => {
                     enqDetails: item,
                     leadStatus: item.leadStatus,
                     leadStage: item.leadStage,
+                    fromScreen:"EMS_TAB"
                   });
                 } else {
                   alert("No Access");
@@ -1541,6 +1542,7 @@ const LeadsScreen = ({ route, navigation }) => {
                   enqDetails: item,
                   leadStatus: item.leadStatus,
                   leadStage: item.leadStage,
+                  fromScreen: "EMS_TAB"
                 });
               }
             }}
