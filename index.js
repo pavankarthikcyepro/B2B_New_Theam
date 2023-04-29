@@ -13,4 +13,4 @@ if (__DEV__) {
   import("./config/ReactotronConfig").then(() => {});
 }
 
-AppRegistry.registerComponent(appName, () => AppScreen);
+AppRegistry.registerComponent(appName, () => EventFormScreen);
