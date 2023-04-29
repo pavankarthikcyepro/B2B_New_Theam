@@ -69,7 +69,6 @@ const MyAttendanceTopTabNavigatorOne = ({ navigation }) => {
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      console.log("jsonObj.hrmsRole", jsonObj.hrmsRole);
       if (
         jsonObj.hrmsRole === "branch manager" ||
         jsonObj.hrmsRole === "MD" ||
