@@ -381,8 +381,8 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                   icon={"phone"}
                   borderless={true}
                   size={19}
-                  style={[styles.playIcon]}
-                  color={Colors.PINK}
+                  style={styles.playIcon}
+                  color={activeColor}
                 />
               </View>
               <Text style={styles.iconText}>Call</Text>
@@ -405,7 +405,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                   icon={"play"}
                   size={20}
                   style={styles.playIcon}
-                  color={Colors.PINK}
+                  color={activeColor}
                 />
               </View>
               <Text numberOfLines={1} style={styles.iconText}>
@@ -423,14 +423,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 <IconButton
                   icon={"map-marker"}
                   size={18}
-                  style={[
-                    styles.playIcon,
-                    {
-                      borderColor: isIconEnable("location", item)
-                        ? activeColor
-                        : disabledColor,
-                    },
-                  ]}
+                  style={styles.playIcon}
                   color={
                     isIconEnable("location", item) ? activeColor : disabledColor
                   }
@@ -448,11 +441,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             <View style={styles.iconDivider} />
             <View style={styles.iconBoxView}>
               <View style={styles.iconView}>
-                <Image
-                  source={require("./../../../assets/images/check-list.png")}
-                  resizeMode="contain"
-                  tintColor={Colors.GRAY}
-                  style={[styles.countContainer]}
+                <IconButton
+                  icon={"checkbox-marked-circle-outline"}
+                  size={18}
+                  style={styles.playIcon}
+                  color={activeColor}
                 />
                 {dataForFOllowUpCount !== undefined ? (
                   <Text style={styles.followUpCountText}>
