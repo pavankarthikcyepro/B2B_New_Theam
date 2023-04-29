@@ -17,7 +17,8 @@ import {
   updateSelectedDate,
   updateHomeVisit,
   getHomeVisitCounts,
-  savehomevisit
+  savehomevisit,
+  getHomeVisitAuditDetails
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -119,6 +120,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
       getCurrentLocation()
       getReasonListData(reasonTaskName)
     })
+    navigation.addListener("blur", () => {
+      dispatch(clearState());
+    });
   }, [navigation]);
 
   const getCurrentLocation = () => {
@@ -214,7 +218,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
     if (selector.task_details_response){
       const universalID = selector.task_details_response?.universalId;
       if(universalID){
-        dispatch(getHomeVisitCounts(universalID))
+       
+       
+        if (selector.task_details_response.taskStatus !== "ASSIGNED") {
+          dispatch(getHomeVisitCounts(universalID))
+          dispatch(getHomeVisitAuditDetails(universalID))
+        }
       }
       
     }

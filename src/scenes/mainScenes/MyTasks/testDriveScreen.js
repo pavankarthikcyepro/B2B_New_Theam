@@ -40,6 +40,7 @@ import {
   updateSelectedScheduledata,
   getTestDriveHistoryDetails,
   saveReScheduleRemark,
+  getDetailsWrokflowTask,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -187,6 +188,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
   const [storeLastupdatedTestDriveId, setStoreLastupdatedTestDriveId] = useState("");
+  const [storeLastupdatedTestDriveDetails, setStoreLastupdatedTestDriveDetails] = useState([]);
   let date = new Date();
   date.setDate(date.getDate() + 9);
 
@@ -231,9 +233,97 @@ const TestDriveScreen = ({ route, navigation }) => {
       let tempData;
       if(response.length >0){
        tempData= response[response.length - 1]
+        setStoreLastupdatedTestDriveDetails(tempData);
+        setStoreLastupdatedTestDriveId(tempData?.id);
+        // todo set last updated test drive data 
+        if (tempData.length > 0) {
+          setName(tempData.name);
+          setEmail(tempData.email || "");
+          setMobileNumber(mobile || tempData.mobileNumber);
+
+          setSelectedVehicleDetails({
+            model: tempData.model,
+            varient: tempData.variant,
+            fuelType: tempData.fuelType,
+            transType: tempData.transmissionType,
+            vehicleId: 0,
+            varientId: 0,
+          });
+
+
+
+          const driverId = tempData.driverId || "";
+          let driverName = "";
+
+          if (selector.drivers_list.length > 0 && tempData.driverId) {
+            const filterAry = selector.drivers_list.filter(
+              (object) => object.id === tempData.driverId
+            );
+            if (filterAry.length > 0) {
+              driverName = filterAry[0].name;
+            }
+          }
+          setSelectedDriverDetails({ name: driverName, id: driverId });
+
+          const customerHaveingDl = tempData.isCustomerHaveingDl
+            ? tempData.isCustomerHaveingDl
+            : false;
+          if (customerHaveingDl) {
+            const dataObj = { ...uploadedImagesDataObj };
+            if (tempData.dlFrontUrl) {
+              dataObj.dlFrontUrl = {
+                documentPath: tempData.dlFrontUrl,
+                fileName: "driving license front",
+              };
+            }
+            if (tempData.dlBackUrl) {
+              dataObj.dlBackUrl = {
+                documentPath: tempData.dlBackUrl,
+                fileName: "driving license back",
+              };
+            }
+            setUploadedImagesDataObj({ ...dataObj });
+          }
+          setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
+
+
+          const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
+          const testDriveDatetimeAry = testDriveDatetime.split(" ");
+          if (testDriveDatetimeAry.length > 0) {
+            // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
+              dispatch(
+                updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
+            );
+          }
+          if (testDriveDatetimeAry.length > 1) {
+            // state.customer_preferred_time = testDriveDatetimeAry[1];
+            dispatch(
+              updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
+            );
+          }
+
+          const startTime = tempData.startTime ? tempData.startTime : "";
+          const startTimeAry = startTime.split(" ");
+          if (startTimeAry.length > 1) {
+            // state.actual_start_time = startTimeAry[1];
+            dispatch(
+              updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
+            );
+          }
+          // state.driverId = tempData.driverId;
+          const endTime = tempData.endTime ? tempData.endTime : "";
+          const endTimeAry = endTime.split(" ");
+          if (endTimeAry.length > 1) {
+            // state.actual_end_time = endTimeAry[1];
+            dispatch(
+              updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
+            );
+          }
+
+
+        }
       }
-      
-      setStoreLastupdatedTestDriveId(tempData?.id)
+     
     }
 
 
@@ -1474,6 +1564,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
 
     dispatch(postReOpenTestDrive(reopenSubmitObj));
+    // dispatch(getDetailsWrokflowTask(entityId)) todo need to check and pass entityId
     setIschangeScreen(true)
 
   }

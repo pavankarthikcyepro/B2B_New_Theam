@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://dev-api.cyepro.com/";
+export const baseUrl = "http://qa-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -439,6 +439,13 @@ const URL = {
 
   GET_RECHEDULE_REMARKS: (universalId) => {
     return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+  },
+
+  GET_WORKFLOW_TASKS: (entityId, taskName) => {
+    return sales_url + `/dms/workflowtask/${entityId}/${taskName}`;
+  },
+  POST_WORKFLOW_TASKS: () => {
+    return sales_url + `/dms/workflowtaskhistory`;
   },
 
 
