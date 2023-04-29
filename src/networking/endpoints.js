@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://qa-api.cyepro.com/";
+export const baseUrl = "http://dev-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -407,9 +407,18 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
+  // ORG_HIRARCHY: (orgId, empId) => {
+  //   return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+  // },
+
   ORG_HIRARCHY: (orgId, empId) => {
-    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+    return orgnaizationHirarchy + `/v1/active-levels/${orgId}/${empId}`;
   },
+
+  ORG_HIRARCHY_DEALDER_DESIGNATIONS: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`;
+  },
+
   LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
   VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",
   EVENT_DATA: () => dashboard + "/v2/get_events_data",
@@ -703,6 +712,14 @@ const URL = {
   GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
     return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
+  GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
+    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId + "/branchName/" + branchId;
+  },
+
+  GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
+  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId + "/branchName/" + branchId;
+  },
+
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
   },

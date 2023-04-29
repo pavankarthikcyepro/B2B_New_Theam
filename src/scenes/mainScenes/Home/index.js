@@ -57,6 +57,10 @@ import {
   updateIsModalVisible,
   getReceptionistManagerData,
   getCRM_ReceptionistManagerData,
+  updatefilter_drop_down_designations,
+  updateFilterLeadership_selectedDesignation,
+  updateFilterLeadership_selectedDesignationName,
+  updateLeaderShipFilter,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -158,6 +162,11 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
+      dispatch(updatefilter_drop_down_designations({}))
+      dispatch(updateFilterLeadership_selectedDesignation(""))
+      dispatch(updateFilterLeadership_selectedDesignationName(""))
+      dispatch(updateLeaderShipFilter([]))
+      
       getCurrentLocation();
       setTargetData().then(() => { }); //Commented to resolved filter issue for Home Screen
     });
