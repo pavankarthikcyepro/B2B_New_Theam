@@ -259,12 +259,16 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     });
 
     Linking.canOpenURL(url).then((supported) => {
-      if (supported) {
-        return Linking.openURL(url);
-      } else {
+      // if (supported) {
+      //   return Linking.openURL(url);
+      // } else 
+      {
         const browser_url =
-          "https://www.google.de/maps/@" + latitude + "," + longitude;
+          "https://www.google.de/maps?q=" + latitude + "," + longitude;
         return Linking.openURL(browser_url);
+        // const browser_url =
+        //   "https://www.google.de/maps/@" + latitude + "," + longitude;
+        // return Linking.openURL(browser_url);
       }
     });
   };

@@ -139,6 +139,7 @@ import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDa
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 import HomeVisitHistory from "../scenes/mainScenes/MyTasks/homeVisitHistory";
+import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -427,7 +428,8 @@ export const HomeStackIdentifiers = {
   location: "MAP_TRACKER",
   receptionistFilter: "REECEPTION_FILTER",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
-  crmFilter:"CRM_FILTER"
+  crmFilter:"CRM_FILTER",
+  laderfilterScreen_new: "LEADER_FLITER_SCREEN_NEW",
 };
 
 export const EmsStackIdentifiers = {
@@ -547,6 +549,11 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name={HomeStackIdentifiers.laderfilterScreen}
         component={LeaderShipFilter}
+        options={{ title: "Filter" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.laderfilterScreen_new}
+        component={leaderShipFilterNewLogic}
         options={{ title: "Filter" }}
       />
       <HomeStack.Screen
@@ -1249,6 +1256,12 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
         options={({ route }) => ({
           headerTitle: route?.params?.title ?? "History",
         })}
+      />
+      <DropAnalysisStack.Screen
+        name={"BOOKING_FORM"}
+        component={BookingFormScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Booking View Form" }}
       />
     </DropAnalysisStack.Navigator>
   );

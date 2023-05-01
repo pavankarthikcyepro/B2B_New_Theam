@@ -389,6 +389,11 @@ const URL = {
   GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
     return sales_url + `/booking-amount/lead/${leadId}`;
   },
+
+  SAVE_BOOKING_CANCEL_ATTACHMENT: () => {
+    return sales_url + `/payment/saveReceiptdoc`;
+  },
+
   GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
     return sales_url + `/workflow/lead/stage/${universalId}`;
   },
@@ -398,6 +403,11 @@ const URL = {
       `/dms/getAllServiceEventsByFilterWithoutPagination?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
+
+  UPLOAD_ATTACHMENTS: () => {
+    return notificationServices_url + `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`;
+  },
+
   GENERATE_OTP: () => {
     return notificationServices_url + "/generateOTP";
   },
@@ -452,9 +462,18 @@ const URL = {
   UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
     return sales_url + `/task-history/updateList/${recordid}`;
   },
+  // ORG_HIRARCHY: (orgId, empId) => {
+  //   return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+  // },
+
   ORG_HIRARCHY: (orgId, empId) => {
-    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+    return orgnaizationHirarchy + `/v1/active-levels/${orgId}/${empId}`;
   },
+
+  ORG_HIRARCHY_DEALDER_DESIGNATIONS: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`;
+  },
+
   LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
   VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",
   EVENT_DATA: () => dashboard + "/v2/get_events_data",
@@ -657,6 +676,15 @@ const URL = {
   UPDATE_REF: () => {
     return sales_url + `/lead-customer-reference/update`;
   },
+
+  GET_LEAD_DROP_DETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/lead-drop/leaddropdetails/${leadid}`;
+  },
+
+  GET_LEAD_RECEPDETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/payment/getReceiptdoc/${leadid}`;
+  },
+
   GET_BRANCH: () => {
     return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
   },
@@ -748,6 +776,14 @@ const URL = {
   GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
     return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
+  GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
+    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId + "/branchName/" + branchId;
+  },
+
+  GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
+  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId + "/branchName/" + branchId;
+  },
+
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
   },

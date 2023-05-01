@@ -77,7 +77,7 @@ export const DropAnalysisItem = ({
   count = 0,
   isThreeBtnClickable = false,
   leadStatus,
-  dse = "",
+  dse = "",onItemPressed
 }) => {
   const [isItemSelected, setisItemSelected] = useState("unchecked");
 
@@ -164,7 +164,9 @@ export const DropAnalysisItem = ({
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY }}>
       <View style={[styles.mainView]}>
-        <TouchableOpacity style={styles.section} disabled={true}>
+        <TouchableOpacity style={styles.section} disabled={leadStage === "BOOKING" ? false :true}
+          onPress={onItemPressed}
+        >
           <View
             style={{
               flexDirection: "row",

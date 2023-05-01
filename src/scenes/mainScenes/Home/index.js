@@ -9,7 +9,7 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  
+
   Keyboard,
   Image,
   Platform,
@@ -57,6 +57,10 @@ import {
   updateIsModalVisible,
   getReceptionistManagerData,
   getCRM_ReceptionistManagerData,
+  updatefilter_drop_down_designations,
+  updateFilterLeadership_selectedDesignation,
+  updateFilterLeadership_selectedDesignationName,
+  updateLeaderShipFilter,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -158,8 +162,13 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
+      dispatch(updatefilter_drop_down_designations({}))
+      dispatch(updateFilterLeadership_selectedDesignation(""))
+      dispatch(updateFilterLeadership_selectedDesignationName(""))
+      dispatch(updateLeaderShipFilter([]))
+      
       getCurrentLocation();
-      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
+      setTargetData().then(() => { }); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -178,10 +187,10 @@ const HomeScreen = ({ route, navigation }) => {
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
         },
-        (error) => {},
+        (error) => { },
         { enableHighAccuracy: true }
       );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -199,12 +208,6 @@ const HomeScreen = ({ route, navigation }) => {
 
   const getDetails = async () => {
     try {
-      var startDate = createDateTime("8:30");
-      var startBetween = createDateTime("11:30");
-      var endBetween = createDateTime("20:30");
-      var endDate = createDateTime("21:30");
-      var now = new Date();
-      var isBetween = startDate <= now && now <= endDate;
       if (true) {
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -228,41 +231,17 @@ const HomeScreen = ({ route, navigation }) => {
             const json1 = await response1.json();
             if (json1?.length > 0) {
               return;
-            }
+            }           
             if (json.length !== 0) {
               let date = new Date(json[json.length - 1].createdtimestamp);
-              // let dist = getDistanceBetweenTwoPoints(
-              //   officeLocation.latitude,
-              //   officeLocation.longitude,
-              //   initialPosition?.latitude,
-              //   initialPosition?.longitude
-              // );
-              // if (dist > officeRadius) {
-              //   setReason(true); ///true for reason
-              // } else {
-              //   setReason(false);
-              // }
               if (date.getDate() !== new Date().getDate()) {
+                
                 setAttendance(true);
-                // if (startDate <= now && now <= startBetween) {
-                //   setAttendance(true);
-                // } else {
-                //   setAttendance(false);
-                // }
               } else {
-                // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-                //   setAttendance(true);
-                // } else {
-                //   setAttendance(false);
-                // }
+
               }
             } else {
               setAttendance(true);
-              //  if (startDate <= now && now <= startBetween) {
-              //    setAttendance(true);
-              //  } else {
-              //    setAttendance(false);
-              //  }
             }
           }
         }
@@ -491,7 +470,7 @@ const HomeScreen = ({ route, navigation }) => {
         .subtract(0, "months")
         .endOf("month")
         .format(dateFormat);
-     
+
       Promise.all([
         dispatch(getOrganaizationHirarchyList(payload)),
         dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
@@ -508,7 +487,7 @@ const HomeScreen = ({ route, navigation }) => {
               endDate: monthLastDate,
               loggedInEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds.empSelected[0] : jsonObj.empId,
               startDate: monthFirstDate,
-              levelSelected: selector.filterIds?.levelSelected ? selector.filterIds?.levelSelected :null,
+              levelSelected: selector.filterIds?.levelSelected ? selector.filterIds?.levelSelected : null,
               pageNo: 0,
               size: 0,
             },
@@ -522,14 +501,14 @@ const HomeScreen = ({ route, navigation }) => {
               endDate: monthLastDate,
               loggedInEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds.empSelected[0] : jsonObj.empId,
               startDate: monthFirstDate,
-              levelSelected: selector.filterIds?.levelSelected ? selector.filterIds?.levelSelected :null,
+              levelSelected: selector.filterIds?.levelSelected ? selector.filterIds?.levelSelected : null,
               pageNo: 0,
               size: 0,
             },
             orgId: jsonObj.orgId,
           })
         ),
-      ]).then(() => {});
+      ]).then(() => { });
       if (
         jsonObj?.hrmsRole === "Admin" ||
         jsonObj?.hrmsRole === "Admin Prod" ||
@@ -574,7 +553,7 @@ const HomeScreen = ({ route, navigation }) => {
           startDate: selector?.filterIds?.startDate
             ? selector.filterIds.startDate
             : monthFirstDate,
-          empId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0]: jsonObj.empId,
+          empId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : jsonObj.empId,
         };
         if (selector.filterIds?.empSelected?.length) {
           payload["empSelected"] = selector.filterIds.empSelected;
@@ -584,8 +563,8 @@ const HomeScreen = ({ route, navigation }) => {
             : null;
         }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) => {})
-          .catch((y) => {});
+          .then((x) => { })
+          .catch((y) => { });
       }
 
       if (
@@ -609,7 +588,9 @@ const HomeScreen = ({ route, navigation }) => {
 
       if (
         jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
-        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("reception") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("tele caller")
       ) {
         dispatch(updateIsDSE(true));
       } else {
@@ -672,10 +653,10 @@ const HomeScreen = ({ route, navigation }) => {
           })
         ),
           getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) => {})
-            .catch((y) => {});
+            .then((x) => { })
+            .catch((y) => { });
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) => {});
+        getTargetParametersDataFromServer(payload).catch((y) => { });
       }
     }
   };
@@ -714,10 +695,10 @@ const HomeScreen = ({ route, navigation }) => {
       // dispatch(getVehicleModelTableList(payload)),
       // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
-    ]).then(() => {});
+    ]).then(() => { });
 
     getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => {});
+    getTargetParametersDataFromServer(payload).catch((y) => { });
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -730,7 +711,7 @@ const HomeScreen = ({ route, navigation }) => {
       dispatch(getTaskTableList(payload)),
       dispatch(getSalesData(payload)),
       dispatch(getSalesComparisonData(payload)),
-    ]).then(() => {});
+    ]).then(() => { });
   };
 
   const getTargetParametersDataFromServer = async (payload) => {
@@ -769,8 +750,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpDataInsights(payload1)
       ),
     ])
-      .then(() => {})
-      .catch((y) => {});
+      .then(() => { })
+      .catch((y) => { });
   };
 
   const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -830,8 +811,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpData(payload1)
       ),
     ])
-      .then(() => {})
-      .catch((y) => {});
+      .then(() => { })
+      .catch((y) => { });
   };
 
   useEffect(() => {
@@ -981,7 +962,9 @@ const HomeScreen = ({ route, navigation }) => {
                 if (res[0]?.payload?.downloadUrl) {
                   let path = res[0]?.payload;
                   if (Platform.OS === "android") {
+                    console.log("LLLL",path)
                     for (const property in path) {
+                      console.log("sssss", path[property]);
                       downloadInLocal(path[property]);
                     }
                   }
@@ -1175,7 +1158,7 @@ const HomeScreen = ({ route, navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <>
               <Button
@@ -1270,19 +1253,19 @@ const HomeScreen = ({ route, navigation }) => {
           isFilterApplied: true,
         },
       });
-    }else{
-      if(userData.hrmsRole === "CRM"){
+    } else {
+      if (userData.hrmsRole === "CRM") {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
           params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: false },
         });
-      }else{
+      } else {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
           params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: true },
         });
       }
-      
+
     }
   }
 
@@ -1320,7 +1303,7 @@ const HomeScreen = ({ route, navigation }) => {
         notification={true}
         navigation={navigation}
       />
-     
+
       {userData.hrmsRole === "CRM" ? <View
         // nestedScrollEnabled={true} // changed due to scrolling issue with CRM login 
         // showsVerticalScrollIndicator={false}
@@ -1734,14 +1717,14 @@ const HomeScreen = ({ route, navigation }) => {
               )}
           </View>
         </View>
-      </View> : 
-      
-          <ScrollView
-            nestedScrollEnabled={true} // changed due to scrolling issue with CRM login 
-            showsVerticalScrollIndicator={false}
-            style={{ flex: 1, paddingHorizontal: 10 }}
-          >
-            {userData.hrmsRole !== "" ? <>
+      </View> :
+
+        <ScrollView
+          nestedScrollEnabled={true} // changed due to scrolling issue with CRM login 
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1, paddingHorizontal: 10 }}
+        >
+          {userData.hrmsRole !== "" ? <>
             {/* 0000 */}
             <View>
               {isButtonPresent && (
@@ -2151,10 +2134,10 @@ const HomeScreen = ({ route, navigation }) => {
               </View>
             </View></> : <></>}
 
-          </ScrollView> 
-      
+        </ScrollView>
+
       }
-    
+
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
