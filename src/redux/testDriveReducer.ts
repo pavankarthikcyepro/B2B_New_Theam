@@ -130,7 +130,7 @@ export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi"
 
 
 
-export const saveReScheduleRemark = createAsyncThunk("HOME_VISIT_SLICE/saveReScheduleRemark", async (payload, { rejectWithValue }) => {
+export const saveReScheduleRemark = createAsyncThunk("TEST_DRIVE_SLICE/saveReScheduleRemark", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.SAVE_RECHEDULE_REMARKS(), payload);
   const json = await response.json()
@@ -140,7 +140,7 @@ export const saveReScheduleRemark = createAsyncThunk("HOME_VISIT_SLICE/saveReSch
   return json;
 })
 
-export const getReScheduleRemark = createAsyncThunk("HOME_VISIT_SLICE/getReScheduleRemark", async (payload, { rejectWithValue }) => {
+export const getReScheduleRemark = createAsyncThunk("TEST_DRIVE_SLICE/getReScheduleRemark", async (payload, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_RECHEDULE_REMARKS(), payload);
   const json = await response.json()
@@ -152,9 +152,9 @@ export const getReScheduleRemark = createAsyncThunk("HOME_VISIT_SLICE/getReSched
 
 
 // call on click of retestdrive added to get entry of same task in today and closed 
-export const getDetailsWrokflowTask = createAsyncThunk("HOME_VISIT_SLICE/getDetailsWrokflowTask", async (payload, { rejectWithValue }) => {
+export const getDetailsWrokflowTask = createAsyncThunk("TEST_DRIVE_SLICE/getDetailsWrokflowTask", async (payload, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload), );
+  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]), );
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -162,7 +162,7 @@ export const getDetailsWrokflowTask = createAsyncThunk("HOME_VISIT_SLICE/getDeta
   return json;
 })
 
-export const postDetailsWorkFlowTask = createAsyncThunk("HOME_VISIT_SLICE/postDetailsWorkFlowTask", async (payload, { rejectWithValue }) => {
+export const postDetailsWorkFlowTask = createAsyncThunk("TEST_DRIVE_SLICE/postDetailsWorkFlowTask", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.POST_WORKFLOW_TASKS(), payload);
   const json = await response.json()
@@ -173,7 +173,7 @@ export const postDetailsWorkFlowTask = createAsyncThunk("HOME_VISIT_SLICE/postDe
 })
 
 
-export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
+export const postReOpenTestDrive = createAsyncThunk("TEST_DRIVE_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.SAVETESTDRIVE(), payload);
   const json = await response.json()
@@ -184,7 +184,7 @@ export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpen
 })
 
 
-export const PutUpdateListTestDriveHistory = createAsyncThunk("HOME_VISIT_SLICE/PutUpdateListTestDriveHistory", async (payload,{ rejectWithValue }) => {
+export const PutUpdateListTestDriveHistory = createAsyncThunk("TEST_DRIVE_SLICE/PutUpdateListTestDriveHistory", async (payload,{ rejectWithValue }) => {
 
   const response = await client.put(URL.UPDATELIST_TESTDRIVE_HISTORY(payload["recordid"]), payload["body"]);
   const json = await response.json()
@@ -210,6 +210,17 @@ export const getTestDriveHistoryCount = createAsyncThunk("TEST_DRIVE_SLICE/getTe
 export const getTestDriveHistoryDetails = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryDetails", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_TEST_HISTORY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+// call for close and reschdules in retestdrvie cases
+export const putWorkFlowHistory = createAsyncThunk("TEST_DRIVE_SLICE/putWorkFlowHistory", async (payload, { rejectWithValue }) => {
+
+  const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["id"]), payload["body"]);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -252,6 +263,7 @@ const testDriveSlice = createSlice({
     save_test_drive_rescheduleRemarks_status: "",
     get_workFlow_task_details:"",
     post_workFlow_task_details: "",
+    put_workflow_task_history :"",
   },
   reducers: {
     clearState: (state, action) => {
@@ -281,7 +293,8 @@ const testDriveSlice = createSlice({
       state.test_drrive_history_updatelist="";
       state.reason = "";
       state.get_workFlow_task_details = "";
-      state.post_workFlow_task_details = ""
+      state.post_workFlow_task_details = "";
+      state.put_workflow_task_history = "";
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -702,6 +715,29 @@ const testDriveSlice = createSlice({
       // }
       state.isLoading = false;
       state.post_workFlow_task_details = "";
+    })
+
+
+    builder.addCase(putWorkFlowHistory.pending, (state, action) => {
+      state.isLoading = true;
+      state.put_workflow_task_history = "";
+    })
+    builder.addCase(putWorkFlowHistory.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.put_workflow_task_history = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(putWorkFlowHistory.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.put_workflow_task_history = "";
     })
   }
 });

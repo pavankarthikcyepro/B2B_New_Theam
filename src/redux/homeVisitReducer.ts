@@ -111,6 +111,39 @@ export const putworkFlowUpdateHomeVisit = createAsyncThunk("HOME_VISIT_SLICE/put
     return json;
 })
 
+
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTask = createAsyncThunk("HOME_VISIT_SLICE/getDetailsWrokflowTask", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const postDetailsWorkFlowTask = createAsyncThunk("HOME_VISIT_SLICE/postDetailsWorkFlowTask", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.POST_WORKFLOW_TASKS(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+// call for close and reschdules in rehome visit cases
+export const putWorkFlowHistory = createAsyncThunk("HOME_VISIT_SLICE/putWorkFlowHistory", async (payload, { rejectWithValue }) => {
+
+    const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["id"]), payload["body"]);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 const slice = createSlice({
     name: "HOME_VISIT_SLICE",
     initialState: {
@@ -135,7 +168,9 @@ const slice = createSlice({
         next_follow_up_Time: "",
         homeVisit_history_counts :"",
         home_visit_History_listing:"",
-        putworkFlowUpdateHomeVisitRes:""
+        putworkFlowUpdateHomeVisitRes:"",
+        post_workFlow_task_details: "",
+        put_workflow_task_history: "",
 
     },
     reducers: {
@@ -149,7 +184,9 @@ const slice = createSlice({
             state.next_follow_up_Time="",
             state.homeVisit_history_counts = "",
             state.home_visit_History_listing = "",
-            state.putworkFlowUpdateHomeVisitRes = ""
+            state.putworkFlowUpdateHomeVisitRes = "",
+                state.post_workFlow_task_details= "",
+                state.put_workflow_task_history = ""
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -398,6 +435,44 @@ const slice = createSlice({
         builder.addCase(putworkFlowUpdateHomeVisit.rejected, (state, action) => {
             state.isLoading = false;
             state.putworkFlowUpdateHomeVisitRes = "";
+        })
+
+
+        // home visit workflowtaskhistory
+        builder.addCase(postDetailsWorkFlowTask.pending, (state, action) => {
+            state.isLoading = true;
+            state.post_workFlow_task_details = ""
+
+        })
+        builder.addCase(postDetailsWorkFlowTask.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.post_workFlow_task_details = action.payload;
+            }
+
+        })
+        builder.addCase(postDetailsWorkFlowTask.rejected, (state, action) => {
+            state.isLoading = false;
+            state.post_workFlow_task_details = "";
+        })
+
+
+        // home visit workflowtaskhistory
+        builder.addCase(putWorkFlowHistory.pending, (state, action) => {
+            state.isLoading = true;
+            state.put_workflow_task_history = ""
+
+        })
+        builder.addCase(putWorkFlowHistory.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.put_workflow_task_history = action.payload;
+            }
+
+        })
+        builder.addCase(putWorkFlowHistory.rejected, (state, action) => {
+            state.isLoading = false;
+            state.put_workflow_task_history = "";
         })
     }
 });

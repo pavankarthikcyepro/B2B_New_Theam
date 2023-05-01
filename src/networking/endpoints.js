@@ -457,7 +457,11 @@ const URL = {
   POST_WORKFLOW_TASKS: () => {
     return sales_url + `/dms/workflowtaskhistory`;
   },
+  GET_PUT_WORKFLOW_HISTORY: (id) => {
+    return sales_url + `/putWorkflowHistory/${id}`;
+  },
 
+  
 
   UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
     return sales_url + `/task-history/updateList/${recordid}`;

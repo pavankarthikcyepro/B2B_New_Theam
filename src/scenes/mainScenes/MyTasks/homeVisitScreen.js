@@ -18,7 +18,9 @@ import {
   updateHomeVisit,
   getHomeVisitCounts,
   savehomevisit,
-  getHomeVisitAuditDetails
+  getHomeVisitAuditDetails,
+  postDetailsWorkFlowTask,
+  putWorkFlowHistory
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -443,10 +445,112 @@ const HomeVisitScreen = ({ route, navigation }) => {
         // "reHomevisitFlag": "ReHomevisit"
       }
       dispatch(savehomevisit(payload));
+        // reHomeVisitPutCallWorkFlowHistory()
+        // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
+        // dispatch(getDetailsWrokflowTask(entityId,"Home Visit")) //todo need to check and pass entityId
     }
   }
+  const postWorkFlowTaskHistory = () => {
+    let payload = {
 
+      "customerRemarks": null,
+      "employeeRemarks": null,
+      "errorDetail": null,
+      "executionJob": "NULL",
+      "isError": null,
+      "isLastTask": false,
+      "isMandatoryTask": false,
+      "entityStatus": null,
+      "reason": null,
+      "repeatTask": null,
+      "taskActualEndTime": null,
+      "taskActualStartTime": 1682766855000,
+      "taskCreatedTime": "", // send the time at that moment
+      "taskExpectedEndTime": 1682939646000,
+      "taskExpectedStartTime": 1682939646000,
+      "taskName": "Home Visit",
+      "entityName": "Werewr Er",
+      "taskSequence": 4,
+      "taskStatus": "",   //By Submit = "Approved",Reschedule ="Reschedule" update the status on customerpreeferdate
+      "taskType": "Manual",
+      "taskUpdatedTime": "", // send the time at that moment
+      "triggerType": "NULL",
+      "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
+      "isParallelTask": true,
+      "dmsProcess": 453914,
+      "assignee": 935,
+      "dmsTaskDef": 310,
+      "entityId": 56946,
+      "taskStageStatus": null,
+      "dmsTaskCategory": 82,
+      "entityModuleId": "9555",
+      "reTask": "Y",
+      "taskUpdatedBy": null,
+      "lat": null,
+      "lon": null,
+      "taskIdRef": 1617945,
+    }
+    dispatch(postDetailsWorkFlowTask(payload))
+  }
   
+  const reHomeVisitPutCallWorkFlowHistory = () => {
+    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+    const startTime = moment(selector.actual_start_time, "HH:mm");
+    const endTime = moment(selector.actual_end_time, "HH:mm");
+    const location = addressType === 1 ? "showroom" : "customer";
+    let varientId = selectedVehicleDetails.varientId;
+    let vehicleId = selectedVehicleDetails.vehicleId;
+
+    if (!varientId || !vehicleId) return;
+
+    let payload = {
+
+      "customerRemarks": null,
+      "employeeRemarks": null,
+      "errorDetail": null,
+      "executionJob": "NULL",
+      "isError": null,
+      "isLastTask": false,
+      "isMandatoryTask": false,
+      "entityStatus": null,
+      "reason": null,
+      "repeatTask": null,
+      "taskActualEndTime": null,
+      "taskActualStartTime": 1682766855000,
+      "taskCreatedTime": "", // send the time at that moment
+      "taskExpectedEndTime": 1682939646000,
+      "taskExpectedStartTime": 1682939646000,
+      "taskName": "Home Visit",
+      "entityName": "Werewr Er",
+      "taskSequence": 4,
+      "taskStatus": "",   //By Reschedule ="Reschedule" ,close = "Closed" update the status
+      "taskType": "Manual",
+      "taskUpdatedTime": "", // send the time at that moment
+      "triggerType": "NULL",
+      "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
+      "isParallelTask": true,
+      "dmsProcess": 453914,
+      "assignee": 935,
+      "dmsTaskDef": 310,
+      "entityId": 56946,
+      "taskStageStatus": null,
+      "dmsTaskCategory": 82,
+      "entityModuleId": "9555",
+      "reTask": "Y",
+      "taskUpdatedBy": null,
+      "lat": null,
+      "lon": null,
+      "taskIdRef": 1617945,
+    }
+
+
+    let masterPayload = {
+      body: payload,
+      recordid: storeLastupdatedTestDriveId
+    }
+    dispatch(putWorkFlowHistory(masterPayload)); // need to add recordid
+
+  }
 
   const generateOtpToCloseTask = () => {
 
@@ -943,6 +1047,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
               labelStyle={{ textTransform: "none", fontSize: 10 }}
               onPress={() => {
                 saveHomeVisitApiCall("ReHomevisit")
+
               }}
             >
               {"Re Home Visit"}
