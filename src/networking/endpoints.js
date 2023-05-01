@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://dev-api.cyepro.com/";
+export const baseUrl = "http://qa-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -392,6 +392,11 @@ const URL = {
   GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
     return sales_url + `/booking-amount/lead/${leadId}`;
   },
+
+  SAVE_BOOKING_CANCEL_ATTACHMENT: () => {
+    return sales_url + `/payment/saveReceiptdoc`;
+  },
+
   GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
     return sales_url + `/workflow/lead/stage/${universalId}`;
   },
@@ -401,6 +406,11 @@ const URL = {
       `/dms/getAllServiceEventsByFilterWithoutPagination?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
+
+  UPLOAD_ATTACHMENTS: () => {
+    return notificationServices_url + `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`;
+  },
+
   GENERATE_OTP: () => {
     return notificationServices_url + "/generateOTP";
   },
@@ -628,6 +638,15 @@ const URL = {
   UPDATE_REF: () => {
     return sales_url + `/lead-customer-reference/update`;
   },
+
+  GET_LEAD_DROP_DETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/lead-drop/leaddropdetails/${leadid}`;
+  },
+
+  GET_LEAD_RECEPDETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/payment/getReceiptdoc/${leadid}`;
+  },
+
   GET_BRANCH: () => {
     return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
   },

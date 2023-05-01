@@ -589,7 +589,9 @@ const HomeScreen = ({ route, navigation }) => {
 
       if (
         jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
-        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("reception") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("tele caller")
       ) {
         dispatch(updateIsDSE(true));
       } else {

@@ -1287,6 +1287,12 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
           headerTitle: route?.params?.title ?? "History",
         })}
       />
+      <DropAnalysisStack.Screen
+        name={"BOOKING_FORM"}
+        component={BookingFormScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Booking View Form" }}
+      />
     </DropAnalysisStack.Navigator>
   );
 };
