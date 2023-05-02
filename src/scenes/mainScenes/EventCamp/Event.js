@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { DataTable, List } from "react-native-paper";
 import { Colors } from "../../../styles";
@@ -78,10 +79,11 @@ const EventFormScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [ItemList, setItemList] = useState(SAMPLELIST);
+  let scrollRef = useRef(null);
 
   const handleSave = (item) => {
     // handle form submit here
-    Keyboard.dismiss();
+    // Keyboard.dismiss();
     setItemList([...ItemList, item]);
     setModalVisible(false);
   };
@@ -94,7 +96,7 @@ const EventFormScreen = () => {
   };
 
   const updateAccordian = (selectedIndex) => {
-    Keyboard.dismiss();
+    // Keyboard.dismiss();
     if (selectedIndex != openAccordian) {
       setOpenAccordian(selectedIndex);
     } else {
@@ -152,7 +154,7 @@ const EventFormScreen = () => {
               <DataTable.Title style={styles.column}>Cost</DataTable.Title>
               <DataTable.Title style={styles.column}>Price</DataTable.Title>
             </DataTable.Header>
-            {ItemList.map((item,index) => {
+            {ItemList.map((item, index) => {
               return (
                 <DataTable.Row key={index}>
                   <DataTable.Cell style={styles.column}>
@@ -188,9 +190,12 @@ const EventFormScreen = () => {
       <>
         <TextinputComp
           style={styles.textInputStyle}
-          label="Event Number*"
+          label={"Event Number*"}
           value={eventNumber}
-          onChangeText={(text) => setEventNumber(text)}
+          onChangeText={(text) => {
+            console.log("tee", text);
+            setEventNumber(text);
+          }}
         />
         <TextinputComp
           style={styles.textInputStyle}
@@ -438,7 +443,7 @@ const EventFormScreen = () => {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={[{ flexDirection: "column", flex: 1 }]}>
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
@@ -446,13 +451,33 @@ const EventFormScreen = () => {
         onChange={(event, selectedDate) => {}}
         onRequestClose={() => setShowDatePicker(false)}
       />
-      <ScrollView>
-        <FloatingModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          handleSave={handleSave}
-        />
-        <KeyboardAvoidingView>
+      <FloatingModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        handleSave={handleSave}
+      />
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        enabled
+        keyboardVerticalOffset={100}
+      >
+        <ScrollView
+          automaticallyAdjustContentInsets={true}
+          bounces={true}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingVertical: 10,
+            paddingHorizontal: 5,
+          }}
+          keyboardShouldPersistTaps={"handled"}
+          style={{ flex: 1 }}
+          ref={scrollRef}
+        >
           <View style={{ flex: 1, marginHorizontal: 10 }}>
             <List.AccordionGroup
               expandedId={openAccordian}
@@ -476,8 +501,8 @@ const EventFormScreen = () => {
               <Button title="Submit" onPress={handleSubmit} />
             </List.AccordionGroup>
           </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
