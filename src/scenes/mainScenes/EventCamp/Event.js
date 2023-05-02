@@ -3,11 +3,11 @@ import {
   View,
   Text,
   Button,
-  SafeAreaView,
   ScrollView,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
 } from "react-native";
 import { DataTable, List } from "react-native-paper";
 import { Colors } from "../../../styles";
@@ -16,6 +16,7 @@ import { DatePickerComponent, TextinputComp } from "../../../components";
 import { Dropdown } from "react-native-element-dropdown";
 import { DateSelectItem } from "../../../pureComponents";
 import { FloatingModal } from "./Component/FloatingModal";
+import { SafeAreaView } from "react-native-safe-area-context";
 const SAMPLELIST = [
   {
     Name: "Product A",
@@ -71,7 +72,7 @@ const EventFormScreen = () => {
   const [driver, setDriver] = useState("");
   const [financeExecutive, setFinanceExecutive] = useState("");
   const [evaluator, setEvaluator] = useState("");
-  const [openAccordian, setOpenAccordian] = useState("4");
+  const [openAccordian, setOpenAccordian] = useState("1");
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [budget, setBudget] = useState("");
@@ -115,335 +116,8 @@ const EventFormScreen = () => {
     { label: "Item 8", value: "8" },
   ];
 
-  const Accordion = (props) => {
-    const { label, id } = props;
-    return (
-      <List.Accordion
-        id={id}
-        title={label}
-        titleStyle={{
-          color: openAccordian === id ? Colors.BLACK : Colors.BLACK,
-          fontSize: 16,
-          fontWeight: "600",
-        }}
-        style={[
-          {
-            backgroundColor: openAccordian === id ? Colors.RED : Colors.WHITE,
-            height: 60,
-          },
-          styles.accordianBorder,
-        ]}
-      >
-        {props.children}
-      </List.Accordion>
-    );
-  };
-
-  const MyTable = () => {
-    return (
-      <View>
-        <ScrollView horizontal={true}>
-          <DataTable style={styles.table}>
-            <DataTable.Header>
-              <DataTable.Title style={styles.column}>Name</DataTable.Title>
-              <DataTable.Title style={styles.column}>
-                Office Allocated
-              </DataTable.Title>
-              <DataTable.Title style={styles.column}>Remarks</DataTable.Title>
-              <DataTable.Title style={styles.column}>Quantity</DataTable.Title>
-              <DataTable.Title style={styles.column}>Cost</DataTable.Title>
-              <DataTable.Title style={styles.column}>Price</DataTable.Title>
-            </DataTable.Header>
-            {ItemList.map((item, index) => {
-              return (
-                <DataTable.Row key={index}>
-                  <DataTable.Cell style={styles.column}>
-                    {item.Name}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={styles.column}>
-                    {item["Office Allocated"]}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={styles.column}>
-                    {item.Remarks}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={styles.column}>
-                    {item.Quantity}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={styles.column}>
-                    {"₹" + item.Cost}
-                  </DataTable.Cell>
-                  <DataTable.Cell style={styles.column}>
-                    {"₹" + item.Price}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              );
-            })}
-          </DataTable>
-        </ScrollView>
-        <Button title="Add Item" onPress={() => setModalVisible(true)} />
-      </View>
-    );
-  };
-
-  const EventSchedule = () => {
-    return (
-      <>
-        <TextinputComp
-          style={styles.textInputStyle}
-          label={"Event Number*"}
-          value={eventNumber}
-          onChangeText={(text) => {
-            console.log("tee", text);
-            setEventNumber(text);
-          }}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="Event Name*"
-          value={eventName}
-          onChangeText={(text) => setEventName(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="Event Organiser*"
-          value={eventOrganiser}
-          onChangeText={(text) => setEventOrganiser(text)}
-        />
-        <Dropdown
-          placeholder="Event Planner-location*"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setEventPlannerLocation(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="Event Planner - Dealer Code*"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setEventPlannerCode(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="PinCode*"
-          value={pinCode}
-          onChangeText={(text) => setPinCode(text)}
-        />
-        <Dropdown
-          placeholder="Event Type*"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setEventType(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="Event Category*"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setEventCategory(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          value={eventArea}
-          label={"Event Area*"}
-          onChangeText={(text) => setEventArea(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="Event Location*"
-          value={eventLocation}
-          onChangeText={(text) => setEventLocation(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="District*"
-          value={district}
-          onChangeText={(text) => setDistrict(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="State*"
-          value={state}
-          onChangeText={(text) => setState(text)}
-        />
-        {/* <TouchableOpacity
-          style={styles.textInputStyle}
-          label="Event Start Date*"
-          value={eventStartDate}
-          onChangeText={(text) => setEventStartDate(text)}
-        /> */}
-        <DateSelectItem
-          label={"Event Start Date*"}
-          value={"nmnmn"}
-          onPress={() => {}}
-        />
-        <DateSelectItem
-          label={"Event End Date*"}
-          value={"nmnmn"}
-          onPress={() => {}}
-        />
-        {/* <TextinputComp
-          style={styles.textInputStyle}
-          label="Event End Date*"
-          value={eventEndDate}
-          onChangeText={(text) => setEventEndDate(text)}
-        /> */}
-      </>
-    );
-  };
-
-  const DemoVehiclesList = () => {
-    return (
-      <>
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="RC.NO"
-          value={rcNumber}
-          onChangeText={(text) => setRcNumber(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="MODEL"
-          value={model}
-          onChangeText={(text) => setModel(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="VARIANT"
-          value={variant}
-          onChangeText={(text) => setVariant(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="COLOR"
-          value={color}
-          onChangeText={(text) => setColor(text)}
-        />
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="FUEL TYPE"
-          value={fuelType}
-          onChangeText={(text) => setFuelType(text)}
-        />
-      </>
-    );
-  };
-
-  const EmployeeList = () => {
-    return (
-      <>
-        <Dropdown
-          placeholder="Manager Name"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setManager(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="TL Name"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setTl(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="Consultant Name"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setConsultant(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="Driver Name"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setDriver(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="Finance Executive Name"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setFinanceExecutive(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-        <Dropdown
-          placeholder="Evaluator Name"
-          labelField="label"
-          valueField="value"
-          data={data}
-          onChange={(value) => setEvaluator(value)}
-          style={[styles.dropdownContainer]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-        />
-      </>
-    );
-  };
-
-  const Budget = () => {
-    return (
-      <>
-        <TextinputComp
-          style={styles.textInputStyle}
-          label="Budget"
-          value={budget}
-          onChangeText={(text) => setBudget(text)}
-        />
-      </>
-    );
-  };
-
   return (
-    <SafeAreaView style={[{ flexDirection: "column", flex: 1 }]}>
+    <SafeAreaView style={[{ flex: 1 }]}>
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
@@ -464,7 +138,6 @@ const EventFormScreen = () => {
         }}
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
-        keyboardVerticalOffset={100}
       >
         <ScrollView
           automaticallyAdjustContentInsets={true}
@@ -474,30 +147,406 @@ const EventFormScreen = () => {
             paddingVertical: 10,
             paddingHorizontal: 5,
           }}
-          keyboardShouldPersistTaps={"handled"}
+          keyboardShouldPersistTaps="handled"
           style={{ flex: 1 }}
           ref={scrollRef}
         >
-          <View style={{ flex: 1, marginHorizontal: 10 }}>
+          <View style={{ marginHorizontal: 10 }}>
             <List.AccordionGroup
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              <Accordion id="1" label="Event Schedule">
-                <EventSchedule />
-              </Accordion>
-              <Accordion id="2" label="Demo Vehicles list">
-                <DemoVehiclesList />
-              </Accordion>
-              <Accordion id="3" label="Employee List">
-                <EmployeeList />
-              </Accordion>
-              <Accordion id="4" label="Item List">
-                <MyTable />
-              </Accordion>
-              <Accordion id="5" label="Budget">
-                <Budget />
-              </Accordion>
+              <List.Accordion
+                id={"1"}
+                key={"1"}
+                title={"Event Schedule"}
+                titleStyle={{
+                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <View>
+                  <TextinputComp
+                    key={"1"}
+                    style={styles.textInputStyle}
+                    label={"Event Number*"}
+                    value={eventNumber}
+                    onChangeText={(text) => {
+                      console.log("tee", text);
+                      setEventNumber(text);
+                    }}
+                  />
+                  <TextinputComp
+                    key={"2"}
+                    style={styles.textInputStyle}
+                    label="Event Name*"
+                    value={eventName}
+                    onChangeText={(text) => setEventName(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="Event Organiser*"
+                    value={eventOrganiser}
+                    onChangeText={(text) => setEventOrganiser(text)}
+                  />
+                  <Dropdown
+                    placeholder="Event Planner-location*"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setEventPlannerLocation(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="Event Planner - Dealer Code*"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setEventPlannerCode(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="PinCode*"
+                    value={pinCode}
+                    onChangeText={(text) => setPinCode(text)}
+                  />
+                  <Dropdown
+                    placeholder="Event Type*"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setEventType(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="Event Category*"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setEventCategory(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={eventArea}
+                    label={"Event Area*"}
+                    onChangeText={(text) => setEventArea(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="Event Location*"
+                    value={eventLocation}
+                    onChangeText={(text) => setEventLocation(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="District*"
+                    value={district}
+                    onChangeText={(text) => setDistrict(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="State*"
+                    value={state}
+                    onChangeText={(text) => setState(text)}
+                  />
+                  {/* <TouchableOpacity
+          style={styles.textInputStyle}
+          label="Event Start Date*"
+          value={eventStartDate}
+          onChangeText={(text) => setEventStartDate(text)}
+        /> */}
+                  <DateSelectItem
+                    label={"Event Start Date*"}
+                    value={"nmnmn"}
+                    onPress={() => {}}
+                  />
+                  <DateSelectItem
+                    label={"Event End Date*"}
+                    value={"nmnmn"}
+                    onPress={() => {}}
+                  />
+                  {/* <TextinputComp
+          style={styles.textInputStyle}
+          label="Event End Date*"
+          value={eventEndDate}
+          onChangeText={(text) => setEventEndDate(text)}
+        /> */}
+                </View>
+              </List.Accordion>
+
+              <List.Accordion
+                id={"2"}
+                key={"2"}
+                title={"Demo Vehicles list"}
+                titleStyle={{
+                  color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="RC.NO"
+                    value={rcNumber}
+                    onChangeText={(text) => setRcNumber(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="MODEL"
+                    value={model}
+                    onChangeText={(text) => setModel(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="VARIANT"
+                    value={variant}
+                    onChangeText={(text) => setVariant(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="COLOR"
+                    value={color}
+                    onChangeText={(text) => setColor(text)}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label="FUEL TYPE"
+                    value={fuelType}
+                    onChangeText={(text) => setFuelType(text)}
+                  />
+                </>
+              </List.Accordion>
+
+              <List.Accordion
+                id={"3"}
+                key={"3"}
+                title={"Employee List"}
+                titleStyle={{
+                  color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <>
+                  <Dropdown
+                    placeholder="Manager Name"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setManager(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="TL Name"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setTl(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="Consultant Name"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setConsultant(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="Driver Name"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setDriver(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="Finance Executive Name"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setFinanceExecutive(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                  <Dropdown
+                    placeholder="Evaluator Name"
+                    labelField="label"
+                    valueField="value"
+                    data={data}
+                    onChange={(value) => setEvaluator(value)}
+                    style={[styles.dropdownContainer]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                  />
+                </>
+              </List.Accordion>
+
+              <List.Accordion
+                id={"4"}
+                key={"4"}
+                title={"Item List"}
+                titleStyle={{
+                  color: openAccordian === "4" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <View>
+                  <ScrollView horizontal={true}>
+                    <DataTable style={styles.table}>
+                      <DataTable.Header>
+                        <DataTable.Title style={styles.column}>
+                          Name
+                        </DataTable.Title>
+                        <DataTable.Title style={styles.column}>
+                          Office Allocated
+                        </DataTable.Title>
+                        <DataTable.Title style={styles.column}>
+                          Remarks
+                        </DataTable.Title>
+                        <DataTable.Title style={styles.column}>
+                          Quantity
+                        </DataTable.Title>
+                        <DataTable.Title style={styles.column}>
+                          Cost
+                        </DataTable.Title>
+                        <DataTable.Title style={styles.column}>
+                          Price
+                        </DataTable.Title>
+                      </DataTable.Header>
+                      {ItemList.map((item, index) => {
+                        return (
+                          <DataTable.Row key={index}>
+                            <DataTable.Cell style={styles.column}>
+                              {item.Name}
+                            </DataTable.Cell>
+                            <DataTable.Cell style={styles.column}>
+                              {item["Office Allocated"]}
+                            </DataTable.Cell>
+                            <DataTable.Cell style={styles.column}>
+                              {item.Remarks}
+                            </DataTable.Cell>
+                            <DataTable.Cell style={styles.column}>
+                              {item.Quantity}
+                            </DataTable.Cell>
+                            <DataTable.Cell style={styles.column}>
+                              {"₹" + item.Cost}
+                            </DataTable.Cell>
+                            <DataTable.Cell style={styles.column}>
+                              {"₹" + item.Price}
+                            </DataTable.Cell>
+                          </DataTable.Row>
+                        );
+                      })}
+                    </DataTable>
+                  </ScrollView>
+                  <Button
+                    title="Add Item"
+                    onPress={() => setModalVisible(true)}
+                  />
+                </View>
+              </List.Accordion>
+
+              <List.Accordion
+                id={"5"}
+                key={"5"}
+                title={"Budget"}
+                titleStyle={{
+                  color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  label="Budget"
+                  value={budget}
+                  onChangeText={(text) => setBudget(text)}
+                />
+              </List.Accordion>
+
               <Button title="Submit" onPress={handleSubmit} />
             </List.AccordionGroup>
           </View>
