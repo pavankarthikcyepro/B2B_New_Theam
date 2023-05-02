@@ -261,7 +261,7 @@ const testDriveSlice = createSlice({
     isReasonUpdate: true,
     reason: "",
     save_test_drive_rescheduleRemarks_status: "",
-    get_workFlow_task_details:"",
+    get_workFlow_task_details:[],
     post_workFlow_task_details: "",
     put_workflow_task_history :"",
   },
@@ -292,7 +292,7 @@ const testDriveSlice = createSlice({
         state.test_drive_history_details= "";
       state.test_drrive_history_updatelist="";
       state.reason = "";
-      state.get_workFlow_task_details = "";
+      state.get_workFlow_task_details = [];
       state.post_workFlow_task_details = "";
       state.put_workflow_task_history = "";
     },
@@ -675,7 +675,7 @@ const testDriveSlice = createSlice({
     
     builder.addCase(getDetailsWrokflowTask.pending, (state, action) => {
       state.isLoading = true;
-      state.get_workFlow_task_details = "";
+      state.get_workFlow_task_details = [];
     })
     builder.addCase(getDetailsWrokflowTask.fulfilled, (state, action) => {
       if (action.payload) {
@@ -692,7 +692,7 @@ const testDriveSlice = createSlice({
       //   showToastRedAlert(action.payload["reason"]);
       // }
       state.isLoading = false;
-      state.get_workFlow_task_details = "";
+      state.get_workFlow_task_details = [];
     })
 
     builder.addCase(postDetailsWorkFlowTask.pending, (state, action) => {

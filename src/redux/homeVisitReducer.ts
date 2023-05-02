@@ -171,7 +171,8 @@ const slice = createSlice({
         putworkFlowUpdateHomeVisitRes:"",
         post_workFlow_task_details: "",
         put_workflow_task_history: "",
-
+        re_home_visitResubmit_response: "",
+        get_workFlow_task_details: [],
     },
     reducers: {
         clearState: (state, action) => {
@@ -186,7 +187,9 @@ const slice = createSlice({
             state.home_visit_History_listing = "",
             state.putworkFlowUpdateHomeVisitRes = "",
                 state.post_workFlow_task_details= "",
-                state.put_workflow_task_history = ""
+                state.put_workflow_task_history = "",
+                state.re_home_visitResubmit_response ="",
+                state.get_workFlow_task_details= []
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -473,6 +476,45 @@ const slice = createSlice({
         builder.addCase(putWorkFlowHistory.rejected, (state, action) => {
             state.isLoading = false;
             state.put_workflow_task_history = "";
+        })
+
+
+        // home visit savehomevisit
+        builder.addCase(savehomevisit.pending, (state, action) => {
+            state.isLoading = true;
+            state.re_home_visitResubmit_response = "pendig"
+
+        })
+        builder.addCase(savehomevisit.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.re_home_visitResubmit_response = "success";
+            }
+
+        })
+        builder.addCase(savehomevisit.rejected, (state, action) => {
+            state.isLoading = false;
+            state.re_home_visitResubmit_response = "rejected";
+        })
+
+
+
+        // home visit savehomevisit
+        builder.addCase(getDetailsWrokflowTask.pending, (state, action) => {
+            state.isLoading = true;
+            state.get_workFlow_task_details = []
+
+        })
+        builder.addCase(getDetailsWrokflowTask.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.get_workFlow_task_details = action.payload;
+            }
+
+        })
+        builder.addCase(getDetailsWrokflowTask.rejected, (state, action) => {
+            state.isLoading = false;
+            state.get_workFlow_task_details = [];
         })
     }
 });

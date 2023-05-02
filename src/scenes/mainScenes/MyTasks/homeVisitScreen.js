@@ -20,7 +20,8 @@ import {
   savehomevisit,
   getHomeVisitAuditDetails,
   postDetailsWorkFlowTask,
-  putWorkFlowHistory
+  putWorkFlowHistory,
+  getDetailsWrokflowTask
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -47,7 +48,7 @@ import {
 } from "../../../redux/enquiryFollowUpReducer";
 import moment from "moment";
 import { ScrollView } from "react-native-gesture-handler";
-
+import _ from "lodash"
 const otpStyles = StyleSheet.create({
   root: { flex: 1, padding: 20 },
   title: { textAlign: 'center', fontSize: 30, fontWeight: "400" },
@@ -216,6 +217,16 @@ const HomeVisitScreen = ({ route, navigation }) => {
   }, [selector.update_task_response_status]);
 
   useEffect(() => {
+    
+    if (selector.re_home_visitResubmit_response == "success"){
+      navigation.popToTop();
+      dispatch(clearState()); 
+    }
+   
+  }, [selector.re_home_visitResubmit_response])
+  
+
+  useEffect(() => {
   
     if (selector.task_details_response){
       const universalID = selector.task_details_response?.universalId;
@@ -242,7 +253,25 @@ const HomeVisitScreen = ({ route, navigation }) => {
       })
     }
   }, [selector.homeVisit_history_counts])
-  
+
+  useEffect(() => {
+
+    if (!_.isEmpty(selector.get_workFlow_task_details)) {
+      let modifiedObj = selector.get_workFlow_task_details[selector.get_workFlow_task_details.length - 1];
+
+      const temp = { ...modifiedObj };
+      temp.taskStatus = "Approved";
+      temp.taskUpdatedTime = moment().valueOf();
+      temp.taskCreatedTime = moment().valueOf();
+      // let newArr = modifiedObj
+      console.log("manthan newArr ", temp);
+      // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+
+    }
+
+
+  }, [selector.get_workFlow_task_details])
 
 
   const updateTask = () => {
@@ -445,51 +474,55 @@ const HomeVisitScreen = ({ route, navigation }) => {
         // "reHomevisitFlag": "ReHomevisit"
       }
       dispatch(savehomevisit(payload));
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Home Visit"
+        }
         // reHomeVisitPutCallWorkFlowHistory()
         // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
-        // dispatch(getDetailsWrokflowTask(entityId,"Home Visit")) //todo need to check and pass entityId
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
     }
   }
-  const postWorkFlowTaskHistory = () => {
-    let payload = {
+  const postWorkFlowTaskHistory = (payload) => {
+    // let payload = {
 
-      "customerRemarks": null,
-      "employeeRemarks": null,
-      "errorDetail": null,
-      "executionJob": "NULL",
-      "isError": null,
-      "isLastTask": false,
-      "isMandatoryTask": false,
-      "entityStatus": null,
-      "reason": null,
-      "repeatTask": null,
-      "taskActualEndTime": null,
-      "taskActualStartTime": 1682766855000,
-      "taskCreatedTime": "", // send the time at that moment
-      "taskExpectedEndTime": 1682939646000,
-      "taskExpectedStartTime": 1682939646000,
-      "taskName": "Home Visit",
-      "entityName": "Werewr Er",
-      "taskSequence": 4,
-      "taskStatus": "",   //By Submit = "Approved",Reschedule ="Reschedule" update the status on customerpreeferdate
-      "taskType": "Manual",
-      "taskUpdatedTime": "", // send the time at that moment
-      "triggerType": "NULL",
-      "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
-      "isParallelTask": true,
-      "dmsProcess": 453914,
-      "assignee": 935,
-      "dmsTaskDef": 310,
-      "entityId": 56946,
-      "taskStageStatus": null,
-      "dmsTaskCategory": 82,
-      "entityModuleId": "9555",
-      "reTask": "Y",
-      "taskUpdatedBy": null,
-      "lat": null,
-      "lon": null,
-      "taskIdRef": 1617945,
-    }
+    //   "customerRemarks": null,
+    //   "employeeRemarks": null,
+    //   "errorDetail": null,
+    //   "executionJob": "NULL",
+    //   "isError": null,
+    //   "isLastTask": false,
+    //   "isMandatoryTask": false,
+    //   "entityStatus": null,
+    //   "reason": null,
+    //   "repeatTask": null,
+    //   "taskActualEndTime": null,
+    //   "taskActualStartTime": 1682766855000,
+    //   "taskCreatedTime": "", // send the time at that moment
+    //   "taskExpectedEndTime": 1682939646000,
+    //   "taskExpectedStartTime": 1682939646000,
+    //   "taskName": "Home Visit",
+    //   "entityName": "Werewr Er",
+    //   "taskSequence": 4,
+    //   "taskStatus": "",   //By Submit = "Approved",Reschedule ="Reschedule" update the status on customerpreeferdate
+    //   "taskType": "Manual",
+    //   "taskUpdatedTime": "", // send the time at that moment
+    //   "triggerType": "NULL",
+    //   "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
+    //   "isParallelTask": true,
+    //   "dmsProcess": 453914,
+    //   "assignee": 935,
+    //   "dmsTaskDef": 310,
+    //   "entityId": 56946,
+    //   "taskStageStatus": null,
+    //   "dmsTaskCategory": 82,
+    //   "entityModuleId": "9555",
+    //   "reTask": "Y",
+    //   "taskUpdatedBy": null,
+    //   "lat": null,
+    //   "lon": null,
+    //   "taskIdRef": 1617945,
+    // }
     dispatch(postDetailsWorkFlowTask(payload))
   }
   

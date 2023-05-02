@@ -77,6 +77,7 @@ import { convertDateStringToMillisecondsUsingMoment } from "./../../../utils/hel
 import { getReasonList } from "../../../redux/enquiryFollowUpReducer";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AsyncStorage from "../../../asyncStore";
+import _ from "lodash";
 const LocalButtonComp = ({
   title,
   onPress,
@@ -238,89 +239,97 @@ const TestDriveScreen = ({ route, navigation }) => {
         setStoreLastupdatedTestDriveDetails(tempData);
         setStoreLastupdatedTestDriveId(tempData?.id);
         // todo set last updated test drive data 
-        if (tempData.length > 0) {
-          setName(tempData.name);
-          setEmail(tempData.email || "");
-          setMobileNumber(mobile || tempData.mobileNumber);
+        
+       
+         // api to get task details 
+            // dispatch(getTaskDetailsApi(taskId))
+        if (_.isEmpty(tempData)) {
+          if (tempData.reTestdriveFlag == "ReTestDrive"){
+            
+            setName(tempData.name);
+            setEmail(tempData.email || "");
+            setMobileNumber(mobile || tempData.mobileNumber);
 
-          setSelectedVehicleDetails({
-            model: tempData.model,
-            varient: tempData.variant,
-            fuelType: tempData.fuelType,
-            transType: tempData.transmissionType,
-            vehicleId: 0,
-            varientId: 0,
-          });
+            setSelectedVehicleDetails({
+              model: tempData.model,
+              varient: tempData.variant,
+              fuelType: tempData.fuelType,
+              transType: tempData.transmissionType,
+              vehicleId: 0,
+              varientId: 0,
+            });
 
 
 
-          const driverId = tempData.driverId || "";
-          let driverName = "";
+            const driverId = tempData.driverId || "";
+            let driverName = "";
 
-          if (selector.drivers_list.length > 0 && tempData.driverId) {
-            const filterAry = selector.drivers_list.filter(
-              (object) => object.id === tempData.driverId
-            );
-            if (filterAry.length > 0) {
-              driverName = filterAry[0].name;
+            if (selector.drivers_list.length > 0 && tempData.driverId) {
+              const filterAry = selector.drivers_list.filter(
+                (object) => object.id === tempData.driverId
+              );
+              if (filterAry.length > 0) {
+                driverName = filterAry[0].name;
+              }
             }
-          }
-          setSelectedDriverDetails({ name: driverName, id: driverId });
+            setSelectedDriverDetails({ name: driverName, id: driverId });
 
-          const customerHaveingDl = tempData.isCustomerHaveingDl
-            ? tempData.isCustomerHaveingDl
-            : false;
-          if (customerHaveingDl) {
-            const dataObj = { ...uploadedImagesDataObj };
-            if (tempData.dlFrontUrl) {
-              dataObj.dlFrontUrl = {
-                documentPath: tempData.dlFrontUrl,
-                fileName: "driving license front",
-              };
+            const customerHaveingDl = tempData.isCustomerHaveingDl
+              ? tempData.isCustomerHaveingDl
+              : false;
+            if (customerHaveingDl) {
+              const dataObj = { ...uploadedImagesDataObj };
+              if (tempData.dlFrontUrl) {
+                dataObj.dlFrontUrl = {
+                  documentPath: tempData.dlFrontUrl,
+                  fileName: "driving license front",
+                };
+              }
+              if (tempData.dlBackUrl) {
+                dataObj.dlBackUrl = {
+                  documentPath: tempData.dlBackUrl,
+                  fileName: "driving license back",
+                };
+              }
+              setUploadedImagesDataObj({ ...dataObj });
             }
-            if (tempData.dlBackUrl) {
-              dataObj.dlBackUrl = {
-                documentPath: tempData.dlBackUrl,
-                fileName: "driving license back",
-              };
-            }
-            setUploadedImagesDataObj({ ...dataObj });
-          }
-          setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
+            setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
 
 
-          const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
-          const testDriveDatetimeAry = testDriveDatetime.split(" ");
-          if (testDriveDatetimeAry.length > 0) {
-            // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
+            const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
+            const testDriveDatetimeAry = testDriveDatetime.split(" ");
+            if (testDriveDatetimeAry.length > 0) {
+              // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
               dispatch(
                 updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
-            );
-          }
-          if (testDriveDatetimeAry.length > 1) {
-            // state.customer_preferred_time = testDriveDatetimeAry[1];
-            dispatch(
-              updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
-            );
-          }
+              );
+            }
+            if (testDriveDatetimeAry.length > 1) {
+              // state.customer_preferred_time = testDriveDatetimeAry[1];
+              dispatch(
+                updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
+              );
+            }
 
-          const startTime = tempData.startTime ? tempData.startTime : "";
-          const startTimeAry = startTime.split(" ");
-          if (startTimeAry.length > 1) {
-            // state.actual_start_time = startTimeAry[1];
-            dispatch(
-              updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
-            );
+            const startTime = tempData.startTime ? tempData.startTime : "";
+            const startTimeAry = startTime.split(" ");
+            if (startTimeAry.length > 1) {
+              // state.actual_start_time = startTimeAry[1];
+              dispatch(
+                updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
+              );
+            }
+            // state.driverId = tempData.driverId;
+            const endTime = tempData.endTime ? tempData.endTime : "";
+            const endTimeAry = endTime.split(" ");
+            if (endTimeAry.length > 1) {
+              // state.actual_end_time = endTimeAry[1];
+              dispatch(
+                updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
+              );
+            }
           }
-          // state.driverId = tempData.driverId;
-          const endTime = tempData.endTime ? tempData.endTime : "";
-          const endTimeAry = endTime.split(" ");
-          if (endTimeAry.length > 1) {
-            // state.actual_end_time = endTimeAry[1];
-            dispatch(
-              updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
-            );
-          }
+          
 
 
         }
@@ -424,7 +433,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             };
 
             Promise.all([
-              dispatch(getTaskDetailsApi(taskId)),
+              dispatch(getTaskDetailsApi(taskId)),// commented to manage re test drive btn not clickable case
               dispatch(getTestDriveVehicleListApi(payload)),
               dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
               dispatch(getDriversListApi(jsonObj.orgId)),
@@ -562,6 +571,35 @@ const TestDriveScreen = ({ route, navigation }) => {
       getTestDriveAppointmentDetailsFromServer();
     }
   }, [selector.task_details_response, taskStatusAndName]);
+
+  useEffect(() => {
+    
+    if (!_.isEmpty(selector.get_workFlow_task_details)){
+      let modifiedObj = selector.get_workFlow_task_details[selector.get_workFlow_task_details.length -1];
+      
+      const temp ={...modifiedObj};
+      temp.taskStatus = "APPROVED";
+      temp.taskUpdatedTime = moment().valueOf();
+      temp.taskCreatedTime = moment().valueOf();
+     const value = temp.taskId;
+      const valueassignee = temp.assignee;
+      const valueProcessId = temp.dmsProcess;
+      temp["assigneeId"] = valueassignee;
+      temp["processId"] = valueProcessId;
+      temp["taskIdRef"] =value;
+      delete temp.taskId;
+      delete temp.assignee;
+      delete temp.dmsProcess;
+      // let newArr = modifiedObj
+
+      // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+       
+    }
+  
+    
+  }, [selector.get_workFlow_task_details])
+  
 
   const getTestDriveAppointmentDetailsFromServer = async () => {
     if (selector.task_details_response.entityModuleId) {
@@ -1548,6 +1586,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       source: taskData.sourceType,
       status: status,
       testDriveDatetime: moment.utc(preferredTime).format(),
+      // testDriveDatetime: prefferedTime,
       varientId: varientId,
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
@@ -1564,55 +1603,60 @@ const TestDriveScreen = ({ route, navigation }) => {
       driver: selectedDriverDetails.name,
       employee: selectedDseDetails.name
     }
+    
 
     dispatch(postReOpenTestDrive(reopenSubmitObj));
+    let payloadForWorkFLow={
+      entityId: selector.task_details_response.entityId,
+      taskName:"Test Drive"
+    }
     // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
     // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
-    // dispatch(getDetailsWrokflowTask(entityId,"Test Drive")) //todo need to check and pass entityId
+    dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
     setIschangeScreen(true)
 
   }
   
-  const postWorkFlowTaskHistory = ()=>{
-    let payload = {
+  const postWorkFlowTaskHistory = (payload)=>{
+    // let payload = {
 
-      "customerRemarks": null,
-      "employeeRemarks": null,
-      "errorDetail": null,
-      "executionJob": "NULL",
-      "isError": null,
-      "isLastTask": false,
-      "isMandatoryTask": false,
-      "entityStatus": null,
-      "reason": null,
-      "repeatTask": null,
-      "taskActualEndTime": null,
-      "taskActualStartTime": 1682766855000,
-      "taskCreatedTime": "", // send the time at that moment
-      "taskExpectedEndTime": 1682939646000,
-      "taskExpectedStartTime": 1682939646000,
-      "taskName": "Test Drive",
-      "entityName": "Werewr Er",
-      "taskSequence": 4,
-      "taskStatus": "",   //By Submit = "Approved",Reschedule ="Reschedule" update the status on customerpreeferdate
-      "taskType": "Manual",
-      "taskUpdatedTime": "", // send the time at that moment
-      "triggerType": "NULL",
-      "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
-      "isParallelTask": true,
-      "dmsProcess": 453914,
-      "assignee": 935,
-      "dmsTaskDef": 310,
-      "entityId": 56946,
-      "taskStageStatus": null,
-      "dmsTaskCategory": 82,
-      "entityModuleId": "9555",
-      "reTask": "Y",
-      "taskUpdatedBy": null,
-      "lat": null,
-      "lon": null,
-      "taskIdRef": 1617945,
-    }
+    //   "customerRemarks": null,
+    //   "employeeRemarks": null,
+    //   "errorDetail": null,
+    //   "executionJob": "NULL",
+    //   "isError": null,
+    //   "isLastTask": false,
+    //   "isMandatoryTask": false,
+    //   "entityStatus": null,
+    //   "reason": null,
+    //   "repeatTask": null,
+    //   "taskActualEndTime": null,
+    //   "taskActualStartTime": 1682766855000,
+    //   "taskCreatedTime": "", // send the time at that moment
+    //   "taskExpectedEndTime": 1682939646000,
+    //   "taskExpectedStartTime": 1682939646000,
+    //   "taskName": "Test Drive",
+    //   "entityName": "Werewr Er",
+    //   "taskSequence": 4,
+    //   "taskStatus": "",   //By Submit = "Approved",Reschedule ="Reschedule" update the status on customerpreeferdate
+    //   "taskType": "Manual",
+    //   "taskUpdatedTime": "", // send the time at that moment
+    //   "triggerType": "NULL",
+    //   "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
+    //   "isParallelTask": true,
+    //   "dmsProcess": 453914,
+    //   "assignee": 935,
+    //   "dmsTaskDef": 310,
+    //   "entityId": 56946,
+    //   "taskStageStatus": null,
+    //   "dmsTaskCategory": 82,
+    //   "entityModuleId": "9555",
+    //   "reTask": "Y",
+    //   "taskUpdatedBy": null,
+    //   "lat": null,
+    //   "lon": null,
+    //   "taskIdRef": 1617945,
+    // }
     dispatch(postDetailsWorkFlowTask(payload))
   }
 
@@ -2710,7 +2754,9 @@ const TestDriveScreen = ({ route, navigation }) => {
 
           {route?.params?.taskStatus === "CLOSED" &&
             !isReopenSubmitVisible &&
-            !isCloseSelected ? (
+            !isCloseSelected 
+            // && storeLastupdatedTestDriveDetails?.reTestdriveFlag !=="ReTestDrive"
+             ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
                 <Button
                   mode="contained"
