@@ -5113,7 +5113,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                               }}
                             >
                               <View>
-                                <View style={styles.select_image_bck_vw}>
+                                <View style={{
+                                  minHeight: 50,
+                                  paddingLeft: 12,
+                                  backgroundColor: Colors.WHITE,
+                                  flexDirection:"row",
+                                  alignContent:"center",
+                                  alignItems:"center"
+                                }}>
                                   <ImageSelectItem
                                     name={"Attachment"}
                                     // disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
@@ -5130,6 +5137,19 @@ const BookingFormScreen = ({ route, navigation }) => {
                                      
                                     }
                                   />
+                                  <TouchableOpacity
+                                    style={styles.previewBtn}
+                                    onPress={() => {
+                                      
+                                      if (uploadedAttachementsObj[index]?.url){
+                                        setImagePath(uploadedAttachementsObj[index]?.url)
+                                      }
+                                     
+                                    }}
+                                  >
+                                    <Text style={styles.previetxt}>Preview</Text>
+                                  </TouchableOpacity>
+                                    
                                 </View>
                            
                                 {uploadedAttachementsObj.length > 0 && uploadedAttachementsObj[index]?.fileName !== undefined ? (
@@ -5416,4 +5436,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.WHITE,
   },
+  previewBtn: {
+    width: "30%",
+    height: 20,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previetxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
 });
