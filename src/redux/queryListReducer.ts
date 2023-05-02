@@ -38,7 +38,6 @@ const queryListReducer = createSlice({
         }
       })
       .addCase(getQueryList.rejected, (state, action) => {
-        state.addCustomerResponseStatus = "failed";
         state.isLoading = false;
         if (action.payload.message) {
           showToast(`${action.payload.message}`);

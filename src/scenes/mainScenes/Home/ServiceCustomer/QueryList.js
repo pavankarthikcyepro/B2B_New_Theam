@@ -50,7 +50,7 @@ const QueryList = ({ navigation, route }) => {
   const noData = () => {
     return (
       <View style={styles.noDataContainer}>
-        <Text style={styles.noDataText}>No Bookings Found !</Text>
+        <Text style={styles.noDataText}>No Query Found !</Text>
       </View>
     );
   };

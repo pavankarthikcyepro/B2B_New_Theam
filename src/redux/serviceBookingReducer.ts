@@ -204,7 +204,10 @@ const serviceBookingReducer = createSlice({
     setExistingBookingData: (state, action) => {
       const {
         categoryName,
+        serviceName,
         city,
+        serviceCenterCode,
+        advisorName,
         serviceDate,
         doorStepService,
         isSelfDrive,
@@ -217,7 +220,10 @@ const serviceBookingReducer = createSlice({
       } = action.payload;
 
       state.serviceType = categoryName;
+      state.subServiceType = serviceName;
       state.location = city;
+      state.serviceCenterCode = serviceCenterCode;
+      state.serviceAdvisorName = advisorName;
       state.serviceReqDate = moment(serviceDate).format("YYYY/MM/DD");
       state.driverName = driverDetails?.name;
       state.selectedTimeSlot = slot?.id;
