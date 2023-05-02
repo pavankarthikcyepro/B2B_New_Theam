@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://qa-api.cyepro.com/";
+export const baseUrl = "http://dev-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -998,6 +998,9 @@ const URL = {
   CREATE_QUERY: (tenantId) => {
     return baseUrl + `vehicle-services/api/tenant/1/customer-query`;
   },
+  CREATE_RSA: (tenantId) => {
+    return baseUrl + `vehicle-services/api/tenant/1/customer-rsa`;
+  },
   UPDATE_QUERY: (tenantId, queryId) => {
     return (
       baseUrl + `vehicle-services/api/tenant/1/customer-query/id/${queryId}`
@@ -1019,6 +1022,12 @@ const URL = {
     return (
       baseUrl +
       `vehicle-services/api/tenant/1/customer-query/search?size=0&page=10&assignedTo=1&createdBy=1`
+    );
+  },
+  GET_SERVICE_RSA_LIST: (tenantId, vehicleRegNumber) => {
+    return (
+      baseUrl +
+      `vehicle-services/api/tenant/1/customer-rsa/search?size=0&page=10&assignedTo=1&createdBy=1`
     );
   },
   GET_BOOKED_SLOTS_LIST: (tenantId, vehicleRegNumber, slotId) => {

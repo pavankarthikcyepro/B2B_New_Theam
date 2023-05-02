@@ -41,6 +41,8 @@ import serviceBookingReducer from "./serviceBookingReducer";
 import serviceBookingCrudReducer from "./serviceBookingCrudReducer";
 import queryListReducer from "./queryListReducer";
 import queryCrudReducer from "./queryCrudReducer";
+import rsaListReducer from "./rsaListReducer";
+import rsaCrudReducer from "./rsaCrudReducer";
 
 import liveLeadsReducerReceptionist from "./liveLeadsReducerReceptionist";
 import digitalDashboardReducer from "./digitalDashboardReducer";
@@ -86,6 +88,8 @@ const reducer = combineReducers({
   serviceBookingCrudReducer,
   queryListReducer,
   queryCrudReducer,
+  rsaListReducer,
+  rsaCrudReducer,
   liveLeadsReducerReceptionist,
   digitalDashboardReducer,
 });

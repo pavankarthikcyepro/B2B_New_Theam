@@ -83,3 +83,9 @@ export const REASON_LIST = [
   { id: "2", name: "Reason 2" },
   { id: "3", name: "Reason 3" },
 ];
+
+export const TECHNICIAN_LIST = [
+  { id: "1", name: "Technician 1" },
+  { id: "2", name: "Technician 2" },
+  { id: "3", name: "Technician 3" },
+];

@@ -2011,7 +2011,14 @@ const AddCustomerInfo = ({ navigation, route }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.rsaQueryBtnContainer}
-                  onPress={() => {}}
+                  onPress={() => {
+                    const { customerDetail } = selector.customerDetailsResponse;
+                    navigation.navigate(HomeStackIdentifiers.rsaList, {
+                      vehicleRegNumber,
+                      customerDetail,
+                      currentUserData: userData,
+                    });
+                  }}
                 >
                   <Text style={styles.editBtnText}>RSA</Text>
                 </TouchableOpacity>

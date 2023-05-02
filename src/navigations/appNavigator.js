@@ -146,6 +146,8 @@ import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDa
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
+import RsaList from "../scenes/mainScenes/Home/ServiceCustomer/RsaList";
+import CreateRsa from "../scenes/mainScenes/Home/ServiceCustomer/CreateRsa";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -439,6 +441,8 @@ export const HomeStackIdentifiers = {
   editCustomerBookingList: "EDIT_CUSTOMER_BOOKING_LIST",
   queryList: "QUERY_LIST",
   createQuery: "CREATE_QUERY",
+  rsaList: "RSA_LIST",
+  createRsa: "CREATE_RSA",
   createCustomerBooking: "CREATE_CUSTOMER_BOOKING",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
   crmFilter: "CRM_FILTER",
@@ -620,6 +624,16 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.createQuery}
         component={CreateQuery}
         options={{ title: "Query" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.rsaList}
+        component={RsaList}
+        options={{ title: "RSA List" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.createRsa}
+        component={CreateRsa}
+        options={{ title: "RSA" }}
       />
       <HomeStack.Screen
         name={HomeStackIdentifiers.crmFilter}
