@@ -5123,8 +5123,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 }}>
                                   <ImageSelectItem
                                     name={"Attachment"}
-                                    // disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                                    disabled={false}
+                                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
+                                    // disabled={false}
                                     onPress={() =>{
                                       if (fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"){
                                         dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
