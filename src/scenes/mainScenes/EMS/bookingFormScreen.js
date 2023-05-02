@@ -5169,7 +5169,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
               </List.AccordionGroup>
               
-              {userData.hrmsRole.includes("DSE") && fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"  ?
+              {userData.hrmsRole.includes("DSE") || userData.hrmsRole.includes("Sales Consultant") && fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"  ?
                 <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
 
                   {isCancleClicked ? <Button
