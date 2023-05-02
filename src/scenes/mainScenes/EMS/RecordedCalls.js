@@ -69,8 +69,8 @@ const RecordedCalls = ({ navigation, route }) => {
   
 
   useEffect(() => {
-    dispatch(getRecordedCallList(1600453));
-    // dispatch(getRecordedCallList(taskId));
+    // dispatch(getRecordedCallList(1600453));
+    dispatch(getRecordedCallList(taskId));
     return () => {
       dispatch(clearRecordedCallsData());
       TrackPlayer.reset();
