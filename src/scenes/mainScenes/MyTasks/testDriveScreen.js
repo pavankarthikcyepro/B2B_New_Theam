@@ -576,9 +576,11 @@ const TestDriveScreen = ({ route, navigation }) => {
     
     if (!_.isEmpty(selector.get_workFlow_task_details)){
       let modifiedObj = selector.get_workFlow_task_details[selector.get_workFlow_task_details.length -1];
-      
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
       const temp ={...modifiedObj};
-      temp.taskStatus = "APPROVED";
+      // temp.taskStatus =  "APPROVED";
+      temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
       temp.taskUpdatedTime = moment().valueOf();
       temp.taskCreatedTime = moment().valueOf();
      const value = temp.taskId;
@@ -1585,6 +1587,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       securityOutId: "",
       source: taskData.sourceType,
       status: status,
+      // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
       testDriveDatetime: moment.utc(preferredTime).format(),
       // testDriveDatetime: prefferedTime,
       varientId: varientId,

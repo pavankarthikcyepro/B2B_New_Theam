@@ -261,10 +261,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
       const temp = { ...modifiedObj };
       temp.taskStatus = "Approved";
+      // temp.taskUpdatedTime = moment().valueOf();
+      // temp.taskCreatedTime = moment().valueOf();
+      // let newArr = modifiedObj
+
       temp.taskUpdatedTime = moment().valueOf();
       temp.taskCreatedTime = moment().valueOf();
-      // let newArr = modifiedObj
-      console.log("manthan newArr ", temp);
+      const value = temp.taskId;
+      const valueassignee = temp.assignee;
+      const valueProcessId = temp.dmsProcess;
+      temp["assigneeId"] = valueassignee;
+      temp["processId"] = valueProcessId;
+      temp["taskIdRef"] = value;
+      delete temp.taskId;
+      delete temp.assignee;
+      delete temp.dmsProcess;
+
       // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
       postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
 
