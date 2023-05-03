@@ -1420,7 +1420,6 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                                             : item.salesConsultant
                                         }
                                         onItemPressed={()=>{
-                                            console.log("manthan ");
                                             navigation.navigate("BOOKING_FORM", {
                                                 universalId: item.crmUniversalId,
                                                 enqDetails: "",
