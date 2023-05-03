@@ -31,6 +31,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
   const [inventory, setInventory] = useState(format);
   const [availableAgingData, setAvailableAgingData] = useState([]);
   const [inTransitAgingData, setInTransitAgingData] = useState([]);
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     navigation.setOptions({
@@ -57,6 +58,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        setRole(jsonObj.hrmsRole);
         let payload = {
           orgId: jsonObj.orgId.toString(),
         };
@@ -196,7 +198,9 @@ const OverviewDetailScreen = ({ route, navigation }) => {
         <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
-            <Text style={styles.titleText}>{"Stock Yard"}</Text>
+            <Text style={styles.titleText}>
+              {role !== "Admin" ? "Dealer Code" : "Stock Yard"}
+            </Text>
             <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
             <Text style={styles.titleText}>{"Stock"}</Text>
           </View>

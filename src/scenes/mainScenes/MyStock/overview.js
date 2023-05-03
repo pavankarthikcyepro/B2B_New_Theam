@@ -34,6 +34,7 @@ const OverviewScreen = ({ route, navigation }) => {
   const [inventory, setInventory] = useState(sample);
   const [availableAgingData, setAvailableAgingData] = useState([]);
   const [inTransitAgingData, setInTransitAgingData] = useState([]);
+  const [role, setRole] = useState("");
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -62,6 +63,7 @@ const OverviewScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        setRole(jsonObj.hrmsRole);
         let payload = {
           orgId: jsonObj.orgId.toString(),
         };

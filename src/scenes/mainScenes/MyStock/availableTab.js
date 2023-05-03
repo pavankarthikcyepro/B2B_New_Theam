@@ -1,11 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
@@ -47,6 +41,7 @@ const AvailableScreen = ({ route, navigation }) => {
   const [orgID, setOrgID] = useState(0);
   const [totalAvailableData, setTotalAvailableData] = useState(Total);
   const [totalInTransitData, setTotalInTransitData] = useState(Total);
+  const [isSelfManager, setIsSelfManager] = useState("N");
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
@@ -81,6 +76,7 @@ const AvailableScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        setIsSelfManager(jsonObj.isSelfManager);
         let branchName = route?.params?.headerTitle;
         let payload = {
           orgId: jsonObj.orgId.toString(),
@@ -178,10 +174,16 @@ const AvailableScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.parameterTitleView}>
           <Text style={styles.valueTxt}>{item.stockValue || "0.0"}</Text>
-          <Text style={styles.valueTxt}>{item.petrolCount || 0}</Text>
-          <Text style={styles.valueTxt}>{item.dieselCount || 0}</Text>
+          {isSelfManager !== "Y" && (
+            <>
+              <Text style={styles.valueTxt}>{item.petrolCount || 0}</Text>
+              <Text style={styles.valueTxt}>{item.dieselCount || 0}</Text>
+            </>
+          )}
           <Text style={styles.valueTxt}>{item.electricCount || 0}</Text>
-          <Text style={styles.valueTxt}>{Total || 0}</Text>
+          {isSelfManager !== "Y" && (
+            <Text style={styles.valueTxt}>{Total || 0}</Text>
+          )}
         </View>
       </View>
     );
@@ -231,10 +233,16 @@ const AvailableScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.parameterTitleView}>
               <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
-              <Text style={styles.titleText}>{"Petrol"}</Text>
-              <Text style={styles.titleText}>{"Diesel"}</Text>
+              {isSelfManager !== "Y" && (
+                <>
+                  <Text style={styles.titleText}>{"Petrol"}</Text>
+                  <Text style={styles.titleText}>{"Diesel"}</Text>
+                </>
+              )}
               <Text style={styles.titleText}>{"Electric"}</Text>
-              <Text style={styles.titleText}>{"Total"}</Text>
+              {isSelfManager !== "Y" && (
+                <Text style={styles.titleText}>{"Total"}</Text>
+              )}
             </View>
           </View>
           {available

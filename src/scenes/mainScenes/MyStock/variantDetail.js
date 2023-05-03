@@ -1,11 +1,5 @@
-import React, { useEffect,useState } from "react";
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
@@ -13,7 +7,6 @@ import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
 import { LoaderComponent } from "../../../components";
 import _ from "lodash";
-
 
 const sample = {
   varientWise_intransit_stock: [],
@@ -45,6 +38,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
   const [models, setModels] = useState(sample);
   const [totalAvailableData, setTotalAvailableData] = useState(Total);
   const [totalInTransitData, setTotalInTransitData] = useState(Total);
+  const [isSelfManager, setIsSelfManager] = useState("N");
 
   useEffect(() => {
     navigation.setOptions({
@@ -64,53 +58,54 @@ const VariantDetailScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-      let payload = {
-        orgId: jsonObj?.orgId.toString(),
-        model: item?.headerTitle,
-        branchName: item?.branchName,
-      };
-      if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
-        let data = {
-          maxAge: selector.agingTo,
-          minAge: selector.agingFrom,
-          branchName: selector.dealerCode.name,
+        setIsSelfManager(jsonObj.isSelfManager);
+        let payload = {
+          orgId: jsonObj?.orgId.toString(),
+          model: item?.headerTitle,
+          branchName: item?.branchName,
         };
-        payload = { ...payload, ...data };
-      }
-      const response = await client.post(
-        URL.GET_INVENTORY_BY_VEHICLE_MODEL(),
-        payload
-      );
-      const json = await response.json();
-      setAvailable(item.available);
-      if (json) {
-        let newArr = json;
-        setModels(json);
-        if (json.varientWise_available_stock) {
-          const arr = json.varientWise_available_stock;
-          let total = {
-            varient: "Total",
-            petrolCount: SumUpTheIndividual("petrolCount", arr),
-            dieselCount: SumUpTheIndividual("dieselCount", arr),
-            electricCount: SumUpTheIndividual("electricCount", arr),
-            stockValue: SumUpTheIndividual("stockValue", arr),
+        if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+          let data = {
+            maxAge: selector.agingTo,
+            minAge: selector.agingFrom,
+            branchName: selector.dealerCode.name,
           };
-          setTotalAvailableData([total]);
+          payload = { ...payload, ...data };
         }
-        if (json.varientWise_intransit_stock) {
-          const arr = json.varientWise_intransit_stock;
-          let total = {
-            varient: "Total",
-            petrolCount: SumUpTheIndividual("petrolCount", arr),
-            dieselCount: SumUpTheIndividual("dieselCount", arr),
-            electricCount: SumUpTheIndividual("electricCount", arr),
-            stockValue: SumUpTheIndividual("stockValue", arr),
-          };
-          setTotalInTransitData([total]);
+        const response = await client.post(
+          URL.GET_INVENTORY_BY_VEHICLE_MODEL(),
+          payload
+        );
+        const json = await response.json();
+        setAvailable(item.available);
+        if (json) {
+          let newArr = json;
+          setModels(json);
+          if (json.varientWise_available_stock) {
+            const arr = json.varientWise_available_stock;
+            let total = {
+              varient: "Total",
+              petrolCount: SumUpTheIndividual("petrolCount", arr),
+              dieselCount: SumUpTheIndividual("dieselCount", arr),
+              electricCount: SumUpTheIndividual("electricCount", arr),
+              stockValue: SumUpTheIndividual("stockValue", arr),
+            };
+            setTotalAvailableData([total]);
+          }
+          if (json.varientWise_intransit_stock) {
+            const arr = json.varientWise_intransit_stock;
+            let total = {
+              varient: "Total",
+              petrolCount: SumUpTheIndividual("petrolCount", arr),
+              dieselCount: SumUpTheIndividual("dieselCount", arr),
+              electricCount: SumUpTheIndividual("electricCount", arr),
+              stockValue: SumUpTheIndividual("stockValue", arr),
+            };
+            setTotalInTransitData([total]);
+          }
         }
+        setLoading(false);
       }
-      setLoading(false);
-    }
     } catch (error) {
       setModels(sample);
       setLoading(false);
@@ -202,18 +197,24 @@ const VariantDetailScreen = ({ route, navigation }) => {
             <Text numberOfLines={1} style={styles.valueTxt}>
               {item.stockValue || "0.0"}
             </Text>
-            <Text numberOfLines={1} style={styles.valueTxt}>
-              {item.petrolCount || 0}
-            </Text>
-            <Text numberOfLines={1} style={styles.valueTxt}>
-              {item.dieselCount || 0}
-            </Text>
+            {isSelfManager !== "Y" && (
+              <>
+                <Text numberOfLines={1} style={styles.valueTxt}>
+                  {item.petrolCount || 0}
+                </Text>
+                <Text numberOfLines={1} style={styles.valueTxt}>
+                  {item.dieselCount || 0}
+                </Text>
+              </>
+            )}
             <Text numberOfLines={1} style={styles.valueTxt}>
               {item.electricCount || 0}
             </Text>
-            <Text numberOfLines={1} style={styles.valueTxt}>
-              {Total || 0}
-            </Text>
+            {isSelfManager !== "Y" && (
+              <Text numberOfLines={1} style={styles.valueTxt}>
+                {Total || 0}
+              </Text>
+            )}
           </View>
         </View>
         <View style={{ marginBottom: item.innerVariant ? 15 : 0 }}>
@@ -250,18 +251,24 @@ const VariantDetailScreen = ({ route, navigation }) => {
           <Text numberOfLines={1} style={styles.valueTxt}>
             {item1.stockValue || "0.0"}
           </Text>
-          <Text numberOfLines={1} style={styles.valueTxt}>
-            {item1.petrolCount || 0}
-          </Text>
-          <Text numberOfLines={1} style={styles.valueTxt}>
-            {item1.dieselCount || 0}
-          </Text>
+          {isSelfManager !== "Y" && (
+            <>
+              <Text numberOfLines={1} style={styles.valueTxt}>
+                {item1.petrolCount || 0}
+              </Text>
+              <Text numberOfLines={1} style={styles.valueTxt}>
+                {item1.dieselCount || 0}
+              </Text>
+            </>
+          )}
           <Text numberOfLines={1} style={styles.valueTxt}>
             {item1.electricCount || 0}
           </Text>
-          <Text numberOfLines={1} style={styles.valueTxt}>
-            {Total || 0}
-          </Text>
+          {isSelfManager !== "Y" && (
+            <Text numberOfLines={1} style={styles.valueTxt}>
+              {Total || 0}
+            </Text>
+          )}
         </View>
       </View>
     );
@@ -280,10 +287,16 @@ const VariantDetailScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.parameterTitleView}>
               <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
-              <Text style={styles.titleText}>{"Petrol"}</Text>
-              <Text style={styles.titleText}>{"Diesel"}</Text>
+              {isSelfManager !== "Y" && (
+                <>
+                  <Text style={styles.titleText}>{"Petrol"}</Text>
+                  <Text style={styles.titleText}>{"Diesel"}</Text>
+                </>
+              )}
               <Text style={styles.titleText}>{"Electric"}</Text>
-              <Text style={styles.titleText}>{"Total"}</Text>
+              {isSelfManager !== "Y" && (
+                <Text style={styles.titleText}>{"Total"}</Text>
+              )}
             </View>
           </View>
           {available
