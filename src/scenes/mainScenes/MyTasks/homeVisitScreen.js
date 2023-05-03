@@ -109,10 +109,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
-
+  const [isScreenChange,setIschangeScreen] =useState(false);
   const [manageUpdateBtn, setManageUpdateBtn] = useState(false);
-
-
+  const [storeLastupdatedHomeVisitDetails, setStoreLastupdatedHomeVisitDetails] = useState([]);
+  const [storeLastupdatedHomeVisitId, setStoreLastupdatedHomeVisitId] = useState([]);
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
@@ -218,12 +218,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     
-    if (selector.re_home_visitResubmit_response == "success"){
-      navigation.popToTop();
-      dispatch(clearState()); 
+    if (selector.re_home_visitResubmit_response == "success" || selector.post_workFlow_task_details == "success"){
+      if (isScreenChange){
+        navigation.popToTop();
+        dispatch(clearState()); 
+      }
+     
     }
    
-  }, [selector.re_home_visitResubmit_response])
+  }, [selector.re_home_visitResubmit_response, selector.post_workFlow_task_details])
   
 
   useEffect(() => {
@@ -243,6 +246,24 @@ const HomeVisitScreen = ({ route, navigation }) => {
   
     
   }, [selector.task_details_response])
+
+  useEffect(() => {
+    if (selector.home_visit_History_listing_status =="success"){
+      if (!_.isEmpty(selector.home_visit_History_listing)) {
+        let response = selector.home_visit_History_listing;
+        let tempData;
+
+        if (response.length > 0) {
+          tempData = response[response.length - 1]
+          setStoreLastupdatedHomeVisitDetails(tempData);
+          setStoreLastupdatedHomeVisitId(tempData?.id);
+        }
+      }
+
+    }
+   
+  }, [selector.home_visit_History_listing])
+  
   
   useEffect(() => {
 
@@ -260,12 +281,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
       let modifiedObj = selector.get_workFlow_task_details[selector.get_workFlow_task_details.length - 1];
 
       const temp = { ...modifiedObj };
-      temp.taskStatus = "Approved";
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+      // temp.taskStatus = "Approved";
       // temp.taskUpdatedTime = moment().valueOf();
       // temp.taskCreatedTime = moment().valueOf();
       // let newArr = modifiedObj
-
-      temp.taskUpdatedTime = moment().valueOf();
+      temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
+      temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
       temp.taskCreatedTime = moment().valueOf();
       const value = temp.taskId;
       const valueassignee = temp.assignee;
@@ -276,15 +299,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
-
+      delete temp.taskUpdatedBy;
       // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
       postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
-
+      setIschangeScreen(true);
     }
 
 
   }, [selector.get_workFlow_task_details])
 
+  function compare(dateTimeA, dateTimeB) {
+    var momentA = moment(dateTimeA, "DD/MM/YYYY");
+    var momentB = moment(dateTimeB, "DD/MM/YYYY");
+    if (momentA > momentB) return 1;
+    else if (momentA < momentB) return -1;
+    else return 0;
+  }
 
   const updateTask = () => {
     changeStatusForTask("UPDATE_TASK");
@@ -1068,7 +1098,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
           </View>
         ) : null}
 
-        {route?.params?.taskStatus === "CLOSED" ? <>
+        {route?.params?.taskStatus === "CLOSED" && storeLastupdatedHomeVisitDetails?.reHomevisitFlag !== "ReHomevisit"
+         ? <>
           <View style={styles.view1}>
             
             <Button

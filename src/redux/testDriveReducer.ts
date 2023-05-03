@@ -697,11 +697,11 @@ const testDriveSlice = createSlice({
 
     builder.addCase(postDetailsWorkFlowTask.pending, (state, action) => {
       state.isLoading = true;
-      state.post_workFlow_task_details = "";
+      state.post_workFlow_task_details = "pending";
     })
     builder.addCase(postDetailsWorkFlowTask.fulfilled, (state, action) => {
       if (action.payload) {
-        state.post_workFlow_task_details = action.payload;
+        state.post_workFlow_task_details = "success";
       }
       // else if (action.payload["reason"]) {
       //   showToastRedAlert(action.payload["reason"]);
@@ -714,7 +714,7 @@ const testDriveSlice = createSlice({
       //   showToastRedAlert(action.payload["reason"]);
       // }
       state.isLoading = false;
-      state.post_workFlow_task_details = "";
+      state.post_workFlow_task_details = "failed";
     })
 
 

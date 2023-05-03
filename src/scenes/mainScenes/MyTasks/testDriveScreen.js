@@ -581,7 +581,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       const temp ={...modifiedObj};
       // temp.taskStatus =  "APPROVED";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
-      temp.taskUpdatedTime = moment().valueOf();
+      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
       temp.taskCreatedTime = moment().valueOf();
      const value = temp.taskId;
       const valueassignee = temp.assignee;
@@ -592,15 +592,19 @@ const TestDriveScreen = ({ route, navigation }) => {
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
-      // let newArr = modifiedObj
+      delete temp.taskUpdatedBy;
 
+    
+      // let newArr = modifiedObj
       // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
       postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
-       
+      setIschangeScreen(true);
     }
   
     
   }, [selector.get_workFlow_task_details])
+  
+  
   
 
   const getTestDriveAppointmentDetailsFromServer = async () => {
@@ -1616,7 +1620,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
     // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
     dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
-    setIschangeScreen(true)
+    // setIschangeScreen(true)
 
   }
   
@@ -1665,13 +1669,13 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   useEffect(() => {
 
-    if (selector.reopen_test_drive_res_status === "successs") {
+    if (selector.reopen_test_drive_res_status === "successs" || selector.post_workFlow_task_details == "success") {
       if (ischangeScreen) {
         navigation.pop(2);
       }
     }
 
-  }, [selector.reopen_test_drive_res_status])
+  }, [selector.reopen_test_drive_res_status, selector.post_workFlow_task_details == "success"])
 
   useEffect(() => {
     // if (route?.params?.taskStatus === "CLOSED"){
@@ -2758,7 +2762,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           {route?.params?.taskStatus === "CLOSED" &&
             !isReopenSubmitVisible &&
             !isCloseSelected 
-            // && storeLastupdatedTestDriveDetails?.reTestdriveFlag !=="ReTestDrive"
+            && storeLastupdatedTestDriveDetails?.reTestdriveFlag !=="ReTestDrive"
              ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
                 <Button

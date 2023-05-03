@@ -168,6 +168,7 @@ const slice = createSlice({
         next_follow_up_Time: "",
         homeVisit_history_counts :"",
         home_visit_History_listing:"",
+        home_visit_History_listing_status: "",
         putworkFlowUpdateHomeVisitRes:"",
         post_workFlow_task_details: "",
         put_workflow_task_history: "",
@@ -185,6 +186,7 @@ const slice = createSlice({
             state.next_follow_up_Time="",
             state.homeVisit_history_counts = "",
             state.home_visit_History_listing = "",
+                state.home_visit_History_listing_status = "",
             state.putworkFlowUpdateHomeVisitRes = "",
                 state.post_workFlow_task_details= "",
                 state.put_workflow_task_history = "",
@@ -407,19 +409,22 @@ const slice = createSlice({
         // home visit history count
         builder.addCase(getHomeVisitAuditDetails.pending, (state, action) => {
             state.isLoading = true;
-            state.home_visit_History_listing = ""
+            state.home_visit_History_listing = "",
+                state.home_visit_History_listing_status = "pending"
 
         })
         builder.addCase(getHomeVisitAuditDetails.fulfilled, (state, action) => {
             state.isLoading = false;
             if(action.payload){
                 state.home_visit_History_listing = action.payload;
+                state.home_visit_History_listing_status = "success";
             }
             
         })
         builder.addCase(getHomeVisitAuditDetails.rejected, (state, action) => {
             state.isLoading = false;
             state.home_visit_History_listing = "";
+            state.home_visit_History_listing_status = "faild"
         })
 
         // home visit workflow update
@@ -444,19 +449,19 @@ const slice = createSlice({
         // home visit workflowtaskhistory
         builder.addCase(postDetailsWorkFlowTask.pending, (state, action) => {
             state.isLoading = true;
-            state.post_workFlow_task_details = ""
+            state.post_workFlow_task_details = "pending"
 
         })
         builder.addCase(postDetailsWorkFlowTask.fulfilled, (state, action) => {
             state.isLoading = false;
             if (action.payload) {
-                state.post_workFlow_task_details = action.payload;
+                state.post_workFlow_task_details = "success";
             }
 
         })
         builder.addCase(postDetailsWorkFlowTask.rejected, (state, action) => {
             state.isLoading = false;
-            state.post_workFlow_task_details = "";
+            state.post_workFlow_task_details = "failed";
         })
 
 
