@@ -221,7 +221,7 @@ export default function branchRankingScreen(props) {
           "startDate": startOfMonth,
             //not for payload, just to add in params
             "orgId":jsonObj.orgId,
-          "branchId": deladerID ? deladerID[0] : branName,
+          "branchIds": deladerID ? deladerID : branName,
           "designationNames": selectedid ? selectedid : []
 
         };
@@ -276,14 +276,14 @@ export default function branchRankingScreen(props) {
       // getBranchRankListFromServerWithoutFilter();
       setTimeout(() => {
         setBranchList(selector.branchrank_list);
-      }, 1000);
+      }, 500);
     }, []);
 
     useEffect(() => {
       if (selector.branchrank_list && selector.branchrank_list.length > 0) {
         setTimeout(() => {
           setBranchList(selector.branchrank_list);
-        }, 2000);
+        }, 500);
       }
 
       if (selector.branchrank_list && selector.branchrank_list.length > 0) {
@@ -294,12 +294,12 @@ export default function branchRankingScreen(props) {
         setTimeout(() => {
           setTopRankList(top);
           setTop5RankList(top.slice(0, 5));
-        }, 1000);
+        }, 500);
 
         setTimeout(() => {
           setBottom5RankList([...bottom].reverse().slice(0, 5));
           setReverseBottomRankList([...bottom].reverse());
-        }, 1000);
+        }, 500);
       }
     }, [selector.branchrank_list]);
 
