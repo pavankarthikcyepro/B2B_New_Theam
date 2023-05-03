@@ -5137,18 +5137,20 @@ const BookingFormScreen = ({ route, navigation }) => {
                                      
                                     }
                                   />
-                                  <TouchableOpacity
-                                    style={styles.previewBtn}
-                                    onPress={() => {
-                                      
-                                      if (uploadedAttachementsObj[index]?.url){
-                                        setImagePath(uploadedAttachementsObj[index]?.url)
-                                      }
-                                     
-                                    }}
-                                  >
-                                    <Text style={styles.previetxt}>Preview</Text>
-                                  </TouchableOpacity>
+                                  {uploadedAttachementsObj[index]?.url ?
+                                    <TouchableOpacity
+                                      style={styles.previewBtn}
+                                      onPress={() => {
+
+                                        if (uploadedAttachementsObj[index]?.url) {
+                                          setImagePath(uploadedAttachementsObj[index]?.url)
+                                        }
+
+                                      }}
+                                    >
+                                      <Text style={styles.previetxt}>Preview</Text>
+                                    </TouchableOpacity> : null}
+                                 
                                     
                                 </View>
                            
@@ -5189,32 +5191,36 @@ const BookingFormScreen = ({ route, navigation }) => {
 
               </List.AccordionGroup>
               
-              {userData.hrmsRole.includes("DSE") || userData.hrmsRole.includes("Sales Consultant") && fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"  ?
-                <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
+              {userData.hrmsRole.includes("DSE") || userData.hrmsRole.includes("Sales Consultant")   ?
+              <>
+                  {fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ?
+                    <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
 
-                  {isCancleClicked ? <Button
-                    mode="contained"
-                    // style={{ flex: 1, marginRight: 10 }}
-                    style={{ flex: 1, marginRight: 10, }}
-                    color={Colors.GRAY}
-                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                    onPress={() => proceedToCancelBooking()}
-                  >
-                    Proceed To Cancellation
-                  </Button> : <Button
-                    mode="contained"
-                    // style={{ flex: 1, marginRight: 10 }}
-                    style={{ width: '30%', marginRight: 10, }}
-                    color={Colors.GRAY}
-                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                    onPress={() => { 
-                      setIsCancelClicked(true)
-                     }}
-                  >
-                    Cancel
-                  </Button>}
+                      {isCancleClicked ? <Button
+                        mode="contained"
+                        // style={{ flex: 1, marginRight: 10 }}
+                        style={{ flex: 1, marginRight: 10, }}
+                        color={Colors.GRAY}
+                        labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                        onPress={() => proceedToCancelBooking()}
+                      >
+                        Proceed To Cancellation
+                      </Button> : <Button
+                        mode="contained"
+                        // style={{ flex: 1, marginRight: 10 }}
+                        style={{ width: '30%', marginRight: 10, }}
+                        color={Colors.GRAY}
+                        labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                        onPress={() => {
+                          setIsCancelClicked(true)
+                        }}
+                      >
+                        Cancel
+                      </Button>}
 
-                </View>            
+                    </View> :null}
+                
+                </>          
              :null }
               
             </View>
