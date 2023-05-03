@@ -234,7 +234,7 @@ const RecordedCalls = ({ navigation, route }) => {
         data={recordingList}
         renderItem={renderItem}
         ListEmptyComponent={noData}
-        contentContainerStyle={[styles.container, { padding: 15 }]}
+        contentContainerStyle={{ padding: 15 }}
         ItemSeparatorComponent={itemSeparator}
       />
       <LoaderComponent visible={selector.isLoading} />
