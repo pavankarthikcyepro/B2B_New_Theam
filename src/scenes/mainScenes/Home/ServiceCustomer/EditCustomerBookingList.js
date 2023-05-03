@@ -7,18 +7,19 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import { Colors, GlobalStyle } from '../../../../styles';
 import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
 import CREATE_NEW from '../../../../assets/images/create_new.svg';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoaderComponent } from '../../../../components';
 import * as AsyncStore from "../../../../asyncStore";
 import moment from 'moment';
 import {
   clearStateData,
   getBookingList,
 } from "../../../../redux/serviceBookingCrudReducer";
+import { EmptyListView } from '../../../../pureComponents';
 
 const dateFormat = "YYYY-MM-DD";
 const timeFormat = "HH:MM a";
@@ -63,14 +64,6 @@ const EditCustomerBookingList = ({ navigation, route }) => {
       };
       dispatch(getBookingList(payload));
     }
-  };
-
-  const noData = () => {
-    return (
-      <View style={styles.noDataContainer}>
-        <Text style={styles.noDataText}>No Bookings Found !</Text>
-      </View>
-    );
   };
 
   const getStatusColor = (status) => {
@@ -155,12 +148,26 @@ const EditCustomerBookingList = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={selector.bookingList}
-        ListEmptyComponent={noData}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 10 }}
-      />
+      {selector.bookingList.length > 0 ? (
+        <FlatList
+          data={selector.bookingList}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 10 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={() => getListing()}
+              progressViewOffset={200}
+              tintColor={Colors.PINK}
+            />
+          }
+        />
+      ) : (
+        <EmptyListView
+          title={"No Booking Found"}
+          isLoading={selector.isLoading}
+        />
+      )}
 
       <TouchableOpacity
         style={[GlobalStyle.shadow, styles.addView]}
@@ -175,8 +182,6 @@ const EditCustomerBookingList = ({ navigation, route }) => {
       >
         <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />
       </TouchableOpacity>
-
-      <LoaderComponent visible={selector.isLoading} />
     </SafeAreaView>
   );
 };
@@ -195,14 +200,6 @@ const styles = StyleSheet.create({
     right: 10,
     borderRadius: 30,
     backgroundColor: Colors.WHITE,
-  },
-  noDataContainer: {},
-  noDataText: {
-    marginVertical: 25,
-    fontSize: 18,
-    color: Colors.BLACK,
-    alignSelf: "center",
-    fontWeight: "bold",
   },
   itemContainer: {
     padding: 12,

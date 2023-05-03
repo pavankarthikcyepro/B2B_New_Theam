@@ -15,11 +15,22 @@ interface PersonalIntroModel {
   text: string;
 }
 
+export const getTechnician = createAsyncThunk(
+  "SERVICE_RSA_CRUD_SLICE/getTechnician",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_TECHNICIAN_LIST());
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const createRsa = createAsyncThunk(
   "SERVICE_RSA_CRUD_SLICE/createRsa",
   async (payload, { rejectWithValue }) => {
-    const { tenantId, rsaData } = payload;
-    const response = await client.post(URL.CREATE_RSA(tenantId), rsaData);
+    const response = await client.post(URL.CREATE_RSA(), payload);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -37,11 +48,12 @@ const initialState = {
   amount: "",
   rsaDate: "",
   technician: "",
+  technicianList: [],
   address: "",
   area: "",
   landmark: "",
   pincode: "",
-  createRsaResponseStatus: "pending",
+  createRsaResponseStatus: "",
 };
 
 const rsaCrudReducer = createSlice({
@@ -123,6 +135,34 @@ const rsaCrudReducer = createSlice({
       .addCase(createRsa.rejected, (state, action) => {
         state.isLoading = false;
         state.createRsaResponseStatus = "failed";
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+      });
+
+    builder
+      .addCase(getTechnician.pending, (state, action) => {
+        state.technicianList = [];
+      })
+      .addCase(getTechnician.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          let tmpArr = [];
+          const element = action.payload.body.employeeDTOS;
+          for (let i = 0; i < element.length; i++) {
+            let obj = {
+              ...element[i],
+              name: element[i].role,
+            };
+            tmpArr.push(Object.assign({}, obj));
+          }
+          state.technicianList = Object.assign([], tmpArr);
+        }
+      })
+      .addCase(getTechnician.rejected, (state, action) => {
+        state.technicianList = [];
         if (action.payload.message) {
           showToast(`${action.payload.message}`);
         } else {

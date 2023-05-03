@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearStateData, getQueryList } from '../../../../redux/queryListReducer';
 import * as AsyncStore from "../../../../asyncStore";
-import { LoaderComponent } from '../../../../components';
 import { Colors, GlobalStyle } from '../../../../styles';
 import moment from 'moment';
 import CREATE_NEW from "../../../../assets/images/create_new.svg";
 import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
+import { EmptyListView } from '../../../../pureComponents';
 
 const QueryList = ({ navigation, route }) => {
   const { currentUserData, vehicleRegNumber, customerDetail } = route.params;
@@ -47,12 +47,16 @@ const QueryList = ({ navigation, route }) => {
     dispatch(getQueryList(payload));
   };
 
-  const noData = () => {
-    return (
-      <View style={styles.noDataContainer}>
-        <Text style={styles.noDataText}>No Query Found !</Text>
-      </View>
-    );
+  const getStatusColor = (status) => {
+    if (status == "BOOKED") {
+      return Colors.GREEN_V2;
+    } else if (status == "CANCELLED" || status == "CLOSED") {
+      return Colors.CORAL;
+    } else if (status == "RESCHEDULED") {
+      return Colors.YELLOW;
+    } else {
+      return Colors.DARK_GRAY;
+    }
   };
 
   const renderItem = ({ item, index }) => {
@@ -110,7 +114,7 @@ const QueryList = ({ navigation, route }) => {
           numberOfLines={1}
           style={[
             styles.statusText,
-            // { color: getStatusColor(item.serviceAppointmentStatus) },
+            { color: getStatusColor(item.customerQueryEnquiryStatus) },
           ]}
         >
           {item.customerQueryEnquiryStatus}
@@ -121,12 +125,26 @@ const QueryList = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={selector.queryList}
-        ListEmptyComponent={noData}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 10 }}
-      />
+      {selector.queryList.length > 0 ? (
+        <FlatList
+          data={selector.queryList}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 10 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={() => getListing()}
+              progressViewOffset={200}
+              tintColor={Colors.PINK}
+            />
+          }
+        />
+      ) : (
+        <EmptyListView
+          title={"No Query Found"}
+          isLoading={selector.isLoading}
+        />
+      )}
 
       <TouchableOpacity
         style={[GlobalStyle.shadow, styles.addView]}
@@ -143,8 +161,6 @@ const QueryList = ({ navigation, route }) => {
       >
         <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />
       </TouchableOpacity>
-
-      <LoaderComponent visible={selector.isLoading} />
     </SafeAreaView>
   );
 };
@@ -162,15 +178,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: Colors.WHITE,
   },
-  noDataContainer: {},
-  noDataText: {
-    marginVertical: 25,
-    fontSize: 18,
-    color: Colors.BLACK,
-    alignSelf: "center",
-    fontWeight: "bold",
-  },
-
   itemContainer: {
     padding: 12,
     marginTop: 10,

@@ -5,9 +5,8 @@ import { showToast } from "../utils/toast";
 
 export const getRsaList = createAsyncThunk(
   "SERVICE_RSA_LIST_SLICE/getRsaList",
-  async (payload, { rejectWithValue }) => {
-    const { tenantId } = payload;
-    const response = await client.get(URL.GET_SERVICE_RSA_LIST(tenantId));
+  async (customerId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_SERVICE_RSA_LIST(customerId));
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);

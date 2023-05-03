@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors, GlobalStyle } from '../../../../styles';
 import { HomeStackIdentifiers } from '../../../../navigations/appNavigator';
 import * as AsyncStore from "../../../../asyncStore";
@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CREATE_NEW from "../../../../assets/images/create_new.svg";
 import { clearStateData, getRsaList } from '../../../../redux/rsaListReducer';
+import { EmptyListView } from '../../../../pureComponents';
 
 const RsaList = ({ navigation, route }) => {
   const { currentUserData, vehicleRegNumber, customerDetail } = route.params;
@@ -16,42 +17,22 @@ const RsaList = ({ navigation, route }) => {
 
   useEffect(() => {
     getListing();
+    getCurrentUser();
     return () => {
       dispatch(clearStateData());
     };
   }, []);
 
   const getListing = () => {
-    if (currentUserData?.branchId || userData?.branchId) {
-      initialCall(currentUserData);
-    } else {
-      getCurrentUser();
-    }
+    dispatch(getRsaList(customerDetail.id));
   };
 
   const getCurrentUser = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      initialCall(jsonObj);
+      setUserData(jsonObj);
     }
-  };
-
-  const initialCall = (data) => {
-    const { branchId, orgId } = data;
-    setUserData(data);
-    let payload = {
-      tenantId: branchId,
-    };
-    dispatch(getRsaList(payload));
-  };
-
-  const noData = () => {
-    return (
-      <View style={styles.noDataContainer}>
-        <Text style={styles.noDataText}>No RSA Found !</Text>
-      </View>
-    );
   };
 
   const getStatusColor = (status) => {
@@ -84,29 +65,25 @@ const RsaList = ({ navigation, route }) => {
          style={styles.itemContainer}
        >
          <View style={styles.topRow}>
-           <Text style={styles.rsaNo}>77HHVGH</Text>
+           <Text style={styles.rsaNo}>{item.id}</Text>
          </View>
          <View style={styles.itemRow}>
            <Text style={styles.rowLabel}>Reason: </Text>
-           <Text style={styles.rowValue}>Just test</Text>
+           <Text style={styles.rowValue}>{item.reason}</Text>
          </View>
          <View style={styles.itemRow}>
            <Text style={styles.rowLabel}>Remarks: </Text>
-           <Text style={styles.rowValue}>No Remarks</Text>
+           <Text style={styles.rowValue}>{item.remarks}</Text>
          </View>
          <View style={styles.itemRow}>
            <Text style={styles.rowLabel}>Amount: </Text>
-           <Text style={styles.rowValue}>200</Text>
+           <Text style={styles.rowValue}>{item.amount}</Text>
          </View>
          <Text
            numberOfLines={1}
-           style={[
-             styles.statusText,
-            //  { color: getStatusColor(item.status) },
-           ]}
+           style={[styles.statusText, { color: getStatusColor(item.status) }]}
          >
-          OPEN
-           {/* {item.status} */}
+           {item.status}
          </Text>
        </TouchableOpacity>
      );
@@ -114,13 +91,24 @@ const RsaList = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={["", "", ""]}
-        // data={selector.rsaList}
-        ListEmptyComponent={noData}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 10 }}
-      />
+      {selector.rsaList.length > 0 ? (
+        <FlatList
+          data={selector.rsaList}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 10 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={() => getListing()}
+              progressViewOffset={200}
+              tintColor={Colors.PINK}
+            />
+          }
+        />
+      ) : (
+        <EmptyListView title={"No RSA Found"} isLoading={selector.isLoading} />
+      )}
+
       <TouchableOpacity
         style={[GlobalStyle.shadow, styles.addView]}
         activeOpacity={0.8}
@@ -153,14 +141,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: Colors.WHITE,
   },
-  noDataContainer: {},
-  noDataText: {
-    marginVertical: 25,
-    fontSize: 18,
-    color: Colors.BLACK,
-    alignSelf: "center",
-    fontWeight: "bold",
-  },
   itemContainer: {
     padding: 12,
     marginTop: 10,
@@ -173,15 +153,16 @@ const styles = StyleSheet.create({
   rsaNo: { fontSize: 14, fontWeight: "600" },
   itemRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginTop: 5,
+    marginTop: 7,
   },
   rowLabel: {
     fontSize: 13,
     fontWeight: "600",
     color: Colors.GRAY,
+    width: "25%"
   },
   rowValue: {
+    flex: 1,
     fontSize: 13,
     fontWeight: "600",
   },

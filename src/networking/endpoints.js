@@ -408,7 +408,10 @@ const URL = {
   },
 
   UPLOAD_ATTACHMENTS: () => {
-    return notificationServices_url + `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`;
+    return (
+      notificationServices_url +
+      `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`
+    );
   },
 
   GENERATE_OTP: () => {
@@ -998,8 +1001,11 @@ const URL = {
   CREATE_QUERY: (tenantId) => {
     return baseUrl + `vehicle-services/api/tenant/1/customer-query`;
   },
-  CREATE_RSA: (tenantId) => {
-    return baseUrl + `vehicle-services/api/tenant/1/customer-rsa`;
+  CREATE_RSA: () => {
+    return baseUrl + `vehicle-services/rsa`;
+  },
+  GET_TECHNICIAN_LIST: () => {
+    return baseUrl + `vehicle-services/rsa/api/technicianList`;
   },
   UPDATE_QUERY: (tenantId, queryId) => {
     return (
@@ -1024,10 +1030,10 @@ const URL = {
       `vehicle-services/api/tenant/1/customer-query/search?size=0&page=10&assignedTo=1&createdBy=1`
     );
   },
-  GET_SERVICE_RSA_LIST: (tenantId, vehicleRegNumber) => {
+  GET_SERVICE_RSA_LIST: (customerId) => {
     return (
       baseUrl +
-      `vehicle-services/api/tenant/1/customer-rsa/search?size=0&page=10&assignedTo=1&createdBy=1`
+      `vehicle-services/rsa/all?page=0&size=10&customerid=${customerId}`
     );
   },
   GET_BOOKED_SLOTS_LIST: (tenantId, vehicleRegNumber, slotId) => {

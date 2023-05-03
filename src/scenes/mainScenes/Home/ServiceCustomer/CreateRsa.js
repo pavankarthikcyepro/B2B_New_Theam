@@ -13,11 +13,11 @@ import { Colors } from '../../../../styles';
 import { DatePickerComponent, DropDownComponant, LoaderComponent } from '../../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextInputServices } from '../../../../components/textInputServices';
-import { clearStateData, setDatePicker, setDropDownData, setInputInfo, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
+import { clearStateData, createRsa, getTechnician, setDatePicker, setDropDownData, setInputInfo, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
 import { convertTimeStampToDateString } from '../../../../utils/helperFunctions';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 import { DropDownServices } from '../../../../pureComponents/dropDownServices';
-import { TECHNICIAN_LIST } from '../../../../jsonData/addCustomerScreenJsonData';
+import { showToastRedAlert } from '../../../../utils/toast';
 
 const CreateRsa = ({ navigation, route }) => {
   const {
@@ -39,6 +39,7 @@ const CreateRsa = ({ navigation, route }) => {
   const [isSubmitPress, setIsSubmitPress] = useState(false);
 
   useEffect(() => {
+    dispatch(getTechnician());
     if (fromType == "editRsa") {
       setExistingData();
     }
@@ -77,7 +78,7 @@ const CreateRsa = ({ navigation, route }) => {
     Keyboard.dismiss();
     switch (key) {
       case "TECHNICIAN":
-        setDataForDropDown([...TECHNICIAN_LIST]);
+        setDataForDropDown([...selector.technicianList]);
         break;
       default:
         setDataForDropDown([]);
@@ -91,6 +92,94 @@ const CreateRsa = ({ navigation, route }) => {
     if (key) {
       dispatch(setDropDownData({ key: key, value: "", id: "" }));
     }
+  };
+
+  const getPayloadId = (val) => {
+    let index = selector.technicianList.findIndex((item) => item.name == val);
+    return selector.technicianList[index]?.id;
+  };
+
+  const convertTimeToIsoString = (date) => {
+    return new Date(`${date} 00:00`).toISOString();
+  };
+
+  const submit = (type) => {
+    setIsSubmitPress(true);
+    if (!selector.remarks) {
+      showToast("Please Enter Remarks");
+      return;
+    }
+    
+    if (!selector.amount) {
+      showToast("Please Enter Amount");
+      return;
+    }
+    
+    if (!selector.rsaDate) {
+      showToast("Please Select Date");
+      return;
+    }
+    
+    if (!selector.technician) {
+      showToast("Please Select Technician");
+      return;
+    }
+    
+    if (!selector.address) {
+      showToast("Please Enter Address");
+      return;
+    }
+    
+    if (!selector.area) {
+      showToast("Please Enter Area");
+      return;
+    }
+    
+    if (!selector.landmark) {
+      showToast("Please Enter Landmark");
+      return;
+    }
+    
+    if (!selector.pincode) {
+      showToast("Please Enter Pincode");
+      return;
+    }
+
+    let branchName = "";
+    let branchIndex = currentUserData.branchs.findIndex(
+      (item) => item.branchId == currentUserData.branchId
+    );
+
+    if (branchIndex >= 0) {
+      branchName = currentUserData.branchs[branchIndex].branchName;
+    }
+
+    let payload = {
+      amount: selector.amount,
+      createdBy: customerDetail.id,
+      createdDate: new Date().toISOString(),
+      customerId: customerDetail.id,
+      lastModifiedBy: customerDetail.id,
+      lastModifiedDate: new Date().toISOString(),
+      reason: selector.reason,
+      remarks: selector.remarks,
+      status: "OPEN",
+      rsaAddressRequest: {
+        address: selector.address,
+        area: selector.area,
+        landmark: selector.landmark,
+        pin: selector.pincode,
+        id: 0,
+        latitude: 0,
+        longitude: 0,
+      },
+      branchName: branchName,
+      technician: getPayloadId(selector.technician),
+      vehicleRegNo: vehicleRegNumber,
+      date: convertTimeToIsoString(selector.rsaDate),
+    };
+
+    dispatch(createRsa(payload));
   };
 
   return (
@@ -163,7 +252,7 @@ const CreateRsa = ({ navigation, route }) => {
           ref={scrollRef}
         >
           <TextInputServices
-            value={selector.remarks}
+            value={selector.reason}
             label={"Reason*"}
             autoCapitalize="words"
             onChangeText={(text) =>
@@ -224,7 +313,7 @@ const CreateRsa = ({ navigation, route }) => {
           />
           <TextInputServices
             value={selector.address}
-            label={"Address"}
+            label={"Address*"}
             autoCapitalize="words"
             onChangeText={(text) =>
               dispatch(
@@ -237,7 +326,7 @@ const CreateRsa = ({ navigation, route }) => {
           />
           <TextInputServices
             value={selector.area}
-            label={"Area"}
+            label={"Area*"}
             autoCapitalize="words"
             onChangeText={(text) =>
               dispatch(
@@ -250,7 +339,7 @@ const CreateRsa = ({ navigation, route }) => {
           />
           <TextInputServices
             value={selector.landmark}
-            label={"Landmark"}
+            label={"Landmark*"}
             autoCapitalize="words"
             onChangeText={(text) =>
               dispatch(
