@@ -3279,6 +3279,1329 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                   )}
                                                                                                 </View>
                                                                                               </View>
+                                                                                              {innerItem6.isOpenInner &&
+                                                                                                innerItem6
+                                                                                                  .employeeTargetAchievements
+                                                                                                  .length >
+                                                                                                  0 &&
+                                                                                                innerItem6.employeeTargetAchievements.map(
+                                                                                                  (
+                                                                                                    innerItem7,
+                                                                                                    innerIndex7
+                                                                                                  ) => {
+                                                                                                    return (
+                                                                                                      <View
+                                                                                                        style={[
+                                                                                                          {
+                                                                                                            width:
+                                                                                                              "98%",
+                                                                                                            minHeight: 40,
+                                                                                                            flexDirection:
+                                                                                                              "column",
+                                                                                                          },
+                                                                                                          innerItem7.isOpenInner && {
+                                                                                                            borderRadius: 10,
+                                                                                                            borderWidth: 1,
+                                                                                                            borderColor:
+                                                                                                              "#C62159",
+                                                                                                            backgroundColor:
+                                                                                                              "#FFFFFF",
+                                                                                                            marginHorizontal: 5,
+                                                                                                          },
+                                                                                                        ]}
+                                                                                                      >
+                                                                                                        <View
+                                                                                                          style={{
+                                                                                                            paddingHorizontal: 4,
+                                                                                                            display:
+                                                                                                              "flex",
+                                                                                                            flexDirection:
+                                                                                                              "row",
+                                                                                                            justifyContent:
+                                                                                                              "space-between",
+                                                                                                            paddingVertical: 4,
+                                                                                                          }}
+                                                                                                        >
+                                                                                                          <View
+                                                                                                            style={{
+                                                                                                              flexDirection:
+                                                                                                                "row",
+                                                                                                            }}
+                                                                                                          >
+                                                                                                            <Text
+                                                                                                              style={{
+                                                                                                                fontSize: 10,
+                                                                                                                fontWeight:
+                                                                                                                  "500",
+                                                                                                              }}
+                                                                                                            >
+                                                                                                              {
+                                                                                                                innerItem7.empName
+                                                                                                              }
+                                                                                                              {innerItem7.childCount >
+                                                                                                              1
+                                                                                                                ? "  |"
+                                                                                                                : ""}
+                                                                                                            </Text>
+                                                                                                            {innerItem7.childCount >
+                                                                                                              1 && (
+                                                                                                              <View
+                                                                                                                style={{
+                                                                                                                  backgroundColor:
+                                                                                                                    "lightgrey",
+                                                                                                                  flexDirection:
+                                                                                                                    "row",
+                                                                                                                  paddingHorizontal: 7,
+                                                                                                                  borderRadius: 10,
+                                                                                                                  alignItems:
+                                                                                                                    "center",
+                                                                                                                  justifyContent:
+                                                                                                                    "space-between",
+                                                                                                                  marginBottom: 5,
+                                                                                                                  alignSelf:
+                                                                                                                    "flex-start",
+                                                                                                                  marginLeft: 7,
+                                                                                                                }}
+                                                                                                              >
+                                                                                                                <MaterialIcons
+                                                                                                                  name="person"
+                                                                                                                  size={
+                                                                                                                    15
+                                                                                                                  }
+                                                                                                                  color={
+                                                                                                                    Colors.BLACK
+                                                                                                                  }
+                                                                                                                />
+                                                                                                                <Text>
+                                                                                                                  {
+                                                                                                                    innerItem7.childCount
+                                                                                                                  }
+                                                                                                                </Text>
+                                                                                                              </View>
+                                                                                                            )}
+                                                                                                          </View>
+                                                                                                        </View>
+                                                                                                        <View
+                                                                                                          style={{
+                                                                                                            flexDirection:
+                                                                                                              "row",
+                                                                                                          }}
+                                                                                                        >
+                                                                                                          <RenderLevel1NameView
+                                                                                                            level={
+                                                                                                              6
+                                                                                                            }
+                                                                                                            item={
+                                                                                                              innerItem7
+                                                                                                            }
+                                                                                                            color={
+                                                                                                              "#C62159"
+                                                                                                            }
+                                                                                                            branchName={getBranchName(
+                                                                                                              innerItem7?.branchId
+                                                                                                            )}
+                                                                                                            titleClick={async () => {
+                                                                                                              const localData =
+                                                                                                                [
+                                                                                                                  ...allParameters,
+                                                                                                                ];
+                                                                                                              const localParameter =
+                                                                                                                localData[
+                                                                                                                  index
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements[
+                                                                                                                  innerIndex1
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements[
+                                                                                                                  innerIndex2
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements[
+                                                                                                                  innerIndex3
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements[
+                                                                                                                  innerIndex4
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements[
+                                                                                                                  innerIndex5
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements[
+                                                                                                                  innerIndex6
+                                                                                                                ]
+                                                                                                                  .employeeTargetAchievements;
+                                                                                                              await onEmployeeNameClick(
+                                                                                                                innerItem7,
+                                                                                                                innerIndex7,
+                                                                                                                localParameter
+                                                                                                              );
+                                                                                                            }}
+                                                                                                          />
+                                                                                                          <View
+                                                                                                            style={{
+                                                                                                              width:
+                                                                                                                "100%",
+                                                                                                              height:
+                                                                                                                boxHeight,
+                                                                                                              flexDirection:
+                                                                                                                "row",
+                                                                                                              alignSelf:
+                                                                                                                "center",
+                                                                                                              backgroundColor:
+                                                                                                                "red",
+                                                                                                            }}
+                                                                                                          >
+                                                                                                            {renderData(
+                                                                                                              innerItem7,
+                                                                                                              "#C62159"
+                                                                                                            )}
+                                                                                                          </View>
+                                                                                                        </View>
+                                                                                                        {innerItem7.isOpenInner &&
+                                                                                                          innerItem7
+                                                                                                            .employeeTargetAchievements
+                                                                                                            .length >
+                                                                                                            0 &&
+                                                                                                          innerItem7.employeeTargetAchievements.map(
+                                                                                                            (
+                                                                                                              innerItem8,
+                                                                                                              innerIndex8
+                                                                                                            ) => {
+                                                                                                              return (
+                                                                                                                <View
+                                                                                                                  style={[
+                                                                                                                    {
+                                                                                                                      width:
+                                                                                                                        "98%",
+                                                                                                                      minHeight: 40,
+                                                                                                                      flexDirection:
+                                                                                                                        "column",
+                                                                                                                    },
+                                                                                                                    innerItem8.isOpenInner && {
+                                                                                                                      borderRadius: 10,
+                                                                                                                      borderWidth: 1,
+                                                                                                                      borderColor:
+                                                                                                                        "#C62159",
+                                                                                                                      backgroundColor:
+                                                                                                                        "#FFFFFF",
+                                                                                                                      marginHorizontal: 5,
+                                                                                                                    },
+                                                                                                                  ]}
+                                                                                                                >
+                                                                                                                  <View
+                                                                                                                    style={{
+                                                                                                                      paddingHorizontal: 4,
+                                                                                                                      display:
+                                                                                                                        "flex",
+                                                                                                                      flexDirection:
+                                                                                                                        "row",
+                                                                                                                      justifyContent:
+                                                                                                                        "space-between",
+                                                                                                                      paddingVertical: 4,
+                                                                                                                    }}
+                                                                                                                  >
+                                                                                                                    <View
+                                                                                                                      style={{
+                                                                                                                        flexDirection:
+                                                                                                                          "row",
+                                                                                                                      }}
+                                                                                                                    >
+                                                                                                                      <Text
+                                                                                                                        style={{
+                                                                                                                          fontSize: 10,
+                                                                                                                          fontWeight:
+                                                                                                                            "500",
+                                                                                                                        }}
+                                                                                                                      >
+                                                                                                                        {
+                                                                                                                          innerItem8.empName
+                                                                                                                        }
+                                                                                                                        {innerItem8.childCount >
+                                                                                                                        1
+                                                                                                                          ? "  |"
+                                                                                                                          : ""}
+                                                                                                                      </Text>
+                                                                                                                      {innerItem8.childCount >
+                                                                                                                        1 && (
+                                                                                                                        <View
+                                                                                                                          style={{
+                                                                                                                            backgroundColor:
+                                                                                                                              "lightgrey",
+                                                                                                                            flexDirection:
+                                                                                                                              "row",
+                                                                                                                            paddingHorizontal: 7,
+                                                                                                                            borderRadius: 10,
+                                                                                                                            alignItems:
+                                                                                                                              "center",
+                                                                                                                            justifyContent:
+                                                                                                                              "space-between",
+                                                                                                                            marginBottom: 5,
+                                                                                                                            alignSelf:
+                                                                                                                              "flex-start",
+                                                                                                                            marginLeft: 7,
+                                                                                                                          }}
+                                                                                                                        >
+                                                                                                                          <MaterialIcons
+                                                                                                                            name="person"
+                                                                                                                            size={
+                                                                                                                              15
+                                                                                                                            }
+                                                                                                                            color={
+                                                                                                                              Colors.BLACK
+                                                                                                                            }
+                                                                                                                          />
+                                                                                                                          <Text>
+                                                                                                                            {
+                                                                                                                              innerItem8.childCount
+                                                                                                                            }
+                                                                                                                          </Text>
+                                                                                                                        </View>
+                                                                                                                      )}
+                                                                                                                    </View>
+                                                                                                                  </View>
+                                                                                                                  <View
+                                                                                                                    style={{
+                                                                                                                      flexDirection:
+                                                                                                                        "row",
+                                                                                                                    }}
+                                                                                                                  >
+                                                                                                                    <RenderLevel1NameView
+                                                                                                                      level={
+                                                                                                                        6
+                                                                                                                      }
+                                                                                                                      item={
+                                                                                                                        innerItem8
+                                                                                                                      }
+                                                                                                                      color={
+                                                                                                                        "#C62159"
+                                                                                                                      }
+                                                                                                                      branchName={getBranchName(
+                                                                                                                        innerItem8?.branchId
+                                                                                                                      )}
+                                                                                                                      titleClick={async () => {
+                                                                                                                        const localData =
+                                                                                                                          [
+                                                                                                                            ...allParameters,
+                                                                                                                          ];
+                                                                                                                        const localParameter =
+                                                                                                                          localData[
+                                                                                                                            index
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex1
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex2
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex3
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex4
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex5
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex6
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements[
+                                                                                                                            innerIndex7
+                                                                                                                          ]
+                                                                                                                            .employeeTargetAchievements;
+                                                                                                                        await onEmployeeNameClick(
+                                                                                                                          innerItem8,
+                                                                                                                          innerIndex8,
+                                                                                                                          localParameter
+                                                                                                                        );
+                                                                                                                      }}
+                                                                                                                    />
+                                                                                                                    <View
+                                                                                                                      style={{
+                                                                                                                        width:
+                                                                                                                          "100%",
+                                                                                                                        height:
+                                                                                                                          boxHeight,
+                                                                                                                        flexDirection:
+                                                                                                                          "row",
+                                                                                                                        alignSelf:
+                                                                                                                          "center",
+                                                                                                                        backgroundColor:
+                                                                                                                          "red",
+                                                                                                                      }}
+                                                                                                                    >
+                                                                                                                      {renderData(
+                                                                                                                        innerItem8,
+                                                                                                                        "#C62159"
+                                                                                                                      )}
+                                                                                                                    </View>
+                                                                                                                  </View>
+                                                                                                                  {innerItem8.isOpenInner &&
+                                                                                                                    innerItem8
+                                                                                                                      .employeeTargetAchievements
+                                                                                                                      .length >
+                                                                                                                      0 &&
+                                                                                                                    innerItem8.employeeTargetAchievements.map(
+                                                                                                                      (
+                                                                                                                        innerItem9,
+                                                                                                                        innerIndex9
+                                                                                                                      ) => {
+                                                                                                                        return (
+                                                                                                                          <View
+                                                                                                                            style={[
+                                                                                                                              {
+                                                                                                                                width:
+                                                                                                                                  "98%",
+                                                                                                                                minHeight: 40,
+                                                                                                                                flexDirection:
+                                                                                                                                  "column",
+                                                                                                                              },
+                                                                                                                              innerItem9.isOpenInner && {
+                                                                                                                                borderRadius: 10,
+                                                                                                                                borderWidth: 1,
+                                                                                                                                borderColor:
+                                                                                                                                  "#C62159",
+                                                                                                                                backgroundColor:
+                                                                                                                                  "#FFFFFF",
+                                                                                                                                marginHorizontal: 5,
+                                                                                                                              },
+                                                                                                                            ]}
+                                                                                                                          >
+                                                                                                                            <View
+                                                                                                                              style={{
+                                                                                                                                paddingHorizontal: 4,
+                                                                                                                                display:
+                                                                                                                                  "flex",
+                                                                                                                                flexDirection:
+                                                                                                                                  "row",
+                                                                                                                                justifyContent:
+                                                                                                                                  "space-between",
+                                                                                                                                paddingVertical: 4,
+                                                                                                                              }}
+                                                                                                                            >
+                                                                                                                              <View
+                                                                                                                                style={{
+                                                                                                                                  flexDirection:
+                                                                                                                                    "row",
+                                                                                                                                }}
+                                                                                                                              >
+                                                                                                                                <Text
+                                                                                                                                  style={{
+                                                                                                                                    fontSize: 10,
+                                                                                                                                    fontWeight:
+                                                                                                                                      "500",
+                                                                                                                                  }}
+                                                                                                                                >
+                                                                                                                                  {
+                                                                                                                                    innerItem9.empName
+                                                                                                                                  }
+                                                                                                                                  {innerItem9.childCount >
+                                                                                                                                  1
+                                                                                                                                    ? "  |"
+                                                                                                                                    : ""}
+                                                                                                                                </Text>
+                                                                                                                                {innerItem9.childCount >
+                                                                                                                                  1 && (
+                                                                                                                                  <View
+                                                                                                                                    style={{
+                                                                                                                                      backgroundColor:
+                                                                                                                                        "lightgrey",
+                                                                                                                                      flexDirection:
+                                                                                                                                        "row",
+                                                                                                                                      paddingHorizontal: 7,
+                                                                                                                                      borderRadius: 10,
+                                                                                                                                      alignItems:
+                                                                                                                                        "center",
+                                                                                                                                      justifyContent:
+                                                                                                                                        "space-between",
+                                                                                                                                      marginBottom: 5,
+                                                                                                                                      alignSelf:
+                                                                                                                                        "flex-start",
+                                                                                                                                      marginLeft: 7,
+                                                                                                                                    }}
+                                                                                                                                  >
+                                                                                                                                    <MaterialIcons
+                                                                                                                                      name="person"
+                                                                                                                                      size={
+                                                                                                                                        15
+                                                                                                                                      }
+                                                                                                                                      color={
+                                                                                                                                        Colors.BLACK
+                                                                                                                                      }
+                                                                                                                                    />
+                                                                                                                                    <Text>
+                                                                                                                                      {
+                                                                                                                                        innerItem9.childCount
+                                                                                                                                      }
+                                                                                                                                    </Text>
+                                                                                                                                  </View>
+                                                                                                                                )}
+                                                                                                                              </View>
+                                                                                                                            </View>
+                                                                                                                            <View
+                                                                                                                              style={{
+                                                                                                                                flexDirection:
+                                                                                                                                  "row",
+                                                                                                                              }}
+                                                                                                                            >
+                                                                                                                              <RenderLevel1NameView
+                                                                                                                                level={
+                                                                                                                                  6
+                                                                                                                                }
+                                                                                                                                item={
+                                                                                                                                  innerItem9
+                                                                                                                                }
+                                                                                                                                color={
+                                                                                                                                  "#C62159"
+                                                                                                                                }
+                                                                                                                                branchName={getBranchName(
+                                                                                                                                  innerItem9?.branchId
+                                                                                                                                )}
+                                                                                                                                titleClick={async () => {
+                                                                                                                                  const localData =
+                                                                                                                                    [
+                                                                                                                                      ...allParameters,
+                                                                                                                                    ];
+                                                                                                                                  const localParameter =
+                                                                                                                                    localData[
+                                                                                                                                      index
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex1
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex2
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex3
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex4
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex5
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex6
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex7
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements[
+                                                                                                                                      innerIndex8
+                                                                                                                                    ]
+                                                                                                                                      .employeeTargetAchievements;
+                                                                                                                                  await onEmployeeNameClick(
+                                                                                                                                    innerItem9,
+                                                                                                                                    innerIndex9,
+                                                                                                                                    localParameter
+                                                                                                                                  );
+                                                                                                                                }}
+                                                                                                                              />
+                                                                                                                              <View
+                                                                                                                                style={{
+                                                                                                                                  width:
+                                                                                                                                    "100%",
+                                                                                                                                  height:
+                                                                                                                                    boxHeight,
+                                                                                                                                  flexDirection:
+                                                                                                                                    "row",
+                                                                                                                                  alignSelf:
+                                                                                                                                    "center",
+                                                                                                                                  backgroundColor:
+                                                                                                                                    "red",
+                                                                                                                                }}
+                                                                                                                              >
+                                                                                                                                {renderData(
+                                                                                                                                  innerItem9,
+                                                                                                                                  "#C62159"
+                                                                                                                                )}
+                                                                                                                              </View>
+                                                                                                                            </View>
+                                                                                                                            {innerItem9.isOpenInner &&
+                                                                                                                              innerItem9
+                                                                                                                                .employeeTargetAchievements
+                                                                                                                                .length >
+                                                                                                                                0 &&
+                                                                                                                              innerItem9.employeeTargetAchievements.map(
+                                                                                                                                (
+                                                                                                                                  innerItem10,
+                                                                                                                                  innerIndex10
+                                                                                                                                ) => {
+                                                                                                                                  return (
+                                                                                                                                    <View
+                                                                                                                                      style={[
+                                                                                                                                        {
+                                                                                                                                          width:
+                                                                                                                                            "98%",
+                                                                                                                                          minHeight: 40,
+                                                                                                                                          flexDirection:
+                                                                                                                                            "column",
+                                                                                                                                        },
+                                                                                                                                        innerItem10.isOpenInner && {
+                                                                                                                                          borderRadius: 10,
+                                                                                                                                          borderWidth: 1,
+                                                                                                                                          borderColor:
+                                                                                                                                            "#C62159",
+                                                                                                                                          backgroundColor:
+                                                                                                                                            "#FFFFFF",
+                                                                                                                                          marginHorizontal: 5,
+                                                                                                                                        },
+                                                                                                                                      ]}
+                                                                                                                                    >
+                                                                                                                                      <View
+                                                                                                                                        style={{
+                                                                                                                                          paddingHorizontal: 4,
+                                                                                                                                          display:
+                                                                                                                                            "flex",
+                                                                                                                                          flexDirection:
+                                                                                                                                            "row",
+                                                                                                                                          justifyContent:
+                                                                                                                                            "space-between",
+                                                                                                                                          paddingVertical: 4,
+                                                                                                                                        }}
+                                                                                                                                      >
+                                                                                                                                        <View
+                                                                                                                                          style={{
+                                                                                                                                            flexDirection:
+                                                                                                                                              "row",
+                                                                                                                                          }}
+                                                                                                                                        >
+                                                                                                                                          <Text
+                                                                                                                                            style={{
+                                                                                                                                              fontSize: 10,
+                                                                                                                                              fontWeight:
+                                                                                                                                                "500",
+                                                                                                                                            }}
+                                                                                                                                          >
+                                                                                                                                            {
+                                                                                                                                              innerItem10.empName
+                                                                                                                                            }
+                                                                                                                                            {innerItem10.childCount >
+                                                                                                                                            1
+                                                                                                                                              ? "  |"
+                                                                                                                                              : ""}
+                                                                                                                                          </Text>
+                                                                                                                                          {innerItem10.childCount >
+                                                                                                                                            1 && (
+                                                                                                                                            <View
+                                                                                                                                              style={{
+                                                                                                                                                backgroundColor:
+                                                                                                                                                  "lightgrey",
+                                                                                                                                                flexDirection:
+                                                                                                                                                  "row",
+                                                                                                                                                paddingHorizontal: 7,
+                                                                                                                                                borderRadius: 10,
+                                                                                                                                                alignItems:
+                                                                                                                                                  "center",
+                                                                                                                                                justifyContent:
+                                                                                                                                                  "space-between",
+                                                                                                                                                marginBottom: 5,
+                                                                                                                                                alignSelf:
+                                                                                                                                                  "flex-start",
+                                                                                                                                                marginLeft: 7,
+                                                                                                                                              }}
+                                                                                                                                            >
+                                                                                                                                              <MaterialIcons
+                                                                                                                                                name="person"
+                                                                                                                                                size={
+                                                                                                                                                  15
+                                                                                                                                                }
+                                                                                                                                                color={
+                                                                                                                                                  Colors.BLACK
+                                                                                                                                                }
+                                                                                                                                              />
+                                                                                                                                              <Text>
+                                                                                                                                                {
+                                                                                                                                                  innerItem10.childCount
+                                                                                                                                                }
+                                                                                                                                              </Text>
+                                                                                                                                            </View>
+                                                                                                                                          )}
+                                                                                                                                        </View>
+                                                                                                                                      </View>
+                                                                                                                                      <View
+                                                                                                                                        style={{
+                                                                                                                                          flexDirection:
+                                                                                                                                            "row",
+                                                                                                                                        }}
+                                                                                                                                      >
+                                                                                                                                        <RenderLevel1NameView
+                                                                                                                                          level={
+                                                                                                                                            6
+                                                                                                                                          }
+                                                                                                                                          item={
+                                                                                                                                            innerItem10
+                                                                                                                                          }
+                                                                                                                                          color={
+                                                                                                                                            "#C62159"
+                                                                                                                                          }
+                                                                                                                                          branchName={getBranchName(
+                                                                                                                                            innerItem10?.branchId
+                                                                                                                                          )}
+                                                                                                                                          titleClick={async () => {
+                                                                                                                                            const localData =
+                                                                                                                                              [
+                                                                                                                                                ...allParameters,
+                                                                                                                                              ];
+                                                                                                                                            const localParameter =
+                                                                                                                                              localData[
+                                                                                                                                                index
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex1
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex2
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex3
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex4
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex5
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex6
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex7
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex8
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements[
+                                                                                                                                                innerIndex9
+                                                                                                                                              ]
+                                                                                                                                                .employeeTargetAchievements;
+                                                                                                                                            await onEmployeeNameClick(
+                                                                                                                                              innerItem10,
+                                                                                                                                              innerIndex10,
+                                                                                                                                              localParameter
+                                                                                                                                            );
+                                                                                                                                          }}
+                                                                                                                                        />
+                                                                                                                                        <View
+                                                                                                                                          style={{
+                                                                                                                                            width:
+                                                                                                                                              "100%",
+                                                                                                                                            height:
+                                                                                                                                              boxHeight,
+                                                                                                                                            flexDirection:
+                                                                                                                                              "row",
+                                                                                                                                            alignSelf:
+                                                                                                                                              "center",
+                                                                                                                                            backgroundColor:
+                                                                                                                                              "red",
+                                                                                                                                          }}
+                                                                                                                                        >
+                                                                                                                                          {renderData(
+                                                                                                                                            innerItem10,
+                                                                                                                                            "#C62159"
+                                                                                                                                          )}
+                                                                                                                                        </View>
+                                                                                                                                      </View>
+                                                                                                                                      {innerItem10.isOpenInner &&
+                                                                                                                                        innerItem10
+                                                                                                                                          .employeeTargetAchievements
+                                                                                                                                          .length >
+                                                                                                                                          0 &&
+                                                                                                                                        innerItem10.employeeTargetAchievements.map(
+                                                                                                                                          (
+                                                                                                                                            innerItem11,
+                                                                                                                                            innerIndex11
+                                                                                                                                          ) => {
+                                                                                                                                            return (
+                                                                                                                                              <View
+                                                                                                                                                style={[
+                                                                                                                                                  {
+                                                                                                                                                    width:
+                                                                                                                                                      "98%",
+                                                                                                                                                    minHeight: 40,
+                                                                                                                                                    flexDirection:
+                                                                                                                                                      "column",
+                                                                                                                                                  },
+                                                                                                                                                  innerItem11.isOpenInner && {
+                                                                                                                                                    borderRadius: 10,
+                                                                                                                                                    borderWidth: 1,
+                                                                                                                                                    borderColor:
+                                                                                                                                                      "#C62159",
+                                                                                                                                                    backgroundColor:
+                                                                                                                                                      "#FFFFFF",
+                                                                                                                                                    marginHorizontal: 5,
+                                                                                                                                                  },
+                                                                                                                                                ]}
+                                                                                                                                              >
+                                                                                                                                                <View
+                                                                                                                                                  style={{
+                                                                                                                                                    paddingHorizontal: 4,
+                                                                                                                                                    display:
+                                                                                                                                                      "flex",
+                                                                                                                                                    flexDirection:
+                                                                                                                                                      "row",
+                                                                                                                                                    justifyContent:
+                                                                                                                                                      "space-between",
+                                                                                                                                                    paddingVertical: 4,
+                                                                                                                                                  }}
+                                                                                                                                                >
+                                                                                                                                                  <View
+                                                                                                                                                    style={{
+                                                                                                                                                      flexDirection:
+                                                                                                                                                        "row",
+                                                                                                                                                    }}
+                                                                                                                                                  >
+                                                                                                                                                    <Text
+                                                                                                                                                      style={{
+                                                                                                                                                        fontSize: 10,
+                                                                                                                                                        fontWeight:
+                                                                                                                                                          "500",
+                                                                                                                                                      }}
+                                                                                                                                                    >
+                                                                                                                                                      {
+                                                                                                                                                        innerItem11.empName
+                                                                                                                                                      }
+                                                                                                                                                      {innerItem11.childCount >
+                                                                                                                                                      1
+                                                                                                                                                        ? "  |"
+                                                                                                                                                        : ""}
+                                                                                                                                                    </Text>
+                                                                                                                                                    {innerItem11.childCount >
+                                                                                                                                                      1 && (
+                                                                                                                                                      <View
+                                                                                                                                                        style={{
+                                                                                                                                                          backgroundColor:
+                                                                                                                                                            "lightgrey",
+                                                                                                                                                          flexDirection:
+                                                                                                                                                            "row",
+                                                                                                                                                          paddingHorizontal: 7,
+                                                                                                                                                          borderRadius: 10,
+                                                                                                                                                          alignItems:
+                                                                                                                                                            "center",
+                                                                                                                                                          justifyContent:
+                                                                                                                                                            "space-between",
+                                                                                                                                                          marginBottom: 5,
+                                                                                                                                                          alignSelf:
+                                                                                                                                                            "flex-start",
+                                                                                                                                                          marginLeft: 7,
+                                                                                                                                                        }}
+                                                                                                                                                      >
+                                                                                                                                                        <MaterialIcons
+                                                                                                                                                          name="person"
+                                                                                                                                                          size={
+                                                                                                                                                            15
+                                                                                                                                                          }
+                                                                                                                                                          color={
+                                                                                                                                                            Colors.BLACK
+                                                                                                                                                          }
+                                                                                                                                                        />
+                                                                                                                                                        <Text>
+                                                                                                                                                          {
+                                                                                                                                                            innerItem11.childCount
+                                                                                                                                                          }
+                                                                                                                                                        </Text>
+                                                                                                                                                      </View>
+                                                                                                                                                    )}
+                                                                                                                                                  </View>
+                                                                                                                                                </View>
+                                                                                                                                                <View
+                                                                                                                                                  style={{
+                                                                                                                                                    flexDirection:
+                                                                                                                                                      "row",
+                                                                                                                                                  }}
+                                                                                                                                                >
+                                                                                                                                                  <RenderLevel1NameView
+                                                                                                                                                    level={
+                                                                                                                                                      6
+                                                                                                                                                    }
+                                                                                                                                                    item={
+                                                                                                                                                      innerItem11
+                                                                                                                                                    }
+                                                                                                                                                    color={
+                                                                                                                                                      "#C62159"
+                                                                                                                                                    }
+                                                                                                                                                    branchName={getBranchName(
+                                                                                                                                                      innerItem11?.branchId
+                                                                                                                                                    )}
+                                                                                                                                                    titleClick={async () => {
+                                                                                                                                                      const localData =
+                                                                                                                                                        [
+                                                                                                                                                          ...allParameters,
+                                                                                                                                                        ];
+                                                                                                                                                      const localParameter =
+                                                                                                                                                        localData[
+                                                                                                                                                          index
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex1
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex2
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex3
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex4
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex5
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex6
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex7
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex8
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex9
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                                          innerIndex10
+                                                                                                                                                        ]
+                                                                                                                                                          .employeeTargetAchievements;
+                                                                                                                                                      await onEmployeeNameClick(
+                                                                                                                                                        innerItem11,
+                                                                                                                                                        innerIndex11,
+                                                                                                                                                        localParameter
+                                                                                                                                                      );
+                                                                                                                                                    }}
+                                                                                                                                                  />
+                                                                                                                                                  <View
+                                                                                                                                                    style={{
+                                                                                                                                                      width:
+                                                                                                                                                        "100%",
+                                                                                                                                                      height:
+                                                                                                                                                        boxHeight,
+                                                                                                                                                      flexDirection:
+                                                                                                                                                        "row",
+                                                                                                                                                      alignSelf:
+                                                                                                                                                        "center",
+                                                                                                                                                      backgroundColor:
+                                                                                                                                                        "red",
+                                                                                                                                                    }}
+                                                                                                                                                  >
+                                                                                                                                                    {renderData(
+                                                                                                                                                      innerItem11,
+                                                                                                                                                      "#C62159"
+                                                                                                                                                    )}
+                                                                                                                                                  </View>
+                                                                                                                                                </View>
+                                                                                                                                                {innerItem11.isOpenInner &&
+                                                                                                                                                  innerItem11
+                                                                                                                                                    .employeeTargetAchievements
+                                                                                                                                                    .length >
+                                                                                                                                                    0 &&
+                                                                                                                                                  innerItem11.employeeTargetAchievements.map(
+                                                                                                                                                    (
+                                                                                                                                                      innerItem12,
+                                                                                                                                                      innerIndex12
+                                                                                                                                                    ) => {
+                                                                                                                                                      return (
+                                                                                                                                                        <View
+                                                                                                                                                          style={[
+                                                                                                                                                            {
+                                                                                                                                                              width:
+                                                                                                                                                                "98%",
+                                                                                                                                                              minHeight: 40,
+                                                                                                                                                              flexDirection:
+                                                                                                                                                                "column",
+                                                                                                                                                            },
+                                                                                                                                                            innerItem12.isOpenInner && {
+                                                                                                                                                              borderRadius: 10,
+                                                                                                                                                              borderWidth: 1,
+                                                                                                                                                              borderColor:
+                                                                                                                                                                "#C62159",
+                                                                                                                                                              backgroundColor:
+                                                                                                                                                                "#FFFFFF",
+                                                                                                                                                              marginHorizontal: 5,
+                                                                                                                                                            },
+                                                                                                                                                          ]}
+                                                                                                                                                        >
+                                                                                                                                                          <View
+                                                                                                                                                            style={{
+                                                                                                                                                              paddingHorizontal: 4,
+                                                                                                                                                              display:
+                                                                                                                                                                "flex",
+                                                                                                                                                              flexDirection:
+                                                                                                                                                                "row",
+                                                                                                                                                              justifyContent:
+                                                                                                                                                                "space-between",
+                                                                                                                                                              paddingVertical: 4,
+                                                                                                                                                            }}
+                                                                                                                                                          >
+                                                                                                                                                            <View
+                                                                                                                                                              style={{
+                                                                                                                                                                flexDirection:
+                                                                                                                                                                  "row",
+                                                                                                                                                              }}
+                                                                                                                                                            >
+                                                                                                                                                              <Text
+                                                                                                                                                                style={{
+                                                                                                                                                                  fontSize: 10,
+                                                                                                                                                                  fontWeight:
+                                                                                                                                                                    "500",
+                                                                                                                                                                }}
+                                                                                                                                                              >
+                                                                                                                                                                {
+                                                                                                                                                                  innerItem12.empName
+                                                                                                                                                                }
+                                                                                                                                                                {innerItem12.childCount >
+                                                                                                                                                                1
+                                                                                                                                                                  ? "  |"
+                                                                                                                                                                  : ""}
+                                                                                                                                                              </Text>
+                                                                                                                                                              {innerItem12.childCount >
+                                                                                                                                                                1 && (
+                                                                                                                                                                <View
+                                                                                                                                                                  style={{
+                                                                                                                                                                    backgroundColor:
+                                                                                                                                                                      "lightgrey",
+                                                                                                                                                                    flexDirection:
+                                                                                                                                                                      "row",
+                                                                                                                                                                    paddingHorizontal: 7,
+                                                                                                                                                                    borderRadius: 10,
+                                                                                                                                                                    alignItems:
+                                                                                                                                                                      "center",
+                                                                                                                                                                    justifyContent:
+                                                                                                                                                                      "space-between",
+                                                                                                                                                                    marginBottom: 5,
+                                                                                                                                                                    alignSelf:
+                                                                                                                                                                      "flex-start",
+                                                                                                                                                                    marginLeft: 7,
+                                                                                                                                                                  }}
+                                                                                                                                                                >
+                                                                                                                                                                  <MaterialIcons
+                                                                                                                                                                    name="person"
+                                                                                                                                                                    size={
+                                                                                                                                                                      15
+                                                                                                                                                                    }
+                                                                                                                                                                    color={
+                                                                                                                                                                      Colors.BLACK
+                                                                                                                                                                    }
+                                                                                                                                                                  />
+                                                                                                                                                                  <Text>
+                                                                                                                                                                    {
+                                                                                                                                                                      innerItem12.childCount
+                                                                                                                                                                    }
+                                                                                                                                                                  </Text>
+                                                                                                                                                                </View>
+                                                                                                                                                              )}
+                                                                                                                                                            </View>
+                                                                                                                                                          </View>
+                                                                                                                                                          <View
+                                                                                                                                                            style={{
+                                                                                                                                                              flexDirection:
+                                                                                                                                                                "row",
+                                                                                                                                                            }}
+                                                                                                                                                          >
+                                                                                                                                                            <RenderLevel1NameView
+                                                                                                                                                              level={
+                                                                                                                                                                6
+                                                                                                                                                              }
+                                                                                                                                                              item={
+                                                                                                                                                                innerItem12
+                                                                                                                                                              }
+                                                                                                                                                              color={
+                                                                                                                                                                "#C62159"
+                                                                                                                                                              }
+                                                                                                                                                              branchName={getBranchName(
+                                                                                                                                                                innerItem12?.branchId
+                                                                                                                                                              )}
+                                                                                                                                                              titleClick={async () => {
+                                                                                                                                                                const localData =
+                                                                                                                                                                  [
+                                                                                                                                                                    ...allParameters,
+                                                                                                                                                                  ];
+                                                                                                                                                                const localParameter =
+                                                                                                                                                                  localData[
+                                                                                                                                                                    index
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex1
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex2
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex3
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex4
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex5
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex6
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex7
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex8
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex9
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex10
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                                    innerIndex11
+                                                                                                                                                                  ]
+                                                                                                                                                                    .employeeTargetAchievements;
+                                                                                                                                                                await onEmployeeNameClick(
+                                                                                                                                                                  innerItem12,
+                                                                                                                                                                  innerIndex12,
+                                                                                                                                                                  localParameter
+                                                                                                                                                                );
+                                                                                                                                                              }}
+                                                                                                                                                            />
+                                                                                                                                                            <View
+                                                                                                                                                              style={{
+                                                                                                                                                                width:
+                                                                                                                                                                  "100%",
+                                                                                                                                                                height:
+                                                                                                                                                                  boxHeight,
+                                                                                                                                                                flexDirection:
+                                                                                                                                                                  "row",
+                                                                                                                                                                alignSelf:
+                                                                                                                                                                  "center",
+                                                                                                                                                                backgroundColor:
+                                                                                                                                                                  "red",
+                                                                                                                                                              }}
+                                                                                                                                                            >
+                                                                                                                                                              {renderData(
+                                                                                                                                                                innerItem12,
+                                                                                                                                                                "#C62159"
+                                                                                                                                                              )}
+                                                                                                                                                            </View>
+                                                                                                                                                          </View>
+                                                                                                                                                          {innerItem12.isOpenInner &&
+                                                                                                                                                            innerItem12
+                                                                                                                                                              .employeeTargetAchievements
+                                                                                                                                                              .length >
+                                                                                                                                                              0 &&
+                                                                                                                                                            innerItem12.employeeTargetAchievements.map(
+                                                                                                                                                              (
+                                                                                                                                                                innerItem13,
+                                                                                                                                                                innerIndex13
+                                                                                                                                                              ) => {
+                                                                                                                                                                return (
+                                                                                                                                                                  <View
+                                                                                                                                                                    style={[
+                                                                                                                                                                      {
+                                                                                                                                                                        width:
+                                                                                                                                                                          "98%",
+                                                                                                                                                                        minHeight: 40,
+                                                                                                                                                                        flexDirection:
+                                                                                                                                                                          "column",
+                                                                                                                                                                      },
+                                                                                                                                                                      innerItem13.isOpenInner && {
+                                                                                                                                                                        borderRadius: 10,
+                                                                                                                                                                        borderWidth: 1,
+                                                                                                                                                                        borderColor:
+                                                                                                                                                                          "#C62159",
+                                                                                                                                                                        backgroundColor:
+                                                                                                                                                                          "#FFFFFF",
+                                                                                                                                                                        marginHorizontal: 5,
+                                                                                                                                                                      },
+                                                                                                                                                                    ]}
+                                                                                                                                                                  >
+                                                                                                                                                                    <View
+                                                                                                                                                                      style={{
+                                                                                                                                                                        paddingHorizontal: 4,
+                                                                                                                                                                        display:
+                                                                                                                                                                          "flex",
+                                                                                                                                                                        flexDirection:
+                                                                                                                                                                          "row",
+                                                                                                                                                                        justifyContent:
+                                                                                                                                                                          "space-between",
+                                                                                                                                                                        paddingVertical: 4,
+                                                                                                                                                                      }}
+                                                                                                                                                                    >
+                                                                                                                                                                      <View
+                                                                                                                                                                        style={{
+                                                                                                                                                                          flexDirection:
+                                                                                                                                                                            "row",
+                                                                                                                                                                        }}
+                                                                                                                                                                      >
+                                                                                                                                                                        <Text
+                                                                                                                                                                          style={{
+                                                                                                                                                                            fontSize: 10,
+                                                                                                                                                                            fontWeight:
+                                                                                                                                                                              "500",
+                                                                                                                                                                          }}
+                                                                                                                                                                        >
+                                                                                                                                                                          {
+                                                                                                                                                                            innerItem13.empName
+                                                                                                                                                                          }
+                                                                                                                                                                          {innerItem13.childCount >
+                                                                                                                                                                          1
+                                                                                                                                                                            ? "  |"
+                                                                                                                                                                            : ""}
+                                                                                                                                                                        </Text>
+                                                                                                                                                                        {innerItem13.childCount >
+                                                                                                                                                                          1 && (
+                                                                                                                                                                          <View
+                                                                                                                                                                            style={{
+                                                                                                                                                                              backgroundColor:
+                                                                                                                                                                                "lightgrey",
+                                                                                                                                                                              flexDirection:
+                                                                                                                                                                                "row",
+                                                                                                                                                                              paddingHorizontal: 7,
+                                                                                                                                                                              borderRadius: 10,
+                                                                                                                                                                              alignItems:
+                                                                                                                                                                                "center",
+                                                                                                                                                                              justifyContent:
+                                                                                                                                                                                "space-between",
+                                                                                                                                                                              marginBottom: 5,
+                                                                                                                                                                              alignSelf:
+                                                                                                                                                                                "flex-start",
+                                                                                                                                                                              marginLeft: 7,
+                                                                                                                                                                            }}
+                                                                                                                                                                          >
+                                                                                                                                                                            <MaterialIcons
+                                                                                                                                                                              name="person"
+                                                                                                                                                                              size={
+                                                                                                                                                                                15
+                                                                                                                                                                              }
+                                                                                                                                                                              color={
+                                                                                                                                                                                Colors.BLACK
+                                                                                                                                                                              }
+                                                                                                                                                                            />
+                                                                                                                                                                            <Text>
+                                                                                                                                                                              {
+                                                                                                                                                                                innerItem13.childCount
+                                                                                                                                                                              }
+                                                                                                                                                                            </Text>
+                                                                                                                                                                          </View>
+                                                                                                                                                                        )}
+                                                                                                                                                                      </View>
+                                                                                                                                                                    </View>
+                                                                                                                                                                    <View
+                                                                                                                                                                      style={{
+                                                                                                                                                                        flexDirection:
+                                                                                                                                                                          "row",
+                                                                                                                                                                      }}
+                                                                                                                                                                    >
+                                                                                                                                                                      <RenderLevel1NameView
+                                                                                                                                                                        level={
+                                                                                                                                                                          6
+                                                                                                                                                                        }
+                                                                                                                                                                        item={
+                                                                                                                                                                          innerItem13
+                                                                                                                                                                        }
+                                                                                                                                                                        color={
+                                                                                                                                                                          "#C62159"
+                                                                                                                                                                        }
+                                                                                                                                                                        branchName={getBranchName(
+                                                                                                                                                                          innerItem13?.branchId
+                                                                                                                                                                        )}
+                                                                                                                                                                        titleClick={async () => {
+                                                                                                                                                                          const localData =
+                                                                                                                                                                            [
+                                                                                                                                                                              ...allParameters,
+                                                                                                                                                                            ];
+                                                                                                                                                                          const localParameter =
+                                                                                                                                                                            localData[
+                                                                                                                                                                              index
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex1
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex2
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex3
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex4
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex5
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex6
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex7
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex8
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex9
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex10
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex11
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                                              innerIndex12
+                                                                                                                                                                            ]
+                                                                                                                                                                              .employeeTargetAchievements;
+                                                                                                                                                                          await onEmployeeNameClick(
+                                                                                                                                                                            innerItem13,
+                                                                                                                                                                            innerIndex13,
+                                                                                                                                                                            localParameter
+                                                                                                                                                                          );
+                                                                                                                                                                        }}
+                                                                                                                                                                      />
+                                                                                                                                                                      <View
+                                                                                                                                                                        style={{
+                                                                                                                                                                          width:
+                                                                                                                                                                            "100%",
+                                                                                                                                                                          height:
+                                                                                                                                                                            boxHeight,
+                                                                                                                                                                          flexDirection:
+                                                                                                                                                                            "row",
+                                                                                                                                                                          alignSelf:
+                                                                                                                                                                            "center",
+                                                                                                                                                                          backgroundColor:
+                                                                                                                                                                            "red",
+                                                                                                                                                                        }}
+                                                                                                                                                                      >
+                                                                                                                                                                        {renderData(
+                                                                                                                                                                          innerItem13,
+                                                                                                                                                                          "#C62159"
+                                                                                                                                                                        )}
+                                                                                                                                                                      </View>
+                                                                                                                                                                    </View>
+                                                                                                                                                                  </View>
+                                                                                                                                                                );
+                                                                                                                                                              }
+                                                                                                                                                            )}
+                                                                                                                                                        </View>
+                                                                                                                                                      );
+                                                                                                                                                    }
+                                                                                                                                                  )}
+                                                                                                                                              </View>
+                                                                                                                                            );
+                                                                                                                                          }
+                                                                                                                                        )}
+                                                                                                                                    </View>
+                                                                                                                                  );
+                                                                                                                                }
+                                                                                                                              )}
+                                                                                                                          </View>
+                                                                                                                        );
+                                                                                                                      }
+                                                                                                                    )}
+                                                                                                                </View>
+                                                                                                              );
+                                                                                                            }
+                                                                                                          )}
+                                                                                                      </View>
+                                                                                                    );
+                                                                                                  }
+                                                                                                )}
                                                                                             </View>
                                                                                           );
                                                                                         }

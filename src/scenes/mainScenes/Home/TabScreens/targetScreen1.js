@@ -56,23 +56,21 @@ const color = [
 const data = [
   {
     id: 0,
-    name: "Enquiry"
+    name: "Enquiry",
   },
   {
     id: 1,
-    name: "Booking"
+    name: "Booking",
   },
   {
     id: 2,
-    name: "Retail"
+    name: "Retail",
   },
   {
     id: 3,
-    name: "Lost"
+    name: "Lost",
   },
-  
-  
-]
+];
 const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const CRMRole = ["CRM"];
 const TargetScreen = ({ route }) => {
@@ -83,7 +81,7 @@ const TargetScreen = ({ route }) => {
   const [retailData, setRetailData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [enqData, setEnqData] = useState(null);
-  
+
   const [visitData, setVisitData] = useState(null);
   const [TDData, setTDData] = useState(null);
   const [exgData, setExgData] = useState(null);
@@ -897,64 +895,101 @@ const TargetScreen = ({ route }) => {
         startDate: selector.receptionistFilterIds.startDate,
         endDate: selector.receptionistFilterIds.endDate,
         dealerCodes: selector.receptionistFilterIds.dealerCodes,
-        ignoreSelectedId: false
+        ignoreSelectedId: false,
       });
     }, 1000);
   }
 
   function navigateToDropLostCancel(params) {
-  
     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
       screen: "DROP_ANALYSIS",
-      params: { emp_id: params, fromScreen: "targetScreen1", dealercodes: selector.receptionistFilterIds.dealerCodes },
+      params: {
+        emp_id: params,
+        fromScreen: "targetScreen1",
+        dealercodes: selector.receptionistFilterIds.dealerCodes,
+      },
     });
-    
-
   }
   const renderItem = (item, index) => {
-
     return (
-      <View style={{
-        width: 300,
-        padding: 10,
-        borderColor: index === 0 ? Colors.PURPLE : index === 2 ? Colors.RED : index === 3 ? Colors.YELLOW : Colors.BLUE_V2,
-        borderWidth: 1,
-        borderRadius: 10,
-        justifyContent: "center",
-        marginVertical: 10,
-        // marginStart:'8%'
-
-
-      }}>
+      <View
+        style={{
+          width: 300,
+          padding: 10,
+          borderColor:
+            index === 0
+              ? Colors.PURPLE
+              : index === 2
+              ? Colors.RED
+              : index === 3
+              ? Colors.YELLOW
+              : Colors.BLUE_V2,
+          borderWidth: 1,
+          borderRadius: 10,
+          justifyContent: "center",
+          marginVertical: 10,
+          // marginStart:'8%'
+        }}
+      >
         <View style={styles.scondView}>
-          <Text style={{
-            fontSize: 16,
-            // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
-            color: Colors.BLACK,
-            fontWeight: "700",
-            paddingVertical: 10
-          }}>{item.name}</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+              color: Colors.BLACK,
+              fontWeight: "700",
+              paddingVertical: 10,
+            }}
+          >
+            {item.name}
+          </Text>
 
-          <TouchableOpacity onPress={() => {
-            
-            {
-              item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId]) :
-                item.id === 1 ? navigateToEMS("BOOKING", "", [userData.empId]) :
-                  item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]) :
-                    item.id === 3 ? navigateToDropLostCancel([userData.empId]) : null
-            }
-          }}>
-            {item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> : 
-              item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> : 
-                item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> : 
-                  item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> : 
-            <Text style={styles.txt10}>0</Text> }
-           
+          <TouchableOpacity
+            onPress={() => {
+              {
+                item.id === 0
+                  ? selector.receptionistData.enquirysCount > 0 &&
+                    navigateToEMS("ENQUIRY", "", [userData.empId])
+                  : item.id === 1
+                  ? navigateToEMS("BOOKING", "", [userData.empId])
+                  : item.id === 2
+                  ? selector.receptionistData.RetailCount > 0 &&
+                    navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                  : item.id === 3
+                  ? navigateToDropLostCancel([userData.empId])
+                  : null;
+              }
+            }}
+          >
+            {item.id === 0 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.enquirysCount}{" "}
+              </Text>
+            ) : item.id === 1 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.bookingsCount}{" "}
+              </Text>
+            ) : item.id === 2 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.RetailCount}{" "}
+              </Text>
+            ) : item.id === 3 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.totalLostCount}{" "}
+              </Text>
+            ) : (
+              <Text style={styles.txt10}>0</Text>
+            )}
           </TouchableOpacity>
         </View>
-      </View>)
-  }
-  
+      </View>
+    );
+  };
+
   return (
     <React.Fragment>
       {!selector.isLoading ? (
@@ -2732,7 +2767,7 @@ const TargetScreen = ({ route }) => {
                                                                                                                 }}
                                                                                                               />
                                                                                                               {renderData(
-                                                                                                                innerItem6,
+                                                                                                                innerItem7,
                                                                                                                 "#F59D00"
                                                                                                               )}
                                                                                                             </View>
@@ -2885,10 +2920,840 @@ const TargetScreen = ({ route }) => {
                                                                                                                           }}
                                                                                                                         />
                                                                                                                         {renderData(
-                                                                                                                          innerItem6,
+                                                                                                                          innerItem8,
                                                                                                                           "#1C95A6"
                                                                                                                         )}
                                                                                                                       </View>
+                                                                                                                      {innerItem8.isOpenInner &&
+                                                                                                                        innerItem8
+                                                                                                                          .employeeTargetAchievements
+                                                                                                                          .length >
+                                                                                                                          0 &&
+                                                                                                                        innerItem8.employeeTargetAchievements.map(
+                                                                                                                          (
+                                                                                                                            innerItem9,
+                                                                                                                            innerIndex9
+                                                                                                                          ) => {
+                                                                                                                            return (
+                                                                                                                              <View
+                                                                                                                                key={
+                                                                                                                                  innerIndex9
+                                                                                                                                }
+                                                                                                                                style={[
+                                                                                                                                  {
+                                                                                                                                    width:
+                                                                                                                                      "98%",
+                                                                                                                                    minHeight: 40,
+                                                                                                                                    flexDirection:
+                                                                                                                                      "column",
+                                                                                                                                  },
+                                                                                                                                  innerItem9.isOpenInner && {
+                                                                                                                                    borderRadius: 10,
+                                                                                                                                    borderWidth: 1,
+                                                                                                                                    borderColor:
+                                                                                                                                      "#1C95A6",
+                                                                                                                                    backgroundColor:
+                                                                                                                                      "#FFFFFF",
+                                                                                                                                    marginHorizontal: 5,
+                                                                                                                                  },
+                                                                                                                                ]}
+                                                                                                                              >
+                                                                                                                                <View
+                                                                                                                                  style={[
+                                                                                                                                    styles.view11,
+                                                                                                                                    {
+                                                                                                                                      width:
+                                                                                                                                        Dimensions.get(
+                                                                                                                                          "screen"
+                                                                                                                                        )
+                                                                                                                                          .width -
+                                                                                                                                        (innerItem9.isOpenInner
+                                                                                                                                          ? 71
+                                                                                                                                          : 67),
+                                                                                                                                    },
+                                                                                                                                  ]}
+                                                                                                                                >
+                                                                                                                                  <Text
+                                                                                                                                    style={{
+                                                                                                                                      fontSize: 10,
+                                                                                                                                      fontWeight:
+                                                                                                                                        "500",
+                                                                                                                                    }}
+                                                                                                                                  >
+                                                                                                                                    {
+                                                                                                                                      innerItem9.empName
+                                                                                                                                    }
+                                                                                                                                  </Text>
+                                                                                                                                  <SourceModelView
+                                                                                                                                    onClick={() => {
+                                                                                                                                      navigation.navigate(
+                                                                                                                                        AppNavigator
+                                                                                                                                          .HomeStackIdentifiers
+                                                                                                                                          .sourceModel,
+                                                                                                                                        {
+                                                                                                                                          empId:
+                                                                                                                                            innerItem9.empId,
+                                                                                                                                          headerTitle:
+                                                                                                                                            innerItem9.empName,
+                                                                                                                                          type: "TEAM",
+                                                                                                                                          moduleType:
+                                                                                                                                            "home",
+                                                                                                                                        }
+                                                                                                                                      );
+                                                                                                                                    }}
+                                                                                                                                    style={{
+                                                                                                                                      transform:
+                                                                                                                                        [
+                                                                                                                                          {
+                                                                                                                                            translateX:
+                                                                                                                                              translation,
+                                                                                                                                          },
+                                                                                                                                        ],
+                                                                                                                                    }}
+                                                                                                                                  />
+                                                                                                                                </View>
+                                                                                                                                <View
+                                                                                                                                  style={{
+                                                                                                                                    flexDirection:
+                                                                                                                                      "row",
+                                                                                                                                  }}
+                                                                                                                                >
+                                                                                                                                  <RenderLevel1NameView
+                                                                                                                                    level={
+                                                                                                                                      6
+                                                                                                                                    }
+                                                                                                                                    item={
+                                                                                                                                      innerItem9
+                                                                                                                                    }
+                                                                                                                                    color={
+                                                                                                                                      "#1C95A6"
+                                                                                                                                    }
+                                                                                                                                    navigation={
+                                                                                                                                      navigation
+                                                                                                                                    }
+                                                                                                                                    branchName={getBranchName(
+                                                                                                                                      innerItem9.branchId
+                                                                                                                                    )}
+                                                                                                                                    titleClick={async () => {
+                                                                                                                                      const localData =
+                                                                                                                                        [
+                                                                                                                                          ...allParameters,
+                                                                                                                                        ];
+                                                                                                                                      const localParameter =
+                                                                                                                                        localData[
+                                                                                                                                          index
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex1
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex2
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex3
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex4
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex5
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex6
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex7
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements[
+                                                                                                                                          innerIndex8
+                                                                                                                                        ]
+                                                                                                                                          .employeeTargetAchievements;
+                                                                                                                                      await onEmployeeNameClick(
+                                                                                                                                        innerItem9,
+                                                                                                                                        innerIndex9,
+                                                                                                                                        localParameter
+                                                                                                                                      );
+                                                                                                                                    }}
+                                                                                                                                  />
+                                                                                                                                  {renderData(
+                                                                                                                                    innerItem9,
+                                                                                                                                    "#1C95A6"
+                                                                                                                                  )}
+                                                                                                                                </View>
+                                                                                                                                {innerItem9.isOpenInner &&
+                                                                                                                                  innerItem9
+                                                                                                                                    .employeeTargetAchievements
+                                                                                                                                    .length >
+                                                                                                                                    0 &&
+                                                                                                                                  innerItem9.employeeTargetAchievements.map(
+                                                                                                                                    (
+                                                                                                                                      innerItem10,
+                                                                                                                                      innerIndex10
+                                                                                                                                    ) => {
+                                                                                                                                      return (
+                                                                                                                                        <View
+                                                                                                                                          key={
+                                                                                                                                            innerIndex10
+                                                                                                                                          }
+                                                                                                                                          style={[
+                                                                                                                                            {
+                                                                                                                                              width:
+                                                                                                                                                "98%",
+                                                                                                                                              minHeight: 40,
+                                                                                                                                              flexDirection:
+                                                                                                                                                "column",
+                                                                                                                                            },
+                                                                                                                                            innerItem10.isOpenInner && {
+                                                                                                                                              borderRadius: 10,
+                                                                                                                                              borderWidth: 1,
+                                                                                                                                              borderColor:
+                                                                                                                                                "#1C95A6",
+                                                                                                                                              backgroundColor:
+                                                                                                                                                "#FFFFFF",
+                                                                                                                                              marginHorizontal: 5,
+                                                                                                                                            },
+                                                                                                                                          ]}
+                                                                                                                                        >
+                                                                                                                                          <View
+                                                                                                                                            style={[
+                                                                                                                                              styles.view11,
+                                                                                                                                              {
+                                                                                                                                                width:
+                                                                                                                                                  Dimensions.get(
+                                                                                                                                                    "screen"
+                                                                                                                                                  )
+                                                                                                                                                    .width -
+                                                                                                                                                  (innerItem10.isOpenInner
+                                                                                                                                                    ? 71
+                                                                                                                                                    : 67),
+                                                                                                                                              },
+                                                                                                                                            ]}
+                                                                                                                                          >
+                                                                                                                                            <Text
+                                                                                                                                              style={{
+                                                                                                                                                fontSize: 10,
+                                                                                                                                                fontWeight:
+                                                                                                                                                  "500",
+                                                                                                                                              }}
+                                                                                                                                            >
+                                                                                                                                              {
+                                                                                                                                                innerItem10.empName
+                                                                                                                                              }
+                                                                                                                                            </Text>
+                                                                                                                                            <SourceModelView
+                                                                                                                                              onClick={() => {
+                                                                                                                                                navigation.navigate(
+                                                                                                                                                  AppNavigator
+                                                                                                                                                    .HomeStackIdentifiers
+                                                                                                                                                    .sourceModel,
+                                                                                                                                                  {
+                                                                                                                                                    empId:
+                                                                                                                                                      innerItem10.empId,
+                                                                                                                                                    headerTitle:
+                                                                                                                                                      innerItem10.empName,
+                                                                                                                                                    type: "TEAM",
+                                                                                                                                                    moduleType:
+                                                                                                                                                      "home",
+                                                                                                                                                  }
+                                                                                                                                                );
+                                                                                                                                              }}
+                                                                                                                                              style={{
+                                                                                                                                                transform:
+                                                                                                                                                  [
+                                                                                                                                                    {
+                                                                                                                                                      translateX:
+                                                                                                                                                        translation,
+                                                                                                                                                    },
+                                                                                                                                                  ],
+                                                                                                                                              }}
+                                                                                                                                            />
+                                                                                                                                          </View>
+                                                                                                                                          <View
+                                                                                                                                            style={{
+                                                                                                                                              flexDirection:
+                                                                                                                                                "row",
+                                                                                                                                            }}
+                                                                                                                                          >
+                                                                                                                                            <RenderLevel1NameView
+                                                                                                                                              level={
+                                                                                                                                                6
+                                                                                                                                              }
+                                                                                                                                              item={
+                                                                                                                                                innerItem10
+                                                                                                                                              }
+                                                                                                                                              color={
+                                                                                                                                                "#1C95A6"
+                                                                                                                                              }
+                                                                                                                                              navigation={
+                                                                                                                                                navigation
+                                                                                                                                              }
+                                                                                                                                              branchName={getBranchName(
+                                                                                                                                                innerItem10.branchId
+                                                                                                                                              )}
+                                                                                                                                              titleClick={async () => {
+                                                                                                                                                const localData =
+                                                                                                                                                  [
+                                                                                                                                                    ...allParameters,
+                                                                                                                                                  ];
+                                                                                                                                                const localParameter =
+                                                                                                                                                  localData[
+                                                                                                                                                    index
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex1
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex2
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex3
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex4
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex5
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex6
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex7
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex8
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements[
+                                                                                                                                                    innerIndex9
+                                                                                                                                                  ]
+                                                                                                                                                    .employeeTargetAchievements;
+                                                                                                                                                await onEmployeeNameClick(
+                                                                                                                                                  innerItem10,
+                                                                                                                                                  innerIndex10,
+                                                                                                                                                  localParameter
+                                                                                                                                                );
+                                                                                                                                              }}
+                                                                                                                                            />
+                                                                                                                                            {renderData(
+                                                                                                                                              innerItem10,
+                                                                                                                                              "#1C95A6"
+                                                                                                                                            )}
+                                                                                                                                          </View>
+                                                                                                                                          {innerItem10.isOpenInner &&
+                                                                                                                                            innerItem10
+                                                                                                                                              .employeeTargetAchievements
+                                                                                                                                              .length >
+                                                                                                                                              0 &&
+                                                                                                                                            innerItem10.employeeTargetAchievements.map(
+                                                                                                                                              (
+                                                                                                                                                innerItem11,
+                                                                                                                                                innerIndex11
+                                                                                                                                              ) => {
+                                                                                                                                                return (
+                                                                                                                                                  <View
+                                                                                                                                                    key={
+                                                                                                                                                      innerIndex11
+                                                                                                                                                    }
+                                                                                                                                                    style={[
+                                                                                                                                                      {
+                                                                                                                                                        width:
+                                                                                                                                                          "98%",
+                                                                                                                                                        minHeight: 40,
+                                                                                                                                                        flexDirection:
+                                                                                                                                                          "column",
+                                                                                                                                                      },
+                                                                                                                                                      innerItem11.isOpenInner && {
+                                                                                                                                                        borderRadius: 10,
+                                                                                                                                                        borderWidth: 1,
+                                                                                                                                                        borderColor:
+                                                                                                                                                          "#1C95A6",
+                                                                                                                                                        backgroundColor:
+                                                                                                                                                          "#FFFFFF",
+                                                                                                                                                        marginHorizontal: 5,
+                                                                                                                                                      },
+                                                                                                                                                    ]}
+                                                                                                                                                  >
+                                                                                                                                                    <View
+                                                                                                                                                      style={[
+                                                                                                                                                        styles.view11,
+                                                                                                                                                        {
+                                                                                                                                                          width:
+                                                                                                                                                            Dimensions.get(
+                                                                                                                                                              "screen"
+                                                                                                                                                            )
+                                                                                                                                                              .width -
+                                                                                                                                                            (innerItem11.isOpenInner
+                                                                                                                                                              ? 71
+                                                                                                                                                              : 67),
+                                                                                                                                                        },
+                                                                                                                                                      ]}
+                                                                                                                                                    >
+                                                                                                                                                      <Text
+                                                                                                                                                        style={{
+                                                                                                                                                          fontSize: 10,
+                                                                                                                                                          fontWeight:
+                                                                                                                                                            "500",
+                                                                                                                                                        }}
+                                                                                                                                                      >
+                                                                                                                                                        {
+                                                                                                                                                          innerItem11.empName
+                                                                                                                                                        }
+                                                                                                                                                      </Text>
+                                                                                                                                                      <SourceModelView
+                                                                                                                                                        onClick={() => {
+                                                                                                                                                          navigation.navigate(
+                                                                                                                                                            AppNavigator
+                                                                                                                                                              .HomeStackIdentifiers
+                                                                                                                                                              .sourceModel,
+                                                                                                                                                            {
+                                                                                                                                                              empId:
+                                                                                                                                                                innerItem11.empId,
+                                                                                                                                                              headerTitle:
+                                                                                                                                                                innerItem11.empName,
+                                                                                                                                                              type: "TEAM",
+                                                                                                                                                              moduleType:
+                                                                                                                                                                "home",
+                                                                                                                                                            }
+                                                                                                                                                          );
+                                                                                                                                                        }}
+                                                                                                                                                        style={{
+                                                                                                                                                          transform:
+                                                                                                                                                            [
+                                                                                                                                                              {
+                                                                                                                                                                translateX:
+                                                                                                                                                                  translation,
+                                                                                                                                                              },
+                                                                                                                                                            ],
+                                                                                                                                                        }}
+                                                                                                                                                      />
+                                                                                                                                                    </View>
+                                                                                                                                                    <View
+                                                                                                                                                      style={{
+                                                                                                                                                        flexDirection:
+                                                                                                                                                          "row",
+                                                                                                                                                      }}
+                                                                                                                                                    >
+                                                                                                                                                      <RenderLevel1NameView
+                                                                                                                                                        level={
+                                                                                                                                                          6
+                                                                                                                                                        }
+                                                                                                                                                        item={
+                                                                                                                                                          innerItem11
+                                                                                                                                                        }
+                                                                                                                                                        color={
+                                                                                                                                                          "#1C95A6"
+                                                                                                                                                        }
+                                                                                                                                                        navigation={
+                                                                                                                                                          navigation
+                                                                                                                                                        }
+                                                                                                                                                        branchName={getBranchName(
+                                                                                                                                                          innerItem11.branchId
+                                                                                                                                                        )}
+                                                                                                                                                        titleClick={async () => {
+                                                                                                                                                          const localData =
+                                                                                                                                                            [
+                                                                                                                                                              ...allParameters,
+                                                                                                                                                            ];
+                                                                                                                                                          const localParameter =
+                                                                                                                                                            localData[
+                                                                                                                                                              index
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex1
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex2
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex3
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex4
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex5
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex6
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex7
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex8
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex9
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements[
+                                                                                                                                                              innerIndex10
+                                                                                                                                                            ]
+                                                                                                                                                              .employeeTargetAchievements;
+                                                                                                                                                          await onEmployeeNameClick(
+                                                                                                                                                            innerItem11,
+                                                                                                                                                            innerIndex11,
+                                                                                                                                                            localParameter
+                                                                                                                                                          );
+                                                                                                                                                        }}
+                                                                                                                                                      />
+                                                                                                                                                      {renderData(
+                                                                                                                                                        innerItem11,
+                                                                                                                                                        "#1C95A6"
+                                                                                                                                                      )}
+                                                                                                                                                    </View>
+                                                                                                                                                    {innerItem11.isOpenInner &&
+                                                                                                                                                      innerItem11
+                                                                                                                                                        .employeeTargetAchievements
+                                                                                                                                                        .length >
+                                                                                                                                                        0 &&
+                                                                                                                                                      innerItem11.employeeTargetAchievements.map(
+                                                                                                                                                        (
+                                                                                                                                                          innerItem12,
+                                                                                                                                                          innerIndex12
+                                                                                                                                                        ) => {
+                                                                                                                                                          return (
+                                                                                                                                                            <View
+                                                                                                                                                              key={
+                                                                                                                                                                innerIndex12
+                                                                                                                                                              }
+                                                                                                                                                              style={[
+                                                                                                                                                                {
+                                                                                                                                                                  width:
+                                                                                                                                                                    "98%",
+                                                                                                                                                                  minHeight: 40,
+                                                                                                                                                                  flexDirection:
+                                                                                                                                                                    "column",
+                                                                                                                                                                },
+                                                                                                                                                                innerItem12.isOpenInner && {
+                                                                                                                                                                  borderRadius: 10,
+                                                                                                                                                                  borderWidth: 1,
+                                                                                                                                                                  borderColor:
+                                                                                                                                                                    "#1C95A6",
+                                                                                                                                                                  backgroundColor:
+                                                                                                                                                                    "#FFFFFF",
+                                                                                                                                                                  marginHorizontal: 5,
+                                                                                                                                                                },
+                                                                                                                                                              ]}
+                                                                                                                                                            >
+                                                                                                                                                              <View
+                                                                                                                                                                style={[
+                                                                                                                                                                  styles.view11,
+                                                                                                                                                                  {
+                                                                                                                                                                    width:
+                                                                                                                                                                      Dimensions.get(
+                                                                                                                                                                        "screen"
+                                                                                                                                                                      )
+                                                                                                                                                                        .width -
+                                                                                                                                                                      (innerItem12.isOpenInner
+                                                                                                                                                                        ? 71
+                                                                                                                                                                        : 67),
+                                                                                                                                                                  },
+                                                                                                                                                                ]}
+                                                                                                                                                              >
+                                                                                                                                                                <Text
+                                                                                                                                                                  style={{
+                                                                                                                                                                    fontSize: 10,
+                                                                                                                                                                    fontWeight:
+                                                                                                                                                                      "500",
+                                                                                                                                                                  }}
+                                                                                                                                                                >
+                                                                                                                                                                  {
+                                                                                                                                                                    innerItem12.empName
+                                                                                                                                                                  }
+                                                                                                                                                                </Text>
+                                                                                                                                                                <SourceModelView
+                                                                                                                                                                  onClick={() => {
+                                                                                                                                                                    navigation.navigate(
+                                                                                                                                                                      AppNavigator
+                                                                                                                                                                        .HomeStackIdentifiers
+                                                                                                                                                                        .sourceModel,
+                                                                                                                                                                      {
+                                                                                                                                                                        empId:
+                                                                                                                                                                          innerItem12.empId,
+                                                                                                                                                                        headerTitle:
+                                                                                                                                                                          innerItem12.empName,
+                                                                                                                                                                        type: "TEAM",
+                                                                                                                                                                        moduleType:
+                                                                                                                                                                          "home",
+                                                                                                                                                                      }
+                                                                                                                                                                    );
+                                                                                                                                                                  }}
+                                                                                                                                                                  style={{
+                                                                                                                                                                    transform:
+                                                                                                                                                                      [
+                                                                                                                                                                        {
+                                                                                                                                                                          translateX:
+                                                                                                                                                                            translation,
+                                                                                                                                                                        },
+                                                                                                                                                                      ],
+                                                                                                                                                                  }}
+                                                                                                                                                                />
+                                                                                                                                                              </View>
+                                                                                                                                                              <View
+                                                                                                                                                                style={{
+                                                                                                                                                                  flexDirection:
+                                                                                                                                                                    "row",
+                                                                                                                                                                }}
+                                                                                                                                                              >
+                                                                                                                                                                <RenderLevel1NameView
+                                                                                                                                                                  level={
+                                                                                                                                                                    6
+                                                                                                                                                                  }
+                                                                                                                                                                  item={
+                                                                                                                                                                    innerItem12
+                                                                                                                                                                  }
+                                                                                                                                                                  color={
+                                                                                                                                                                    "#1C95A6"
+                                                                                                                                                                  }
+                                                                                                                                                                  navigation={
+                                                                                                                                                                    navigation
+                                                                                                                                                                  }
+                                                                                                                                                                  branchName={getBranchName(
+                                                                                                                                                                    innerItem12.branchId
+                                                                                                                                                                  )}
+                                                                                                                                                                  titleClick={async () => {
+                                                                                                                                                                    const localData =
+                                                                                                                                                                      [
+                                                                                                                                                                        ...allParameters,
+                                                                                                                                                                      ];
+                                                                                                                                                                    const localParameter =
+                                                                                                                                                                      localData[
+                                                                                                                                                                        index
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex1
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex2
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex3
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex4
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex5
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex6
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex7
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex8
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex9
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex10
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements[
+                                                                                                                                                                        innerIndex11
+                                                                                                                                                                      ]
+                                                                                                                                                                        .employeeTargetAchievements;
+                                                                                                                                                                    await onEmployeeNameClick(
+                                                                                                                                                                      innerItem12,
+                                                                                                                                                                      innerIndex12,
+                                                                                                                                                                      localParameter
+                                                                                                                                                                    );
+                                                                                                                                                                  }}
+                                                                                                                                                                />
+                                                                                                                                                                {renderData(
+                                                                                                                                                                  innerItem12,
+                                                                                                                                                                  "#1C95A6"
+                                                                                                                                                                )}
+                                                                                                                                                              </View>
+                                                                                                                                                              {innerItem12.isOpenInner &&
+                                                                                                                                                                innerItem12
+                                                                                                                                                                  .employeeTargetAchievements
+                                                                                                                                                                  .length >
+                                                                                                                                                                  0 &&
+                                                                                                                                                                innerItem12.employeeTargetAchievements.map(
+                                                                                                                                                                  (
+                                                                                                                                                                    innerItem13,
+                                                                                                                                                                    innerIndex13
+                                                                                                                                                                  ) => {
+                                                                                                                                                                    return (
+                                                                                                                                                                      <View
+                                                                                                                                                                        key={
+                                                                                                                                                                          innerIndex13
+                                                                                                                                                                        }
+                                                                                                                                                                        style={[
+                                                                                                                                                                          {
+                                                                                                                                                                            width:
+                                                                                                                                                                              "98%",
+                                                                                                                                                                            minHeight: 40,
+                                                                                                                                                                            flexDirection:
+                                                                                                                                                                              "column",
+                                                                                                                                                                          },
+                                                                                                                                                                          innerItem13.isOpenInner && {
+                                                                                                                                                                            borderRadius: 10,
+                                                                                                                                                                            borderWidth: 1,
+                                                                                                                                                                            borderColor:
+                                                                                                                                                                              "#1C95A6",
+                                                                                                                                                                            backgroundColor:
+                                                                                                                                                                              "#FFFFFF",
+                                                                                                                                                                            marginHorizontal: 5,
+                                                                                                                                                                          },
+                                                                                                                                                                        ]}
+                                                                                                                                                                      >
+                                                                                                                                                                        <View
+                                                                                                                                                                          style={[
+                                                                                                                                                                            styles.view11,
+                                                                                                                                                                            {
+                                                                                                                                                                              width:
+                                                                                                                                                                                Dimensions.get(
+                                                                                                                                                                                  "screen"
+                                                                                                                                                                                )
+                                                                                                                                                                                  .width -
+                                                                                                                                                                                (innerItem13.isOpenInner
+                                                                                                                                                                                  ? 71
+                                                                                                                                                                                  : 67),
+                                                                                                                                                                            },
+                                                                                                                                                                          ]}
+                                                                                                                                                                        >
+                                                                                                                                                                          <Text
+                                                                                                                                                                            style={{
+                                                                                                                                                                              fontSize: 10,
+                                                                                                                                                                              fontWeight:
+                                                                                                                                                                                "500",
+                                                                                                                                                                            }}
+                                                                                                                                                                          >
+                                                                                                                                                                            {
+                                                                                                                                                                              innerItem13.empName
+                                                                                                                                                                            }
+                                                                                                                                                                          </Text>
+                                                                                                                                                                          <SourceModelView
+                                                                                                                                                                            onClick={() => {
+                                                                                                                                                                              navigation.navigate(
+                                                                                                                                                                                AppNavigator
+                                                                                                                                                                                  .HomeStackIdentifiers
+                                                                                                                                                                                  .sourceModel,
+                                                                                                                                                                                {
+                                                                                                                                                                                  empId:
+                                                                                                                                                                                    innerItem13.empId,
+                                                                                                                                                                                  headerTitle:
+                                                                                                                                                                                    innerItem13.empName,
+                                                                                                                                                                                  type: "TEAM",
+                                                                                                                                                                                  moduleType:
+                                                                                                                                                                                    "home",
+                                                                                                                                                                                }
+                                                                                                                                                                              );
+                                                                                                                                                                            }}
+                                                                                                                                                                            style={{
+                                                                                                                                                                              transform:
+                                                                                                                                                                                [
+                                                                                                                                                                                  {
+                                                                                                                                                                                    translateX:
+                                                                                                                                                                                      translation,
+                                                                                                                                                                                  },
+                                                                                                                                                                                ],
+                                                                                                                                                                            }}
+                                                                                                                                                                          />
+                                                                                                                                                                        </View>
+                                                                                                                                                                        <View
+                                                                                                                                                                          style={{
+                                                                                                                                                                            flexDirection:
+                                                                                                                                                                              "row",
+                                                                                                                                                                          }}
+                                                                                                                                                                        >
+                                                                                                                                                                          <RenderLevel1NameView
+                                                                                                                                                                            level={
+                                                                                                                                                                              6
+                                                                                                                                                                            }
+                                                                                                                                                                            item={
+                                                                                                                                                                              innerItem13
+                                                                                                                                                                            }
+                                                                                                                                                                            color={
+                                                                                                                                                                              "#1C95A6"
+                                                                                                                                                                            }
+                                                                                                                                                                            navigation={
+                                                                                                                                                                              navigation
+                                                                                                                                                                            }
+                                                                                                                                                                            branchName={getBranchName(
+                                                                                                                                                                              innerItem13.branchId
+                                                                                                                                                                            )}
+                                                                                                                                                                            titleClick={async () => {
+                                                                                                                                                                              const localData =
+                                                                                                                                                                                [
+                                                                                                                                                                                  ...allParameters,
+                                                                                                                                                                                ];
+                                                                                                                                                                              const localParameter =
+                                                                                                                                                                                localData[
+                                                                                                                                                                                  index
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex1
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex2
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex3
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex4
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex5
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex6
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex7
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex8
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex9
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex10
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex11
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements[
+                                                                                                                                                                                  innerIndex12
+                                                                                                                                                                                ]
+                                                                                                                                                                                  .employeeTargetAchievements;
+                                                                                                                                                                              await onEmployeeNameClick(
+                                                                                                                                                                                innerItem13,
+                                                                                                                                                                                innerIndex13,
+                                                                                                                                                                                localParameter
+                                                                                                                                                                              );
+                                                                                                                                                                            }}
+                                                                                                                                                                          />
+                                                                                                                                                                          {renderData(
+                                                                                                                                                                            innerItem13,
+                                                                                                                                                                            "#1C95A6"
+                                                                                                                                                                          )}
+                                                                                                                                                                        </View>
+                                                                                                                                                                      </View>
+                                                                                                                                                                    );
+                                                                                                                                                                  }
+                                                                                                                                                                )}
+                                                                                                                                                            </View>
+                                                                                                                                                          );
+                                                                                                                                                        }
+                                                                                                                                                      )}
+                                                                                                                                                  </View>
+                                                                                                                                                );
+                                                                                                                                              }
+                                                                                                                                            )}
+                                                                                                                                        </View>
+                                                                                                                                      );
+                                                                                                                                    }
+                                                                                                                                  )}
+                                                                                                                              </View>
+                                                                                                                            );
+                                                                                                                          }
+                                                                                                                        )}
                                                                                                                     </View>
                                                                                                                   );
                                                                                                                 }
@@ -3086,532 +3951,599 @@ const TargetScreen = ({ route }) => {
                   {receptionistRole.includes(userData.hrmsRole) &&
                   !selector.isTeam ? (
                     <>
-                          {CRMRole.includes(userData.hrmsRole) && <View style={{ paddingHorizontal: '8%' }}>
-                            <View style={styles.newView}>
-                              <Text style={{
+                      {CRMRole.includes(userData.hrmsRole) && (
+                        <View style={{ paddingHorizontal: "8%" }}>
+                          <View style={styles.newView}>
+                            <Text
+                              style={{
                                 fontSize: 12,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
-                              }}>Leads Allocated</Text>
-                              <SourceModelView
-                                style={{ alignSelf: "flex-end" }}
-                                onClick={() => {
-                                  navigation.navigate("RECEP_SOURCE_MODEL", {
-                                    empId: userData.empId,
-                                    headerTitle: "Source/Model",
-                                    loggedInEmpId: userData.empId,
-                                    orgId: userData.orgId,
-                                    role: userData.hrmsRole,
-                                  });
-                                }}
-                              />
-                            </View>
-                            {/* todo */}
-                            <FlatList
-                              data={data}
-                              bounces={false}
-                              renderItem={({ item, index }) => renderItem(item, index)}
-                              contentContainerStyle={{ width: '100%' }}
+                              }}
+                            >
+                              Leads Allocated
+                            </Text>
+                            <SourceModelView
+                              style={{ alignSelf: "flex-end" }}
+                              onClick={() => {
+                                navigation.navigate("RECEP_SOURCE_MODEL", {
+                                  empId: userData.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId: userData.empId,
+                                  orgId: userData.orgId,
+                                  role: userData.hrmsRole,
+                                });
+                              }}
                             />
-                          </View> 
+                          </View>
+                          {/* todo */}
+                          <FlatList
+                            data={data}
+                            bounces={false}
+                            renderItem={({ item, index }) =>
+                              renderItem(item, index)
                             }
-                    
-                        
+                            contentContainerStyle={{ width: "100%" }}
+                          />
+                        </View>
+                      )}
 
-                        {/* CRM exisiting code start */}
-                          {!CRMRole.includes(userData.hrmsRole) && <>
-                            <View style={styles.view14}>
-                              <SourceModelView
-                                style={{ alignSelf: "flex-end" }}
-                                onClick={() => {
-                                  navigation.navigate("RECEP_SOURCE_MODEL", {
-                                    empId: userData.empId,
-                                    headerTitle: "Source/Model",
-                                    loggedInEmpId: userData.empId,
-                                    orgId: userData.orgId,
-                                    role: userData.hrmsRole,
-                                  });
-                                }}
-                              />
-                            </View>
-                            <ScrollView showsVerticalScrollIndicator={false}>
-                              <View style={styles.recBoxContainer}>
-                                <View style={styles.view15}>
-                                  <View
+                      {/* CRM exisiting code start */}
+                      {!CRMRole.includes(userData.hrmsRole) && (
+                        <>
+                          <View style={styles.view14}>
+                            <SourceModelView
+                              style={{ alignSelf: "flex-end" }}
+                              onClick={() => {
+                                navigation.navigate("RECEP_SOURCE_MODEL", {
+                                  empId: userData.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId: userData.empId,
+                                  orgId: userData.orgId,
+                                  role: userData.hrmsRole,
+                                });
+                              }}
+                            />
+                          </View>
+                          <ScrollView showsVerticalScrollIndicator={false}>
+                            <View style={styles.recBoxContainer}>
+                              <View style={styles.view15}>
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "35%",
+                                  }}
+                                >
+                                  <Text
                                     style={{
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      width: "35%",
+                                      fontSize: 14,
+                                      fontWeight: "500",
                                     }}
                                   >
-                                    <Text
-                                      style={{
-                                        fontSize: 14,
-                                        fontWeight: "500",
-                                      }}
-                                    >
-                                      {"Consultant Name"}
-                                    </Text>
-                                  </View>
-
-                                  <View
-                                    style={{
-                                      flexDirection: "row",
-                                      justifyContent: "space-between",
-                                      width: "60%",
-                                    }}
-                                  >
-                                    <Text
-                                      style={{ ...styles.txt4, width: "25%" }}
-                                      numberOfLines={2}
-                                    >
-                                      {"Enq"}
-                                    </Text>
-                                    <Text
-                                      style={{ ...styles.txt4, width: "25%" }}
-                                      numberOfLines={2}
-                                    >
-                                      {"Bkg"}
-                                    </Text>
-                                    <Text
-                                      style={{ ...styles.txt4, width: "25%" }}
-                                      numberOfLines={2}
-                                    >
-                                      {"Retail"}
-                                    </Text>
-                                    <Text
-                                      style={{ ...styles.txt4, width: "25%" }}
-                                      numberOfLines={2}
-                                    >
-                                      {"Lost"}
-                                    </Text>
-                                  </View>
+                                    {"Consultant Name"}
+                                  </Text>
                                 </View>
-                                <FlatList
-                                  data={selector.receptionistData.consultantList}
-                                  style={{ marginTop: 10 }}
-                                  nestedScrollEnabled
-                                  renderItem={({ item }) => {
-                                    Array.prototype.random = function () {
-                                      return this[
-                                        Math.floor(Math.random() * this.length)
-                                      ];
-                                    };
-                                    let selectedColor = color.random();
-                                    return (
-                                      <View style={styles.view16}>
-                                        <View style={styles.view17}>
-                                          <Text  numberOfLines={1}>
-                                            {item?.emp_name}
+
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    width: "60%",
+                                  }}
+                                >
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Enq"}
+                                  </Text>
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Bkg"}
+                                  </Text>
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Retail"}
+                                  </Text>
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Lost"}
+                                  </Text>
+                                </View>
+                              </View>
+                              <FlatList
+                                data={selector.receptionistData.consultantList}
+                                style={{ marginTop: 10 }}
+                                nestedScrollEnabled
+                                renderItem={({ item }) => {
+                                  Array.prototype.random = function () {
+                                    return this[
+                                      Math.floor(Math.random() * this.length)
+                                    ];
+                                  };
+                                  let selectedColor = color.random();
+                                  return (
+                                    <View style={styles.view16}>
+                                      <View style={styles.view17}>
+                                        <Text numberOfLines={1}>
+                                          {item?.emp_name}
+                                        </Text>
+                                      </View>
+                                      <View style={styles.view18}>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              item?.enquiryCount > 0 &&
+                                                navigateToEMS("ENQUIRY", "", [
+                                                  item.emp_id,
+                                                ]);
+                                            }}
+                                            style={{
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.enquiryCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
+                                            }}
+                                          >
+                                            {item?.enquiryCount}
                                           </Text>
                                         </View>
-                                        <View style={styles.view18}>
-                                          <View
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              item?.bookingCount > 0 &&
+                                                navigateToEMS("BOOKING", "", [
+                                                  item.emp_id,
+                                                ]);
+                                            }}
                                             style={{
-                                              minWidth: 45,
-                                              height: 25,
-                                              borderColor: Colors.GRAY,
-                                              borderWidth: 1,
-                                              borderRadius: 8,
-                                              justifyContent: "center",
-                                              alignItems: "center",
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.bookingCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
                                             }}
                                           >
-                                            <Text
-                                              onPress={() => {
-                                                item?.enquiryCount > 0 &&
-                                                  navigateToEMS("ENQUIRY", "", [item.emp_id]);
-                                              }}
-                                              style={{
-                                                padding: 2,
-                                                textDecorationLine:
-                                                  item?.enquiryCount > 0
-                                                    ? "underline"
-                                                    : "none",
-                                                color: Colors.PINK
-                                              }}
-                                            >
-                                              {item?.enquiryCount}
-                                            </Text>
-                                          </View>
-                                          <View
+                                            {item?.bookingCount}
+                                          </Text>
+                                        </View>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              item?.retailCount > 0 &&
+                                                navigateToEMS(
+                                                  "INVOICECOMPLETED",
+                                                  "",
+                                                  [item.emp_id]
+                                                );
+                                            }}
                                             style={{
-                                              minWidth: 45,
-                                              height: 25,
-                                              borderColor: Colors.GRAY,
-                                              borderWidth: 1,
-                                              borderRadius: 8,
-                                              justifyContent: "center",
-                                              alignItems: "center",
-                                              
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.retailCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
                                             }}
                                           >
-                                            <Text
-                                              onPress={() => {
-                                                item?.bookingCount > 0 &&
-                                                  navigateToEMS("BOOKING", "", [item.emp_id]);
-                                              }}
-                                              style={{
-                                                padding: 2,
-                                                textDecorationLine:
-                                                  item?.bookingCount > 0
-                                                    ? "underline"
-                                                    : "none",
-                                                color: Colors.PINK
-                                              }}
-                                            >
-                                              {item?.bookingCount}
-                                            </Text>
-                                          </View>
-                                          <View
+                                            {item?.retailCount}
+                                          </Text>
+                                        </View>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              navigateToDropLostCancel([
+                                                item.emp_id,
+                                              ]);
+                                            }}
                                             style={{
-                                              minWidth: 45,
-                                              height: 25,
-                                              borderColor: Colors.GRAY,
-                                              borderWidth: 1,
-                                              borderRadius: 8,
-                                              justifyContent: "center",
-                                              alignItems: "center",
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.droppedCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
                                             }}
                                           >
-                                            <Text
-                                              onPress={() => {
-                                                item?.retailCount > 0 &&
-                                                  navigateToEMS("INVOICECOMPLETED", "", [item.emp_id]);
-                                              }}
-                                              style={{
-                                                padding: 2,
-                                                textDecorationLine:
-                                                  item?.retailCount > 0
-                                                    ? "underline"
-                                                    : "none",
-                                                color: Colors.PINK
-                                              }}
-                                            >
-                                              {item?.retailCount}
-                                            </Text>
-                                          </View>
-                                          <View
-                                            style={{
-                                              minWidth: 45,
-                                              height: 25,
-                                              borderColor: Colors.GRAY,
-                                              borderWidth: 1,
-                                              borderRadius: 8,
-                                              justifyContent: "center",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            <Text
-                                              onPress={() => {
-                                              
-                                                navigateToDropLostCancel([item.emp_id]);
-                                              }}
-                                              style={{
-                                                padding: 2,
-                                                textDecorationLine:
-                                                  item?.droppedCount > 0
-                                                    ? "underline"
-                                                    : "none",
-                                                color: Colors.PINK
-                                              }}
-                                            >
-                                              {item?.droppedCount}
-                                            </Text>
-                                          </View>
+                                            {item?.droppedCount}
+                                          </Text>
                                         </View>
                                       </View>
-                                    );
+                                    </View>
+                                  );
+                                }}
+                              />
+                              <View style={styles.view16}>
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "35%",
                                   }}
-                                />
-                                <View style={styles.view16}>
-                                  <View
+                                >
+                                  <Text
                                     style={{
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      width: "35%",
+                                      fontSize: 15,
+                                      fontWeight: "600",
+                                      color: "#00b1ff",
                                     }}
                                   >
+                                    {"          Total"}
+                                  </Text>
+                                </View>
+                                <View style={styles.view18}>
+                                  <View style={styles.view20}>
                                     <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .enquirysCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToEMS(
+                                            "ENQUIRY",
+                                            "",
+                                            empIdArry
+                                          );
+                                        }
+                                      }}
                                       style={{
-                                        fontSize: 15,
-                                        fontWeight: "600",
-                                        color: "#00b1ff",
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .enquirysCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
                                       }}
                                     >
-                                      {"          Total"}
+                                      {selector.receptionistData.enquirysCount}
                                     </Text>
                                   </View>
-                                  <View style={styles.view18}>
-                                    <View style={styles.view20}>
-                                      <Text
-                                        onPress={() => {
-                                          if (selector.receptionistData.enquirysCount >0){
-                                            let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
-                                              empIdArry.push(item.emp_id);
-
-                                            })
-                                            navigateToEMS("ENQUIRY", "", empIdArry);
-                                          }
-                                            
-                                            
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            selector.receptionistData.enquirysCount >
-                                              0
-                                              ? "underline"
-                                              : "none",
-                                          color: Colors.PINK
-                                        }}
-                                      >
-                                        {selector.receptionistData.enquirysCount}
-                                      </Text>
-                                    </View>
-                                    <View style={styles.view20}>
-                                      <Text
-                                        onPress={() => {
-                                          if (selector.receptionistData.bookingsCount > 0) {
-                                            let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
-                                              empIdArry.push(item.emp_id);
-
-                                            })
-                                            navigateToEMS("BOOKING", "", empIdArry);
-                                          }
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            selector.receptionistData.bookingsCount >
-                                              0
-                                              ? "underline"
-                                              : "none",
-                                          color: Colors.PINK
-                                        }}
-                                      >
-                                        {selector.receptionistData.bookingsCount}
-                                      </Text>
-                                    </View>
-                                    <View style={styles.view20}>
-                                      <Text
-                                        onPress={() => {
-                                          if (selector.receptionistData.RetailCount > 0) {
-                                            let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
-                                              empIdArry.push(item.emp_id);
-
-                                            })
-                                            navigateToEMS("INVOICECOMPLETED", "", empIdArry);
-                                          }
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            selector.receptionistData.RetailCount > 0
-                                              ? "underline"
-                                              : "none",
-                                          color: Colors.PINK
-                                        }}
-                                      >
-                                        {selector.receptionistData.RetailCount}
-                                      </Text>
-                                    </View>
-                                    <View style={styles.view20}>
-                                      <Text
-                                        onPress={() => {
-                                          if (selector.receptionistData.totalLostCount > 0) {
-                                            let empIdArry = [];
-                                            const temp = selector.receptionistData.consultantList.map((item) => {
-                                              empIdArry.push(item.emp_id);
-                                            })
-                                            navigateToDropLostCancel([...empIdArry]);
-                                          }
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            selector.receptionistData.totalLostCount >
-                                              0
-                                              ? "underline"
-                                              : "none",
-                                          color: Colors.PINK
-                                        }}
-                                      >
-                                        {selector.receptionistData.totalLostCount}
-                                      </Text>
-                                    </View>
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .bookingsCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToEMS(
+                                            "BOOKING",
+                                            "",
+                                            empIdArry
+                                          );
+                                        }
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .bookingsCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
+                                      }}
+                                    >
+                                      {selector.receptionistData.bookingsCount}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .RetailCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToEMS(
+                                            "INVOICECOMPLETED",
+                                            "",
+                                            empIdArry
+                                          );
+                                        }
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .RetailCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
+                                      }}
+                                    >
+                                      {selector.receptionistData.RetailCount}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .totalLostCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToDropLostCancel([
+                                            ...empIdArry,
+                                          ]);
+                                        }
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .totalLostCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
+                                      }}
+                                    >
+                                      {selector.receptionistData.totalLostCount}
+                                    </Text>
                                   </View>
                                 </View>
                               </View>
-                              <View style={styles.view21}>
-                                <View style={{ ...styles.statWrap, width: "33%" }}>
-                                  <Text style={styles.txt5}>E2B</Text>
-                                  {selector.receptionistData.bookingsCount !== null &&
-                                    selector.receptionistData.enquirysCount !== null ? (
-                                    <Text
-                                      style={{
-                                        color:
-                                          Math.floor(
-                                            (parseInt(
-                                              selector.receptionistData.bookingsCount
-                                            ) /
-                                              parseInt(
-                                                selector.receptionistData
-                                                  .enquirysCount
-                                              )) *
-                                            100
-                                          ) > 40
-                                            ? "#14ce40"
-                                            : "#ff0000",
-                                        fontSize: 12,
-                                        marginRight: 4,
-                                      }}
-                                    >
-                                      {parseInt(
-                                        selector.receptionistData.bookingsCount
-                                      ) === 0 ||
-                                        parseInt(
-                                          selector.receptionistData.enquirysCount
-                                        ) === 0
-                                        ? 0
-                                        : Math.round(
+                            </View>
+                            <View style={styles.view21}>
+                              <View
+                                style={{ ...styles.statWrap, width: "33%" }}
+                              >
+                                <Text style={styles.txt5}>E2B</Text>
+                                {selector.receptionistData.bookingsCount !==
+                                  null &&
+                                selector.receptionistData.enquirysCount !==
+                                  null ? (
+                                  <Text
+                                    style={{
+                                      color:
+                                        Math.floor(
                                           (parseInt(
-                                            selector.receptionistData.bookingsCount
+                                            selector.receptionistData
+                                              .bookingsCount
                                           ) /
                                             parseInt(
                                               selector.receptionistData
                                                 .enquirysCount
                                             )) *
-                                          100
-                                        )}
-                                      %
-                                    </Text>
-                                  ) : (
-                                    <Text
-                                      style={{
-                                        color: "#ff0000",
-                                        fontSize: 12,
-                                      }}
-                                    >
-                                      0%
-                                    </Text>
-                                  )}
-                                </View>
-                                <View style={{ ...styles.statWrap, width: "33%" }}>
-                                  <Text style={styles.txt6}>B2R</Text>
-                                  {selector.receptionistData.bookingsCount !== null &&
-                                    selector.receptionistData.RetailCount !== null ? (
-                                    <Text
-                                      style={{
-                                        color:
-                                          Math.floor(
-                                            (parseInt(
-                                              selector.receptionistData.RetailCount
-                                            ) /
-                                              parseInt(
-                                                selector.receptionistData
-                                                  .bookingsCount
-                                              )) *
                                             100
-                                          ) > 40
-                                            ? "#14ce40"
-                                            : "#ff0000",
-                                        fontSize: 12,
-                                        marginRight: 4,
-                                      }}
-                                    >
-                                      {parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) === 0 ||
-                                        parseInt(
-                                          selector.receptionistData.bookingsCount
-                                        ) === 0
-                                        ? 0
-                                        : Math.round(
+                                        ) > 40
+                                          ? "#14ce40"
+                                          : "#ff0000",
+                                      fontSize: 12,
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {parseInt(
+                                      selector.receptionistData.bookingsCount
+                                    ) === 0 ||
+                                    parseInt(
+                                      selector.receptionistData.enquirysCount
+                                    ) === 0
+                                      ? 0
+                                      : Math.round(
                                           (parseInt(
-                                            selector.receptionistData.RetailCount
+                                            selector.receptionistData
+                                              .bookingsCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                            100
+                                        )}
+                                    %
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#ff0000",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    0%
+                                  </Text>
+                                )}
+                              </View>
+                              <View
+                                style={{ ...styles.statWrap, width: "33%" }}
+                              >
+                                <Text style={styles.txt6}>B2R</Text>
+                                {selector.receptionistData.bookingsCount !==
+                                  null &&
+                                selector.receptionistData.RetailCount !==
+                                  null ? (
+                                  <Text
+                                    style={{
+                                      color:
+                                        Math.floor(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
                                           ) /
                                             parseInt(
                                               selector.receptionistData
                                                 .bookingsCount
                                             )) *
-                                          100
-                                        )}
-                                      %
-                                    </Text>
-                                  ) : (
-                                    <Text
-                                      style={{
-                                        color: "#ff0000",
-                                        fontSize: 12,
-                                      }}
-                                    >
-                                      0%
-                                    </Text>
-                                  )}
-                                </View>
-                                <View style={{ ...styles.statWrap, width: "33%" }}>
-                                  <Text style={styles.txt6}>E2R</Text>
-                                  {selector.receptionistData.enquirysCount !== null &&
-                                    selector.receptionistData.RetailCount !== null ? (
-                                    <Text
-                                      style={{
-                                        color:
-                                          Math.floor(
-                                            (parseInt(
-                                              selector.receptionistData.RetailCount
-                                            ) /
-                                              parseInt(
-                                                selector.receptionistData
-                                                  .enquirysCount
-                                              )) *
                                             100
-                                          ) > 40
-                                            ? "#14ce40"
-                                            : "#ff0000",
-                                        fontSize: 12,
-                                        marginRight: 4,
-                                      }}
-                                    >
-                                      {parseInt(
-                                        selector.receptionistData.enquirysCount
-                                      ) === 0 ||
-                                        parseInt(
-                                          selector.receptionistData.RetailCount
-                                        ) === 0
-                                        ? 0
-                                        : Math.round(
+                                        ) > 40
+                                          ? "#14ce40"
+                                          : "#ff0000",
+                                      fontSize: 12,
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {parseInt(
+                                      selector.receptionistData.RetailCount
+                                    ) === 0 ||
+                                    parseInt(
+                                      selector.receptionistData.bookingsCount
+                                    ) === 0
+                                      ? 0
+                                      : Math.round(
                                           (parseInt(
-                                            selector.receptionistData.RetailCount
+                                            selector.receptionistData
+                                              .RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .bookingsCount
+                                            )) *
+                                            100
+                                        )}
+                                    %
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#ff0000",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    0%
+                                  </Text>
+                                )}
+                              </View>
+                              <View
+                                style={{ ...styles.statWrap, width: "33%" }}
+                              >
+                                <Text style={styles.txt6}>E2R</Text>
+                                {selector.receptionistData.enquirysCount !==
+                                  null &&
+                                selector.receptionistData.RetailCount !==
+                                  null ? (
+                                  <Text
+                                    style={{
+                                      color:
+                                        Math.floor(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
                                           ) /
                                             parseInt(
                                               selector.receptionistData
                                                 .enquirysCount
                                             )) *
-                                          100
+                                            100
+                                        ) > 40
+                                          ? "#14ce40"
+                                          : "#ff0000",
+                                      fontSize: 12,
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {parseInt(
+                                      selector.receptionistData.enquirysCount
+                                    ) === 0 ||
+                                    parseInt(
+                                      selector.receptionistData.RetailCount
+                                    ) === 0
+                                      ? 0
+                                      : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                            100
                                         )}
-                                      %
-                                    </Text>
-                                  ) : (
-                                    <Text
-                                      style={{
-                                        color: "#ff0000",
-                                        fontSize: 12,
-                                      }}
-                                    >
-                                      0%
-                                    </Text>
-                                  )}
-                                </View>
+                                    %
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#ff0000",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    0%
+                                  </Text>
+                                )}
                               </View>
-                            </ScrollView>
-                          </>}
-                     
-                          {/* CRM exisiting code end */}
+                            </View>
+                          </ScrollView>
+                        </>
+                      )}
+
+                      {/* CRM exisiting code end */}
                     </>
                   ) : null}
                 </>
@@ -4360,7 +5292,7 @@ const styles = StyleSheet.create({
   txt4: {
     fontSize: 13,
     fontWeight: "500",
-    textAlign: "center"
+    textAlign: "center",
   },
   view16: {
     flexDirection: "row",
@@ -4430,12 +5362,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.BLACK,
     fontWeight: "600",
-    textDecorationLine: 'underline'
+    textDecorationLine: "underline",
   },
   newView: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 10,
     marginRight: 10,
-  }
+  },
 });
