@@ -333,7 +333,16 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateFilterLevelSelectedDataReceptionist({}));
         dispatch(updateDealerFilterData_Recep({}));
         dispatch(updateCrm_employees_drop_down_data({}))
-        dispatch(updateFilterIds({}))
+        dispatch(
+          updateFilterIds({
+            startDate: "",
+            endDate: "",
+            levelSelected: [],
+            empSelected: [],
+            allEmpSelected: [],
+            employeeName: [],
+          })
+        );
         dispatch(updateEmpDropDown_Local({}))
         
         break;
@@ -513,7 +522,16 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterSelectedDataHome({}));
     dispatch(updateFilterSelectedDataReceptionist({}));
     dispatch(updateCrm_employees_drop_down_data({}))
-    dispatch(updateFilterIds({}))
+    dispatch(
+      updateFilterIds({
+        startDate: "",
+        endDate: "",
+        levelSelected: [],
+        empSelected: [],
+        allEmpSelected: [],
+        employeeName: [],
+      })
+    );
     dispatch(updateEmpDropDown_Local({}))
 
     signOut();
