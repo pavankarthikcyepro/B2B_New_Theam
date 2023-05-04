@@ -197,6 +197,7 @@ const URL = {
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },
+  GET_CALL_URI : () => sales_url + `/callrecording/saveCallRecordings`,
   GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
     return (
       sales_url +
@@ -391,6 +392,9 @@ const URL = {
   },
   GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
     return sales_url + `/booking-amount/lead/${leadId}`;
+  },
+  GET_RECORDED_CALLS: (taskId) => {
+    return sales_url + `/callrecording/getCallHistory-urls?recordId=${taskId}`;
   },
 
   SAVE_BOOKING_CANCEL_ATTACHMENT: () => {

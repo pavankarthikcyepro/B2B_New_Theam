@@ -148,6 +148,8 @@ import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDeale
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 import RsaList from "../scenes/mainScenes/Home/ServiceCustomer/RsaList";
 import CreateRsa from "../scenes/mainScenes/Home/ServiceCustomer/CreateRsa";
+import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
+import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -471,6 +473,7 @@ export const EmsStackIdentifiers = {
   ProformaScreen: "PROFORMA_SCREEN",
   newEnquiry: "NEW_ENQUIRY",
   testDriveHistory: "TEST_HISTORY",
+  recordedCalls: "RECORDED_CALLS",
   task360HistoryFilter: "TASK_360_HISTORY_FILTER",
 };
 
@@ -496,6 +499,7 @@ export const MyTasksStackIdentifiers = {
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN",
   myTaskFilterScreen: "MYTASK_FILTER",
+  webCallScreen: "WEB_CALL",
   testDriveHistory: "TEST_HISTORY",
 };
 
@@ -743,6 +747,11 @@ const EmsStackNavigator = ({ navigation }) => {
             return <LeadAge />;
           },
         }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.recordedCalls}
+        component={RecordedCalls}
+        options={{ title: "Recorded Calls" }}
       />
 
       <EmsStack.Screen
@@ -1819,6 +1828,15 @@ const MainStackNavigator = ({ navigation }) => {
         name={"NOTIF_1"}
         component={NotificationScreen}
         options={{ title: "Notifications" }}
+      />
+      <MainStack.Screen
+        name={MyTasksStackIdentifiers.webCallScreen}
+        component={WebCallScreen}
+        options={{
+          headerTransparent: true,
+          headerTitle: "",
+          headerTintColor: Colors.BLACK,
+        }}
       />
     </MainStack.Navigator>
   );
