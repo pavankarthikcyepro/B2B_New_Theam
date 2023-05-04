@@ -2,6 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import { showToast } from "../utils/toast";
 import URL from "../networking/endpoints";
+import { convertTimeStringToDate } from "../utils/helperFunctions";
 
 interface DropDownModelNew {
   key: string;
@@ -61,6 +62,21 @@ const rsaCrudReducer = createSlice({
   initialState: JSON.parse(JSON.stringify(initialState)),
   reducers: {
     clearStateData: () => JSON.parse(JSON.stringify(initialState)),
+    setExistingData: (state, action) => {
+      const { technician, date, reason, remarks, rsaAddress, amount } = action.payload;
+      const { address, area, landmark, pin } = rsaAddress;
+      state.technician = technician;
+      state.reason = reason;
+      state.remarks = remarks;
+      state.address = address;
+      state.area = area;
+      state.landmark = landmark;
+      state.pincode = pin;
+      state.amount = `${amount}`;
+      if (date) {
+        state.rsaDate = convertTimeStringToDate(date, "YYYY/MM/DD");
+      }
+    },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value } = action.payload;
       switch (key) {
@@ -174,6 +190,7 @@ const rsaCrudReducer = createSlice({
 
 export const {
   clearStateData,
+  setExistingData,
   setDropDownData,
   setDatePicker,
   updateSelectedDate,

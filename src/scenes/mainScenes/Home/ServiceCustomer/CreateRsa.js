@@ -13,7 +13,7 @@ import { Colors } from '../../../../styles';
 import { DatePickerComponent, DropDownComponant, LoaderComponent } from '../../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextInputServices } from '../../../../components/textInputServices';
-import { clearStateData, createRsa, getTechnician, setDatePicker, setDropDownData, setInputInfo, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
+import { clearStateData, createRsa, getTechnician, setDatePicker, setDropDownData, setExistingData, setInputInfo, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
 import { convertTimeStampToDateString } from '../../../../utils/helperFunctions';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 import { DropDownServices } from '../../../../pureComponents/dropDownServices';
@@ -41,15 +41,13 @@ const CreateRsa = ({ navigation, route }) => {
   useEffect(() => {
     dispatch(getTechnician());
     if (fromType == "editRsa") {
-      setExistingData();
+      dispatch(setExistingData(existingRsaData));
     }
     return () => {
       dispatch(clearStateData());
       clearLocalData();
     };
   }, []);
-
-  const setExistingData = () => {};
 
   const clearLocalData = () => {
     setDataForDropDown([]);
@@ -156,10 +154,8 @@ const CreateRsa = ({ navigation, route }) => {
 
     let payload = {
       amount: selector.amount,
-      createdBy: customerDetail.id,
-      createdDate: new Date().toISOString(),
       customerId: customerDetail.id,
-      lastModifiedBy: customerDetail.id,
+      lastModifiedBy: currentUserData.id,
       lastModifiedDate: new Date().toISOString(),
       reason: selector.reason,
       remarks: selector.remarks,
@@ -179,6 +175,10 @@ const CreateRsa = ({ navigation, route }) => {
       date: convertTimeToIsoString(selector.rsaDate),
     };
 
+    if (type == "create") {
+      payload.createdDate = new Date().toISOString();
+      payload.createdBy = currentUserData.id;
+    }
     dispatch(createRsa(payload));
   };
 
@@ -378,6 +378,23 @@ const CreateRsa = ({ navigation, route }) => {
                 onPress={() => submit("create")}
               >
                 <Text style={styles.btnText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+            {fromType == "editRsa" && existingRsaData?.status == "OPEN" && (
+            <View style={styles.buttonListRow}>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                // onPress={() => submit("close")}
+              >
+                <Text style={styles.btnText}>Close RSA</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btnContainer}
+                onPress={() => submit("update")}
+              >
+                <Text style={styles.btnText}>Update</Text>
               </TouchableOpacity>
             </View>
           )}
