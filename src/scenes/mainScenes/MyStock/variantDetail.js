@@ -188,13 +188,20 @@ const VariantDetailScreen = ({ route, navigation }) => {
               style={{
                 ...styles.locationTxt,
                 textDecorationLine: noBorder ? "none" : "underline",
+                color: Colors.RED
               }}
             >
               {item?.varient}
             </Text>
           </View>
           <View style={styles.parameterTitleView}>
-            <Text numberOfLines={1} style={styles.valueTxt}>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.valueTxt,
+                { width: isSelfManager === "Y" ? "45%" : "20%" },
+              ]}
+            >
               {item.stockValue || "0.0"}
             </Text>
             {isSelfManager !== "Y" && (
@@ -207,7 +214,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
                 </Text>
               </>
             )}
-            <Text numberOfLines={1} style={styles.valueTxt}>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.valueTxt,
+                { width: isSelfManager === "Y" ? "45%" : "20%" },
+              ]}
+            >
               {item.electricCount || 0}
             </Text>
             {isSelfManager !== "Y" && (
@@ -248,7 +261,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
           </Text>
         </View>
         <View style={styles.parameterTitleView}>
-          <Text numberOfLines={1} style={styles.valueTxt}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.valueTxt,
+              { width: isSelfManager === "Y" ? "45%" : "20%" },
+            ]}
+          >
             {item1.stockValue || "0.0"}
           </Text>
           {isSelfManager !== "Y" && (
@@ -261,7 +280,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
               </Text>
             </>
           )}
-          <Text numberOfLines={1} style={styles.valueTxt}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.valueTxt,
+              { width: isSelfManager === "Y" ? "45%" : "20%" },
+            ]}
+          >
             {item1.electricCount || 0}
           </Text>
           {isSelfManager !== "Y" && (

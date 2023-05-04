@@ -62,6 +62,16 @@ const OverviewDetailScreen = ({ route, navigation }) => {
         let payload = {
           orgId: jsonObj.orgId.toString(),
         };
+        if (jsonObj.hrmsRole !== "Admin") {
+          const branchName = jsonObj.branchs.filter(
+            (item) => item.branchId === jsonObj.branchId
+          )[0].branchName;
+
+          let newPayload = {
+            branchName: branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,

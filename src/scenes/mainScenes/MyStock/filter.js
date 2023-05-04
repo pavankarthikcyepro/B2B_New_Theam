@@ -48,9 +48,13 @@ import { MyStockTopTabNavigatorIdentifiers } from "../../../navigations/myStockN
 import {
   updateAgingFrom,
   updateAgingTo,
+  updateLocation,
   updateSelectedDealerCode,
 } from "../../../redux/myStockReducer";
 import _ from "lodash";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
+import { Dropdown } from "react-native-element-dropdown";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -98,10 +102,40 @@ const MyStockFilter = ({ route, navigation }) => {
   );
   const [dropDownFrom, setDropDownFrom] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const [location, setLocation] = useState([]);
+  const [stockyard, setStockyard] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState({});
+  const [selectedStockyard, setSelectedStockyard] = useState({});
   useEffect(() => {
     getAsyncData();
   }, []);
+
+  useEffect(() => {
+    getOptions();
+  }, []);
+
+  const getOptions = async () => {
+    try {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(
+          URL.GET_INVENTORY_BY_STOCK_YARD_BRANCHES(jsonObj.orgId)
+        );
+        const json = await response.json();
+        if (json.length > 0) {
+          setLocation(json);
+          if (stockSelector.dealerCode.stockyardName) {
+            setSelectedLocation(stockSelector.location);
+            setStockyard(stockSelector.location.stockyardBranches);
+            setSelectedStockyard(stockSelector.dealerCode);
+          }
+        }
+      }
+    } catch (error) {}
+  };
 
   const getAsyncData = async (startDate, endDate) => {
     const employeeData = await AsyncStore.getData(
@@ -201,11 +235,12 @@ const MyStockFilter = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       for (let i = 0; i < data.length; i++) {
         const id = data[i];
+        newData.push(id);
         for (let j = 0; j < jsonObj.branchs.length; j++) {
           const id2 = jsonObj.branchs[j];
-          if (id2.branchName === id.name) {
-            newData.push(id);
-          }
+          // if (id2.branchName === id.name) {
+          //   newData.push(id);
+          // }
         }
       }
     }
@@ -362,6 +397,16 @@ const MyStockFilter = ({ route, navigation }) => {
     setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
   };
 
+  const clearBtnClicked2 = () => {
+    setSelectedLocation({});
+    setSelectedStockyard({});
+    setFromDate("0");
+    setToDate("0");
+    dispatch(updateLocation({}));
+    dispatch(updateSelectedDealerCode({}));
+    dispatch(updateAgingFrom(null));
+    dispatch(updateAgingTo(null));
+  };
   const clearBtnClicked = () => {
     const totalDataObjLocal = { ...totalDataObj };
     let i = 0;
@@ -416,7 +461,29 @@ const MyStockFilter = ({ route, navigation }) => {
       dispatch(updateSelectedDealerCode(selectedDealerCode));
       dispatch(updateAgingFrom(fromDate));
       dispatch(updateAgingTo(toDate));
-      navigation.goBack()
+      navigation.goBack();
+      //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
+    } else {
+      showToast("Please select any value");
+    }
+  };
+
+  const submitBtnClicked2 = (initialData) => {
+    if (_.isEmpty(selectedLocation)) {
+      showToast("Please select any Location Code");
+      return;
+    }
+    if (_.isEmpty(selectedStockyard)) {
+      showToast("Please select any Stock Yard Code");
+      return;
+    }
+    if (!_.isEmpty(selectedStockyard)) {
+      setIsLoading(true);
+      dispatch(updateLocation(selectedLocation));
+      dispatch(updateSelectedDealerCode(selectedStockyard));
+      dispatch(updateAgingFrom(fromDate));
+      dispatch(updateAgingTo(toDate));
+      navigation.goBack();
       //   getDashboadTableDataFromServer(selectedIds, "LEVEL");
     } else {
       showToast("Please select any value");
@@ -686,7 +753,44 @@ const MyStockFilter = ({ route, navigation }) => {
                   <View
                     style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}
                   >
-                    <FlatList
+                    <Dropdown
+                      label={"Location"}
+                      visible={true}
+                      onChange={(item) => {
+                        setSelectedLocation(item);
+                        setStockyard(item.stockyardBranches);
+                      }}
+                      data={location || []}
+                      value={selectedLocation ? selectedLocation.name : ""}
+                      labelField={"name"}
+                      valueField={"name"}
+                      placeholder={"Location"}
+                      style={[styles.dropdownElement]}
+                      placeholderStyle={{
+                        color: Colors.GRAY,
+                      }}
+                    />
+                    <Dropdown
+                      label={"Stock Yard"}
+                      visible={true}
+                      underLine
+                      onChange={(item) => {
+                        setSelectedStockyard(item);
+                        // setSelectedLocation(item);
+                      }}
+                      data={stockyard || []}
+                      value={
+                        selectedStockyard ? selectedStockyard.stockyardName : ""
+                      }
+                      labelField={"stockyardName"}
+                      valueField={"stockyardName"}
+                      placeholder={"Stock Yard"}
+                      style={[styles.dropdownElement]}
+                      placeholderStyle={{
+                        color: Colors.GRAY,
+                      }}
+                    />
+                    {/* <FlatList
                       data={nameKeyList}
                       listKey="ORG_TABLE"
                       scrollEnabled={false}
@@ -720,7 +824,7 @@ const MyStockFilter = ({ route, navigation }) => {
                           </View>
                         );
                       }}
-                    />
+                    /> */}
                   </View>
                   <View style={styles.submitBtnBckVw}>
                     <Button
@@ -730,7 +834,7 @@ const MyStockFilter = ({ route, navigation }) => {
                       }}
                       style={{ width: buttonWidth }}
                       mode="outlined"
-                      onPress={clearBtnClicked}
+                      onPress={clearBtnClicked2}
                     >
                       Clear
                     </Button>
@@ -742,7 +846,7 @@ const MyStockFilter = ({ route, navigation }) => {
                       style={{ width: buttonWidth }}
                       contentStyle={{ backgroundColor: Colors.BLACK }}
                       mode="contained"
-                      onPress={() => submitBtnClicked(null)}
+                      onPress={() => submitBtnClicked2(null)}
                     >
                       Submit
                     </Button>
@@ -865,5 +969,18 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     borderColor: Colors.BORDER_COLOR,
     borderWidth: 1,
+  },
+  dropdownElement: {
+    height: 50,
+    width: "100%",
+    fontSize: 16,
+    fontWeight: "400",
+    backgroundColor: Colors.WHITE,
+    marginTop: 10,
+    borderRadius: 6,
+    padding: 15,
+    color: Colors.BLACK,
+    borderBottomColor: Colors.BLACK,
+    borderBottomWidth: 1,
   },
 });

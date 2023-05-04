@@ -60,7 +60,15 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
-import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
+import {
+  saveFilterPayload,
+  updateDealerFilterData,
+  updateFilterSelectedData,
+} from "../../redux/targetSettingsReducer";
+import {
+  updateLocation,
+  updateSelectedDealerCode,
+} from "../../redux/myStockReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -76,8 +84,7 @@ const commonMenu = [
   "My Attendance",
   "My Stock",
   "Download Report",
-  "Complaint Tracker"
-
+  "Complaint Tracker",
 ];
 const salesMenu = [
   ...commonMenu,
@@ -85,7 +92,7 @@ const salesMenu = [
   "Target Planning",
   "Event Dashboard",
   "Geolocation",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 const receptionTelCallerMenu = [
   ...commonMenu,
@@ -101,7 +108,7 @@ const managerMenu = [
   "Target Planning",
   "Task Transfer",
   "Geolocation",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 const mdMenu = [
   ...commonMenu,
@@ -111,7 +118,7 @@ const mdMenu = [
   "Digital Dashboard",
   "Target Planning",
   "Task Transfer",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -374,12 +381,14 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
       case 123:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.complaintTracker);
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.complaintTracker
+        );
         break;
       case 112:
         signOutClicked();
         break;
-      
+
       // case 999:
       //   navigation.navigate("Target Settings");
       //   break;
@@ -411,6 +420,8 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(saveFilterPayload({}));
     dispatch(updateFilterSelectedData({}));
     dispatch(updateDealerFilterData({}));
+    dispatch(updateLocation({}));
+    dispatch(updateSelectedDealerCode({}));
     signOut();
   };
 

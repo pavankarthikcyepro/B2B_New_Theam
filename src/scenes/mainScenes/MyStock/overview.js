@@ -35,7 +35,8 @@ const OverviewScreen = ({ route, navigation }) => {
   const [availableAgingData, setAvailableAgingData] = useState([]);
   const [inTransitAgingData, setInTransitAgingData] = useState([]);
   const [role, setRole] = useState("");
-
+  const [noAvailableData, setNoAvailableData] = useState(false);
+  const [noInTransitData, setNoInTransitData] = useState(false);
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       dispatch(updateCurrentScreen("OVERVIEW"));
@@ -43,7 +44,6 @@ const OverviewScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log(selector.dealerCode);
     if (selector.dealerCode) {
       getInventory(selector.dealerCode);
     } else {
@@ -67,18 +67,49 @@ const OverviewScreen = ({ route, navigation }) => {
         let payload = {
           orgId: jsonObj.orgId.toString(),
         };
+        if (jsonObj.hrmsRole !== "Admin") {
+          const branchName = jsonObj.branchs.filter(
+            (item) => item.branchId === jsonObj.branchId
+          )[0].branchName;
+
+          let newPayload = {
+            branchName: branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
             minAge: selector.agingFrom,
-            branchName: selector.dealerCode.name,
           };
+          if (jsonObj.hrmsRole === "Admin") {
+            let data2 = {
+              stockyardBranchName: selector.dealerCode.stockyardName,
+            };
+            payload = { ...payload, ...data2 };
+          } else {
+            let data2 = {
+              branchName: selector.dealerCode.stockyardName,
+            };
+            payload = { ...payload, ...data2 };
+          }
+
           payload = { ...payload, ...data };
         }
         const response = await client.post(URL.GET_INVENTORY(), payload);
         const json = await response.json();
         if (json) {
           setInventory(json);
+          if (json.locationWise_available_count.length === 0) {
+            setNoAvailableData(true);
+          } else {
+            setNoAvailableData(false);
+          }
+          if (json.locationWise_intrsnsit_count.length === 0) {
+            setNoInTransitData(true);
+          } else {
+            setNoInTransitData(false);
+          }
           // if (json.available_stock) {
           //   let path = json.available_stock;
           //   setAvailableAgingData(FormatAging(path));
@@ -101,6 +132,8 @@ const OverviewScreen = ({ route, navigation }) => {
     } catch (error) {
       setLoading(false);
       setInventory(sample);
+      setNoAvailableData(false);
+      setNoInTransitData(false);
       // setAvailableAgingData(tableData);
       // setInTransitAgingData(tableData);
     }
@@ -227,6 +260,15 @@ const OverviewScreen = ({ route, navigation }) => {
       </View>
     );
   };
+  const NoData = () => {
+    return (
+      <>
+        <View style={styles.noDataView}>
+          <Text style={styles.titleText}>{"No Data Found"}</Text>
+        </View>
+      </>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -274,6 +316,8 @@ const OverviewScreen = ({ route, navigation }) => {
                 renderTotalData(inventory?.locationWise_available_count)
               : inventory?.locationWise_intrsnsit_count?.length > 0 &&
                 renderTotalData(inventory?.locationWise_intrsnsit_count)}
+            {available && noAvailableData && <NoData />}
+            {!available && noInTransitData && <NoData />}
           </View>
         </View>
         <View style={styles.mainView}>
@@ -370,4 +414,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   tableTitleView: { flexDirection: "row", justifyContent: "space-between" },
+  noDataView: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+    marginTop: 150,
+  },
 });

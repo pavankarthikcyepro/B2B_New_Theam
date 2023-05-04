@@ -857,6 +857,9 @@ const URL = {
   GET_INVENTORY_BY_VEHICLE_COLOR: () => {
     return baseUrl + `dfdr/vehicle-inventory/get-varientBasedVehicles`;
   },
+  GET_INVENTORY_BY_STOCK_YARD_BRANCHES: (orgId) => {
+    return baseUrl + `dfdr/vehicle-inventory/get-stockyardbranches/${orgId}`;
+  },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
   },

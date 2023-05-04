@@ -44,6 +44,7 @@ export const myStockSlice = createSlice({
     dealerCode: {},
     agingFrom: null,
     agingTo: null,
+    location: {}
   },
   reducers: {
     updateCurrentScreen: (state, action) => {
@@ -51,6 +52,9 @@ export const myStockSlice = createSlice({
     },
     updateSelectedDealerCode: (state, action) => {
       state.dealerCode = action.payload;
+    },
+    updateLocation: (state, action) => {
+      state.location = action.payload;
     },
     updateAgingFrom: (state, action) => {
       state.agingFrom = action.payload;
@@ -87,5 +91,6 @@ export const {
   updateSelectedDealerCode,
   updateAgingFrom,
   updateAgingTo,
+  updateLocation,
 } = myStockSlice.actions;
 export default myStockSlice.reducer;
