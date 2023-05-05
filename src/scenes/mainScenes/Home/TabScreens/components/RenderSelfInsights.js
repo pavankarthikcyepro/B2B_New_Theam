@@ -33,7 +33,7 @@ export const RenderSelfInsights = (args) => {
     (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
       (1000 * 60 * 60 * 24) +
     1;
-  const { data, type, navigation, userData ="" } = args;
+  const { data, type, navigation, userData = "" } = args;
 
   const enq = data && data.find((x) => x && x.paramName === "Enquiry");
   const ret = data && data.find((x) => x && x.paramName == "INVOICE");
@@ -65,7 +65,6 @@ export const RenderSelfInsights = (args) => {
 
   return getRearrangeArray().map((item, index) => {
     if (item) {
-      
       return (
         <View
           style={{ flexDirection: "row", marginLeft: 8 }}
@@ -80,21 +79,6 @@ export const RenderSelfInsights = (args) => {
                 param === "Booking" ||
                 param === "INVOICE"
               ) {
-<<<<<<< HEAD
-                navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-                  screen: "EMS",
-                  params: {
-                    screen: "LEADS",
-                    params: {
-                      param: param === "INVOICE" ? "Retail" : param,
-                      moduleType: "home",
-                      employeeDetail: "",
-                    },
-                  },
-                });
-                // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-=======
-                
                 navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
                 setTimeout(() => {
                   navigation.navigate("LEADS", {
@@ -102,54 +86,65 @@ export const RenderSelfInsights = (args) => {
                     params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
                     moduleType: "",
                     employeeDetail: "",
-                    selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : "",
+                    selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected)
+                      ? selector.filterIds?.empSelected[0]
+                      : "",
                     startDate: "",
                     endDate: "",
-                    dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected: [],
+                    dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected)
+                      ? selector.filterIds?.levelSelected
+                      : [],
                     ignoreSelectedId: false,
                     parentId: "",
                     istotalClick: true,
-                    self: false
+                    self: false,
                   });
                 }, 1000);
->>>>>>> 1001524158c96e1cb15e0858fcf891b5f3e8aab3
                 // setTimeout(() => {
                 //   navigation.navigate("LEADS", {
                 //     param: param === "INVOICE" ? "Retail" : param,
                 //     moduleType: "home",
                 //     employeeDetail: "",
                 //   });
-<<<<<<< HEAD
-                // }, 10);
-=======
                 // }, 1000);
->>>>>>> 1001524158c96e1cb15e0858fcf891b5f3e8aab3
               } else if (param == "Home Visit" || param == "Test Drive") {
-                
                 navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
                 setTimeout(() => {
                   navigation.navigate("CLOSED", {
                     screenName: "TargetScreenSales",
-                    selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : "",
+                    selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected)
+                      ? selector.filterIds?.empSelected[0]
+                      : "",
                     startDate: "",
                     endDate: "",
-                    dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+                    dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected)
+                      ? selector.filterIds?.levelSelected
+                      : [],
                     isself: false,
-                    isTeam:true
+                    isTeam: true,
                   });
                 }, 700);
               } else if (param === "DROPPED") {
-                navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-                  screen: "DROP_ANALYSIS",
-                  params: {
-                    emp_id: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : userData !== ""  ? userData.empId : "",
-                    fromScreen: "targetSaleshome",
-                    dealercodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
-                    isFilterApplied: true,
-                    parentId: "",
-                    isSelf: ""
-                  },
-                });
+                navigation.navigate(
+                  AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+                  {
+                    screen: "DROP_ANALYSIS",
+                    params: {
+                      emp_id: !_.isEmpty(selector.filterIds?.empSelected)
+                        ? selector.filterIds?.empSelected[0]
+                        : userData !== ""
+                        ? userData.empId
+                        : "",
+                      fromScreen: "targetSaleshome",
+                      dealercodes: !_.isEmpty(selector.filterIds?.levelSelected)
+                        ? selector.filterIds?.levelSelected
+                        : [],
+                      isFilterApplied: true,
+                      parentId: "",
+                      isSelf: "",
+                    },
+                  }
+                );
                 // navigation.navigate(
                 //   AppNavigator.DrawerStackIdentifiers.dropAnalysis,
                 //   {
@@ -166,7 +161,6 @@ export const RenderSelfInsights = (args) => {
                 //     startDate: "",
                 //     endDate: "",
                 //     dealerCodes: [],
-                  
                 //   });
                 // }, 750);
               }

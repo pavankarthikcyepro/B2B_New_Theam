@@ -54,46 +54,6 @@ export const RenderEmployeeParameters = (parameter) => {
       branchId: item.branchId,
     };
     if (isLead) {
-<<<<<<< HEAD
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      // setTimeout(() => {
-      //   navigation.navigate("LEADS", {
-      //     param: param === "INVOICE" ? "Retail" : param,
-      //     employeeDetail: employeeDetail,
-      //     moduleType: "live-leads",
-      //   });
-      // }, 1000);
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-        screen: "EMS",
-        params: {
-          screen: "LEADS",
-          params: {
-            param: param === "INVOICE" ? "Retail" : param,
-            employeeDetail: employeeDetail,
-            moduleType: "live-leads",
-          },
-        },
-      });
-    } else if (isContact) {
-       navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-         screen: "EMS",
-         params: {
-           screen: EmsTopTabNavigatorIdentifiers.preEnquiry,
-           param: {
-             employeeDetail: employeeDetail,
-             moduleType: "live-leads",
-           },
-         },
-       });
-      // navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      // setTimeout(() => {
-      //   navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-      //     // param: param === "INVOICE" ? "Retail" : param,
-      //     employeeDetail: employeeDetail,
-      //     moduleType: "live-leads",
-      //   });
-      // }, 1000);
-=======
       if (moduleType !== "live-leads") {
         navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
         setTimeout(() => {
@@ -133,7 +93,6 @@ export const RenderEmployeeParameters = (parameter) => {
           selectedEmpId: ""
         });
       }, 1000);
->>>>>>> 1001524158c96e1cb15e0858fcf891b5f3e8aab3
       // navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
       //   moduleType: "live-leads",
       //   employeeDetail: employeeDetail,

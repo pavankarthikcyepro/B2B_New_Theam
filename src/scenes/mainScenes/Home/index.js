@@ -163,10 +163,8 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-<<<<<<< HEAD
       // getCurrentLocation();
       // setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
-=======
       dispatch(updatefilter_drop_down_designations({}))
       dispatch(updateFilterLeadership_selectedDesignation(""))
       dispatch(updateFilterLeadership_selectedDesignationName(""))
@@ -174,7 +172,6 @@ const HomeScreen = ({ route, navigation }) => {
       
       getCurrentLocation();
       setTargetData().then(() => { }); //Commented to resolved filter issue for Home Screen
->>>>>>> 1001524158c96e1cb15e0858fcf891b5f3e8aab3
     });
   }, [navigation]);
 
@@ -1120,42 +1117,6 @@ const HomeScreen = ({ route, navigation }) => {
         //   });
         // }, 1000);
       } else if (userData.hrmsRole === "CRM") {
-<<<<<<< HEAD
-         navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-           screen: "EMS",
-           params: {
-             screen: "LEADS",
-             params: {
-               screenName: "TargetScreenCRM",
-               params: params,
-               moduleType: "",
-               employeeDetail: "",
-               selectedEmpId: selectedEmpId,
-               startDate: "",
-               endDate: "",
-               dealerCodes: [],
-               ignoreSelectedId: false,
-               parentId: selectedEmpId[0],
-               istotalClick: true,
-             },
-           },
-         });
-        // setTimeout(() => {
-        //   navigation.navigate("LEADS", {
-        //     screenName: "TargetScreenCRM",
-        //     params: params,
-        //     moduleType: "",
-        //     employeeDetail: "",
-        //     selectedEmpId: selectedEmpId,
-        //     startDate: "",
-        //     endDate: "",
-        //     dealerCodes: [],
-        //     ignoreSelectedId: false,
-        //     parentId: selectedEmpId[0],
-        //     istotalClick: true,
-        //   });
-        // }, 1000);
-=======
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "TargetScreenCRM",
@@ -1172,7 +1133,6 @@ const HomeScreen = ({ route, navigation }) => {
             self: false
           });
         }, 1000);
->>>>>>> 1001524158c96e1cb15e0858fcf891b5f3e8aab3
       } else {
         // setTimeout(() => {
            navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
