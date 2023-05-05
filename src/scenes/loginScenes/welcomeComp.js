@@ -45,15 +45,52 @@ const WelcomeScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
 
-  useEffect(async() => {
-const token = await messaging().getToken();
-console.log("OOOOO",token);
+  useEffect(async () => {
+    const token = await messaging().getToken();
+    console.log("OOOOO", token);
+    Clipboard.setString(token);
+    messaging().requestPermission();
+    messaging().onMessage(async (remoteMessage) => {
+      console.log(
+        "Received a new notification while the app is in the foreground:",
+        remoteMessage.notification
+      );
+      // Display the notification in your app
+    });
+
+    // Handle incoming notifications when app is in background or not running
+    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+      console.log(
+        "Received a new notification while the app is in the background:",
+        remoteMessage.notification
+      );
+      // Display the notification in your app
+    });
+    // Get the device token
+    messaging()
+      .getToken()
+      .then((token) => {
+        if (Platform.OS === "ios") {
+          dispatch(updateToken(token));
+        }
+        console.log("FCM Token:", token);
+        // Save the token to your backend server for sending notifications later
+      });
+
+    // Listen for token refresh events
+    messaging().onTokenRefresh((token) => {
+      console.log("FCM Token refreshed:", token);
+      // Save the new token to your backend server for sending notifications later
+    });
+
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
       onRegister: function (token) {
         console.log(token);
         // Clipboard.setString(token.token);
-        dispatch(updateToken(token.token));
+        if (Platform.OS === "android") {
+          dispatch(updateToken(token.token));
+        }
       },
       // (required) Called when a remote is received or opened, or local notification is opened
       onNotification: function (notification) {
