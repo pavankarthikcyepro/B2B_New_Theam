@@ -2431,7 +2431,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           .fetch("GET", url, {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            // Authorization: "Bearer " + token,
           })
           .then((res) => {
             // setLoading(false);
@@ -2463,7 +2463,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           .fetch("GET", iOSUrl, {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            // Authorization: "Bearer " + token,
           })
           .then((res) => {
             // setLoading(false);
