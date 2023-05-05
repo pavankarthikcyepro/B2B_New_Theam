@@ -592,11 +592,11 @@ const styles = StyleSheet.create({
   txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
   progressColumn: {
     height: "100%",
-    width: 5,
+    width: 3,
     backgroundColor: Colors.LIGHT_GRAY2,
     marginTop: 27,
     position: "absolute",
-    marginHorizontal: 7
+    marginHorizontal: 8
   },
   itemContainer: {
     flexDirection: "row",
