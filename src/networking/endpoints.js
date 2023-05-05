@@ -197,7 +197,7 @@ const URL = {
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },
-  GET_CALL_URI : () => sales_url + `/callrecording/saveCallRecordings`,
+  GET_CALL_URI: () => sales_url + `/callrecording/saveCallRecordings`,
   GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
     return (
       sales_url +
@@ -409,7 +409,10 @@ const URL = {
   },
 
   UPLOAD_ATTACHMENTS: () => {
-    return notificationServices_url + `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`;
+    return (
+      notificationServices_url +
+      `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`
+    );
   },
 
   GENERATE_OTP: () => {
@@ -428,9 +431,13 @@ const URL = {
   ORG_HIRARCHY: (orgId, empId) => {
     return orgnaizationHirarchy + `/v1/active-levels/${orgId}/${empId}`;
   },
-
+  ORG_HIRARCHY2: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+  },
   ORG_HIRARCHY_DEALDER_DESIGNATIONS: (orgId, empId) => {
-    return orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`;
+    return (
+      orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`
+    );
   },
 
   LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
@@ -549,7 +556,9 @@ const URL = {
     return orgnaizationHirarchy + `/getcrmchild/digital/${orgId}/${employeeId}`;
   },
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA_RECEP: (orgId, employeeId) => {
-    return orgnaizationHirarchy + `/getcrmchild/reception/${orgId}/${employeeId}`;
+    return (
+      orgnaizationHirarchy + `/getcrmchild/reception/${orgId}/${employeeId}`
+    );
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
@@ -736,11 +745,11 @@ const URL = {
     return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
   GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
-    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId + "/branchName/" + branchId;
+    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId;
   },
 
   GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
-  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId + "/branchName/" + branchId;
+  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId;
   },
 
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
@@ -820,12 +829,10 @@ const URL = {
     `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
   GET_LIVE_LEADS_SELF: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
-    
-  GET_LIVE_LEADS_SELF_RECEPTIONIST: () =>
-    `${dashboard}/receptionistLiveLeads`,
 
-  GET_LIVE_LEADS_MANAGERDATA: () =>
-    `${dashboard}/managerLiveLeads`,
+  GET_LIVE_LEADS_SELF_RECEPTIONIST: () => `${dashboard}/receptionistLiveLeads`,
+
+  GET_LIVE_LEADS_MANAGERDATA: () => `${dashboard}/managerLiveLeads`,
 
   GET_LIVE_LEADS_INSIGHTS: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
