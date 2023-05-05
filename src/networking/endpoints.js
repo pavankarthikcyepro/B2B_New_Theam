@@ -736,11 +736,11 @@ const URL = {
     return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
   GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
-    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId + "/branchName/" + branchId;
+    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId;
   },
 
   GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
-  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId + "/branchName/" + branchId;
+  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId;
   },
 
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
