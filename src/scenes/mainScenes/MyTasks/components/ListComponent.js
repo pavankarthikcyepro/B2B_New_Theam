@@ -72,6 +72,7 @@ const NoDataFound = () => {
 
 const taskNames = [
   "testdrive",
+  "retestdrive",
   "testdriveapproval",
   "homevisit",
   "enquiryfollowup",
@@ -258,6 +259,7 @@ const ListComponent = ({ route, navigation }) => {
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
+               
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
@@ -265,6 +267,7 @@ const ListComponent = ({ route, navigation }) => {
                       (item) => item.taskName === filteredData[i].taskName
                     );
                     if (index !== -1) {
+  
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
@@ -730,21 +733,62 @@ const ListComponent = ({ route, navigation }) => {
               (res) => {
                 const todaysData = res[0].payload?.rescheduledData[0];
                 let tempData = [...defaultData];
-                const filteredData = todaysData.tasksList.filter((element) => {
+                let filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
+                  console.log("manthan ",finalTaskName);
+                  if (finalTaskName === "testdrive"){
+                    // if (retestdrive === "retestdrive"){
+
+                    // }
+                  }
                   return taskNames.includes(finalTaskName);
                 });
+                // console.log("manthan dhdhd ", JSON.stringify(filteredData));
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
                     index = tempData.findIndex(
                       (item) => item.taskName === filteredData[i].taskName
                     );
+
+                    
                     if (index !== -1) {
                       tempData[index].taskCnt = filteredData[i].taskCnt;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
+// manthan new code 
+                    let index2 = -1;
+                    index2 = tempData.findIndex(
+                      (item) => item.taskName == "Test Drive");
+
+                    if (index2 !== -1) {
+
+                      if (filteredData[i].taskName == "testdrive") {
+                        // console.log("manthan dhdhd ", JSON.stringify(filteredData[i].taskName));
+                      }
+                      
+                      if (filteredData[i].taskName == "Re Test Drive") {
+                        
+                        tempData[index2].taskCnt = tempData[index2].taskCnt + filteredData[i].taskCnt;
+
+                        // console.log("manthan dhdhd ", JSON.stringify(tempData[index2].myTaskList));
+                        // let temp = JSON.parse(tempData[index2].myTaskList) ;
+                        let temp2 = Object.assign([], tempData[index2].myTaskList)
+                        // let temp1 = tempData[index2].myTaskList;
+                      
+                        // temp1 = [...temp1, filteredData[i].myTaskList];
+                        console.log("manthan dddss ", filteredData[i].myTaskList);
+
+                        let tes = filteredData[i].myTaskList
+
+                        // temp.push(filteredData[i].myTaskList);
+                        tempData[index2].myTaskList = Array.prototype.push.apply(temp2, tes) ;
+                      }
+                      console.log("manthan dhdhd 2 d ", JSON.stringify(tempData));
+                    }
+                    // manthan new code end
+
                     if (i === filteredData.length - 1) {
                       setMyTasksData(tempData);
                     }
@@ -1216,9 +1260,10 @@ const ListComponent = ({ route, navigation }) => {
 
   const itemClicked = (item) => {
     if (item.myTaskList.length > 0) {
-      navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
-        data: item.myTaskList,
-      });
+      console.log("manthan jjjjj ",JSON.stringify(item));
+      // navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+      //   data: item.myTaskList,
+      // });
     } else {
       showToast("No tasks available");
     }

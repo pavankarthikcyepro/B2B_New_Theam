@@ -192,6 +192,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
   const [storeLastupdatedTestDriveId, setStoreLastupdatedTestDriveId] = useState("");
   const [storeLastupdatedTestDriveDetails, setStoreLastupdatedTestDriveDetails] = useState([]);
+  const [isClosedClicked, setIsClosedClicked] =useState(false);
   let date = new Date();
   date.setDate(date.getDate() + 9);
 
@@ -580,6 +581,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       const currentDate = moment().add(0, "day").format(dateFormat)
       const temp ={...modifiedObj};
       // temp.taskStatus =  "APPROVED";
+      temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
       temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
       temp.taskCreatedTime = moment().valueOf();
@@ -594,10 +596,20 @@ const TestDriveScreen = ({ route, navigation }) => {
       delete temp.dmsProcess;
       delete temp.taskUpdatedBy;
 
+
+      if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+   
+         temp.taskStatus = isClosedClicked ? "CLOSED" :"RESCHEDULED";
+       
+        console.log("manthan temp ", temp);
+        reTestDrivePutCallWorkFlowHistory(temp, modifiedObj.taskId);
+      }else{
+        postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+      }
     
       // let newArr = modifiedObj
       // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
-      postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+      
       setIschangeScreen(true);
     }
   
@@ -1049,7 +1061,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       endTime: moment.utc(endTime).format(),
       testDriveDatetime: moment.utc(preferredTime).format(),
       testdriveId: 0,
-      status: "ASSIGNED",
+      status: "APPROVED",
       varientId: varientId,
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
@@ -1083,13 +1095,27 @@ const TestDriveScreen = ({ route, navigation }) => {
     // const payloadForsubmitApi = {
     //   appointment: appointmentObj,
     // };
-    dispatch(bookTestDriveAppointmentApi(payload));
+    if (storeLastupdatedTestDriveDetails?.reTestdriveFlag !== "ReTestDrive"){
+      dispatch(bookTestDriveAppointmentApi(payload));
+    }
+   
     if (status === "APPROVED") {
       dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     }
     if (status === "RESCHEDULED"){
+      console.log("manthan reschd ");
+      setIsClosedClicked(false);
       submitRescheduleRemarks()
-      // reTestDrivePutCallupdateList();
+
+      if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Test Drive"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+      }
     }
    
 
@@ -1097,6 +1123,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   };
 
   const closeTask = (from) => {
+    setIsClosedClicked(true);
     setIsSubmitPress(true);
     setIsisReopenSubmitVisible(false)
     if (selectedVehicleDetails.model.length === 0) {
@@ -1188,6 +1215,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       }
 
     }
+    reTestDrivePutCallupdateList("CLOSED");
     setIsCloseSelected(true);
   };
 
@@ -1266,6 +1294,40 @@ const TestDriveScreen = ({ route, navigation }) => {
   const displayStatusSuccessMessage = () => {
     Alert.alert(
       selector.test_drive_update_task_response,
+      taskStatusAndName.status,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            dispatch(clearState());
+            if (fromScreen == "taskThreeSixty") {
+              navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+                fromScreen: "testDrive",
+              });
+            } else {
+              navigation.popToTop();
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
+  useEffect(() => {
+    
+    if (selector.put_workflow_task_history == "success"){
+      displayStatusSuccessMessageRetestDrive();
+    }
+  
+   
+  }, [selector.put_workflow_task_history])
+  
+
+  const displayStatusSuccessMessageRetestDrive = () => {
+    Alert.alert(
+      "success",
       taskStatusAndName.status,
       [
         {
@@ -1705,66 +1767,59 @@ const TestDriveScreen = ({ route, navigation }) => {
   
   // }, [isCloseSelected, isReopenSubmitVisible, route?.params?.taskStatus])
   
-  const reTestDrivePutCallWorkFlowHistory = ()=>{
-    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
-    const startTime = moment(selector.actual_start_time, "HH:mm");
-    const endTime = moment(selector.actual_end_time, "HH:mm");
-    const location = addressType === 1 ? "showroom" : "customer";
-    let varientId = selectedVehicleDetails.varientId;
-    let vehicleId = selectedVehicleDetails.vehicleId;
+  const reTestDrivePutCallWorkFlowHistory = (payload,id)=>{
 
-    if (!varientId || !vehicleId) return;
+    // let payload = {
 
-    let payload = {
-
-      "customerRemarks": null,
-      "employeeRemarks": null,
-      "errorDetail": null,
-      "executionJob": "NULL",
-      "isError": null,
-      "isLastTask": false,
-      "isMandatoryTask": false,
-      "entityStatus": null,
-      "reason": null,
-      "repeatTask": null,
-      "taskActualEndTime": null,
-      "taskActualStartTime": 1682766855000,
-      "taskCreatedTime": "", // send the time at that moment
-      "taskExpectedEndTime": 1682939646000,
-      "taskExpectedStartTime": 1682939646000,
-      "taskName": "Test Drive",
-      "entityName": "Werewr Er",
-      "taskSequence": 4,
-      "taskStatus": "",  //By Reschedule ="Reschedule" ,close = "Closed" update the status
-      "taskType": "Manual",
-      "taskUpdatedTime": "", // send the time at that moment
-      "triggerType": "NULL",
-      "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
-      "isParallelTask": true,
-      "dmsProcess": 453914,
-      "assignee": 935,
-      "dmsTaskDef": 310,
-      "entityId": 56946,
-      "taskStageStatus": null,
-      "dmsTaskCategory": 82,
-      "entityModuleId": "9555",
-      "reTask": "Y",
-      "taskUpdatedBy": null,
-      "lat": null,
-      "lon": null,
-      "taskIdRef": 1617945,
-    }
+    //   "customerRemarks": null,
+    //   "employeeRemarks": null,
+    //   "errorDetail": null,
+    //   "executionJob": "NULL",
+    //   "isError": null,
+    //   "isLastTask": false,
+    //   "isMandatoryTask": false,
+    //   "entityStatus": null,
+    //   "reason": null,
+    //   "repeatTask": null,
+    //   "taskActualEndTime": null,
+    //   "taskActualStartTime": 1682766855000,
+    //   "taskCreatedTime": "", // send the time at that moment
+    //   "taskExpectedEndTime": 1682939646000,
+    //   "taskExpectedStartTime": 1682939646000,
+    //   "taskName": "Test Drive",
+    //   "entityName": "Werewr Er",
+    //   "taskSequence": 4,
+    //   "taskStatus": "",  //By Reschedule ="Reschedule" ,close = "Closed" update the status
+    //   "taskType": "Manual",
+    //   "taskUpdatedTime": "", // send the time at that moment
+    //   "triggerType": "NULL",
+    //   "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
+    //   "isParallelTask": true,
+    //   "dmsProcess": 453914,
+    //   "assignee": 935,
+    //   "dmsTaskDef": 310,
+    //   "entityId": 56946,
+    //   "taskStageStatus": null,
+    //   "dmsTaskCategory": 82,
+    //   "entityModuleId": "9555",
+    //   "reTask": "Y",
+    //   "taskUpdatedBy": null,
+    //   "lat": null,
+    //   "lon": null,
+    //   "taskIdRef": 1617945,
+    // }
 
 
     let masterPayload = {
       body: payload,
-      recordid: storeLastupdatedTestDriveId
+      recordid: id
     }
+    
     dispatch(putWorkFlowHistory(masterPayload)); // need to add recordid
 
   }
 
-  const reTestDrivePutCallupdateList = () => {
+  const reTestDrivePutCallupdateList = (status) => {
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1773,6 +1828,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     let vehicleId = selectedVehicleDetails.vehicleId;
     
     if (!varientId || !vehicleId) return;
+    let retestflag = storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" ? "ReTestDrive" : "Original";
 
     let payload = {
       "address": customerAddress,
@@ -1798,13 +1854,13 @@ const TestDriveScreen = ({ route, navigation }) => {
       "securityOutId": null,
       "source": "ShowroomWalkin",
       "startTime": moment(startTime).valueOf(),
-      "status": "RESCHEDULE",
+      "status": status,
       "testDriveDatetime": moment(preferredTime).valueOf(),
       "varientId": varientId,
       "vehicleId": vehicleId,
       "driverId": selectedDriverDetails.id.toString(),
       "testdriveId": 0,
-      "reTestdriveFlag": "ReTestDrive",
+      "reTestdriveFlag": retestflag,
       "customerHaveingDl": customerHavingDrivingLicense === 1
     }
     
@@ -1869,7 +1925,21 @@ const TestDriveScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.validate_otp_response_status === "successs") {
       dispatch(clearOTP());
-      submitClicked("CLOSED", "Test Drive");
+      if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive"){
+     
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Test Drive"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+      
+
+      }else{
+        submitClicked("CLOSED", "Test Drive");  
+      }
+      
     }
   }, [selector.validate_otp_response_status]);
 
@@ -2100,13 +2170,19 @@ const TestDriveScreen = ({ route, navigation }) => {
                   backgroundColor: Colors.RED,
                 }}
                 onPress={() => {
-                  if (selector.task_details_response.taskStatus === "APPROVED" || selector.task_details_response.taskStatus === "ASSIGNED"){
+                  // if (selector.task_details_response.taskStatus === "APPROVED" || selector.task_details_response.taskStatus === "ASSIGNED"){
                     // todo manthan
                     submitClicked("RESCHEDULED", "Test Drive") // API for reschdule existing flow
-                    
-                  }else{
+
+                  // }else{
+                    // if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+                      // setIsClosedClicked(false);
+                      // submitClicked("RESCHEDULED", "Test Drive")
+                  reTestDrivePutCallupdateList("RESCHEDULED");
+                    // }
+                    // console.log("manthan ddd ");
                     // submitRescheduleRemarks()
-                  }
+                  // }
                   
                   setIsRescheduleModalVisible(false)
                 }
@@ -2762,7 +2838,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           {route?.params?.taskStatus === "CLOSED" &&
             !isReopenSubmitVisible &&
             !isCloseSelected 
-            && storeLastupdatedTestDriveDetails?.reTestdriveFlag !=="ReTestDrive"
+            && storeLastupdatedTestDriveDetails?.reTestdriveFlag !== "ReTestDrive" 
              ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
                 <Button

@@ -52,7 +52,7 @@ const TestDriveHistory = ({ route, navigation }) => {
 
     const renderItem = ({ item, index }) => {
        
-        const date = moment(item.testDriveDatetime).format("DD/MM/YY h:mm a").split(" ");
+        const date = item.testDriveDatetime.split(" ");
         let topBcgColor = Colors.LIGHT_GRAY;
         let bottomBcgColor = Colors.LIGHT_GRAY;
         if (historyList[index - 1] !== undefined) {
@@ -104,7 +104,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                         <Text
                             style={styles.txt2}
                         >
-                            {date[1] + " " + date[2]}
+                            {date[1]}
 
                         </Text>
                     </View>
@@ -177,7 +177,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.fuel}
+                                        {item.fuelType}
                                     </Text>
 
                                 </View>  
@@ -190,7 +190,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.transmission}
+                                        {item.transmissionType}
                                     </Text>
 
                                 </View>  

@@ -219,8 +219,9 @@ export const getTestDriveHistoryDetails = createAsyncThunk("TEST_DRIVE_SLICE/get
 
 // call for close and reschdules in retestdrvie cases
 export const putWorkFlowHistory = createAsyncThunk("TEST_DRIVE_SLICE/putWorkFlowHistory", async (payload, { rejectWithValue }) => {
-
-  const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["id"]), payload["body"]);
+ 
+  
+  const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["recordid"]), payload["body"]);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -720,11 +721,11 @@ const testDriveSlice = createSlice({
 
     builder.addCase(putWorkFlowHistory.pending, (state, action) => {
       state.isLoading = true;
-      state.put_workflow_task_history = "";
+      state.put_workflow_task_history = "pending";
     })
     builder.addCase(putWorkFlowHistory.fulfilled, (state, action) => {
       if (action.payload) {
-        state.put_workflow_task_history = action.payload;
+        state.put_workflow_task_history = "success";
       }
       // else if (action.payload["reason"]) {
       //   showToastRedAlert(action.payload["reason"]);
@@ -737,7 +738,7 @@ const testDriveSlice = createSlice({
       //   showToastRedAlert(action.payload["reason"]);
       // }
       state.isLoading = false;
-      state.put_workflow_task_history = "";
+      state.put_workflow_task_history = "failed";
     })
   }
 });

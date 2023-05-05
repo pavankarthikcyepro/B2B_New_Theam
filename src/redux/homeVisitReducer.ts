@@ -174,6 +174,7 @@ const slice = createSlice({
         put_workflow_task_history: "",
         re_home_visitResubmit_response: "",
         get_workFlow_task_details: [],
+        actual_start_time_local: "",
     },
     reducers: {
         clearState: (state, action) => {
@@ -191,7 +192,8 @@ const slice = createSlice({
                 state.post_workFlow_task_details= "",
                 state.put_workflow_task_history = "",
                 state.re_home_visitResubmit_response ="",
-                state.get_workFlow_task_details= []
+                state.get_workFlow_task_details= [],
+                state.actual_start_time_local = ""
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -268,6 +270,10 @@ const slice = createSlice({
                     : "";
 
                 state.actual_start_time = convertTimeStampToDateString(
+                    startDate,
+                    "DD/MM/YYYY"
+                );
+                state.actual_start_time_local = convertTimeStampToDateString(
                     startDate,
                     "DD/MM/YYYY"
                 );

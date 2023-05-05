@@ -113,6 +113,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [manageUpdateBtn, setManageUpdateBtn] = useState(false);
   const [storeLastupdatedHomeVisitDetails, setStoreLastupdatedHomeVisitDetails] = useState([]);
   const [storeLastupdatedHomeVisitId, setStoreLastupdatedHomeVisitId] = useState([]);
+  const [isUpdateBtnVisible,setIsUpdateBtnVisible] = useState(true);
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
@@ -257,6 +258,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
           tempData = response[response.length - 1]
           setStoreLastupdatedHomeVisitDetails(tempData);
           setStoreLastupdatedHomeVisitId(tempData?.id);
+
+        
+          // if(tempData)
         }
       }
 
@@ -427,7 +431,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       "DD/MM/YYYY HH:mm"
     );
 
-    newTaskObj.taskActualNextFollowupTime = moment(nextFollowuptime).valueOf();
+    newTaskObj.nextFlowupTime = moment(nextFollowuptime).valueOf();
 
     if (actionType === "CLOSE_TASK") {
       newTaskObj.taskStatus = "CLOSED";
@@ -493,6 +497,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
        let branchId =   await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
             return branchId
         });
+        const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
+
       let payload = {
         "address": null,
         "reason": selector.reason === 'Others' ? otherReason : selector.reason,
@@ -512,17 +518,21 @@ const HomeVisitScreen = ({ route, navigation }) => {
         "customerId": selector.task_details_response?.universalId,
         "entityId": selector.task_details_response?.entityId,
         "reHomevisitFlag": fromWhere,
+        "nextFlowupTime": moment(nextFollowuptime).valueOf()
         // "reHomevisitFlag": "Original"
         // "reHomevisitFlag": "ReHomevisit"
       }
       dispatch(savehomevisit(payload));
-        let payloadForWorkFLow = {
-          entityId: selector.task_details_response.entityId,
-          taskName: "Home Visit"
+        if (fromWhere == "ReHomevisit"){
+          let payloadForWorkFLow = {
+            entityId: selector.task_details_response.entityId,
+            taskName: "Home Visit"
+          }
+          // reHomeVisitPutCallWorkFlowHistory()
+          // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
+          dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
         }
-        // reHomeVisitPutCallWorkFlowHistory()
-        // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
-        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+       
     }
   }
   const postWorkFlowTaskHistory = (payload) => {
@@ -735,6 +745,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   formatDate = convertToTime(selectedDate);
                 } else {
                   formatDate = convertToTime(selectedDate);
+                }
+              }
+              if (selector.datePickerKeyId == "ACTUAL_START_TIME"){
+                
+                if (compare(convertToDate(selectedDate), selector.actual_start_time)  == 0){
+                  setIsUpdateBtnVisible(true);
+                }else{
+                  setIsUpdateBtnVisible(false);
                 }
               }
               
@@ -1046,16 +1064,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
                     onPress={closeTask}
                     disabled={selector.is_loading_for_task_update}
                   />
-                  <LocalButtonComp
+                  {isUpdateBtnVisible ? <LocalButtonComp
                     title={"Update"}
                     onPress={updateTask}
                     disabled={selector.is_loading_for_task_update}
-                  />
-                  <LocalButtonComp
+                  /> : <LocalButtonComp
                     title={"Reschedule"}
                     onPress={rescheduleTask}
                     disabled={selector.is_loading_for_task_update}
-                  />
+                  /> }
+                 
+                
                 
                 </View>
 

@@ -175,7 +175,7 @@ const HomeVisitHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.fuel}
+                                        {item.fuelType}
                                     </Text>
 
                                 </View>  
@@ -188,7 +188,7 @@ const HomeVisitHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.transmission}
+                                        {item.transmissionType}
                                     </Text>
 
                                 </View>  
