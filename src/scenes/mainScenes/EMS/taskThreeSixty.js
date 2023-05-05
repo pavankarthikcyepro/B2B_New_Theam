@@ -278,7 +278,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
   const checkForEnqFollow = (item, section) => {
     if (
-      item.taskName.includes("Enquiry Follow Up") &&
+      item.taskName == "Enquiry Follow Up" &&
       section?.title == "Planned Tasks"
     ) {
       let formate = "DD/MM/YYYY hh:mm a";
@@ -347,14 +347,17 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     const date = moment(item.taskUpdatedTime)
       .format("DD/MM/YY h:mm a")
       .split(" ");
-
-    let radioColor =
+    const radioColor =
       item.taskStatus === "CLOSED" ? Colors.DARK_GREEN : Colors.LIGHT_GRAY2;
-
-    let isHoursVisible = checkForEnqFollow(item, section) >= 2;
+    const isHoursVisible = checkForEnqFollow(item, section) >= 2;
 
     return (
       <View style={styles.itemContainer}>
+        {section.data[index + 1] ? (
+          <View
+            style={[styles.progressColumn, { backgroundColor: radioColor }]}
+          />
+        ) : null}
         <View style={styles.radioContainer}>
           <View style={[styles.radioRound, { backgroundColor: radioColor }]} />
         </View>
@@ -368,7 +371,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
           {isHoursVisible ? (
             <View style={styles.itemTopRow}>
               <View style={styles.hourContainer}>
-                <Text style={styles.hourText}>{`>${checkForEnqFollow(item, section)}hrs`}</Text>
+                <Text style={styles.hourText}>{`>${checkForEnqFollow(
+                  item,
+                  section
+                )}hrs`}</Text>
               </View>
               <Text style={styles.dateTimeText}>
                 {date[0]} | {date[1] + " " + date[2]}
@@ -584,6 +590,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
+  progressColumn: {
+    height: "100%",
+    width: 5,
+    backgroundColor: Colors.LIGHT_GRAY2,
+    marginTop: 27,
+    position: "absolute",
+    marginHorizontal: 7
+  },
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -622,7 +636,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 3
+    marginBottom: 3,
   },
   hourContainer: {
     borderRadius: 10,

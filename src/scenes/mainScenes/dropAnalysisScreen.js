@@ -1072,10 +1072,8 @@ const DropAnalysisScreen = ({ route, navigation }) => {
     const liveLeadsEndDate = currentDate;
 
     return (
-
-            <SafeAreaView style={styles.container}>
-
-                {/* <DatePickerComponent
+      <SafeAreaView style={styles.container}>
+        {/* <DatePickerComponent
                     visible={showDatePicker}
                     mode={"date"}
                     value={new Date(Date.now())}
@@ -1092,7 +1090,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     onRequestClose={() => setShowDatePicker(false)}
                 /> */}
 
-                {/* <SortAndFilterComp
+        {/* <SortAndFilterComp
                     visible={sortAndFilterVisible}
                     categoryList={categoryList}
                     modelList={vehicleModelList}
@@ -1106,7 +1104,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     }}
                 /> */}
 
-                {/* <View style={styles.view1}>
+        {/* <View style={styles.view1}>
                     <View style={{ width: "100%" }}>
                         <DateRangeComp
                             fromDate={selectedFromDate}
@@ -1117,328 +1115,354 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     </View>
                 </View> */}
 
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          maximumDate={new Date(liveLeadsEndDate.toString())}
+          value={new Date()}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (Platform.OS === "android") {
+              if (selectedDate) {
+                updateSelectedDate(selectedDate, datePickerId);
+              }
+            } else {
+              updateSelectedDate(selectedDate, datePickerId);
+            }
+          }}
+          onRequestClose={() => setShowDatePicker(false)}
+        />
+        <View>
+          <SingleLeadSelectComp
+            isContactVisible={true}
+            visible={leadsFilterVisible}
+            modelList={leadsFilterData}
+            submitCallback={(x) => {
+              setLeadsSubMenuFilterDropDownText("All");
+              setLeadsFilterData([...x]);
+              setLeadsFilterVisible(false);
+              const data = x.filter((y) => y.checked);
+              if (data.length === 3) {
+                setLeadsFilterDropDownText("All");
+              } else {
+                const names = data.map((y) => y.menu);
+                getSubMenuList(names.toString());
+                setLeadsFilterDropDownText(names.toString());
+              }
+            }}
+            cancelClicked={() => {
+              setLeadsFilterVisible(false);
+            }}
+            selectAll={async () => {
+              setSubMenu([]);
+              getDropAnalysisWithFilterFromServer();
+              setLeadsFilterDropDownText("All");
+              setLeadsSubMenuFilterDropDownText("All");
+              let path = selector.dropStageMenus;
 
-          
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                maximumDate={new Date(liveLeadsEndDate.toString())}
-                value={new Date()}
-                onChange={(event, selectedDate) => {
+              const newArr = path.map((v) => ({ ...v, checked: false }));
+              setLeadsFilterData(newArr);
 
-                    setShowDatePicker(false);
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            updateSelectedDate(selectedDate, datePickerId);
-                        }
-                    } else {
-                        updateSelectedDate(selectedDate, datePickerId);
+              const dateFormat = "YYYY-MM-DD";
+              const currentDate = moment().add(0, "day").format(dateFormat);
+              const CurrentMonthFirstDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .startOf("month")
+                .format(dateFormat);
+              const currentMonthLastDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .endOf("month")
+                .format(dateFormat);
+              setFromDateState(CurrentMonthFirstDate);
+              setToDateState(currentMonthLastDate);
+            }}
+          />
+          <DropAnalysisSubFilterComp
+            visible={leadsSubMenuFilterVisible}
+            modelList={subMenu}
+            submitCallback={(x) => {
+              setSubMenu([...x]);
+              setTempFilterPayload(x);
+              setLeadsSubMenuFilterVisible(false);
+              const data = x.filter((y) => y.checked);
+
+              // if (data.length === subMenu.length) {
+              //     setLeadsSubMenuFilterDropDownText("All");
+              // } else {
+              let names = data.map((y) => y?.subMenu);
+              setLeadsSubMenuFilterDropDownText(
+                names.toString() ? names.toString() : "Select Sub Menu"
+              );
+              let tmpArr = [];
+              data.map((item) => tmpArr.push(item.leadStage));
+
+              getDropAnalysisWithFilterFromServerFilterApply(
+                selectedFromDate,
+                selectedToDate,
+                ...tmpArr,
+                null,
+                names.toString()
+              );
+              // }
+            }}
+            cancelClicked={() => {
+              setLeadsSubMenuFilterVisible(false);
+            }}
+            onChange={(x) => {}}
+          />
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.9}
+          style={styles.headerTitleContainer}
+          onPress={() => toggleParamsView(0)}
+        >
+          <Text
+            style={styles.headerTitleText}
+          >{`DROPPED ${droppedData.length}`}</Text>
+        </TouchableOpacity>
+
+        {/* date and other filters UI start*/}
+        <View style={styles.view1}>
+          <View style={{ width: "100%" }}>
+            <DateRangeComp
+              fromDate={selectedFromDate}
+              toDate={selectedToDate}
+              fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+              toDateClicked={() => showDatePickerMethod("TO_DATE")}
+            />
+          </View>
+          <View style={styles.fliterView}>
+            <View style={{ width: "49%" }}>
+              <Pressable
+                onPress={() => {
+                  setLeadsFilterVisible(true);
+                }}
+              >
+                <View
+                  style={{
+                    borderWidth: 0.5,
+                    borderColor: Colors.BORDER_COLOR,
+                    borderRadius: 4,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "65%",
+                      paddingHorizontal: 5,
+                      paddingVertical: 2,
+                      fontSize: 12,
+                      fontWeight: "600",
+                    }}
+                    numberOfLines={2}
+                  >
+                    {leadsFilterDropDownText}
+                  </Text>
+                  <IconButton
+                    icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
+                    size={20}
+                    color={Colors.BLACK}
+                    style={{ margin: 0, padding: 0 }}
+                  />
+                </View>
+              </Pressable>
+            </View>
+            <View
+              style={{
+                width: "49%",
+              }}
+            >
+              <Pressable
+                onPress={() => {
+                  setLeadsSubMenuFilterVisible(true);
+                }}
+              >
+                <View
+                  style={{
+                    borderWidth: 0.5,
+                    borderColor: Colors.BORDER_COLOR,
+                    borderRadius: 4,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "65%",
+                      paddingHorizontal: 5,
+                      paddingVertical: 2,
+                      fontSize: 12,
+                      fontWeight: "600",
+                    }}
+                    numberOfLines={2}
+                  >
+                    {leadsSubMenuFilterDropDownText}
+                  </Text>
+                  <IconButton
+                    icon={
+                      leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
                     }
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
-            <View>
-                <SingleLeadSelectComp
-                    isContactVisible={true}
-                    visible={leadsFilterVisible}
-                    modelList={leadsFilterData}
-                    submitCallback={(x) => {
-                        setLeadsSubMenuFilterDropDownText("All")
-                        setLeadsFilterData([...x]);
-                        setLeadsFilterVisible(false);
-                        const data = x.filter((y) => y.checked);
-                        if (data.length === 3) {
-                            setLeadsFilterDropDownText("All");
-                        } else {
-                            const names = data.map((y) => y.menu);
-                              getSubMenuList(names.toString());
-                            setLeadsFilterDropDownText(names.toString());
-                        }
+                    size={20}
+                    color={Colors.BLACK}
+                    style={{
+                      margin: 0,
+                      padding: 0,
                     }}
-                    cancelClicked={() => {
-                        setLeadsFilterVisible(false);
-                    }}
-                    selectAll={async () => {
-                        setSubMenu([]);
-                        getDropAnalysisWithFilterFromServer();
-                        setLeadsFilterDropDownText("All")
-                        setLeadsSubMenuFilterDropDownText("All");
-                        let path = selector.dropStageMenus;
+                  />
+                </View>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+        {/* date and other filters UI END*/}
 
-                        const newArr = path.map((v) => ({ ...v, checked: false }));
-                        setLeadsFilterData(newArr);
-
-                        const dateFormat = "YYYY-MM-DD";
-                        const currentDate = moment().add(0, "day").format(dateFormat)
-                        const CurrentMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                        const currentMonthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                        setFromDateState(CurrentMonthFirstDate);
-                        setToDateState(currentMonthLastDate);
+        {toggleParamsIndex === 0 && (
+          <>
+            {droppedData.length === 0 ? (
+              <EmptyListView
+                title={"No Data Found"}
+                isLoading={selector.isLoading}
+              />
+            ) : (
+              <View
+                style={[
+                  {
+                    backgroundColor: Colors.LIGHT_GRAY,
+                    flex: 1,
+                    marginBottom: 10,
+                    marginTop: 10,
+                  },
+                ]}
+              >
+                {isManager && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignSelf: "flex-end",
+                      marginTop: "2%",
                     }}
-                />
-                <DropAnalysisSubFilterComp
-                    visible={leadsSubMenuFilterVisible}
-                    modelList={subMenu}
-                    submitCallback={(x) => {
-                        setSubMenu([...x]);
-                        setTempFilterPayload(x);
-                        setLeadsSubMenuFilterVisible(false);
-                        const data = x.filter((y) => y.checked);
-                    
-                        // if (data.length === subMenu.length) {
-                        //     setLeadsSubMenuFilterDropDownText("All");
-                        // } else {
-                            let names = data.map((y) => y?.subMenu);
-                            setLeadsSubMenuFilterDropDownText(
-                                names.toString() ? names.toString() : "Select Sub Menu"
-                            );
-                            let tmpArr=[];
-                       data.map((item) => 
-                            tmpArr.push(item.leadStage)
+                  >
+                    <View style={styles.modal}>
+                      <TouchableOpacity
+                        style={styles.tochable}
+                        disabled={selectedItemIds.length > 0 ? false : true}
+                        onPress={() => updateBulkStatus("approve")}
+                      >
+                        <Text style={styles.text4}>{"APPROVE"}</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.tochable}
+                        disabled={selectedItemIds.length > 0 ? false : true}
+                        onPress={() => updateBulkStatus("reject")}
+                      >
+                        <Text style={styles.text4}>{"REJECT"}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+
+                <FlatList
+                  initialNumToRender={droppedData.length}
+                  data={droppedData}
+                  extraData={droppedData}
+                  keyExtractor={(item, index) => index.toString()}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={selector.isLoading}
+                      onRefresh={() =>
+                        getDropListFromServerV2(
+                          employeeId,
+                          employeeName,
+                          branchId,
+                          orgId,
+                          selectedFromDate,
+                          selectedToDate
                         )
-                        
-                        getDropAnalysisWithFilterFromServerFilterApply(selectedFromDate, selectedToDate, ...tmpArr, null, names.toString())
-                        // }
-                    }}
-                    cancelClicked={() => {
-                        setLeadsSubMenuFilterVisible(false);
-                    }}
-                    onChange={(x) => {
-
-                    }}
-                />
-            </View>
-          
-
-            <SegmentedControl
-                style={{
-                    marginHorizontal: 4,
-                    justifyContent: "center",
-                    alignSelf: "flex-end",
-                    height: 34,
-                    marginTop: 8,
-                    width: "100%",
-                    backgroundColor: "rgb(211,211,211,0.65)",
-                }}
-                // values={["ETVBRL", "Allied", "View All"]}
-                // values={['DROPPED ' + `${(droppedData.length)}`, 'REJECTED ' + `${(rejectedData.length)}`]}
-                values={['DROPPED ' + `${(droppedData.length)}`]}
-                selectedIndex={toggleParamsIndex}
-                tintColor={Colors.RED}
-                fontStyle={{ color: Colors.BLACK, fontSize: 10 }}
-                activeFontStyle={{ color: Colors.WHITE, fontSize: 10 }}
-                onChange={(event) => toggleParamsView(event)}
-            />
-            {/* date and other filters UI start*/}
-            <View style={styles.view1}>
-                <View style={{ width: "100%" }}>
-                    <DateRangeComp
-                        fromDate={selectedFromDate}
-                        toDate={selectedToDate}
-                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                      }
+                      progressViewOffset={200}
                     />
-                </View>
-                <View style={styles.fliterView}>
-                    <View style={{ width:'49%'}}>
-                        <Pressable
-                            onPress={() => {
-                                setLeadsFilterVisible(true);
-                            }}
-                        >
-                            <View
-                                style={{
-                                    borderWidth: 0.5,
-                                    borderColor: Colors.BORDER_COLOR,
-                                    borderRadius: 4,
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        width: "65%",
-                                        paddingHorizontal: 5,
-                                        paddingVertical: 2,
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                    }}
-                                    numberOfLines={2}
-                                >
-                                    {leadsFilterDropDownText}
-                                </Text>
-                                <IconButton
-                                    icon={leadsFilterVisible ? "chevron-up" : "chevron-down"}
-                                    size={20}
-                                    color={Colors.BLACK}
-                                    style={{ margin: 0, padding: 0 }}
-                                />
-                            </View>
-                        </Pressable>
-                    </View>
-                    <View
-                        style={{
-                            width: "49%",
-                        }}
-                    >
-                        <Pressable
-                            onPress={() => {
-                                setLeadsSubMenuFilterVisible(true);
-                            }}
-                        >
-                            <View
-                                style={{
-                                    borderWidth: 0.5,
-                                    borderColor: Colors.BORDER_COLOR,
-                                    borderRadius: 4,
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        width: "65%",
-                                        paddingHorizontal: 5,
-                                        paddingVertical: 2,
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                    }}
-                                    numberOfLines={2}
-                                >
-                                    {leadsSubMenuFilterDropDownText}
-                                </Text>
-                                <IconButton
-                                    icon={
-                                        leadsSubMenuFilterVisible ? "chevron-up" : "chevron-down"
-                                    }
-                                    size={20}
-                                    color={Colors.BLACK}
-                                    style={{
-                                        margin: 0,
-                                        padding: 0,
-                                    }}
-                                />
-                            </View>
-                        </Pressable>
-                    </View>
-                </View>
-            </View>
-            {/* date and other filters UI END*/}
-          
-            {toggleParamsIndex === 0 && <>
-                {droppedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
-                    <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10, marginTop: 10 }]}>
-                        {isManager &&
-                        <View style={{ flexDirection: "row", alignSelf: "flex-end", marginTop: '2%' }}>
-                        
-                           <View style={styles.modal}>
-                                <TouchableOpacity style={styles.tochable}
-                                    disabled={selectedItemIds.length > 0 ? false : true}
-                                    onPress={() => updateBulkStatus('approve')}>
-                                    <Text style={styles.text4}>{"APPROVE"}</Text>
-                                </TouchableOpacity>
+                  }
+                  showsVerticalScrollIndicator={false}
+                  onEndReachedThreshold={0}
+                  onEndReached={() => {
+                    if (appSelector.searchKey === "") {
+                      // getMoreEnquiryListFromServer()
+                    }
+                  }}
+                  ListFooterComponent={renderFooter}
+                  renderItem={({ item, index }) => {
+                    let color = Colors.WHITE;
+                    if (index % 2 != 0) {
+                      color = Colors.LIGHT_GRAY;
+                    }
+                    isCountAndFollowUpVisible(item.stage);
 
-                                <TouchableOpacity style={styles.tochable}
-                                    disabled={selectedItemIds.length > 0 ? false : true}
-                                    onPress={() => updateBulkStatus('reject')}>
-                                    <Text style={styles.text4}>{"REJECT"}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            
-                           
-                        </View>}
-                    
-                        <FlatList
-                            initialNumToRender={droppedData.length}
-                            data={droppedData}
-                            extraData={droppedData}
-                            keyExtractor={(item, index) => index.toString()}
-                            refreshControl={(
-                                <RefreshControl
-                                    refreshing={selector.isLoading}
-                                    onRefresh={() => getDropListFromServerV2(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)}
-                                    progressViewOffset={200}
-                                />
+                    return (
+                      <>
+                        <View>
+                          <DropAnalysisItem
+                            onItemSelected={onItemSelected}
+                            from="PRE_ENQUIRY"
+                            name={
+                              getFirstLetterUpperCase(item.firstName) +
+                              " " +
+                              getFirstLetterUpperCase(item.lastName)
+                            }
+                            enqCat={item.enquiryCategory}
+                            uniqueId={item.leadId}
+                            leadDropId={item.leadDropId}
+                            created={item.droppedDate}
+                            dmsLead={item.droppedby}
+                            source={item.enquirySource}
+                            lostReason={item.lostReason}
+                            status={item.status}
+                            leadStage={item.stage}
+                            isManager={isManager}
+                            dropStatus={item.status}
+                            mobileNo={item.mobileNumber}
+                            isCheckboxVisible={true}
+                            isRefresh={isRefresh}
+                            navigation={navigation}
+                            showBubble={true}
+                            showThreeDots={true}
+                            universalId={item.crmUniversalId}
+                            count={item.count}
+                            isThreeBtnClickable={isCountAndFollowUpVisible(
+                              item.stage
                             )}
-                            showsVerticalScrollIndicator={false}
-                            onEndReachedThreshold={0}
-                            onEndReached={() => {
-                                if (appSelector.searchKey === '') {
-                                    // getMoreEnquiryListFromServer()
-                                }
+                            leadStatus={item.leadStatus}
+                            dse={
+                              item.stage == "PREENQUIRY"
+                                ? item.createdBy
+                                : item.salesConsultant
+                            }
+                            onItemPressed={() => {
+                              navigation.navigate("BOOKING_FORM", {
+                                universalId: item.crmUniversalId,
+                                enqDetails: "",
+                                leadStatus: item.leadStatus,
+                                leadStage: item.stage,
+                                fromScreen: "DROP_ANALYSIS",
+                              });
                             }}
-                            ListFooterComponent={renderFooter}
-                            renderItem={({ item, index }) => {
-
-                                let color = Colors.WHITE;
-                                if (index % 2 != 0) {
-                                    color = Colors.LIGHT_GRAY;
-                                }
-                                isCountAndFollowUpVisible(item.stage);
-
-                                return (
-                                  <>
-                                    <View>
-                                      <DropAnalysisItem
-                                        onItemSelected={onItemSelected}
-                                        from="PRE_ENQUIRY"
-                                        name={
-                                          getFirstLetterUpperCase(
-                                            item.firstName
-                                          ) +
-                                          " " +
-                                          getFirstLetterUpperCase(item.lastName)
-                                        }
-                                        enqCat={item.enquiryCategory}
-                                        uniqueId={item.leadId}
-                                        leadDropId={item.leadDropId}
-                                        created={item.droppedDate}
-                                        dmsLead={item.droppedby}
-                                        source={item.enquirySource}
-                                        lostReason={item.lostReason}
-                                        status={item.status}
-                                        leadStage={item.stage}
-                                        isManager={isManager}
-                                        dropStatus={item.status}
-                                        mobileNo={item.mobileNumber}
-                                        isCheckboxVisible={true}
-                                        isRefresh={isRefresh}
-                                        navigation={navigation}
-                                        showBubble={true}
-                                        showThreeDots={true}
-                                        universalId={item.crmUniversalId}
-                                        count={item.count}
-                                        isThreeBtnClickable={isCountAndFollowUpVisible(
-                                          item.stage
-                                        )}
-                                        leadStatus={item.leadStatus}
-                                        dse={
-                                          item.stage == "PREENQUIRY"
-                                            ? item.createdBy
-                                            : item.salesConsultant
-                                        }
-                                        onItemPressed={()=>{
-                                            navigation.navigate("BOOKING_FORM", {
-                                                universalId: item.crmUniversalId,
-                                                enqDetails: "",
-                                                leadStatus: item.leadStatus,
-                                                leadStage: item.stage,
-                                                fromScreen: "DROP_ANALYSIS"
-                                            });
-                                        }}
-                                      />
-                                    </View>
-                                  </>
-                                );
-                            }}
-                        />
-                        {renderFooter()}
-                        {/* {isManager && renderApprovalUi()} */}
-                    </View>}
-            </> }
-            {/* {toggleParamsIndex === 1 && <>
+                          />
+                        </View>
+                      </>
+                    );
+                  }}
+                />
+                {renderFooter()}
+                {/* {isManager && renderApprovalUi()} */}
+              </View>
+            )}
+          </>
+        )}
+        {/* {toggleParamsIndex === 1 && <>
                 {rejectedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10,marginTop:10 }]}>
                         <FlatList
@@ -1509,7 +1533,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                     </View>}
             </>} */}
 
-                {/* {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+        {/* {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                         <FlatList
                             data={searchedData}
@@ -1565,8 +1589,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
                         {renderFooter()}
                         {isManager && renderApprovalUi()}
                     </View>} */}
-            </SafeAreaView>
-
+      </SafeAreaView>
     );
 };
 export default DropAnalysisScreen;
@@ -1575,6 +1598,21 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingBottom: 5,
         paddingHorizontal: 10,
+    },
+    headerTitleContainer: {
+        ...GlobalStyle.shadow,
+        backgroundColor: Colors.PINK,
+        width: "97%",
+        alignSelf: "center",
+        borderRadius: 5,
+        paddingVertical: 8,
+        alignItems: "center",
+        marginTop: 8
+    },
+    headerTitleText: {
+      fontWeight: "600",
+      color: Colors.WHITE,
+      fontSize: 13 
     },
     view1: {
         flexDirection: 'column',
