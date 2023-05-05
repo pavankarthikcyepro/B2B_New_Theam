@@ -275,7 +275,7 @@ PODS:
     - React-Core
   - react-native-maps (1.4.0):
     - React-Core
-  - react-native-netinfo (9.3.8):
+  - react-native-netinfo (9.3.9):
     - React-Core
   - react-native-orientation-locker (1.5.0):
     - React-Core
@@ -651,7 +651,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
   react-native-maps: 7135a33610202745d08fdf151ce6b0d01952a99c
-  react-native-netinfo: fbc23bc2fe217155d85f2f7e0644b1654df8029b
+  react-native-netinfo: 22c082970cbd99071a4e5aa7a612ac20d66b08f0
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
