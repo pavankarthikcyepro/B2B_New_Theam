@@ -2431,7 +2431,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           .fetch("GET", url, {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            // Authorization: "Bearer " + token,
           })
           .then((res) => {
             // setLoading(false);
@@ -2463,7 +2463,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           .fetch("GET", iOSUrl, {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            // Authorization: "Bearer " + token,
           })
           .then((res) => {
             // setLoading(false);
@@ -5113,11 +5113,18 @@ const BookingFormScreen = ({ route, navigation }) => {
                               }}
                             >
                               <View>
-                                <View style={styles.select_image_bck_vw}>
+                                <View style={{
+                                  minHeight: 50,
+                                  paddingLeft: 12,
+                                  backgroundColor: Colors.WHITE,
+                                  flexDirection:"row",
+                                  alignContent:"center",
+                                  alignItems:"center"
+                                }}>
                                   <ImageSelectItem
                                     name={"Attachment"}
-                                    // disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                                    disabled={false}
+                                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
+                                    // disabled={false}
                                     onPress={() =>{
                                       if (fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"){
                                         dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
@@ -5130,6 +5137,21 @@ const BookingFormScreen = ({ route, navigation }) => {
                                      
                                     }
                                   />
+                                  {uploadedAttachementsObj[index]?.url ?
+                                    <TouchableOpacity
+                                      style={styles.previewBtn}
+                                      onPress={() => {
+
+                                        if (uploadedAttachementsObj[index]?.url) {
+                                          setImagePath(uploadedAttachementsObj[index]?.url)
+                                        }
+
+                                      }}
+                                    >
+                                      <Text style={styles.previetxt}>Preview</Text>
+                                    </TouchableOpacity> : null}
+                                 
+                                    
                                 </View>
                            
                                 {uploadedAttachementsObj.length > 0 && uploadedAttachementsObj[index]?.fileName !== undefined ? (
@@ -5169,32 +5191,36 @@ const BookingFormScreen = ({ route, navigation }) => {
 
               </List.AccordionGroup>
               
-              {userData.hrmsRole.includes("DSE") || userData.hrmsRole.includes("Sales Consultant") && fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"  ?
-                <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
+              {userData.hrmsRole.includes("DSE") || userData.hrmsRole.includes("Sales Consultant")   ?
+              <>
+                  {fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ?
+                    <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
 
-                  {isCancleClicked ? <Button
-                    mode="contained"
-                    // style={{ flex: 1, marginRight: 10 }}
-                    style={{ flex: 1, marginRight: 10, }}
-                    color={Colors.GRAY}
-                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                    onPress={() => proceedToCancelBooking()}
-                  >
-                    Proceed To Cancellation
-                  </Button> : <Button
-                    mode="contained"
-                    // style={{ flex: 1, marginRight: 10 }}
-                    style={{ width: '30%', marginRight: 10, }}
-                    color={Colors.GRAY}
-                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                    onPress={() => { 
-                      setIsCancelClicked(true)
-                     }}
-                  >
-                    Cancel
-                  </Button>}
+                      {isCancleClicked ? <Button
+                        mode="contained"
+                        // style={{ flex: 1, marginRight: 10 }}
+                        style={{ flex: 1, marginRight: 10, }}
+                        color={Colors.GRAY}
+                        labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                        onPress={() => proceedToCancelBooking()}
+                      >
+                        Proceed To Cancellation
+                      </Button> : <Button
+                        mode="contained"
+                        // style={{ flex: 1, marginRight: 10 }}
+                        style={{ width: '30%', marginRight: 10, }}
+                        color={Colors.GRAY}
+                        labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                        onPress={() => {
+                          setIsCancelClicked(true)
+                        }}
+                      >
+                        Cancel
+                      </Button>}
 
-                </View>            
+                    </View> :null}
+                
+                </>          
              :null }
               
             </View>
@@ -5416,4 +5442,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.WHITE,
   },
+  previewBtn: {
+    width: "30%",
+    height: 20,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previetxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
 });

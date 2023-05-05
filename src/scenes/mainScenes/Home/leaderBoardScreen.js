@@ -234,12 +234,12 @@ export default function leaderBoardScreen(props) {
       setTimeout(() => {
         setTopRankList(top);
         setTop5RankList(top.slice(0, 5));
-      }, 2000);
+      }, 500);
 
       setTimeout(() => {
         setBottom5RankList([...bottom].reverse().slice(0, 5));
         setReverseBottomRankList([...bottom].reverse());
-      }, 2000);
+      }, 500);
     }
 
 
@@ -301,7 +301,7 @@ export default function leaderBoardScreen(props) {
       "size": 50,
       "startDate": startOfMonth,
       "orgId": jsonObj.orgId,
-      "branchId": deladerID ? deladerID[0] : branName,
+      "branchIds": deladerID ? deladerID : branName,
       "designationNames": loogedInid ? loogedInid: []
     };
     // alert(JSON.stringify(payload))
@@ -321,12 +321,12 @@ export default function leaderBoardScreen(props) {
     setTimeout(() => {
       setTopRankList(top);
       setTop5RankList(top.slice(0, 5));
-    }, 2000);
+    }, 500);
 
     setTimeout(() => {
       setBottom5RankList([...bottom].reverse().slice(0, 5));
       setReverseBottomRankList([...bottom].reverse());
-    }, 2000);
+    }, 500);
   }, []);
 
   const renderTableTopRow = () => {
