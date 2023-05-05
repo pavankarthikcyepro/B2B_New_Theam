@@ -957,7 +957,9 @@ const MainParamScreen = ({ route, navigation }) => {
         let payload = {
           branch: selectedBranch.value,
           // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
-          employeeId: selectedUser?.employeeId || selectedUser?.empId,
+          employeeId: !selector.isTeam
+            ? jsonObj.empId
+            : selectedUser?.employeeId || selectedUser?.empId,
           endDate: filterData?.toDate ? filterData?.toDate : selector.endDate,
           // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
           retailTarget: retail,
@@ -971,7 +973,6 @@ const MainParamScreen = ({ route, navigation }) => {
           loggedInEmpId: jsonObj.empId,
           recordId: selectedUser?.recordId || ownData?.id,
         };
-
         Promise.all([dispatch(editTargetMapping(payload))])
           .then((response) => {
             setSelectedUser(null);
