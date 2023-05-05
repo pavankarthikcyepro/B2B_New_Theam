@@ -98,25 +98,35 @@ const AttendanceFromSelf = ({
 
 
   useEffect(async () => {
-    if (selector.filter_drop_down_data) {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        setDropDownData(selector.filter_drop_down_data);
-        var vals = jsonObj.branchs.map(function (a) {
-          return a.branchName;
-        });
-        let branchs = selector.filter_drop_down_data[
-          "Dealer Code"
-        ]?.sublevels?.filter((i) => vals.includes(i.name) == true);
-        setDealerCodes(
-          selector.filter_drop_down_data["Dealer Code"]?.sublevels
-        );
-        setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
-      }
+    try {
+         if (selector.filter_drop_down_data) {
+           let employeeData = await AsyncStore.getData(
+             AsyncStore.Keys.LOGIN_EMPLOYEE
+           );
+           if (employeeData) {
+             const jsonObj = JSON.parse(employeeData);
+             const response = await client.get(
+               URL.ORG_HIRARCHY2(jsonObj.orgId, jsonObj.empId)
+             );
+             const json = await response.json();
+              if (json) {
+                 setDropDownData(json);
+                 var vals = jsonObj.branchs.map(function (a) {
+                   return a.branchName;
+                 });
+                 let branchs = json["Dealer Code"]?.sublevels?.filter(
+                   (i) => vals.includes(i.name) == true
+                 );
+                 setDealerCodes(json["Dealer Code"]?.sublevels);
+                 setLocation(json["Location"]?.sublevels);
+              }
+            
+           }
+         }
+    } catch (error) {
+      
     }
+ 
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
