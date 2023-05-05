@@ -101,12 +101,16 @@ const ListComponent = ({ route, navigation }) => {
     if (isFocused) {
       console.log("LLLL", route.params);
       if (route.params) {
+      
         if (route.params?.from) {
           dispatch(updateCurrentScreen(route.params.from));
         }
         if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
           setIndex(1);
           changeTab(1);
+        }
+        if (!route.params.isTeam){
+          setIndex(0);
         }
         initialTask(
           notificationSelector.myTaskAllFilter
@@ -123,7 +127,7 @@ const ListComponent = ({ route, navigation }) => {
         initialTask(selectedFilter);
       }
     }
-  }, [isFocused, selector.filterIds]);
+  }, [isFocused, selector.filterIds, route.params]);
 
   const defaultData = [
     {
@@ -925,8 +929,8 @@ const ListComponent = ({ route, navigation }) => {
             if (selectedFilterLocal !== "ALL") {
               payload = {
                 orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: true,
+                loggedInEmpId: route.params.selectedEmpId ? route.params.selectedEmpId : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : true,
                 dataType: "completedData",
                 startDate: startDate,
                 endDate: endDate,
@@ -937,8 +941,8 @@ const ListComponent = ({ route, navigation }) => {
             } else {
               payload = {
                 orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: true,
+                loggedInEmpId: route.params.selectedEmpId ? route.params.selectedEmpId : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : true,
                 dataType: "completedData",
                 ignoreDateFilter: true,
                 salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
@@ -972,30 +976,60 @@ const ListComponent = ({ route, navigation }) => {
               }
             );
           } else if (index === 1) {
-            let payload = {};
-            if (selectedFilterLocal !== "ALL") {
-              payload = {
-                orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: false,
-                dataType: "completedData",
-                startDate: route.params.from ? globalStartDate : startDate,
-                endDate: route.params.from ? globalEndDate : endDate,
-                ignoreDateFilter: false,
-                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
-                branchCodes: selector.filterIds?.dealerCodes || [],
-              };
-            } else {
-              payload = {
-                orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: false,
-                dataType: "completedData",
-                ignoreDateFilter: true,
-                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
-                branchCodes: selector.filterIds?.dealerCodes || [],
-              };
-            }
+            // if (homeSelector.isDSE){
+              let payload = {};
+              if (selectedFilterLocal !== "ALL") {
+                payload = {
+                  orgId: jsonObj.orgId,
+                  loggedInEmpId: route.params.selectedEmpId ? route.params.selectedEmpId : jsonObj.empId,
+                  onlyForEmp: route.params.isself ? route.params.isself : false,
+                  dataType: "completedData",
+                  startDate: route.params.from ? globalStartDate : startDate,
+                  endDate: route.params.from ? globalEndDate : endDate,
+                  ignoreDateFilter: false,
+                  salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                  branchCodes: selector.filterIds?.dealerCodes || [],
+                };
+              } else {
+                payload = {
+                  orgId: jsonObj.orgId,
+                  loggedInEmpId: route.params.selectedEmpId ? route.params.selectedEmpId : jsonObj.empId,
+                  onlyForEmp: route.params.isself ? route.params.isself : false,
+                  dataType: "completedData",
+                  ignoreDateFilter: true,
+                  salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                  branchCodes: selector.filterIds?.dealerCodes || [],
+                };
+              }
+            // }else{
+              // let payload = {};
+              // if (selectedFilterLocal !== "ALL") {
+      
+              //   payload = {
+              //     orgId: jsonObj.orgId,
+              //     loggedInEmpId: jsonObj.empId,
+              //     onlyForEmp:false,
+              //     dataType: "completedData",
+              //     startDate: route.params.from ? globalStartDate : startDate,
+              //     endDate: route.params.from ? globalEndDate : endDate,
+              //     ignoreDateFilter: false,
+              //     salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+              //     branchCodes: selector.filterIds?.dealerCodes || [],
+              //   };
+              // } else {
+              //   
+              //   payload = {
+              //     orgId: jsonObj.orgId,
+              //     loggedInEmpId:  jsonObj.empId,
+              //     onlyForEmp:  false,
+              //     dataType: "completedData",
+              //     ignoreDateFilter: true,
+              //     salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+              //     branchCodes: selector.filterIds?.dealerCodes || [],
+              //   };
+              // }
+            // }
+            
             Promise.all([dispatch(getCompletedTeamTasksListApi(payload))]).then(
               (res) => {
                 let tempArr = [];

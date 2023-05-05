@@ -43,6 +43,7 @@ import TextTicker from "react-native-text-ticker";
 import AnimLoaderComp from "../../../../components/AnimLoaderComp";
 import Lottie from "lottie-react-native";
 
+import _ from "lodash";
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 const color = [
@@ -566,6 +567,7 @@ const TargetScreen = ({ route }) => {
       ...allParameters[0],
       targetAchievements: selector.totalParameters,
     };
+    
     setAllParameters(allParameters);
   }, [selector.totalParameters]);
 
@@ -577,20 +579,41 @@ const TargetScreen = ({ route }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        let myParams;
         if (selector.all_emp_parameters_data.length > 0) {
-          let myParams = [
-            ...selector.all_emp_parameters_data.filter(
-              (item) => item.empId === jsonObj.empId
-            ),
-          ];
-          myParams[0] = {
-            ...myParams[0],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-            targetAchievements: selector.totalParameters,
-            tempTargetAchievements: myParams[0]?.targetAchievements,
-          };
-          setAllParameters(myParams);
+          if (!_.isEmpty(selector.filterIds?.empSelected)){
+            myParams = [
+              ...selector.all_emp_parameters_data.filter(
+                (item) => item.empId == selector.filterIds?.empSelected[0]
+              ),
+            ];
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: selector.totalParameters,
+              tempTargetAchievements: myParams[0]?.targetAchievements,
+            };
+          
+            setAllParameters(myParams);
+          }else{
+            myParams = [
+              ...selector.all_emp_parameters_data.filter(
+                (item) => item.empId === jsonObj.empId
+              ),
+            ];
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: selector.totalParameters,
+              tempTargetAchievements: myParams[0]?.targetAchievements,
+            };
+           
+            setAllParameters(myParams);
+          }
+         
+        
           // setMyParameters(myParams);
           // let tempParams = [
           //   ...selector.all_emp_parameters_data.filter(
@@ -628,7 +651,7 @@ const TargetScreen = ({ route }) => {
     } catch (error) {
       setIsLoading(false);
     }
-  }, [selector.all_emp_parameters_data]);
+  }, [selector.all_emp_parameters_data, selector.totalParameters]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -809,6 +832,97 @@ const TargetScreen = ({ route }) => {
       selectedEmpId: employeeIds,
     };
   };
+
+  useEffect(() => {
+    
+    // if (selector.filterIds?.empSelected[0]){
+    //   // getDataAfterFilter()
+    // }
+  }, [selector.filterIds])
+  
+
+
+  const getDataAfterFilter = async () => {
+
+    let employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment().format(dateFormat);
+      const monthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      const monthLastDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .endOf("month")
+        .format(dateFormat);
+      let payload = {
+        orgId: jsonObj.orgId,
+        selectedEmpId: selector.filterIds?.empSelected[0],
+        endDate: monthLastDate,
+        loggedInEmpId: jsonObj.empId,
+        empId: selector.filterIds?.empSelected[0],
+        startDate: monthFirstDate,
+        levelSelected: null,
+        pageNo: 0,
+        size: 100,
+      };
+      Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
+        async (res) => {
+          let tempRawData = [];
+          tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
+            (emp) => emp.empId == selector.filterIds?.empSelected[0]
+          );
+          if (tempRawData.length > 0) {
+            for (let i = 0; i < tempRawData.length; i++) {
+              (tempRawData[i].empName = tempRawData[i].empName),
+                (tempRawData[i] = {
+                  ...tempRawData[i],
+                  isOpenInner: false,
+                  branchName: getBranchName(tempRawData[i].branchId),
+                  employeeTargetAchievements: [],
+                  tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                  targetAchievements: tempRawData[i]?.targetAchievements
+                });
+              // if (i === tempRawData.length - 1) {
+              // localData[index].employeeTargetAchievements = tempRawData;
+              // let newIds = tempRawData.map((emp) => emp.empId);
+              // if (newIds.length >= 2 || true) {
+              //   for (let i = 0; i < newIds.length; i++) {
+              //     const element = newIds[i].toString();
+              //     let tempPayload = getTotalPayload(employeeData, element);
+              //     const response = await client.post(
+              //       URL.GET_LIVE_LEADS_INSIGHTS(),
+              //       tempPayload
+              //     );
+              //     const json = await response.json();
+              //     if (Array.isArray(json)) {
+              //       localData[index].employeeTargetAchievements[
+              //         i
+              //       ].targetAchievements = json;
+              //     }
+              //   }
+              // }
+              // }
+            }
+          }
+          // setFilterParameters([...tempRawData])
+          // alert(JSON.stringify(tempRawData))
+          // setAllParameters([...tempRawData]);
+        }
+      );
+
+      // if (localData[index].employeeTargetAchievements.length > 0) {
+      //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+      //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+      //   }
+      // }
+    }
+  }
+
 
   const onEmployeeNameClick = async (item, index, lastParameter) => {
     setTeamMember(item?.empName);
@@ -1051,9 +1165,55 @@ const TargetScreen = ({ route }) => {
                   >
                     <View>
                       <View key={"headers"} style={styles.view3}>
-                        <View
+                        {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
-                        ></View>
+                        ></View> */}
+                          {/* <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          >
+                            <Text style={{
+                              fontSize: 10,
+                              color: Colors.RED,
+                              fontWeight: "600",
+                              alignSelf: "center",
+                              textAlign: "center",
+
+                              // marginTop: 10
+                            }}>Employee</Text>
+
+                          </View> */}
+                          <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "flex-start", marginLeft: 10 }}
+                          >
+                            <View
+                              style={[
+                                styles.itemBox,
+                                {
+                                  width: 55,
+                                },
+                              ]}
+
+                            >
+                              <Text
+                                style={{
+                                  color: Colors.RED,
+                                  fontSize: 12,
+                                }}
+                              >
+                                Employee
+                              </Text>
+                            </View>
+                            {/* <Text style={{
+                            fontSize: 10,
+                            color: Colors.RED,
+                            fontWeight: "600",
+                            alignSelf: "center",
+                            textAlign: "center",
+                            height:30
+                            // marginTop: 10
+                          }}>Employee</Text> */}
+
+                          </View>
                         <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
@@ -1086,7 +1246,7 @@ const TargetScreen = ({ route }) => {
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
-                            console.log("item -> ", item);
+                            
                             return (
                               <View key={`${item.empName} ${index}`}>
                                 <View
@@ -1392,9 +1552,41 @@ const TargetScreen = ({ route }) => {
                   <View>
                     {/* TOP Header view */}
                     <View key={"headers"} style={styles.view3}>
-                      <View
+                      {/* <View
                         style={{ width: 100, height: 20, marginRight: 5 }}
-                      ></View>
+                      ></View> */}
+                        <View
+                          style={{ width: 100, height: 20, marginRight: 5, alignItems: "flex-start", marginLeft: 10 }}
+                        >
+                          <View
+                            style={[
+                              styles.itemBox,
+                              {
+                                width: 55,
+                              },
+                            ]}
+                         
+                          >
+                            <Text
+                              style={{
+                                color: Colors.RED,
+                                fontSize: 12,
+                              }}
+                            >
+                              Employee
+                            </Text>
+                          </View>
+                          {/* <Text style={{
+                            fontSize: 10,
+                            color: Colors.RED,
+                            fontWeight: "600",
+                            alignSelf: "center",
+                            textAlign: "center",
+                            height:30
+                            // marginTop: 10
+                          }}>Employee</Text> */}
+
+                        </View>
                       <View style={styles.view4}>
                         {toggleParamsMetaData.map((param) => {
                           return (
@@ -1493,11 +1685,9 @@ const TargetScreen = ({ route }) => {
                                           AppNavigator.HomeStackIdentifiers
                                             .sourceModel,
                                           {
-                                            empId: item.empId,
+                                            empId:  item.empId,
                                             headerTitle: item.empName,
-                                            loggedInEmpId:
-                                              selector.login_employee_details
-                                                .empId,
+                                            loggedInEmpId: selector.login_employee_details.empId,
                                             orgId:
                                               selector.login_employee_details
                                                 .orgId,
@@ -1505,6 +1695,21 @@ const TargetScreen = ({ route }) => {
                                             moduleType: "home",
                                           }
                                         );
+                                        // navigation.navigate(
+                                        //   AppNavigator.HomeStackIdentifiers
+                                        //     .sourceModel,
+                                        //   {
+                                        //     empId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : item.empId,
+                                        //     headerTitle: item.empName,
+                                        //     loggedInEmpId:
+                                        //       !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : item.empId,
+                                        //     orgId:
+                                        //       selector.login_employee_details
+                                        //         .orgId,
+                                        //     type: "TEAM",
+                                        //     moduleType: "home",
+                                        //   }
+                                        // );
                                       }}
                                       style={{
                                         transform: [
@@ -3491,6 +3696,7 @@ const TargetScreen = ({ route }) => {
                           type={togglePercentage}
                           navigation={navigation}
                           moduleType={"home"}
+                          userData = {userData}
                         />
                       </View>
                     </>

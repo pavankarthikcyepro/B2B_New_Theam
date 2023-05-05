@@ -10,7 +10,7 @@ import CREATE_NEW from '../../../assets/images/create_new.svg';
 
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
-import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
+import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData, getPreEnquiryDataLiveReceptionist, getPreEnquiryDataLiveReceptionistManager } from '../../../redux/preEnquiryReducer';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
@@ -24,11 +24,16 @@ import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { getLeadsList, getStatus } from '../../../redux/leaddropReducer';
 import { useIsFocused } from '@react-navigation/native';
 import AnimLoaderComp from '../../../components/AnimLoaderComp';
-
+import { getLiveleadsReceptinoist } from '../../../redux/enquiryReducer';
+import { EventRegister } from 'react-native-event-listeners';
+import _ from "lodash";
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").endOf('month').format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-
+const lastMonthLastDate = moment(currentDate, dateFormat)
+  .subtract(0, "months")
+  .endOf("month")
+  .format(dateFormat);
 const PreEnquiryScreen = ({ route, navigation }) => {
     const moduleType = route?.params?.moduleType ? route?.params?.moduleType : null;
     const selector = useSelector(state => state.preEnquiryReducer);
@@ -152,12 +157,18 @@ const PreEnquiryScreen = ({ route, navigation }) => {
           const { empId } = route.params.employeeDetail;
           employeeId = empId;
         }
+        let dashboardType = route?.params?.screenName
+        if (route && route.params && route.params.selectedEmpId !== "" && route.params.selectedEmpId !== undefined) {
+          employeeId = route.params.selectedEmpId
+        }
         // setEmployeeId(jsonObj.empId);
         // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
+       
         getPreEnquiryListFromServer(
           employeeId,
           lastMonthFirstDateLocal,
-          currentDateLocal
+          currentDateLocal,
+          dashboardType
         );
       }
     };
@@ -186,6 +197,11 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                 setToDateState(currentDate);
             }
             getDataFromDB()
+
+      if (route?.params?.screenName === "ParametersScreen"){
+        getLiveleadsContacts()
+      }
+          
           // });
 
         // return () => {
@@ -232,6 +248,21 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         }
     }, [appSelector.isSearch])
 
+
+  useEffect(() => {
+    EventRegister.addEventListener("EMSBOTTOMTAB_CLICKED", (res) => {
+      if (res) {
+        onRefreshBringData();
+      }
+    });
+
+    return () => {
+      EventRegister.removeEventListener();
+    };
+  }, [])
+
+    
+
     const getPreEnquiryListFromDB = () => {
         const data = realm.objects('PRE_ENQUIRY_TABLE');
         dispatch(setPreEnquiryList(JSON.stringify(data)));
@@ -249,9 +280,78 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         // }
     }
 
-    const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
-        const payload = getPayloadData(empId, startDate, endDate, 0);
+    const getPreEnquiryListFromServer = (empId, startDate, endDate,dashboardType = "") => {
+        const payload = getPayloadData(empId, startDate, endDate, 0,[],[],[],dashboardType);
+     
         dispatch(getPreEnquiryData(payload));
+    }
+
+    const getLiveleadsContacts = async ()=>{
+      const liveLeadsStartDate =
+        route?.params?.moduleType === "live-leadsV2"
+          ? "2021-01-01"
+          : lastMonthFirstDate;
+      const liveLeadsEndDate =
+        route?.params?.moduleType === "live-leadsV2"
+          ? moment().format(dateFormat)
+          : currentDate;
+
+      setFromDateState(liveLeadsStartDate);
+      setToDateState(liveLeadsEndDate);
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if(employeeData){
+        const jsonObj = JSON.parse(employeeData);
+
+        if (route.params.isCRMOwnDATA){
+          if (route.params.isgetCRMTotalData){
+            let payload = {
+              "loggedInEmpId": route?.params?.parentId,
+              "orgId": jsonObj.orgId,
+              "stageName": route?.params?.params,
+              "limit": 1000,
+              "offset": 0,
+              "self": route.params.isgetCRMTotalData
+            }
+
+            setTimeout(() => {
+              dispatch(getPreEnquiryDataLiveReceptionistManager(payload))
+            }, 2000);
+          }else{
+            let payload = {
+              "loggedInEmpId": route?.params?.parentId,
+              "orgId": jsonObj.orgId,
+              "stageName": route?.params?.params,
+              "limit": 1000,
+              "offset": 0,
+              "self": route.params.isgetCRMTotalData
+            }
+
+            setTimeout(() => {
+              dispatch(getPreEnquiryDataLiveReceptionistManager(payload))
+            }, 2000);
+          }
+         
+        }else{
+          let payload = {
+            "loginEmpId": route?.params?.parentId,
+            // "startDate": liveLeadsStartDate,
+            // "endDate": liveLeadsEndDate,
+            "orgId": jsonObj.orgId,
+            "branchList": route.params.dealerCodes,
+            "stageName": route?.params?.params,
+            "selectedEmpId": route?.params?.selectedEmpId,
+            "limit": 1000,
+            "offset": 0
+          }
+          setTimeout(() => {
+            dispatch(getPreEnquiryDataLiveReceptionist(payload))
+          }, 2000);
+        }
+       
+      }
+      
     }
 
     const onTempFliter = async (id, from, to, modelData, categoryFilters, sourceData, leadStage, leadStatus) => {
@@ -338,7 +438,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     }
 
 
-    const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+    const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = [],dashboardType = "") => {
         let payload = new Object();
         payload = {
             "startdate": startDate,
@@ -349,7 +449,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 50,
+          "limit": route?.params?.moduleType === "live-leads"? 50000 : 50,
+          "dashboardType": dashboardType
         }
         return payload;
     }
@@ -451,6 +552,24 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         dispatch(updateSearchKey(query));
         dispatch(updateIsSearch(true));
     };
+
+    const onRefreshBringData = async() =>{
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+      
+        getPreEnquiryListFromServer(
+          jsonObj.empId,
+          lastMonthFirstDate,
+          lastMonthLastDate
+        )
+        setFromDateState(lastMonthFirstDate);
+        setToDateState(lastMonthLastDate)
+      }
+      
+    }
 
     const renderItem=({item,index})=>{
       return (
@@ -577,7 +696,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               ]}
             >
               <FlatList
-                  initialNumToRender={searchedData.length}
+                initialNumToRender={searchedData.length}
                 data={searchedData}
                 extraData={searchedData}
                 keyExtractor={(item, index) => index.toString()}
@@ -586,11 +705,15 @@ const PreEnquiryScreen = ({ route, navigation }) => {
                     refreshing={selector.isLoading}
                     // onRefresh={() => onTempFliter(employeeId, selectedFromDate, selectedToDate, vehicleModelList, categoryList, sourceList)}
                     onRefresh={() =>
-                      getPreEnquiryListFromServer(
+                      {
+                        getPreEnquiryListFromServer(
                         employeeId,
-                        selectedFromDate,
-                        selectedToDate
+                        lastMonthFirstDate,
+                        lastMonthLastDate
                       )
+                      setFromDateState(lastMonthFirstDate);
+                      setToDateState(lastMonthLastDate)
+                    }
                     }
                     progressViewOffset={200}
                   />
