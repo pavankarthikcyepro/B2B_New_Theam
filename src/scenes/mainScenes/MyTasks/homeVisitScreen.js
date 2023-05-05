@@ -21,7 +21,8 @@ import {
   getHomeVisitAuditDetails,
   postDetailsWorkFlowTask,
   putWorkFlowHistory,
-  getDetailsWrokflowTask
+  getDetailsWrokflowTask,
+  getDetailsWrokflowTaskFormData
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -114,6 +115,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [storeLastupdatedHomeVisitDetails, setStoreLastupdatedHomeVisitDetails] = useState([]);
   const [storeLastupdatedHomeVisitId, setStoreLastupdatedHomeVisitId] = useState([]);
   const [isUpdateBtnVisible,setIsUpdateBtnVisible] = useState(true);
+  const [isClosedClicked, setIsClosedClicked] = useState(false);
+  const [userData, setUserData] = useState({
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+    isSelfManager: "",
+    isOtp: "",
+    isTracker: "",
+  });
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
@@ -190,8 +200,23 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const getAsyncStorageData = async () => {
     const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
+    const employeeData = await AsyncStorage.getData(
+      AsyncStorage.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData){
+      const jsonObj = JSON.parse(employeeData);
+      setUserData({
+        orgId: jsonObj.orgId,
+        employeeId: jsonObj.empId,
+        employeeName: jsonObj.empName,
+        isSelfManager: jsonObj.isSelfManager,
+        isOtp: jsonObj.isOtp,
+        isTracker: jsonObj.isTracker,
+      });
+    }
     if (employeeId) {
       setEmpId(employeeId);
+      
     }
   };
 
@@ -241,6 +266,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
           dispatch(getHomeVisitCounts(universalID))
           dispatch(getHomeVisitAuditDetails(universalID))
         }
+        // if (fromWhere == "ReHomevisit") {
+          let payloadForWorkFLow = {
+            entityId: selector.task_details_response.entityId,
+            taskName: "Home Visit"
+          }
+          // reHomeVisitPutCallWorkFlowHistory()
+          // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
+          dispatch(getDetailsWrokflowTaskFormData(payloadForWorkFLow)) //todo need to check and pass entityId
+        // }
       }
       
     }
@@ -294,7 +328,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
       temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
       temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
       temp.taskCreatedTime = moment().valueOf();
-      const value = temp.taskId;
+      // const value = temp.taskId;
+      const value = selector.get_workFlow_task_details[0].taskId;
       const valueassignee = temp.assignee;
       const valueProcessId = temp.dmsProcess;
       temp["assigneeId"] = valueassignee;
@@ -304,8 +339,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
       delete temp.assignee;
       delete temp.dmsProcess;
       delete temp.taskUpdatedBy;
-      // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
-      postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+
+
+      if (storeLastupdatedHomeVisitDetails?.reTestdriveFlag == "ReHomeVisit") {
+
+        temp.taskStatus = isClosedClicked ? "CLOSED" : "RESCHEDULED";
+
+        console.log("manthan temp ", temp);
+        reHomeVisitPutCallWorkFlowHistory(temp, modifiedObj.taskId);
+      } else {
+        postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+      }
+
+      // reTestDrivePutCafllWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      // need to call after we get response for getDetailsWrokflowTask
       setIschangeScreen(true);
     }
 
@@ -321,6 +368,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   }
 
   const updateTask = () => {
+    homeVisitPutCallupdateList("RESCHEDULE");
     changeStatusForTask("UPDATE_TASK");
   };
 
@@ -328,6 +376,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     changeStatusForTask("SUBMIT_TASK");
   };
   const closeTask = () => {
+    setIsClosedClicked(true);
     setIsSubmitPress(true)
     if (selector.reason.length === 0) {
       showToast("Please Select Reason");
@@ -343,13 +392,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
       showToast("Please Enter employee remarks");
       return;
     }
-
+    homeVisitPutCallupdateList("CLOSED");
     generateOtpToCloseTask();
     setIsCloseSelected(true)
   };
 
   const rescheduleTask = () => {
+    homeVisitPutCallupdateList("RESCHEDULE");
     changeStatusForTask("RESCHEDULE");
+    setIsClosedClicked(false);
   };
 
   const cancelTask = () => {
@@ -498,7 +549,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
             return branchId
         });
         const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
-
+        const dateFormat = "DD/MM/YYYY";
+        const currentDate = moment().add(0, "day").format(dateFormat)
       let payload = {
         "address": null,
         "reason": selector.reason === 'Others' ? otherReason : selector.reason,
@@ -514,7 +566,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
         "actualEndTime": convertDateStringToMillisecondsUsingMoment(
           selector.actual_end_time
         ),
-        "status": "Assigned",
+        // "status": "Assigned",
+        "status": compare(selector.actual_start_time, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
         "customerId": selector.task_details_response?.universalId,
         "entityId": selector.task_details_response?.entityId,
         "reHomevisitFlag": fromWhere,
@@ -578,62 +631,53 @@ const HomeVisitScreen = ({ route, navigation }) => {
     dispatch(postDetailsWorkFlowTask(payload))
   }
   
-  const reHomeVisitPutCallWorkFlowHistory = () => {
-    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
-    const startTime = moment(selector.actual_start_time, "HH:mm");
-    const endTime = moment(selector.actual_end_time, "HH:mm");
-    const location = addressType === 1 ? "showroom" : "customer";
-    let varientId = selectedVehicleDetails.varientId;
-    let vehicleId = selectedVehicleDetails.vehicleId;
-
-    if (!varientId || !vehicleId) return;
-
-    let payload = {
-
-      "customerRemarks": null,
-      "employeeRemarks": null,
-      "errorDetail": null,
-      "executionJob": "NULL",
-      "isError": null,
-      "isLastTask": false,
-      "isMandatoryTask": false,
-      "entityStatus": null,
-      "reason": null,
-      "repeatTask": null,
-      "taskActualEndTime": null,
-      "taskActualStartTime": 1682766855000,
-      "taskCreatedTime": "", // send the time at that moment
-      "taskExpectedEndTime": 1682939646000,
-      "taskExpectedStartTime": 1682939646000,
-      "taskName": "Home Visit",
-      "entityName": "Werewr Er",
-      "taskSequence": 4,
-      "taskStatus": "",   //By Reschedule ="Reschedule" ,close = "Closed" update the status
-      "taskType": "Manual",
-      "taskUpdatedTime": "", // send the time at that moment
-      "triggerType": "NULL",
-      "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
-      "isParallelTask": true,
-      "dmsProcess": 453914,
-      "assignee": 935,
-      "dmsTaskDef": 310,
-      "entityId": 56946,
-      "taskStageStatus": null,
-      "dmsTaskCategory": 82,
-      "entityModuleId": "9555",
-      "reTask": "Y",
-      "taskUpdatedBy": null,
-      "lat": null,
-      "lon": null,
-      "taskIdRef": 1617945,
-    }
-
+  const reHomeVisitPutCallWorkFlowHistory = (payload,id) => {
+   
 
     let masterPayload = {
       body: payload,
       recordid: storeLastupdatedTestDriveId
     }
     dispatch(putWorkFlowHistory(masterPayload)); // need to add recordid
+
+  }
+
+  const homeVisitPutCallupdateList = async(status) => {
+    // const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+    // const startTime = moment(selector.actual_start_time, "HH:mm");
+    // const endTime = moment(selector.actual_end_time, "HH:mm");
+    // const location = addressType === 1 ? "showroom" : "customer";
+    // let varientId = selectedVehicleDetails.varientId;
+    // let vehicleId = selectedVehicleDetails.vehicleId;
+
+    // if (!varientId || !vehicleId) return;
+    let retestflag = storeLastupdatedHomeVisitDetails?.reTestdriveFlag == "ReHomeVisit" ? "ReHomevisit" : "Original";
+    let branchId = await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+      return branchId
+    });
+    let payload = {
+      "address": customerAddress,
+      "reason": selector.reason === 'Others' ? otherReason : selector.reason,
+      "location": addressType === 1 ? "showroom" : "customer",
+      "orgId": userData.orgId,
+      "branchId": branchId,
+      "customerRemarks": selector.customer_remarks,
+      "employeeRemarks": selector.employee_remarks,
+      "actualStartTime": convertDateStringToMillisecondsUsingMoment(selector.actual_start_time),
+      "actualEndTime":"",
+      "nextFlowupTime": convertDateStringToMillisecondsUsingMoment(selector.next_follow_up_Time) ,
+      "status": status,
+      "customerId": selector.task_details_response?.universalId,
+      "entityId": selector.task_details_response.entityId,
+      "reHomevisitFlag": retestflag,
+    }
+
+
+    let masterPayload = {
+      body: payload,
+      recordid: storeLastupdatedHomeVisitId
+    }
+    dispatch(updateListHV(masterPayload)); // need to add recordid
 
   }
 
@@ -1117,7 +1161,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
           </View>
         ) : null}
 
-        {route?.params?.taskStatus === "CLOSED" && storeLastupdatedHomeVisitDetails?.reHomevisitFlag !== "ReHomevisit"
+        {route?.params?.taskStatus === "CLOSED" &&
+         storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ||
+          storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "Original" 
+          && storeLastupdatedHomeVisitDetails?.status == "CLOSED"
          ? <>
           <View style={styles.view1}>
             

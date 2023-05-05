@@ -75,6 +75,7 @@ const taskNames = [
   "retestdrive",
   "testdriveapproval",
   "homevisit",
+  "rehomevisit",
   "enquiryfollowup",
   "preenquiryfollowup",
   "prebookingfollowup",
@@ -153,12 +154,22 @@ const ListComponent = ({ route, navigation }) => {
     },
     {
       taskCnt: 0,
+      taskName: "Re Test Drive",
+      myTaskList: [],
+    },
+    {
+      taskCnt: 0,
       taskName: "Test Drive Approval",
       myTaskList: [],
     },
     {
       taskCnt: 0,
       taskName: "Home Visit",
+      myTaskList: [],
+    },
+    {
+      taskCnt: 0,
+      taskName: "Re Home Visit",
       myTaskList: [],
     },
     {
@@ -758,35 +769,35 @@ const ListComponent = ({ route, navigation }) => {
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
 // manthan new code 
-                    let index2 = -1;
-                    index2 = tempData.findIndex(
-                      (item) => item.taskName == "Test Drive");
+                    // let index2 = -1;
+                    // index2 = tempData.findIndex(
+                    //   (item) => item.taskName == "Test Drive");
 
-                    if (index2 !== -1) {
+                    // if (index2 !== -1) {
 
-                      if (filteredData[i].taskName == "testdrive") {
-                        // console.log("manthan dhdhd ", JSON.stringify(filteredData[i].taskName));
-                      }
+                    //   if (filteredData[i].taskName == "testdrive") {
+                    //     // console.log("manthan dhdhd ", JSON.stringify(filteredData[i].taskName));
+                    //   }
                       
-                      if (filteredData[i].taskName == "Re Test Drive") {
+                    //   if (filteredData[i].taskName == "Re Test Drive") {
                         
-                        tempData[index2].taskCnt = tempData[index2].taskCnt + filteredData[i].taskCnt;
+                    //     tempData[index2].taskCnt = tempData[index2].taskCnt + filteredData[i].taskCnt;
 
-                        // console.log("manthan dhdhd ", JSON.stringify(tempData[index2].myTaskList));
-                        // let temp = JSON.parse(tempData[index2].myTaskList) ;
-                        let temp2 = Object.assign([], tempData[index2].myTaskList)
-                        // let temp1 = tempData[index2].myTaskList;
+                    //     // console.log("manthan dhdhd ", JSON.stringify(tempData[index2].myTaskList));
+                    //     // let temp = JSON.parse(tempData[index2].myTaskList) ;
+                    //     let temp2 = Object.assign([], tempData[index2].myTaskList)
+                    //     // let temp1 = tempData[index2].myTaskList;
                       
-                        // temp1 = [...temp1, filteredData[i].myTaskList];
-                        console.log("manthan dddss ", filteredData[i].myTaskList);
+                    //     // temp1 = [...temp1, filteredData[i].myTaskList];
+                    //     console.log("manthan dddss ", filteredData[i].myTaskList);
 
-                        let tes = filteredData[i].myTaskList
+                    //     let tes = filteredData[i].myTaskList
 
-                        // temp.push(filteredData[i].myTaskList);
-                        tempData[index2].myTaskList = Array.prototype.push.apply(temp2, tes) ;
-                      }
-                      console.log("manthan dhdhd 2 d ", JSON.stringify(tempData));
-                    }
+                    //     // temp.push(filteredData[i].myTaskList);
+                    //     tempData[index2].myTaskList = Array.prototype.push.apply(temp2, tes) ;
+                    //   }
+                    //   console.log("manthan dhdhd 2 d ", JSON.stringify(tempData));
+                    // }
                     // manthan new code end
 
                     if (i === filteredData.length - 1) {
@@ -1260,10 +1271,10 @@ const ListComponent = ({ route, navigation }) => {
 
   const itemClicked = (item) => {
     if (item.myTaskList.length > 0) {
-      console.log("manthan jjjjj ",JSON.stringify(item));
-      // navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
-      //   data: item.myTaskList,
-      // });
+      
+      navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+        data: item.myTaskList,
+      });
     } else {
       showToast("No tasks available");
     }

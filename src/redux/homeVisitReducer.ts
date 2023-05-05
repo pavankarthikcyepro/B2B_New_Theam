@@ -123,6 +123,17 @@ export const getDetailsWrokflowTask = createAsyncThunk("HOME_VISIT_SLICE/getDeta
     return json;
 })
 
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTaskFormData = createAsyncThunk("HOME_VISIT_SLICE/getDetailsWrokflowTaskFormData", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const postDetailsWorkFlowTask = createAsyncThunk("HOME_VISIT_SLICE/postDetailsWorkFlowTask", async (payload, { rejectWithValue }) => {
 
     const response = await client.post(URL.POST_WORKFLOW_TASKS(), payload);
@@ -175,6 +186,7 @@ const slice = createSlice({
         re_home_visitResubmit_response: "",
         get_workFlow_task_details: [],
         actual_start_time_local: "",
+        get_workFlow_task_details_FormData: [],
     },
     reducers: {
         clearState: (state, action) => {
@@ -193,7 +205,8 @@ const slice = createSlice({
                 state.put_workflow_task_history = "",
                 state.re_home_visitResubmit_response ="",
                 state.get_workFlow_task_details= [],
-                state.actual_start_time_local = ""
+                state.actual_start_time_local = "",
+                state.get_workFlow_task_details_FormData = []
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -526,6 +539,24 @@ const slice = createSlice({
         builder.addCase(getDetailsWrokflowTask.rejected, (state, action) => {
             state.isLoading = false;
             state.get_workFlow_task_details = [];
+        })
+
+        // home visit 
+        builder.addCase(getDetailsWrokflowTaskFormData.pending, (state, action) => {
+            state.isLoading = true;
+            state.get_workFlow_task_details_FormData = []
+
+        })
+        builder.addCase(getDetailsWrokflowTaskFormData.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.get_workFlow_task_details_FormData = action.payload;
+            }
+
+        })
+        builder.addCase(getDetailsWrokflowTaskFormData.rejected, (state, action) => {
+            state.isLoading = false;
+            state.get_workFlow_task_details_FormData = [];
         })
     }
 });

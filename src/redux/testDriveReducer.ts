@@ -162,6 +162,29 @@ export const getDetailsWrokflowTask = createAsyncThunk("TEST_DRIVE_SLICE/getDeta
   return json;
 })
 
+
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTaskReTestDrive = createAsyncThunk("TEST_DRIVE_SLICE/getDetailsWrokflowTaskReTestDrive", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTaskForFormData = createAsyncThunk("TEST_DRIVE_SLICE/getDetailsWrokflowTaskForFormData", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const postDetailsWorkFlowTask = createAsyncThunk("TEST_DRIVE_SLICE/postDetailsWorkFlowTask", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.POST_WORKFLOW_TASKS(), payload);
@@ -265,6 +288,8 @@ const testDriveSlice = createSlice({
     get_workFlow_task_details:[],
     post_workFlow_task_details: "",
     put_workflow_task_history :"",
+    get_workFlow_task_details_Form_data: [],
+    get_workFlow_task_details_reTestDrive:[]
   },
   reducers: {
     clearState: (state, action) => {
@@ -296,6 +321,8 @@ const testDriveSlice = createSlice({
       state.get_workFlow_task_details = [];
       state.post_workFlow_task_details = "";
       state.put_workflow_task_history = "";
+      state.get_workFlow_task_details_Form_data = [];
+      state.get_workFlow_task_details_reTestDrive = []
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -695,6 +722,54 @@ const testDriveSlice = createSlice({
       state.isLoading = false;
       state.get_workFlow_task_details = [];
     })
+
+    builder.addCase(getDetailsWrokflowTaskReTestDrive.pending, (state, action) => {
+      state.isLoading = true;
+      state.get_workFlow_task_details_reTestDrive = [];
+    })
+    builder.addCase(getDetailsWrokflowTaskReTestDrive.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.get_workFlow_task_details_reTestDrive = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getDetailsWrokflowTaskReTestDrive.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.get_workFlow_task_details_reTestDrive = [];
+    })
+
+
+    builder.addCase(getDetailsWrokflowTaskForFormData.pending, (state, action) => {
+      state.isLoading = true;
+      state.get_workFlow_task_details_Form_data = [];
+    })
+    builder.addCase(getDetailsWrokflowTaskForFormData.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.get_workFlow_task_details_Form_data = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+
+    builder.addCase(getDetailsWrokflowTaskForFormData.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.get_workFlow_task_details_Form_data = [];
+    })
+
+
 
     builder.addCase(postDetailsWorkFlowTask.pending, (state, action) => {
       state.isLoading = true;

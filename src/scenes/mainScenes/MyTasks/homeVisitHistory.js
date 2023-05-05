@@ -30,7 +30,7 @@ const HomeVisitHistory = ({ route, navigation }) => {
     }, [selector.home_visit_History_listing])
 
 
-    function TaskNameView() {
+    function TaskNameView(item) {
 
         return (
             <Text
@@ -42,8 +42,8 @@ const HomeVisitHistory = ({ route, navigation }) => {
                     margin:5
                 }}
             >
-                Test drive
-
+                {/* Test drive */}
+                {item.reTestdriveFlag == "ReHomeVisit" ? "Re Home Visit" : "Home Visit"}
             </Text>
         );
     }
@@ -135,7 +135,7 @@ const HomeVisitHistory = ({ route, navigation }) => {
                                     justifyContent: "space-between",
                                 }}
                             >
-                                {TaskNameView()}
+                                {TaskNameView(item)}
 
                             </View>
 

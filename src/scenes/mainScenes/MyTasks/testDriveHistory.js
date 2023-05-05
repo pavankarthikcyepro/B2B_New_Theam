@@ -32,7 +32,7 @@ const TestDriveHistory = ({ route, navigation }) => {
     }, [selector.test_drive_history_details_statu])
 
 
-    function TaskNameView() {
+    function TaskNameView(item) {
 
         return (
             <Text
@@ -44,8 +44,8 @@ const TestDriveHistory = ({ route, navigation }) => {
                     margin:5
                 }}
             >
-                Test drive
-
+                
+                {item.reTestdriveFlag == "ReTestDrive" ? "Re Test drive" : "Test drive"}
             </Text>
         );
     }
@@ -137,7 +137,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     justifyContent: "space-between",
                                 }}
                             >
-                                {TaskNameView()}
+                                {TaskNameView(item)}
 
                             </View>
 
