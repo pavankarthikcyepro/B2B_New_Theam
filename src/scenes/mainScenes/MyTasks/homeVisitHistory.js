@@ -43,8 +43,8 @@ const HomeVisitHistory = ({ route, navigation }) => {
                 }}
             >
                 {/* Test drive */}
-                {item.reTestdriveFlag == "ReHomeVisit" ? "Re Home Visit" : "Home Visit"}
-            </Text>
+                {item.reHomevisitFlag == "ReHomevisit" ? "Re Home Visit" : "Home Visit"}
+            </Text> 
         );
     }
 

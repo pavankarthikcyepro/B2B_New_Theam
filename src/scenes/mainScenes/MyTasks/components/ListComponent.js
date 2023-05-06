@@ -747,15 +747,10 @@ const ListComponent = ({ route, navigation }) => {
                 let filteredData = todaysData.tasksList.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
-                  console.log("manthan ",finalTaskName);
-                  if (finalTaskName === "testdrive"){
-                    // if (retestdrive === "retestdrive"){
-
-                    // }
-                  }
+                  
                   return taskNames.includes(finalTaskName);
                 });
-                // console.log("manthan dhdhd ", JSON.stringify(filteredData));
+                
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
@@ -776,27 +771,27 @@ const ListComponent = ({ route, navigation }) => {
                     // if (index2 !== -1) {
 
                     //   if (filteredData[i].taskName == "testdrive") {
-                    //     // console.log("manthan dhdhd ", JSON.stringify(filteredData[i].taskName));
+                    //    
                     //   }
                       
                     //   if (filteredData[i].taskName == "Re Test Drive") {
                         
                     //     tempData[index2].taskCnt = tempData[index2].taskCnt + filteredData[i].taskCnt;
 
-                    //     // console.log("manthan dhdhd ", JSON.stringify(tempData[index2].myTaskList));
+                    //     
                     //     // let temp = JSON.parse(tempData[index2].myTaskList) ;
                     //     let temp2 = Object.assign([], tempData[index2].myTaskList)
                     //     // let temp1 = tempData[index2].myTaskList;
                       
                     //     // temp1 = [...temp1, filteredData[i].myTaskList];
-                    //     console.log("manthan dddss ", filteredData[i].myTaskList);
+                    //    
 
                     //     let tes = filteredData[i].myTaskList
 
                     //     // temp.push(filteredData[i].myTaskList);
                     //     tempData[index2].myTaskList = Array.prototype.push.apply(temp2, tes) ;
                     //   }
-                    //   console.log("manthan dhdhd 2 d ", JSON.stringify(tempData));
+                    
                     // }
                     // manthan new code end
 

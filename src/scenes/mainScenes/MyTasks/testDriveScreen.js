@@ -247,7 +247,7 @@ const TestDriveScreen = ({ route, navigation }) => {
          // api to get task details 
             // dispatch(getTaskDetailsApi(taskId))
         if (!_.isEmpty(tempData)) {
-          console.log("manthan jjjd ",);
+          
           if (tempData.reTestdriveFlag == "ReTestDrive"){
             
               // let payloadForWorkFLow = {
@@ -618,7 +618,7 @@ const TestDriveScreen = ({ route, navigation }) => {
    
          temp.taskStatus = isClosedClicked ? "CLOSED" :"RESCHEDULED";
        
-        console.log("manthan temp ", temp);
+        
         reTestDrivePutCallWorkFlowHistory(temp, modifiedObj.taskId);
       }else{
         postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
@@ -662,7 +662,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
       //   temp.taskStatus = isClosedClicked ? "CLOSED" : "RESCHEDULED";
 
-      //   console.log("manthan temp ", temp);
+      
       //   reTestDrivePutCallWorkFlowHistory(temp, modifiedObj.taskId);
       // } else {
         postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
@@ -1190,7 +1190,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     }
     if (status === "RESCHEDULED"){
-      console.log("manthan reschd ");
+      
       setIsClosedClicked(false);
       submitRescheduleRemarks()
 
@@ -2290,7 +2290,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                       // submitClicked("RESCHEDULED", "Test Drive")
                   reTestDrivePutCallupdateList("RESCHEDULED");
                     // }
-                    // console.log("manthan ddd ");
+                  
                     // submitRescheduleRemarks()
                   // }
                   
@@ -2949,7 +2949,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             !isReopenSubmitVisible &&
             !isCloseSelected 
             && storeLastupdatedTestDriveDetails?.status == "CLOSED" 
-            && storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" || storeLastupdatedTestDriveDetails?.reTestdriveFlag == "Original" 
+            // && storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" || storeLastupdatedTestDriveDetails?.reTestdriveFlag == "Original" 
            
              ? (
             <View style={[styles.view1, { marginTop: 30 }]}>

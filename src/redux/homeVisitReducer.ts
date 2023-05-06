@@ -82,7 +82,7 @@ export const getHomeVisitCounts = createAsyncThunk("HOME_VISIT_SLICE/getHomeVisi
 // put home visit For update and reschedule
 export const updateListHV = createAsyncThunk("HOME_VISIT_SLICE/updateListHV", async (payload, { rejectWithValue }) => {
 
-    const response = await client.put(URL.UPDATELIST_HOME_VISIT(), payload);
+    const response = await client.put(URL.UPDATELIST_HOME_VISIT(payload["recordid"]), payload["body"]);
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -112,7 +112,7 @@ export const putworkFlowUpdateHomeVisit = createAsyncThunk("HOME_VISIT_SLICE/put
 })
 
 
-// call on click of retestdrive added to get entry of same task in today and closed 
+// call on click of homevist added to get entry of same task in today and closed 
 export const getDetailsWrokflowTask = createAsyncThunk("HOME_VISIT_SLICE/getDetailsWrokflowTask", async (payload, { rejectWithValue }) => {
 
     const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
@@ -122,6 +122,19 @@ export const getDetailsWrokflowTask = createAsyncThunk("HOME_VISIT_SLICE/getDeta
     }
     return json;
 })
+
+
+// call on click of home visit added to get entry of same task in today and closed 
+export const getDetailsWrokflowTaskReHomeVisitDrive = createAsyncThunk("HOME_VISIT_SLICE/getDetailsWrokflowTaskReHomeVisitDrive", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 
 // call on click of retestdrive added to get entry of same task in today and closed 
 export const getDetailsWrokflowTaskFormData = createAsyncThunk("HOME_VISIT_SLICE/getDetailsWrokflowTaskFormData", async (payload, { rejectWithValue }) => {
@@ -147,7 +160,7 @@ export const postDetailsWorkFlowTask = createAsyncThunk("HOME_VISIT_SLICE/postDe
 // call for close and reschdules in rehome visit cases
 export const putWorkFlowHistory = createAsyncThunk("HOME_VISIT_SLICE/putWorkFlowHistory", async (payload, { rejectWithValue }) => {
 
-    const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["id"]), payload["body"]);
+    const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["recordid"]), payload["body"]);
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -187,6 +200,7 @@ const slice = createSlice({
         get_workFlow_task_details: [],
         actual_start_time_local: "",
         get_workFlow_task_details_FormData: [],
+        get_workFlow_task_details_Re_home_visit:[]
     },
     reducers: {
         clearState: (state, action) => {
@@ -206,7 +220,8 @@ const slice = createSlice({
                 state.re_home_visitResubmit_response ="",
                 state.get_workFlow_task_details= [],
                 state.actual_start_time_local = "",
-                state.get_workFlow_task_details_FormData = []
+                state.get_workFlow_task_details_FormData = [],
+                state.get_workFlow_task_details_Re_home_visit = []
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -262,6 +277,24 @@ const slice = createSlice({
             }
             state.showDatepicker = !state.showDatepicker;
         },
+
+        updateSelectedDateFormServerRes: (state, action: PayloadAction<CustomerDetailModel>) => {
+            const { key, text } = action.payload;
+           
+            switch (key) {
+                case "ACTUAL_START_TIME":
+                    state.actual_start_time = text;
+
+                    break;
+                case "ACTUAL_END_TIME":
+                    state.actual_end_time = text;
+                    break;
+                case "NEEXT_FOLLOWUP_TIME":
+                    state.next_follow_up_Time = text;
+                    break;
+            }
+            
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getTaskDetailsApi.pending, (state, action) => {
@@ -298,8 +331,8 @@ const slice = createSlice({
                     "DD/MM/YYYY"
                 );
 
-                const nextFollowuptime = taskObj.taskActualNextFollowupTime
-                    ? taskObj.taskActualNextFollowupTime
+                const nextFollowuptime = taskObj?.nextFlowupTime
+                    ? taskObj?.nextFlowupTime
                     : "";
 
 
@@ -558,6 +591,25 @@ const slice = createSlice({
             state.isLoading = false;
             state.get_workFlow_task_details_FormData = [];
         })
+
+
+        // home visit 
+        builder.addCase(getDetailsWrokflowTaskReHomeVisitDrive.pending, (state, action) => {
+            state.isLoading = true;
+            state.get_workFlow_task_details_Re_home_visit = []
+
+        })
+        builder.addCase(getDetailsWrokflowTaskReHomeVisitDrive.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                state.get_workFlow_task_details_Re_home_visit = action.payload;
+            }
+
+        })
+        builder.addCase(getDetailsWrokflowTaskReHomeVisitDrive.rejected, (state, action) => {
+            state.isLoading = false;
+            state.get_workFlow_task_details_Re_home_visit = [];
+        })
     }
 });
 
@@ -565,6 +617,6 @@ export const {
     clearState,
     setHomeVisitDetails,
     setDatePicker,
-    updateSelectedDate
+    updateSelectedDate, updateSelectedDateFormServerRes
 } = slice.actions;
 export default slice.reducer;

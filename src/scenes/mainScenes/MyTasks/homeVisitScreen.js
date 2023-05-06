@@ -22,7 +22,10 @@ import {
   postDetailsWorkFlowTask,
   putWorkFlowHistory,
   getDetailsWrokflowTask,
-  getDetailsWrokflowTaskFormData
+  getDetailsWrokflowTaskFormData,
+  getDetailsWrokflowTaskReHomeVisitDrive,
+  updateListHV,
+  updateSelectedDateFormServerRes
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -113,7 +116,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [isScreenChange,setIschangeScreen] =useState(false);
   const [manageUpdateBtn, setManageUpdateBtn] = useState(false);
   const [storeLastupdatedHomeVisitDetails, setStoreLastupdatedHomeVisitDetails] = useState([]);
-  const [storeLastupdatedHomeVisitId, setStoreLastupdatedHomeVisitId] = useState([]);
+  const [storeLastupdatedHomeVisitId, setStoreLastupdatedHomeVisitId] = useState("");
   const [isUpdateBtnVisible,setIsUpdateBtnVisible] = useState(true);
   const [isClosedClicked, setIsClosedClicked] = useState(false);
   const [userData, setUserData] = useState({
@@ -132,7 +135,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener('focus', () => {
       getCurrentLocation()
-      getReasonListData(reasonTaskName)
+      getReasonListData("Home Visit")
     })
     navigation.addListener("blur", () => {
       dispatch(clearState());
@@ -287,14 +290,42 @@ const HomeVisitScreen = ({ route, navigation }) => {
       if (!_.isEmpty(selector.home_visit_History_listing)) {
         let response = selector.home_visit_History_listing;
         let tempData;
-
+        
         if (response.length > 0) {
           tempData = response[response.length - 1]
           setStoreLastupdatedHomeVisitDetails(tempData);
           setStoreLastupdatedHomeVisitId(tempData?.id);
-
-        
-          // if(tempData)
+          
+        // todo set form data 
+          if (!_.isEmpty(tempData)) {
+            //
+            if (tempData.location == "showroom"){
+              setAddressType(1)
+            }else{
+              setAddressType(2);
+              setCustomerAddress(tempData?.address);
+            }
+            dispatch(
+              setHomeVisitDetails({ key: "REASON", text: tempData.reason })
+            );
+            dispatch(
+              setHomeVisitDetails({ key: "CUSTOMER_REMARKS", text: tempData.customerRemarks })
+            )
+            dispatch(
+              setHomeVisitDetails({ key: "EMPLOYEE_REMARKS", text: tempData.employeeRemarks })
+            )
+            
+            dispatch(updateSelectedDateFormServerRes({
+              key: "ACTUAL_START_TIME", text: convertTimeStampToDateString(
+                tempData?.actualStartTime,
+                "DD/MM/YYYY"
+              ) }));
+            if (tempData?.nextFlowupTime) {
+              dispatch(updateSelectedDateFormServerRes({
+                key: "NEEXT_FOLLOWUP_TIME", text: convertToTime(tempData?.nextFlowupTime)
+              }));
+            }
+          }
         }
       }
 
@@ -325,7 +356,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
       // temp.taskUpdatedTime = moment().valueOf();
       // temp.taskCreatedTime = moment().valueOf();
       // let newArr = modifiedObj
-      temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
+      temp.taskName = "Re Home Visit";
+      temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED";
       temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
@@ -341,11 +373,11 @@ const HomeVisitScreen = ({ route, navigation }) => {
       delete temp.taskUpdatedBy;
 
 
-      if (storeLastupdatedHomeVisitDetails?.reTestdriveFlag == "ReHomeVisit") {
+      if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit") {
 
         temp.taskStatus = isClosedClicked ? "CLOSED" : "RESCHEDULED";
 
-        console.log("manthan temp ", temp);
+        
         reHomeVisitPutCallWorkFlowHistory(temp, modifiedObj.taskId);
       } else {
         postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
@@ -359,6 +391,53 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   }, [selector.get_workFlow_task_details])
 
+  useEffect(() => {
+
+    if (!_.isEmpty(selector.get_workFlow_task_details_Re_home_visit)) {
+      let modifiedObj = selector.get_workFlow_task_details_Re_home_visit[selector.get_workFlow_task_details_Re_home_visit.length - 1];
+
+      const temp = { ...modifiedObj };
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+      // temp.taskStatus = "Approved";
+      // temp.taskUpdatedTime = moment().valueOf();
+      // temp.taskCreatedTime = moment().valueOf();
+      // let newArr = modifiedObj
+      temp.taskName = "Re Home Visit";
+      temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED";
+      temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
+      temp.taskCreatedTime = moment().valueOf();
+      // const value = temp.taskId;
+      const value = selector.get_workFlow_task_details_Re_home_visit[0].taskId;
+      const valueassignee = temp.assignee;
+      const valueProcessId = temp.dmsProcess;
+      temp["assigneeId"] = valueassignee;
+      temp["processId"] = valueProcessId;
+      temp["taskIdRef"] = value;
+      delete temp.taskId;
+      delete temp.assignee;
+      delete temp.dmsProcess;
+      delete temp.taskUpdatedBy;
+
+
+      // if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomeVisit") {
+
+      //   temp.taskStatus = isClosedClicked ? "CLOSED" : "RESCHEDULED";
+
+
+      //   reHomeVisitPutCallWorkFlowHistory(temp, modifiedObj.taskId);
+      // } else {
+        postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+      // }
+
+      // reTestDrivePutCafllWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      // need to call after we get response for getDetailsWrokflowTask
+      setIschangeScreen(true);
+    }
+
+
+  }, [selector.get_workFlow_task_details_Re_home_visit])
+
   function compare(dateTimeA, dateTimeB) {
     var momentA = moment(dateTimeA, "DD/MM/YYYY");
     var momentB = moment(dateTimeB, "DD/MM/YYYY");
@@ -368,7 +447,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   }
 
   const updateTask = () => {
-    homeVisitPutCallupdateList("RESCHEDULE");
+    homeVisitPutCallupdateList("IN_PROGRESS");
     changeStatusForTask("UPDATE_TASK");
   };
 
@@ -393,7 +472,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
     homeVisitPutCallupdateList("CLOSED");
-    generateOtpToCloseTask();
+    if (userData.isOtp === "Y"){
+      generateOtpToCloseTask();
+    }else{
+      changeStatusForTask("CLOSE_TASK");
+    }
+    
     setIsCloseSelected(true)
   };
 
@@ -457,10 +541,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
 
     // let temp = moment(`${updateTime} ${selector.next_follow_up_Time}`, "DD/MM/YYYY");
-    // console.log("manthan obj ", convertDateStringToMillisecondsUsingMoment(
-    //   temp,
-    //   "DD/MM/YYYY HH:mm"
-    // ));
+   
 
     // newTaskObj.taskUpdatedTime = updateTime
     // let updateTimeDate = moment(defaultDate).format("YYYY-MM-DD");
@@ -483,18 +564,45 @@ const HomeVisitScreen = ({ route, navigation }) => {
     );
 
     newTaskObj.nextFlowupTime = moment(nextFollowuptime).valueOf();
-
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
     if (actionType === "CLOSE_TASK") {
       newTaskObj.taskStatus = "CLOSED";
+
+      if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit") {
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Re Home Visit"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+        // setIschangeScreen(true)
+
+      }
+
     }
     if (actionType === "CANCEL") {
       newTaskObj.taskStatus = "CANCELLED";
     }
     if (actionType === "SUBMIT_TASK"){
-      newTaskObj.taskStatus = "IN_PROGRESS";
+      
+      newTaskObj.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED";
     }
     if (actionType === "UPDATE_TASK") {
-      newTaskObj.taskStatus = "IN_PROGRESS";
+      newTaskObj.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED";
+
+      if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit") {
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Re Home Visit"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+        // setIschangeScreen(true)
+
+      }
     }
     if (actionType === "RESCHEDULE") {
       var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
@@ -505,8 +613,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
         return;
       }
       newTaskObj.taskStatus = "RESCHEDULED";
+
+      if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit") {
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Re Home Visit"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+        // setIschangeScreen(true)
+
+      }
     }
-    console.log("manthan hhh ",newTaskObj);
+  
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
@@ -552,9 +672,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
         const dateFormat = "DD/MM/YYYY";
         const currentDate = moment().add(0, "day").format(dateFormat)
       let payload = {
-        "address": null,
+        "address": customerAddress,
         "reason": selector.reason === 'Others' ? otherReason : selector.reason,
-        "location": "",
+        "location": addressType === 1 ? "showroom" : "customer",
         "orgId": jsonObj.orgId,
         "branchId": branchId,
         "customerRemarks": selector.customer_remarks,
@@ -567,7 +687,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
           selector.actual_end_time
         ),
         // "status": "Assigned",
-        "status": compare(selector.actual_start_time, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        "status": compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED",
         "customerId": selector.task_details_response?.universalId,
         "entityId": selector.task_details_response?.entityId,
         "reHomevisitFlag": fromWhere,
@@ -577,13 +697,26 @@ const HomeVisitScreen = ({ route, navigation }) => {
       }
       dispatch(savehomevisit(payload));
         if (fromWhere == "ReHomevisit"){
-          let payloadForWorkFLow = {
-            entityId: selector.task_details_response.entityId,
-            taskName: "Home Visit"
+          if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit") {
+            let payloadForWorkFLow = {
+              entityId: selector.task_details_response.entityId,
+              taskName: "Re Home Visit"
+            }
+            // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+            // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+            dispatch(getDetailsWrokflowTaskReHomeVisitDrive(payloadForWorkFLow)) //todo need to check and pass entityId
+            // setIschangeScreen(true)
+
+          }else{
+            let payloadForWorkFLow = {
+              entityId: selector.task_details_response.entityId,
+              taskName: "Home Visit"
+            }
+            // reHomeVisitPutCallWorkFlowHistory()
+            // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
+            dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
           }
-          // reHomeVisitPutCallWorkFlowHistory()
-          // postWorkFlowTaskHistory() // need to call after we get response for getDetailsWrokflowTask
-          dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+         
         }
        
     }
@@ -636,7 +769,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
     let masterPayload = {
       body: payload,
-      recordid: storeLastupdatedTestDriveId
+      recordid: id
     }
     dispatch(putWorkFlowHistory(masterPayload)); // need to add recordid
 
@@ -651,7 +784,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     // let vehicleId = selectedVehicleDetails.vehicleId;
 
     // if (!varientId || !vehicleId) return;
-    let retestflag = storeLastupdatedHomeVisitDetails?.reTestdriveFlag == "ReHomeVisit" ? "ReHomevisit" : "Original";
+    let retestflag = storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ? "ReHomevisit" : "Original";
     let branchId = await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
       return branchId
     });
@@ -1162,9 +1295,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
         ) : null}
 
         {route?.params?.taskStatus === "CLOSED" &&
-         storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ||
-          storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "Original" 
-          && storeLastupdatedHomeVisitDetails?.status == "CLOSED"
+          // storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ||
+          // storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "Original" &&
+           storeLastupdatedHomeVisitDetails?.status == "CLOSED"
          ? <>
           <View style={styles.view1}>
             
