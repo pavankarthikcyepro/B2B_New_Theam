@@ -62,14 +62,36 @@ const VariantDetailScreen = ({ route, navigation }) => {
         let payload = {
           orgId: jsonObj?.orgId.toString(),
           model: item?.headerTitle,
-          branchName: item?.branchName,
+          // branchName: item?.branchName,
         };
+        if (jsonObj.hrmsRole === "Admin") {
+          let newPayload = {
+            stockyardBranchName: item?.branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        } else {
+          let newPayload = {
+            branchName: item?.branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
             minAge: selector.agingFrom,
-            branchName: selector.dealerCode.name,
+            // branchName: selector.dealerCode.name,
           };
+          if (jsonObj.hrmsRole === "Admin") {
+            let newPayload = {
+              stockyardBranchName: selector.dealerCode.name,
+            };
+            payload = { ...payload, ...newPayload };
+          } else {
+            let newPayload = {
+              branchName: selector.dealerCode.name,
+            };
+            payload = { ...payload, ...newPayload };
+          }
           payload = { ...payload, ...data };
         }
         const response = await client.post(

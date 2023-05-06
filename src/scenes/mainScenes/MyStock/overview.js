@@ -76,7 +76,17 @@ const OverviewScreen = ({ route, navigation }) => {
             branchName: branchName,
           };
           payload = { ...payload, ...newPayload };
-        }
+        } 
+        if (jsonObj.hrmsRole === "Admin") {
+          const branchName = jsonObj.branchs.filter(
+            (item) => item.branchId === jsonObj.branchId
+          )[0].branchName;
+
+          let newPayload = {
+            stockyardBranchName: branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        } 
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
@@ -93,9 +103,9 @@ const OverviewScreen = ({ route, navigation }) => {
             };
             payload = { ...payload, ...data2 };
           }
-
           payload = { ...payload, ...data };
         }
+        
         const response = await client.post(URL.GET_INVENTORY(), payload);
         const json = await response.json();
         if (json) {

@@ -82,12 +82,34 @@ const AvailableScreen = ({ route, navigation }) => {
           orgId: jsonObj.orgId.toString(),
           branchName: branchName,
         };
+        if (jsonObj.hrmsRole === "Admin") {
+          let newPayload = {
+            stockyardBranchName: branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        } else {
+          let newPayload = {
+            branchName: branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
             minAge: selector.agingFrom,
-            branchName: selector.dealerCode.name,
+            // branchName: selector.dealerCode.name,
           };
+          if (jsonObj.hrmsRole === "Admin") {
+            let newPayload = {
+              stockyardBranchName: selector.dealerCode.name,
+            };
+            payload = { ...payload, ...newPayload };
+          } else {
+            let newPayload = {
+              branchName: selector.dealerCode.name,
+            };
+            payload = { ...payload, ...newPayload };
+          }
           payload = { ...payload, ...data };
         }
         const response = await client.post(

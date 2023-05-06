@@ -72,18 +72,50 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           };
           payload = { ...payload, ...newPayload };
         }
+        if (jsonObj.hrmsRole === "Admin") {
+          const branchName = jsonObj.branchs.filter(
+            (item) => item.branchId === jsonObj.branchId
+          )[0].branchName;
+
+          let newPayload = {
+            stockyardBranchName: branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
             minAge: selector.agingFrom,
-            branchName: selector.dealerCode.name,
           };
+          if (jsonObj.hrmsRole === "Admin") {
+            let newPayload = {
+              stockyardBranchName: selector.dealerCode.name,
+            };
+            payload = { ...payload, ...newPayload };
+          } else {
+            let newPayload = {
+              branchName: selector.dealerCode.name,
+            };
+            payload = { ...payload, ...newPayload };
+          }
           payload = { ...payload, ...data };
         } else {
-          let data = {
-            locationName: location,
-          };
-          payload = { ...payload, ...data };
+
+          if (jsonObj.hrmsRole === "Admin") {
+            let newPayload = {
+              stockyardlocationName: location,
+            };
+            payload = { ...payload, ...newPayload };
+          } else {
+            let newPayload = {
+              locationName: location,
+            };
+            payload = { ...payload, ...newPayload };
+          }
+          // let data = {
+          //   locationName: location,
+          // };
+          // payload = { ...payload, ...data };
         }
         const response = await client.post(
           URL.GET_INVENTORY_BY_LOCATION(),
