@@ -455,7 +455,6 @@ const EventDashBoardScreen = ({ route, navigation }) => {
                       : Colors.RED,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
-                    padding:14
                   }}
                 >
                   <Text
@@ -482,7 +481,6 @@ const EventDashBoardScreen = ({ route, navigation }) => {
                       : Colors.WHITE,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
-                    padding:14
                   }}
                 >
                   <Text
@@ -806,7 +804,7 @@ const styles = StyleSheet.create({
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {
     flexDirection: "row",
-    marginVertical:14,
+    marginBottom: 2,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -815,10 +813,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     borderWidth: 1,
     borderRadius: 5,
-    // height: 28,
+    height: 28,
     marginTop: 2,
     justifyContent: "center",
-    width: "95%",
+    width: "80%",
   },
   touchable2: {
     width: "100%",
@@ -827,7 +825,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
-    padding:15
   },
 
   txt4: {

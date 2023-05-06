@@ -389,9 +389,9 @@ const SourceModel = ({ route, navigation }) => {
       </>
     );
   }
-function isEmpty(obj) {
-  return Object.keys(obj).length === 0;
-}
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
   return (
     <>
       <View>

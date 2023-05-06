@@ -9,7 +9,6 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  ScrollView,
   Keyboard,
   Image,
   Platform,
@@ -56,8 +55,11 @@ import {
   getReceptionistData,
   updateIsModalVisible,
   getReceptionistManagerData,
-  updateLoader,
   getCRM_ReceptionistManagerData,
+  updatefilter_drop_down_designations,
+  updateFilterLeadership_selectedDesignation,
+  updateFilterLeadership_selectedDesignationName,
+  updateLeaderShipFilter,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -104,7 +106,8 @@ import Orientation from "react-native-orientation-locker";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { isReceptionist } from "../../../utils/helperFunctions";
-
+import { ScrollView } from "react-native-gesture-handler";
+import _ from "lodash";
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
@@ -158,8 +161,13 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
-      // getCurrentLocation();
-      // setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
+      dispatch(updatefilter_drop_down_designations({}));
+      dispatch(updateFilterLeadership_selectedDesignation(""));
+      dispatch(updateFilterLeadership_selectedDesignationName(""));
+      dispatch(updateLeaderShipFilter([]));
+
+      getCurrentLocation();
+      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -199,12 +207,6 @@ const HomeScreen = ({ route, navigation }) => {
 
   const getDetails = async () => {
     try {
-      var startDate = createDateTime("8:30");
-      var startBetween = createDateTime("11:30");
-      var endBetween = createDateTime("20:30");
-      var endDate = createDateTime("21:30");
-      var now = new Date();
-      var isBetween = startDate <= now && now <= endDate;
       if (true) {
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -229,40 +231,14 @@ const HomeScreen = ({ route, navigation }) => {
             if (json1?.length > 0) {
               return;
             }
-            if (json.length != 0) {
+            if (json.length !== 0) {
               let date = new Date(json[json.length - 1].createdtimestamp);
-              // let dist = getDistanceBetweenTwoPoints(
-              //   officeLocation.latitude,
-              //   officeLocation.longitude,
-              //   initialPosition?.latitude,
-              //   initialPosition?.longitude
-              // );
-              // if (dist > officeRadius) {
-              //   setReason(true); ///true for reason
-              // } else {
-              //   setReason(false);
-              // }
-              if (date.getDate() != new Date().getDate()) {
+              if (date.getDate() !== new Date().getDate()) {
                 setAttendance(true);
-                // if (startDate <= now && now <= startBetween) {
-                //   setAttendance(true);
-                // } else {
-                //   setAttendance(false);
-                // }
               } else {
-                // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-                //   setAttendance(true);
-                // } else {
-                //   setAttendance(false);
-                // }
               }
             } else {
               setAttendance(true);
-              //  if (startDate <= now && now <= startBetween) {
-              //    setAttendance(true);
-              //  } else {
-              //    setAttendance(false);
-              //  }
             }
           }
         }
@@ -301,21 +277,21 @@ const HomeScreen = ({ route, navigation }) => {
   }, [userData, selector.receptionistFilterIds]);
 
   const setTargetData = async () => {
-    let obj = {
-      empData: (await AsyncStore.getData("TARGET_EMP"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_EMP"))
-        : empData,
-      allEmpData: (await AsyncStore.getData("TARGET_EMP_ALL"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_EMP_ALL"))
-        : allData.employeeTargetAchievements,
-      allTargetData: (await AsyncStore.getData("TARGET_ALL"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_ALL"))
-        : allData.overallTargetAchivements,
-      targetData: (await AsyncStore.getData("TARGET_DATA"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_DATA"))
-        : targetData,
-    };
-    dispatch(updateTargetData(obj));
+    // let obj = {
+    //   empData: (await AsyncStore.getData("TARGET_EMP"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_EMP"))
+    //     : empData,
+    //   allEmpData: (await AsyncStore.getData("TARGET_EMP_ALL"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_EMP_ALL"))
+    //     : allData.employeeTargetAchievements,
+    //   allTargetData: (await AsyncStore.getData("TARGET_ALL"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_ALL"))
+    //     : allData.overallTargetAchivements,
+    //   targetData: (await AsyncStore.getData("TARGET_DATA"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_DATA"))
+    //     : targetData,
+    // };
+    // dispatch(updateTargetData(obj));
   };
 
   useEffect(() => {
@@ -515,9 +491,13 @@ const HomeScreen = ({ route, navigation }) => {
           getDealerRanking({
             payload: {
               endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
+              loggedInEmpId: !_.isEmpty(selector.filterIds?.empSelected)
+                ? selector.filterIds.empSelected[0]
+                : jsonObj.empId,
               startDate: monthFirstDate,
-              levelSelected: null,
+              levelSelected: selector.filterIds?.levelSelected
+                ? selector.filterIds?.levelSelected
+                : null,
               pageNo: 0,
               size: 0,
             },
@@ -529,9 +509,13 @@ const HomeScreen = ({ route, navigation }) => {
           getGroupDealerRanking({
             payload: {
               endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
+              loggedInEmpId: !_.isEmpty(selector.filterIds?.empSelected)
+                ? selector.filterIds.empSelected[0]
+                : jsonObj.empId,
               startDate: monthFirstDate,
-              levelSelected: null,
+              levelSelected: selector.filterIds?.levelSelected
+                ? selector.filterIds?.levelSelected
+                : null,
               pageNo: 0,
               size: 0,
             },
@@ -583,7 +567,9 @@ const HomeScreen = ({ route, navigation }) => {
           startDate: selector?.filterIds?.startDate
             ? selector.filterIds.startDate
             : monthFirstDate,
-          empId: jsonObj.empId,
+          empId: !_.isEmpty(selector.filterIds?.empSelected)
+            ? selector.filterIds?.empSelected[0]
+            : jsonObj.empId,
         };
         if (selector.filterIds?.empSelected?.length) {
           payload["empSelected"] = selector.filterIds.empSelected;
@@ -618,7 +604,9 @@ const HomeScreen = ({ route, navigation }) => {
 
       if (
         jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
-        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("reception") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("tele caller")
       ) {
         dispatch(updateIsDSE(true));
       } else {
@@ -1095,9 +1083,11 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
-    // navigation.navigate(
-    //   screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
-    // );
+    if (screenName) {
+      navigation.navigate(
+        screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
+      );
+    }
     if (!screenName) {
       if (selector.saveCRMfilterObj?.selectedempId) {
         navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
@@ -1117,97 +1107,73 @@ const HomeScreen = ({ route, navigation }) => {
             },
           },
         });
-        // setTimeout(() => {
-        //   navigation.navigate("LEADS", {
-        //     screenName: "Home",
-        //     params: params,
-        //     moduleType: "",
-        //     employeeDetail: "",
-        //     selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-        //     startDate: selector.saveCRMfilterObj.startDate,
-        //     endDate: selector.saveCRMfilterObj.endDate,
-        //     dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-        //     ignoreSelectedId: true,
-        //   });
-        // }, 1000);
       } else if (userData.hrmsRole === "CRM") {
-         navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-           screen: "EMS",
-           params: {
-             screen: "LEADS",
-             params: {
-               screenName: "TargetScreenCRM",
-               params: params,
-               moduleType: "",
-               employeeDetail: "",
-               selectedEmpId: selectedEmpId,
-               startDate: "",
-               endDate: "",
-               dealerCodes: [],
-               ignoreSelectedId: false,
-               parentId: selectedEmpId[0],
-               istotalClick: true,
-             },
-           },
-         });
-        // setTimeout(() => {
-        //   navigation.navigate("LEADS", {
-        //     screenName: "TargetScreenCRM",
-        //     params: params,
-        //     moduleType: "",
-        //     employeeDetail: "",
-        //     selectedEmpId: selectedEmpId,
-        //     startDate: "",
-        //     endDate: "",
-        //     dealerCodes: [],
-        //     ignoreSelectedId: false,
-        //     parentId: selectedEmpId[0],
-        //     istotalClick: true,
-        //   });
-        // }, 1000);
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "TargetScreenCRM",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: "",
+              endDate: "",
+              dealerCodes: [],
+              ignoreSelectedId: false,
+              parentId: selectedEmpId[0],
+              istotalClick: true,
+              self: false,
+            },
+          },
+        });
       } else {
-        // setTimeout(() => {
-           navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-             screen: "EMS",
-             params: {
-               screen: "LEADS",
-               params: {
-                 screenName: "Home",
-                 params: params,
-                 moduleType: "",
-                 employeeDetail: "",
-                 selectedEmpId: selectedEmpId,
-                 startDate: selector.receptionistFilterIds.startDate,
-                 endDate: selector.receptionistFilterIds.endDate,
-                 dealerCodes: selector.receptionistFilterIds.dealerCodes,
-                 ignoreSelectedId: true,
-               },
-             },
-           });
-        //   navigation.navigate("LEADS", {
-        //     screenName: "Home",
-        //     params: params,
-        //     moduleType: "",
-        //     employeeDetail: "",
-        //     selectedEmpId: selectedEmpId,
-        //     startDate: selector.receptionistFilterIds.startDate,
-        //     endDate: selector.receptionistFilterIds.endDate,
-        //     dealerCodes: selector.receptionistFilterIds.dealerCodes,
-        //     ignoreSelectedId: true,
-        //   });
-        // }, 1000);
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: selector.receptionistFilterIds.startDate,
+              endDate: selector.receptionistFilterIds.endDate,
+              dealerCodes: selector.receptionistFilterIds.dealerCodes,
+              ignoreSelectedId: true,
+            },
+          },
+        });
       }
     }
   }
   function navigateToContact(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("PRE_ENQUIRY", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 1000);
+     navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+       screen: "EMS",
+       params: {
+         screen: "PRE_ENQUIRY",
+         params: {
+           screenName:
+             userData.hrmsRole === "Reception" ? "reception" : "digital",
+           params: params,
+           moduleType: "",
+           employeeDetail: "",
+           selectedEmpId: !_.isEmpty(selector.saveCRMfilterObj.selectedempId)
+             ? selector.saveCRMfilterObj.selectedempId[0]
+             : "",
+           startDate: selector.saveCRMfilterObj.startDate,
+           endDate: selector.saveCRMfilterObj.endDate,
+           dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+           ignoreSelectedId: "",
+           parentId: "",
+           // param: param === "INVOICE" ? "Retail" : param,
+           // moduleType: "home",
+           // employeeDetail: "",
+         },
+       },
+     });
   }
   const getFileExtention = (fileUrl) => {
     // To get the file extension
@@ -1309,7 +1275,6 @@ const HomeScreen = ({ route, navigation }) => {
       />
     );
   };
-
   function navigateToDropLostCancel(params) {
     if (selector.saveCRMfilterObj.selectedempId) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
@@ -1323,16 +1288,29 @@ const HomeScreen = ({ route, navigation }) => {
         },
       });
     } else {
-      navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
-        screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-        params: {
-          emp_id: "",
-          fromScreen: "Home",
-          dealercodes: selector.receptionistFilterIds.dealerCodes,
-          isForDropped: false,
-          isFilterApplied: false,
-        },
-      });
+      if (userData.hrmsRole === "CRM") {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+          params: {
+            emp_id: "",
+            fromScreen: "Home",
+            dealercodes: selector.receptionistFilterIds.dealerCodes,
+            isForDropped: false,
+            isFilterApplied: false,
+          },
+        });
+      } else {
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+          screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
+          params: {
+            emp_id: "",
+            fromScreen: "Home",
+            dealercodes: selector.receptionistFilterIds.dealerCodes,
+            isForDropped: false,
+            isFilterApplied: true,
+          },
+        });
+      }
     }
   }
 
@@ -1370,100 +1348,38 @@ const HomeScreen = ({ route, navigation }) => {
         notification={true}
         navigation={navigation}
       />
-      <ScrollView
-        nestedScrollEnabled={true}
-        showsVerticalScrollIndicator={false}
-        style={{ flex: 1, paddingHorizontal: 10 }}
-      >
-        {/* 0000 */}
-        <View>
-          {isButtonPresent && (
-            <View style={styles.view1}>
-              <TouchableOpacity
-                style={styles.tochable1}
-                onPress={downloadFileFromServer1}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <IconButton
-                    icon={"download"}
-                    size={16}
-                    color={Colors.RED}
-                    style={{ margin: 0, padding: 0 }}
-                  />
-                  <Text style={styles.etvbrlTxt}>ETVBRL Report</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
-          {!receptionistRole.includes(userData.hrmsRole) ? (
-            selector.isRankHide ? (
-              <View style={styles.hideRankRow}>
-                <View style={styles.hideRankBox}>
-                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                  <TouchableOpacity
-                    style={styles.rankIconBox}
-                    onPress={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.leaderboard
-                      );
-                    }}
-                  >
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/perform_rank.png")}
+
+      {userData.hrmsRole === "CRM" ? (
+        <View
+          // nestedScrollEnabled={true} // changed due to scrolling issue with CRM login
+          // showsVerticalScrollIndicator={false}
+          style={{ flex: 1, paddingHorizontal: 10 }}
+        >
+          {/* 0000 */}
+          <View>
+            {isButtonPresent && (
+              <View style={styles.view1}>
+                <TouchableOpacity
+                  style={styles.tochable1}
+                  onPress={downloadFileFromServer1}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <IconButton
+                      icon={"download"}
+                      size={16}
+                      color={Colors.RED}
+                      style={{ margin: 0, padding: 0 }}
                     />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.hideRankBox}>
-                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                  <TouchableOpacity
-                    style={styles.rankIconBox}
-                    onPress={() => {
-                      navigation.navigate(
-                        AppNavigator.HomeStackIdentifiers.branchRanking
-                      );
-                    }}
-                  >
-                    <Image
-                      style={styles.rankIcon}
-                      source={require("../../../assets/images/perform_rank.png")}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.hideRankBox}>
-                  <Text style={styles.rankHeadingText}>Retails</Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                    }}
-                  >
-                    <View style={styles.rankIconBox}>
-                      <Image
-                        style={styles.rankIcon}
-                        source={require("../../../assets/images/retail.png")}
-                      />
-                    </View>
-                    <View style={styles.view2}>
-                      <View style={styles.view3}>
-                        <Text style={[styles.rankText, { color: Colors.RED }]}>
-                          {retailData?.achievment}
-                        </Text>
-                        <Text style={[styles.rankText]}>
-                          /{retailData?.target}
-                        </Text>
-                      </View>
-                      <View style={styles.view4}>
-                        <Text style={styles.baseText}>Ach v/s Tar</Text>
-                      </View>
-                    </View>
+                    <Text style={styles.etvbrlTxt}>ETVBRL Report</Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               </View>
-            ) : (
-              <View style={styles.rankView}>
-                <View style={styles.rankBox}>
-                  <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                  <View style={styles.view5}>
+            )}
+            {!receptionistRole.includes(userData.hrmsRole) ? (
+              selector.isRankHide ? (
+                <View style={styles.hideRankRow}>
+                  <View style={styles.hideRankBox}>
+                    <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                     <TouchableOpacity
                       style={styles.rankIconBox}
                       onPress={() => {
@@ -1477,27 +1393,9 @@ const HomeScreen = ({ route, navigation }) => {
                         source={require("../../../assets/images/perform_rank.png")}
                       />
                     </TouchableOpacity>
-                    <View
-                      style={{
-                        marginTop: 5,
-                        marginLeft: 3,
-                      }}
-                    >
-                      {groupDealerRank !== null && (
-                        <Text style={styles.rankText}>
-                          {groupDealerRank}/{groupDealerCount}
-                        </Text>
-                      )}
-                    </View>
                   </View>
-                </View>
-                <View style={styles.rankBox}>
-                  <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                    }}
-                  >
+                  <View style={styles.hideRankBox}>
+                    <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                     <TouchableOpacity
                       style={styles.rankIconBox}
                       onPress={() => {
@@ -1511,280 +1409,820 @@ const HomeScreen = ({ route, navigation }) => {
                         source={require("../../../assets/images/perform_rank.png")}
                       />
                     </TouchableOpacity>
-                    <View style={styles.view6}>
-                      {dealerRank !== null && (
+                  </View>
+                  <View style={styles.hideRankBox}>
+                    <Text style={styles.rankHeadingText}>Retails</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View style={styles.rankIconBox}>
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/retail.png")}
+                        />
+                      </View>
+                      <View style={styles.view2}>
                         <View style={styles.view3}>
-                          <Text style={[styles.rankText]}>{dealerRank}</Text>
-                          <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                          <Text
+                            style={[styles.rankText, { color: Colors.RED }]}
+                          >
+                            {retailData?.achievment}
+                          </Text>
+                          <Text style={[styles.rankText]}>
+                            /{retailData?.target}
+                          </Text>
                         </View>
-                      )}
+                        <View style={styles.view4}>
+                          <Text style={styles.baseText}>Ach v/s Tar</Text>
+                        </View>
+                      </View>
                     </View>
                   </View>
                 </View>
-                <View style={styles.rankBox}>
-                  <Text style={styles.rankHeadingText}>Retails</Text>
-                  <View style={styles.view3}>
-                    <View style={styles.rankIconBox}>
-                      <Image
-                        style={styles.rankIcon}
-                        source={require("../../../assets/images/retail.png")}
-                      />
-                    </View>
-                    <View style={styles.view2}>
-                      <View style={styles.view3}>
-                        <Text style={[styles.rankText, { color: Colors.RED }]}>
-                          {retailData?.achievment}
-                        </Text>
-                        <Text style={[styles.rankText]}>
-                          /{retailData?.target}
-                        </Text>
-                      </View>
+              ) : (
+                <View style={styles.rankView}>
+                  <View style={styles.rankBox}>
+                    <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+                    <View style={styles.view5}>
+                      <TouchableOpacity
+                        style={styles.rankIconBox}
+                        onPress={() => {
+                          navigation.navigate(
+                            AppNavigator.HomeStackIdentifiers.leaderboard
+                          );
+                        }}
+                      >
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/perform_rank.png")}
+                        />
+                      </TouchableOpacity>
                       <View
                         style={{
                           marginTop: 5,
+                          marginLeft: 3,
                         }}
                       >
-                        <Text style={styles.baseText}>Ach v/s Tar</Text>
+                        {groupDealerRank !== null && (
+                          <Text style={styles.rankText}>
+                            {groupDealerRank}/{groupDealerCount}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.rankBox}>
+                    <Text style={styles.rankHeadingText}>Branch Ranking</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={styles.rankIconBox}
+                        onPress={() => {
+                          navigation.navigate(
+                            AppNavigator.HomeStackIdentifiers.branchRanking
+                          );
+                        }}
+                      >
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/perform_rank.png")}
+                        />
+                      </TouchableOpacity>
+                      <View style={styles.view6}>
+                        {dealerRank !== null && (
+                          <View style={styles.view3}>
+                            <Text style={[styles.rankText]}>{dealerRank}</Text>
+                            <Text style={[styles.rankText]}>
+                              /{dealerCount}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.rankBox}>
+                    <Text style={styles.rankHeadingText}>Retails</Text>
+                    <View style={styles.view3}>
+                      <View style={styles.rankIconBox}>
+                        <Image
+                          style={styles.rankIcon}
+                          source={require("../../../assets/images/retail.png")}
+                        />
+                      </View>
+                      <View style={styles.view2}>
+                        <View style={styles.view3}>
+                          <Text
+                            style={[styles.rankText, { color: Colors.RED }]}
+                          >
+                            {retailData?.achievment}
+                          </Text>
+                          <Text style={[styles.rankText]}>
+                            /{retailData?.target}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            marginTop: 5,
+                          }}
+                        >
+                          <Text style={styles.baseText}>Ach v/s Tar</Text>
+                        </View>
                       </View>
                     </View>
                   </View>
                 </View>
-              </View>
-            )
-          ) : null}
-          {receptionistRole.includes(userData.hrmsRole) && (
-            <View style={styles.view7}>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.contactsCount > 0 &&
-                    navigateToContact();
-                }}
-                style={styles.view8}
-              >
-                <Text numberOfLines={2} style={styles.rankHeadingText}>
-                  {"Contact"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text
-                    style={{
-                      ...styles.rankText,
-                      color: Colors.RED,
-                      textDecorationLine: selector.receptionistData
-                        ?.contactsCount
-                        ? "underline"
-                        : "none",
-                    }}
-                  >
-                    {selector.receptionistData?.contactsCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.totalDroppedCount > 0 &&
-                    navigateToDropLostCancel();
-                }}
-                style={styles.view8}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{ ...styles.rankHeadingText, width: 50 }}
-                >
-                  {"Drop"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text
-                    style={{
-                      ...styles.rankText,
-                      color: Colors.RED,
-                      textDecorationLine: selector.receptionistData
-                        ?.totalDroppedCount
-                        ? "underline"
-                        : "none",
-                    }}
-                  >
-                    {selector.receptionistData?.totalDroppedCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.enquirysCount > 0 &&
-                    navigateToEMS("ENQUIRY", "", [userData.empId]);
-                }}
-                style={styles.view8}
-              >
-                <Text numberOfLines={2} style={styles.rankHeadingText}>
-                  {"Enquiry"}
-                </Text>
-                <View style={styles.cardView}>
-                  <Text
-                    style={{
-                      ...styles.rankText,
-                      color: Colors.RED,
-                      textDecorationLine: selector.receptionistData
-                        ?.enquirysCount
-                        ? "underline"
-                        : "none",
-                    }}
-                  >
-                    {selector.receptionistData?.enquirysCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.bookingsCount > 0 &&
-                    navigateToEMS("BOOKING", "", [userData.empId]);
-                }}
-                style={styles.view8}
-              >
-                <Text style={styles.rankHeadingText}>{"Bookings"}</Text>
-                <View style={styles.cardView}>
-                  <Text
-                    style={{
-                      ...styles.rankText,
-                      color: Colors.RED,
-                      textDecorationLine: selector.receptionistData
-                        ?.bookingsCount
-                        ? "underline"
-                        : "none",
-                    }}
-                  >
-                    {selector.receptionistData?.bookingsCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  selector.receptionistData.RetailCount > 0 &&
-                    navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
-                }}
-                style={styles.view8}
-              >
-                <Text style={styles.rankHeadingText}>{"Retails"}</Text>
-                <View style={styles.cardView}>
-                  <Text
-                    style={{
-                      ...styles.rankText,
-                      color: Colors.RED,
-                      textDecorationLine: selector.receptionistData?.RetailCount
-                        ? "underline"
-                        : "none",
-                    }}
-                  >
-                    {selector.receptionistData?.RetailCount || 0}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-
-        {selector.bannerList.length > 0 && renderBannerList()}
-
-        {/* 1111 */}
-        <View>
-          {isTeamPresent && !selector.isDSE && (
-            <View style={styles.view9}>
-              <View style={styles.view10}>
+              )
+            ) : null}
+            {receptionistRole.includes(userData.hrmsRole) && (
+              <View style={styles.view7}>
                 <TouchableOpacity
                   onPress={() => {
-                    // setIsTeam(true)
-                    dispatch(updateIsTeam(false));
+                    selector.receptionistData.contactsCount > 0 &&
+                      navigateToContact("Contact");
                   }}
-                  style={{
-                    width: "50%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: selector.isTeam
-                      ? Colors.WHITE
-                      : Colors.RED,
-                    borderTopLeftRadius: 5,
-                    borderBottomLeftRadius: 5,
-                    padding:14
-                  }}
+                  style={styles.view8}
                 >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      color: selector.isTeam ? Colors.BLACK : Colors.WHITE,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Insights
+                  <Text numberOfLines={2} style={styles.rankHeadingText}>
+                    {"Contact"}
                   </Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistData
+                          ?.contactsCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistData?.contactsCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistData.enquirysCount > 0 &&
+                      navigateToEMS("ENQUIRY", "", [userData.empId]);
+                  }}
+                  style={styles.view8}
+                >
+                  <Text numberOfLines={2} style={styles.rankHeadingText}>
+                    {"Enquiry"}
+                  </Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistData
+                          ?.enquirysCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistData?.enquirysCount || 0}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    // setIsTeam(false)
-                    dispatch(updateIsTeam(true));
+                    selector.receptionistData.bookingsCount > 0 &&
+                      navigateToEMS("BOOKING", "", [userData.empId]);
                   }}
-                  style={{
-                    width: "50%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: selector.isTeam
-                      ? Colors.RED
-                      : Colors.WHITE,
-                    borderTopRightRadius: 5,
-                    borderBottomRightRadius: 5,
-                    padding:14
-                  }}
+                  style={styles.view8}
                 >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      color: selector.isTeam ? Colors.WHITE : Colors.BLACK,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Teams
-                  </Text>
+                  <Text style={styles.rankHeadingText}>{"Booking"}</Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistData
+                          ?.bookingsCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistData?.bookingsCount || 0}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
-              </View>
-            </View>
-          )}
-          {selector.isDSE && (
-            <View style={styles.view9}>
-              <View style={styles.view10}>
                 <TouchableOpacity
                   onPress={() => {
-                    // setIsTeam(true)
-                    dispatch(updateIsTeam(false));
+                    selector.receptionistData.RetailCount > 0 &&
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                   }}
-                  style={styles.touchable2}
+                  style={styles.view8}
                 >
-                  <Text style={styles.txt4}>Dashboard</Text>
+                  <Text style={styles.rankHeadingText}>{"Retail"}</Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistData
+                          ?.RetailCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistData?.RetailCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistData.totalDroppedCount > 0 &&
+                      navigateToDropLostCancel();
+                  }}
+                  style={styles.view8}
+                >
+                  <Text
+                    numberOfLines={1}
+                    style={{ ...styles.rankHeadingText, width: 50 }}
+                  >
+                    {"Drop"}
+                  </Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistData
+                          ?.totalDroppedCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistData?.totalDroppedCount || 0}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               </View>
-            </View>
-          )}
-        </View>
-
-        {/* 2222 */}
-        <View style={{ alignItems: "center" }}>
-          <View
-            style={{
-              shadowColor: Colors.DARK_GRAY,
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowRadius: 4,
-              shadowOpacity: 0.5,
-              marginHorizontal: 4,
-              height: isButtonPresent ? "93%" : "90%",
-            }}
-          >
-            {(selector.target_parameters_data.length > 0 ||
-              (isTeamPresent &&
-                selector.all_target_parameters_data.length > 0)) && (
-              <DashboardTopTabNavigatorNew />
             )}
           </View>
+
+          {selector.bannerList.length > 0 && renderBannerList()}
+
+          {/* 1111 */}
+          <View>
+            {isTeamPresent && !selector.isDSE && (
+              <View style={styles.view9}>
+                <View style={styles.view10}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      // setIsTeam(true)
+                      dispatch(updateIsTeam(false));
+                    }}
+                    style={{
+                      width: "50%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: selector.isTeam
+                        ? Colors.WHITE
+                        : Colors.RED,
+                      borderTopLeftRadius: 5,
+                      borderBottomLeftRadius: 5,
+                      padding: 14,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: selector.isTeam ? Colors.BLACK : Colors.WHITE,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Insights
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      // setIsTeam(false)
+                      dispatch(updateIsTeam(true));
+                    }}
+                    style={{
+                      width: "50%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: selector.isTeam
+                        ? Colors.RED
+                        : Colors.WHITE,
+                      borderTopRightRadius: 5,
+                      borderBottomRightRadius: 5,
+                      padding: 14,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: selector.isTeam ? Colors.WHITE : Colors.BLACK,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Teams
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            {selector.isDSE && (
+              <View style={styles.view9}>
+                <View style={styles.view10}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      // setIsTeam(true)
+                      dispatch(updateIsTeam(false));
+                    }}
+                    style={styles.touchable2}
+                  >
+                    <Text style={styles.txt4}>Dashboard</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {/* 2222 */}
+          <View style={{ marginTop: 8, alignItems: "center" }}>
+            <View
+              style={{
+                shadowColor: Colors.DARK_GRAY,
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowRadius: 4,
+                shadowOpacity: 0.5,
+                marginHorizontal: 4,
+                height: isButtonPresent ? "93%" : "90%",
+              }}
+            >
+              {(selector.target_parameters_data.length > 0 ||
+                (isTeamPresent &&
+                  selector.all_target_parameters_data.length > 0)) && (
+                <DashboardTopTabNavigatorNew />
+              )}
+            </View>
+          </View>
         </View>
-      </ScrollView>
+      ) : (
+        <ScrollView
+          nestedScrollEnabled={true} // changed due to scrolling issue with CRM login
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1, paddingHorizontal: 10 }}
+        >
+          {userData.hrmsRole !== "" ? (
+            <>
+              {/* 0000 */}
+              <View>
+                {isButtonPresent && (
+                  <View style={styles.view1}>
+                    <TouchableOpacity
+                      style={styles.tochable1}
+                      onPress={downloadFileFromServer1}
+                    >
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <IconButton
+                          icon={"download"}
+                          size={16}
+                          color={Colors.RED}
+                          style={{ margin: 0, padding: 0 }}
+                        />
+                        <Text style={styles.etvbrlTxt}>ETVBRL Report</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {!receptionistRole.includes(userData.hrmsRole) ? (
+                  selector.isRankHide ? (
+                    <View style={styles.hideRankRow}>
+                      <View style={styles.hideRankBox}>
+                        <Text style={styles.rankHeadingText}>
+                          Dealer Ranking
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.rankIconBox}
+                          onPress={() => {
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.leaderboard
+                            );
+                          }}
+                        >
+                          <Image
+                            style={styles.rankIcon}
+                            source={require("../../../assets/images/perform_rank.png")}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.hideRankBox}>
+                        <Text style={styles.rankHeadingText}>
+                          Branch Ranking
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.rankIconBox}
+                          onPress={() => {
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.branchRanking
+                            );
+                          }}
+                        >
+                          <Image
+                            style={styles.rankIcon}
+                            source={require("../../../assets/images/perform_rank.png")}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.hideRankBox}>
+                        <Text style={styles.rankHeadingText}>Retails</Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                          }}
+                        >
+                          <View style={styles.rankIconBox}>
+                            <Image
+                              style={styles.rankIcon}
+                              source={require("../../../assets/images/retail.png")}
+                            />
+                          </View>
+                          <View style={styles.view2}>
+                            <View style={styles.view3}>
+                              <Text
+                                style={[styles.rankText, { color: Colors.RED }]}
+                              >
+                                {retailData?.achievment}
+                              </Text>
+                              <Text style={[styles.rankText]}>
+                                /{retailData?.target}
+                              </Text>
+                            </View>
+                            <View style={styles.view4}>
+                              <Text style={styles.baseText}>Ach v/s Tar</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.rankView}>
+                      <View style={styles.rankBox}>
+                        <Text style={styles.rankHeadingText}>
+                          Dealer Ranking
+                        </Text>
+                        <View style={styles.view5}>
+                          <TouchableOpacity
+                            style={styles.rankIconBox}
+                            onPress={() => {
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.leaderboard
+                              );
+                            }}
+                          >
+                            <Image
+                              style={styles.rankIcon}
+                              source={require("../../../assets/images/perform_rank.png")}
+                            />
+                          </TouchableOpacity>
+                          <View
+                            style={{
+                              marginTop: 5,
+                              marginLeft: 3,
+                            }}
+                          >
+                            {groupDealerRank !== null && (
+                              <Text style={styles.rankText}>
+                                {groupDealerRank}/{groupDealerCount}
+                              </Text>
+                            )}
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.rankBox}>
+                        <Text style={styles.rankHeadingText}>
+                          Branch Ranking
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                          }}
+                        >
+                          <TouchableOpacity
+                            style={styles.rankIconBox}
+                            onPress={() => {
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.branchRanking
+                              );
+                            }}
+                          >
+                            <Image
+                              style={styles.rankIcon}
+                              source={require("../../../assets/images/perform_rank.png")}
+                            />
+                          </TouchableOpacity>
+                          <View style={styles.view6}>
+                            {dealerRank !== null && (
+                              <View style={styles.view3}>
+                                <Text style={[styles.rankText]}>
+                                  {dealerRank}
+                                </Text>
+                                <Text style={[styles.rankText]}>
+                                  /{dealerCount}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.rankBox}>
+                        <Text style={styles.rankHeadingText}>Retails</Text>
+                        <View style={styles.view3}>
+                          <View style={styles.rankIconBox}>
+                            <Image
+                              style={styles.rankIcon}
+                              source={require("../../../assets/images/retail.png")}
+                            />
+                          </View>
+                          <View style={styles.view2}>
+                            <View style={styles.view3}>
+                              <Text
+                                style={[styles.rankText, { color: Colors.RED }]}
+                              >
+                                {retailData?.achievment}
+                              </Text>
+                              <Text style={[styles.rankText]}>
+                                /{retailData?.target}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                marginTop: 5,
+                              }}
+                            >
+                              <Text style={styles.baseText}>Ach v/s Tar</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  )
+                ) : null}
+                {receptionistRole.includes(userData.hrmsRole) && (
+                  <View style={styles.view7}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        selector.receptionistData.contactsCount > 0 &&
+                          navigateToContact("Contact");
+                      }}
+                      style={styles.view8}
+                    >
+                      <Text numberOfLines={2} style={styles.rankHeadingText}>
+                        {"Contact"}
+                      </Text>
+                      <View style={styles.cardView}>
+                        <Text
+                          style={{
+                            ...styles.rankText,
+                            color: Colors.RED,
+                            textDecorationLine: selector.receptionistData
+                              ?.contactsCount
+                              ? "underline"
+                              : "none",
+                          }}
+                        >
+                          {selector.receptionistData?.contactsCount || 0}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        selector.receptionistData.enquirysCount > 0 &&
+                          navigateToEMS("ENQUIRY", "", [userData.empId]);
+                      }}
+                      style={styles.view8}
+                    >
+                      <Text numberOfLines={2} style={styles.rankHeadingText}>
+                        {"Enquiry"}
+                      </Text>
+                      <View style={styles.cardView}>
+                        <Text
+                          style={{
+                            ...styles.rankText,
+                            color: Colors.RED,
+                            textDecorationLine: selector.receptionistData
+                              ?.enquirysCount
+                              ? "underline"
+                              : "none",
+                          }}
+                        >
+                          {selector.receptionistData?.enquirysCount || 0}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        selector.receptionistData.bookingsCount > 0 &&
+                          navigateToEMS("BOOKING", "", [userData.empId]);
+                      }}
+                      style={styles.view8}
+                    >
+                      <Text style={styles.rankHeadingText}>{"Booking"}</Text>
+                      <View style={styles.cardView}>
+                        <Text
+                          style={{
+                            ...styles.rankText,
+                            color: Colors.RED,
+                            textDecorationLine: selector.receptionistData
+                              ?.bookingsCount
+                              ? "underline"
+                              : "none",
+                          }}
+                        >
+                          {selector.receptionistData?.bookingsCount || 0}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        selector.receptionistData.RetailCount > 0 &&
+                          navigateToEMS("INVOICECOMPLETED", "", [
+                            userData.empId,
+                          ]);
+                      }}
+                      style={styles.view8}
+                    >
+                      <Text style={styles.rankHeadingText}>{"Retail"}</Text>
+                      <View style={styles.cardView}>
+                        <Text
+                          style={{
+                            ...styles.rankText,
+                            color: Colors.RED,
+                            textDecorationLine: selector.receptionistData
+                              ?.RetailCount
+                              ? "underline"
+                              : "none",
+                          }}
+                        >
+                          {selector.receptionistData?.RetailCount || 0}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        selector.receptionistData.totalDroppedCount > 0 &&
+                          navigateToDropLostCancel();
+                      }}
+                      style={styles.view8}
+                    >
+                      <Text
+                        numberOfLines={1}
+                        style={{ ...styles.rankHeadingText, width: 50 }}
+                      >
+                        {"Drop"}
+                      </Text>
+                      <View style={styles.cardView}>
+                        <Text
+                          style={{
+                            ...styles.rankText,
+                            color: Colors.RED,
+                            textDecorationLine: selector.receptionistData
+                              ?.totalDroppedCount
+                              ? "underline"
+                              : "none",
+                          }}
+                        >
+                          {selector.receptionistData?.totalDroppedCount || 0}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+
+              {selector.bannerList.length > 0 && renderBannerList()}
+
+              {/* 1111 */}
+              <View>
+                {isTeamPresent && !selector.isDSE && (
+                  <View style={styles.view9}>
+                    <View style={styles.view10}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          // setIsTeam(true)
+                          dispatch(updateIsTeam(false));
+                        }}
+                        style={{
+                          width: "50%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: selector.isTeam
+                            ? Colors.WHITE
+                            : Colors.RED,
+                          borderTopLeftRadius: 5,
+                          borderBottomLeftRadius: 5,
+                          padding: 14,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: selector.isTeam
+                              ? Colors.BLACK
+                              : Colors.WHITE,
+                            fontWeight: "600",
+                          }}
+                        >
+                          Insights
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          // setIsTeam(false)
+                          dispatch(updateIsTeam(true));
+                        }}
+                        style={{
+                          width: "50%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: selector.isTeam
+                            ? Colors.RED
+                            : Colors.WHITE,
+                          borderTopRightRadius: 5,
+                          borderBottomRightRadius: 5,
+                          padding: 14,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: selector.isTeam
+                              ? Colors.WHITE
+                              : Colors.BLACK,
+                            fontWeight: "600",
+                          }}
+                        >
+                          Teams
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+                {selector.isDSE && (
+                  <View style={styles.view9}>
+                    <View style={styles.view10}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          // setIsTeam(true)
+                          dispatch(updateIsTeam(false));
+                        }}
+                        style={styles.touchable2}
+                      >
+                        <Text style={styles.txt4}>Dashboard</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+
+              {/* 2222 */}
+              <View style={{ marginTop: 8, alignItems: "center" }}>
+                <View
+                  style={{
+                    shadowColor: Colors.DARK_GRAY,
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowRadius: 4,
+                    shadowOpacity: 0.5,
+                    marginHorizontal: 4,
+                    height: isButtonPresent ? "93%" : "90%",
+                  }}
+                >
+                  {(selector.target_parameters_data.length > 0 ||
+                    (isTeamPresent &&
+                      selector.all_target_parameters_data.length > 0)) && (
+                    <DashboardTopTabNavigatorNew />
+                  )}
+                </View>
+              </View>
+            </>
+          ) : (
+            <></>
+          )}
+        </ScrollView>
+      )}
+
       <LoaderComponent visible={loading} />
     </SafeAreaView>
   );

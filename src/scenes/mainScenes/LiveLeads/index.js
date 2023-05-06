@@ -60,7 +60,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
 import _ from "lodash";
-const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
+const crmRole = ["CRM"];
 
 const LiveLeadsScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.liveLeadsReducer);
@@ -96,64 +97,96 @@ const LiveLeadsScreen = ({ route, navigation }) => {
   }, [isFocused, isDrawerOpen]);
 
   useLayoutEffect(() => {
-    navigation.addListener("focus", () => {
-      setTargetData().then((r) => {});
-
-      
-      navigation.setOptions(
-        {
-          headerTitleStyle: {
-            fontSize: 16,
-            fontWeight: "600",
-          },
-          headerStyle: {
-            backgroundColor: Colors.DARK_GRAY,
-          },
-          headerTintColor: Colors.WHITE,
-          headerBackTitleVisible: false,
-          headerRight: () => (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {/* <SearchIcon /> */}
-              <MyTaskFilter navigation={navigation} />
-
-            </View>
-          ),
-        });
+    const sub = navigation.addListener("focus", () => {
+      getUserData();
     });
+    return sub;
   }, [navigation]);
 
-    useEffect(async() => {
-     
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+  useEffect(async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+
+      // if (!_.isEmpty(selector.saveLiveleadObject)) {
+      //   getDashboadTableDataFromServer(jsonObj.empId);
+      //   // getInsightsDataFilter(selector.saveLiveleadObject.startDate, selector.saveLiveleadObject.endDate
+      //   //   , selector.saveLiveleadObject.levelSelected, selector.saveLiveleadObject?.selectedempId)
+      // }
+      if (isFocused) {
+        getDashboadTableDataFromServer(jsonObj.empId);
+        // getLoginEmployeeDetailsFromAsyn();
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat);
+        const payload = {
+          endDate: currentDate,
+          loggedInEmpId: jsonObj.empId,
+          startDate: "2021-01-01",
+          levelSelected: null,
+          empId: jsonObj.empId,
+        };
+        getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
+      }
+    }
+  }, [selector.levelSelected, selector.saveLiveleadObject, isFocused]);
+
+  const getUserData = async () => {
+    try {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-    
-       
-        // if (!_.isEmpty(selector.saveLiveleadObject)) {
-        //   getDashboadTableDataFromServer(jsonObj.empId);
-        //   // getInsightsDataFilter(selector.saveLiveleadObject.startDate, selector.saveLiveleadObject.endDate
-        //   //   , selector.saveLiveleadObject.levelSelected, selector.saveLiveleadObject?.selectedempId)
-        // }
-        if (isFocused){
-          getDashboadTableDataFromServer(jsonObj.empId);
-          // getLoginEmployeeDetailsFromAsyn();
-          const dateFormat = "YYYY-MM-DD";
-          const currentDate = moment().format(dateFormat);
-          const payload = {
-            endDate: currentDate,
-            loggedInEmpId: jsonObj.empId,
-            startDate: "2021-01-01",
-            levelSelected: null,
-            empId: jsonObj.empId,
-          };
-          getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+
+        if (crmRole.includes(jsonObj.hrmsRole)) {
+          navigation.setOptions({
+            headerTitleStyle: {
+              fontSize: 16,
+              fontWeight: "600",
+            },
+            headerStyle: {
+              backgroundColor: Colors.DARK_GRAY,
+            },
+            headerTintColor: Colors.WHITE,
+            headerBackTitleVisible: false,
+            headerRight: () => (
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {/* <SearchIcon /> */}
+                <MyTaskFilter
+                  navigation={navigation}
+                  screenName="CRM_LIVE_FILTERS"
+                />
+              </View>
+            ),
+          });
+        } else {
+          navigation.setOptions({
+            headerTitleStyle: {
+              fontSize: 16,
+              fontWeight: "600",
+            },
+            headerStyle: {
+              backgroundColor: Colors.DARK_GRAY,
+            },
+            headerTintColor: Colors.WHITE,
+            headerBackTitleVisible: false,
+            headerRight: () => (
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {/* <SearchIcon /> */}
+                <MyTaskFilter
+                  navigation={navigation}
+                  screenName="LIVE_LEADS_FILTERS"
+                />
+              </View>
+            ),
+          });
         }
-        
       }
-     
-      
-    }, [selector.levelSelected, selector.saveLiveleadObject,isFocused])
-    
+    } catch (error) {
+      alert(error);
+    }
+  };
   const setTargetData = async () => {
     numk++;
     // commented manthan
@@ -244,24 +277,22 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
     updateBranchNameInHeader();
     getMenuListFromServer();
-    getCustomerType();
+    // getCustomerType(); not geting used in live leads
     checkLoginUserAndEnableReportButton();
     // getLoginEmployeeDetailsFromAsyn();
     // }
-    
+
     const unsubscribe = navigation.addListener("focus", () => {
       updateBranchNameInHeader();
-      if (route.params.fromScreen === ""){
+      if (route.params.fromScreen === "") {
         getLoginEmployeeDetailsFromAsyn();
       }
-      
-     
     });
 
     return unsubscribe;
   }, [navigation]);
 
-  const MyTaskFilter = ({ navigation }) => {
+  const MyTaskFilter = ({ navigation, screenName = "" }) => {
     // const screen = useSelector((state) => state.mytaskReducer.currentScreen);
     // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
     return (
@@ -271,10 +302,8 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         color={Colors.WHITE}
         size={25}
         onPress={() => {
-
-          navigation.navigate("LIVE_LEADS_FILTERS", {});
-        }
-        }
+          navigation.navigate(screenName, {});
+        }}
       />
     );
   };
@@ -360,41 +389,41 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
       Promise.all([
         dispatch(getOrganaizationHirarchyList(payload)),
-        dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
-        dispatch(
-          getVehicalModalList({
-            bu: jsonObj.orgId,
-            dropdownType: "model",
-            parentId: 0,
-          })
-        ),
-        dispatch(
-          getDealerRanking({
-            payload: {
-              endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
-              startDate: monthFirstDate,
-              levelSelected: null,
-              pageNo: 0,
-              size: 0,
-            },
-            orgId: jsonObj.orgId,
-            branchId: jsonObj.branchId,
-          })
-        ),
-        dispatch(
-          getGroupDealerRanking({
-            payload: {
-              endDate: monthLastDate,
-              loggedInEmpId: jsonObj.empId,
-              startDate: monthFirstDate,
-              levelSelected: null,
-              pageNo: 0,
-              size: 0,
-            },
-            orgId: jsonObj.orgId,
-          })
-        ),
+        // dispatch(getSourceOfEnquiryList(jsonObj.orgId)), not getting used in live leads
+        // dispatch(  not getting used in live leads
+        //   getVehicalModalList({
+        //     bu: jsonObj.orgId,
+        //     dropdownType: "model",
+        //     parentId: 0,
+        //   })
+        // ),
+        // dispatch( not getting used in live-leads
+        //   getDealerRanking({
+        //     payload: {
+        //       endDate: monthLastDate,
+        //       loggedInEmpId: jsonObj.empId,
+        //       startDate: monthFirstDate,
+        //       levelSelected: null,
+        //       pageNo: 0,
+        //       size: 0,
+        //     },
+        //     orgId: jsonObj.orgId,
+        //     branchId: jsonObj.branchId,
+        //   })
+        // ),
+        // dispatch( not getting used in live-leads
+        //   getGroupDealerRanking({
+        //     payload: {
+        //       endDate: monthLastDate,
+        //       loggedInEmpId: jsonObj.empId,
+        //       startDate: monthFirstDate,
+        //       levelSelected: null,
+        //       pageNo: 0,
+        //       size: 0,
+        //     },
+        //     orgId: jsonObj.orgId,
+        //   })
+        // ),
       ]).then(() => {});
       // if (
       //   jsonObj?.hrmsRole === "Admin" ||
@@ -410,8 +439,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       //   jsonObj?.hrmsRole === "Sales Manager" ||
       //   jsonObj?.hrmsRole === "Sales Head"
       // )
-      if (jsonObj?.isTeam.toLowerCase().includes("y"))
-       {
+      if (jsonObj?.isTeam.toLowerCase().includes("y")) {
         dispatch(updateIsTeamPresent(true));
         setIsTeamPresent(true);
         if (jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "App Admin") {
@@ -443,6 +471,10 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         // getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
         //   .then((x) => {})
         //   .catch((y) => {});
+      } else {
+        setIsTeamPresent(false);
+        dispatch(updateIsTeamPresent(false));
+        dispatch(updateIsTeam(false));
       }
       if (jsonObj?.hrmsRole.toLowerCase().includes("manager")) {
         dispatch(updateIsManager(true));
@@ -540,20 +572,26 @@ const LiveLeadsScreen = ({ route, navigation }) => {
     // let payload3 = getInsightsDataFilter(selector.saveLiveleadObject.startDate, selector.saveLiveleadObject.endDate
     //   , selector.saveLiveleadObject.levelSelected, selector.saveLiveleadObject?.selectedempId);
     let payload4 = {
-      "endDate": selector.saveLiveleadObject.endDate ? selector.saveLiveleadObject.endDate : monthLastDate,
-      "loggedInEmpId": empId,
-      "startDate": selector.saveLiveleadObject.startDate ? selector.saveLiveleadObject.startDate : monthFirstDate,
-      "levelSelected": selector.saveLiveleadObject.levelSelected , // countey , zone etc ids active-levels API
-      "empId": empId,
-      "pageNo": 0,
-      "size": 5,
-      "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null // selected employes id active-dropdowns APi
-    }
-    
+      endDate: selector.saveLiveleadObject.endDate
+        ? selector.saveLiveleadObject.endDate
+        : monthLastDate,
+      loggedInEmpId: empId,
+      startDate: selector.saveLiveleadObject.startDate
+        ? selector.saveLiveleadObject.startDate
+        : monthFirstDate,
+      levelSelected: selector.saveLiveleadObject.levelSelected, // countey , zone etc ids active-levels API
+      empId: empId,
+      pageNo: 0,
+      size: 5,
+      empSelected: selector.saveLiveleadObject?.selectedempId
+        ? selector.saveLiveleadObject?.selectedempId
+        : null, // selected employes id active-dropdowns APi
+    };
+
     Promise.all([
-      dispatch(getLeadSourceTableList(payload)),
-      dispatch(getVehicleModelTableList(payload)),
-      dispatch(getEventTableList(payload)),
+      // dispatch(getLeadSourceTableList(payload)), not getting used in live leads
+      // dispatch(getVehicleModelTableList(payload)),not getting used in live leads
+      // dispatch(getEventTableList(payload)),,not getting used in live leads
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
@@ -570,9 +608,9 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       size: 5,
     };
     Promise.all([
-      dispatch(getTaskTableList(payload)),
-      dispatch(getSalesData(payload)),
-      dispatch(getSalesComparisonData(payload)),
+      // dispatch(getTaskTableList(payload)), not getting used in live lead
+      // dispatch(getSalesData(payload)), not getting used in live leads
+      // dispatch(getSalesComparisonData(payload)), not getting used in live leads
     ]).then(() => {});
   };
 
@@ -597,20 +635,22 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       if (allRoles.includes(jsonObj?.hrmsRole)) {
         isTeamPresentLocal = true;
       }
-    
 
-    const payload1 = {
-      ...payload,
-      pageNo: 0,
-      size: 5,
-    };
-    
-    //   if (jsonObj?.hrmsRole.toLowerCase().includes("dse") && route.params.fromScreen == ""){
-    //    
-    //   // dispatch(getTargetParametersData(payload1))
-    // }
-     
-        
+      const payload1 = {
+        ...payload,
+        pageNo: 0,
+        size: 5,
+      };
+
+      //   if (jsonObj?.hrmsRole.toLowerCase().includes("dse") && route.params.fromScreen == ""){
+      //
+      //   // dispatch(getTargetParametersData(payload1))
+      // }
+
+      if (
+        !receptionistRole.includes(jsonObj.hrmsRole) &&
+        !crmRole.includes(jsonObj.hrmsRole)
+      ) {
         Promise.allSettled([
           // commented manthan
           // dispatch(getTargetParametersData(payload1)),
@@ -620,42 +660,44 @@ const LiveLeadsScreen = ({ route, navigation }) => {
               : getTargetParametersEmpDataInsights(payload1)
           ),
         ])
-          .then(() => { })
-          .catch((y) => { });
-     
-  
-  }
+          .then(() => {})
+          .catch((y) => {});
+      }
+    }
   };
 
-  const getInsightsDataFilter = async(startdate,enddate,levelSelected,empSelected)=>{
-    
+  const getInsightsDataFilter = async (
+    startdate,
+    enddate,
+    levelSelected,
+    empSelected
+  ) => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    
+
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       let payload = {
-        "endDate": enddate,
-        "loggedInEmpId": jsonObj.empId ,
-        "startDate": startdate,
-        "levelSelected": levelSelected, // countey , zone etc ids active-levels API
-        "empId": jsonObj.empId,
-        "pageNo": 0,
-        "size": 5,
-        "empSelected": empSelected ? [empSelected] : null // selected employes id active-dropdowns APi
-      }
+        endDate: enddate,
+        loggedInEmpId: jsonObj.empId,
+        startDate: startdate,
+        levelSelected: levelSelected, // countey , zone etc ids active-levels API
+        empId: jsonObj.empId,
+        pageNo: 0,
+        size: 5,
+        empSelected: empSelected ? [empSelected] : null, // selected employes id active-dropdowns APi
+      };
       return payload;
-      // console.log("manthan final -- ",payload);
+
       // dispatch(getTargetParametersEmpDataInsights(payload))
     }
-    
-  }
+  };
 
   const getAllTargetParametersDataFromServer = async (payload, orgId) => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     let isTeamPresentLocal = false;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      
+
       const allRoles = [
         "Admin",
         "Admin Prod",
@@ -672,25 +714,24 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       if (allRoles.includes(jsonObj?.hrmsRole)) {
         isTeamPresentLocal = true;
       }
-    
 
-    const payload1 = {
-      ...payload,
-      pageNo: 0,
-      size: 5,
-      endDate: moment().add(0, "day").endOf("month").format("YYYY-MM-DD"),
-    };
-    const payload2 = {
-      orgId: orgId,
-      selectedEmpId: payload.empId,
-      endDate: moment().add(0, "day").endOf("month").format("YYYY-MM-DD"),
-      loggedInEmpId: payload.empId,
-      empId: payload.empId,
-      startDate: payload.startDate,
-      levelSelected: null,
-      pageNo: 0,
-      size: 5000,
-    };
+      const payload1 = {
+        ...payload,
+        pageNo: 0,
+        size: 5,
+        endDate: moment().add(0, "day").endOf("month").format("YYYY-MM-DD"),
+      };
+      const payload2 = {
+        orgId: orgId,
+        selectedEmpId: payload.empId,
+        endDate: moment().add(0, "day").endOf("month").format("YYYY-MM-DD"),
+        loggedInEmpId: payload.empId,
+        empId: payload.empId,
+        startDate: payload.startDate,
+        levelSelected: null,
+        pageNo: 0,
+        size: 5000,
+      };
       const dateFormat = "YYYY-MM-DD";
       const currentDate = moment().format(dateFormat);
       const monthFirstDate = moment(currentDate, dateFormat)
@@ -701,28 +742,41 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         .subtract(0, "months")
         .endOf("month")
         .format(dateFormat);
-    const payload4 = {
-      orgId: orgId,
-      "endDate": selector.saveLiveleadObject.endDate ? selector.saveLiveleadObject.endDate : monthLastDate,
-      "loggedInEmpId": jsonObj.empId,
-      "startDate": selector.saveLiveleadObject.startDate ? selector.saveLiveleadObject.startDate : monthFirstDate,
-      "levelSelected": selector.saveLiveleadObject.levelSelected ? selector.saveLiveleadObject.levelSelected : null , // countey , zone etc ids active-levels API
-      "empId": jsonObj.empId,
-      "pageNo": 0,
-      "size": 5000,
-      "empSelected": selector.saveLiveleadObject?.selectedempId ? selector.saveLiveleadObject?.selectedempId : null, // selected employes id active-dropdowns APi
-      "selectedEmpId": jsonObj.empId
+      const payload4 = {
+        orgId: orgId,
+        endDate: selector.saveLiveleadObject.endDate
+          ? selector.saveLiveleadObject.endDate
+          : monthLastDate,
+        loggedInEmpId: jsonObj.empId,
+        startDate: selector.saveLiveleadObject.startDate
+          ? selector.saveLiveleadObject.startDate
+          : monthFirstDate,
+        levelSelected: selector.saveLiveleadObject.levelSelected
+          ? selector.saveLiveleadObject.levelSelected
+          : null, // countey , zone etc ids active-levels API
+        empId: jsonObj.empId,
+        pageNo: 0,
+        size: 5000,
+        empSelected: selector.saveLiveleadObject?.selectedempId
+          ? selector.saveLiveleadObject?.selectedempId
+          : null, // selected employes id active-dropdowns APi
+        selectedEmpId: jsonObj.empId,
+      };
+      // if (!selector.saveLiveleadObject?.selectedempId) {
+      dispatch(getNewTargetParametersAllData(payload4)); // TEAM
+      // }
+      //todo
+      if (!crmRole.includes(jsonObj.hrmsRole)) {
+        Promise.allSettled([
+          //dispatch(getTargetParametersAllData(payload1)),
+          dispatch(getTotalTargetParametersData(payload4)), // grand total
+
+          // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
+        ])
+          .then(() => {})
+          .catch((y) => {});
+      }
     }
-    //todo 
-    Promise.allSettled([
-      //dispatch(getTargetParametersAllData(payload1)),
-      dispatch(getTotalTargetParametersData(payload4)), // grand total
-      dispatch(getNewTargetParametersAllData(payload4)), // TEAM
-      // dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
-    ])
-      .then(() => {})
-      .catch((y) => {});
-  }
   };
 
   useEffect(() => {
@@ -941,7 +995,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                               : Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
-                            padding:14
+                            padding: 14,
                           }}
                         >
                           <Text
@@ -970,7 +1024,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                               : Colors.WHITE,
                             borderTopRightRadius: 5,
                             borderBottomRightRadius: 5,
-                            padding:14
+                            padding: 14,
                           }}
                         >
                           <Text
@@ -1020,7 +1074,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                             backgroundColor: Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
-                            padding:15
+                            padding: 15,
                           }}
                         >
                           <Text

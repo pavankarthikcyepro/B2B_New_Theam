@@ -99,8 +99,8 @@ const EventDashBoardTargetScreen = ({ route }) => {
     orgId: 0,
     branchs: [],
   });
-  const [teamLoader, setTeamLoader] = useState(false);
-  const [teamMember, setTeamMember] = useState("");
+    const [teamLoader, setTeamLoader] = useState(false);
+    const [teamMember, setTeamMember] = useState("");
   const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
   const scrollViewRef = useRef();
   const paramsMetadata = [
@@ -799,14 +799,14 @@ const EventDashBoardTargetScreen = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-      screen: "EMS",
-      params: {
-        screen: "LEADS",
-      },
-    });
-  }
+function navigateToEMS(params) {
+  navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+    screen: "EMS",
+    params: {
+      screen: "LEADS",
+    },
+  });
+}
 
   function navigateToDropLostCancel(params) {
     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
