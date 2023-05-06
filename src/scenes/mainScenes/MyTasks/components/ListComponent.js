@@ -111,7 +111,6 @@ const ListComponent = ({ route, navigation }) => {
       fromClick: false,
     });
     if (isFocused) {
-      console.log("LLLL", route.params);
       if (route.params) {
         if (route.params?.from) {
           dispatch(updateCurrentScreen(route.params.from));
@@ -194,43 +193,6 @@ const ListComponent = ({ route, navigation }) => {
     initialTask("TODAY");
   }, []);
 
-  useEffect(() => {
-    // getData();
-  }, []);
-
-  const getData = () => {
-    switch (route.params.from) {
-      case "TODAY":
-        getCount(route.params.from);
-        break;
-      case "PENDING":
-        getCount(route.params.from);
-        break;
-      case "RESCHEDULE":
-        getCount(route.params.from);
-        break;
-      case "CLOSED":
-        getCount(route.params.from);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const getCount = async (tabName) => {
-    try {
-      const employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      setMyTasksData([...defaultData]);
-      setMyTeamsData([...defaultData]);
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
   //     setSelectedFilter("TODAY");
