@@ -481,6 +481,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       }
 
       Promise.all([
+       
         dispatch(getOrganaizationHirarchyList(payload)),
         dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
         dispatch(
@@ -844,6 +845,9 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
   useEffect(() => {
     setIsTeam(selector.isTeam);
   }, [selector.isTeam]);
+
+
+ 
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();

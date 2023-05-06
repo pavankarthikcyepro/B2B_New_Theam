@@ -64,6 +64,78 @@ export const getLeadsListReceptionist = createAsyncThunk(
 );
 
 
+
+export const getLeadsListXrole = createAsyncThunk(
+  "ENQUIRY/getLeadsListXrole",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LEAD_LIST_XROLE();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+
+export const getLiveleadsReceptinoist = createAsyncThunk(
+  "ENQUIRY/getLiveleadsReceptinoist",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LIVE_LEAD_LIST_RECEPTINOST();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getLiveleadsReceptinoistManager = createAsyncThunk(
+  "ENQUIRY/getLiveleadsReceptinoistManager",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LIVE_LEAD_LIST_RECEPTINOST_MANAGER();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getSalesHomeDashbaordRedirections = createAsyncThunk(
+  "ENQUIRY/getSalesHomeDashbaordRedirections",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_SALES_DASHBOARD_LEADS();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 export const getLeadsListCRM = createAsyncThunk(
   "ENQUIRY/getLeadsListCRM",
   async (payload, { rejectWithValue }) => {
@@ -202,7 +274,33 @@ const enquirySlice = createSlice({
       }
 
     });
-    builder.addCase(getLeadsListCRM.rejected, (state, action) => {
+    builder.addCase(getLeadsListReceptionist.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+
+    builder.addCase(getLeadsListXrole.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLeadsListXrole.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    builder.addCase(getLeadsListXrole.rejected, (state, action) => {
       state.leadList = [];
       state.leadList_status = "rejected";
       state.isLoading = false;
@@ -227,11 +325,92 @@ const enquirySlice = createSlice({
       }
 
     });
-    builder.addCase(getLeadsListReceptionist.rejected, (state, action) => {
+    builder.addCase(getLeadsListCRM.rejected, (state, action) => {
       state.leadList = [];
       state.leadList_status = "rejected";
       state.isLoading = false;
     });
+
+    builder.addCase(getLiveleadsReceptinoist.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLiveleadsReceptinoist.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLiveleadsReceptinoist.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+
+    builder.addCase(getLiveleadsReceptinoistManager.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLiveleadsReceptinoistManager.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLiveleadsReceptinoistManager.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+
+
+    builder.addCase(getSalesHomeDashbaordRedirections.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getSalesHomeDashbaordRedirections.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getSalesHomeDashbaordRedirections.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    
+  
   }
 });
 

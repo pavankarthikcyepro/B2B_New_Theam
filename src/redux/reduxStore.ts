@@ -35,7 +35,10 @@ import liveLeadsReducer from "./liveLeadsReducer";
 import settingReducer from "./settingReducer";
 import complaintTrackerReducer from "./complaintTrackerReducer";
 import digitalPaymentReducer from "./digitalPaymentReducer";
-
+import liveLeadsReducerReceptionist from "./liveLeadsReducerReceptionist";
+import digitalDashboardReducer from "./digitalDashboardReducer";
+import webCallReducer from "./webCallReducer";
+import recordedCallsReducer from "./recordedCallsReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -72,6 +75,10 @@ const reducer = combineReducers({
   settingReducer,
   complaintTrackerReducer,
   digitalPaymentReducer,
+  liveLeadsReducerReceptionist,
+  digitalDashboardReducer,
+  webCallReducer,
+  recordedCallsReducer,
 });
 
 const createDebugger = require("redux-flipper").default;

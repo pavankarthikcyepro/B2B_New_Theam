@@ -222,6 +222,15 @@ export const getTargetParametersEmpData = createAsyncThunk("LIVE_LEADS/getTarget
     }
  return json;
 })
+// self Receptionist/ tele caller / CRE
+export const getTargetReceptionistData = createAsyncThunk("LIVE_LEADS/getTargetReceptionistData", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_SELF_RECEPTIONIST(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
 
 export const getGroupDealerRanking = createAsyncThunk("LIVE_LEADS/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
 
@@ -411,6 +420,33 @@ export const saveFilterPayload = createAsyncThunk(
     }
 );
 
+// CRM live leads tree
+export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS/getManagerLiveLeads", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_MANAGERDATA(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getCRMEmployeesDropDownData = createAsyncThunk(
+    "HOME/getCRMEmployeesDropDownData",
+    async (payload: any, { rejectWithValue }) => {
+        const response = await client.post(
+            URL.GET_CRM_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId),
+            payload.selectedIds
+        );
+        const json = await response.json();
+
+        if (!response.ok) {
+            return rejectWithValue(json);
+        }
+        return json;
+    }
+);
+
+
 const AVAILABLE_SCREENS = [
     {
         "menuId": 81,
@@ -472,7 +508,11 @@ export const liveLeadsSlice = createSlice({
         filterPayload: {},
         filterSelectedData: {},
         levelSelected:[],
-        saveLiveleadObject:{}
+        saveLiveleadObject:{},
+        saveLiveleadObjectCRM: {},
+        receptionist_self_data:[],
+        crm_response_data: [],
+        crm_employees_drop_down_data: {},
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -511,6 +551,17 @@ export const liveLeadsSlice = createSlice({
         },
         updateLiveLeadObjectData: (state, action) => {
             state.saveLiveleadObject = action.payload;
+        },
+        updateLiveLeadObjectDataCRM: (state, action) => {
+            state.saveLiveleadObjectCRM = action.payload;
+        },
+        updateEmployeeDropdownData: (state, action) => {
+            state.employees_drop_down_data = {};
+        },
+        updateEmployeeDropdownDataCRMLiVeLeads: (state, action) => {
+           
+            
+            state.crm_employees_drop_down_data = {};
         },
         clearState: (state, action) => {
             state.serchtext = ""
@@ -552,6 +603,9 @@ export const liveLeadsSlice = createSlice({
             state.branchrank_list = []
             state.self_target_parameters_data =empData
             state.insights_target_parameters_data =empData
+            state.receptionist_self_data = [],
+            state.crm_response_data = [],
+                state.crm_employees_drop_down_data = {}
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -840,6 +894,23 @@ export const liveLeadsSlice = createSlice({
                 state.self_target_parameters_data = empData;
                 state.isLoading = false;
             })
+
+            // self receptionist / tele caller / cre
+            .addCase(getTargetReceptionistData.pending, (state, action) => {
+                state.receptionist_self_data = [];
+                state.isLoading = true;
+            })
+            .addCase(getTargetReceptionistData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.receptionist_self_data = action.payload;
+                }
+                state.isLoading = false;
+            })
+            .addCase(getTargetReceptionistData.rejected, (state, action) => {
+                state.receptionist_self_data = [];
+                state.isLoading = false;
+            })
+
             .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
                 state.insights_target_parameters_data = empData;
                 state.isLoading = true;
@@ -1021,10 +1092,42 @@ export const liveLeadsSlice = createSlice({
         builder.addCase(getDesignationDropdown.rejected, (state, action) => {
             // state.isLoading = false;
         })
+
+
+        // Get CRM Live leads Data
+        builder.addCase(getCRM_ManagerLiveLeads.pending, (state, action) => {
+            state.isLoading = true;
+            state.crm_response_data= [];
+        })
+        builder.addCase(getCRM_ManagerLiveLeads.fulfilled, (state, action) => {
+            if (action.payload) {
+                
+                state.crm_response_data = action.payload; 
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getCRM_ManagerLiveLeads.rejected, (state, action) => {
+            state.isLoading = false;
+            state.crm_response_data = [];
+        })
+
+            // Get  CRM Employees Drop Down Data
+            .addCase(getCRMEmployeesDropDownData.pending, (state, action) => {
+                state.crm_employees_drop_down_data = {};
+            })
+            .addCase(getCRMEmployeesDropDownData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.crm_employees_drop_down_data = action.payload;
+                }
+            })
+            .addCase(getCRMEmployeesDropDownData.rejected, (state, action) => {
+                state.crm_employees_drop_down_data = {};
+            })
     }
 });
 
 export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData
-    , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData  } = liveLeadsSlice.actions;
+    , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM,
+    updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads  } = liveLeadsSlice.actions;
 export default liveLeadsSlice.reducer;
 

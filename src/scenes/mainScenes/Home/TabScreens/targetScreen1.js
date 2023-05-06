@@ -567,7 +567,6 @@ const TargetScreen = ({ route }) => {
       ...allParameters[0],
       targetAchievements: selector.totalParameters,
     };
-
     setAllParameters(allParameters);
   }, [selector.totalParameters]);
 
@@ -1670,11 +1669,9 @@ const TargetScreen = ({ route }) => {
                                           AppNavigator.HomeStackIdentifiers
                                             .sourceModel,
                                           {
-                                            empId: item.empId,
+                                            empId:  item.empId,
                                             headerTitle: item.empName,
-                                            loggedInEmpId:
-                                              selector.login_employee_details
-                                                .empId,
+                                            loggedInEmpId: selector.login_employee_details.empId,
                                             orgId:
                                               selector.login_employee_details
                                                 .orgId,

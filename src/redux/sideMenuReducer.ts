@@ -34,6 +34,12 @@ const data = [
     pngIcon: require("../assets/images/Help_Desk-01.png"),
   },
   {
+    title: "Live Leads Receptionist",
+    icon: HOME_LINE_STR,
+    screen: 170,
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
+  },
+  {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
@@ -43,6 +49,12 @@ const data = [
     title: "Digital Dashboard",
     icon: DIGITAL_DASHBOARD,
     screen: 118,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "Receptionist Dashboard",
+    icon: DIGITAL_DASHBOARD,
+    screen: 171,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {

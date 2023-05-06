@@ -65,6 +65,7 @@ export const RenderSelfInsights = (args) => {
 
   return getRearrangeArray().map((item, index) => {
     if (item) {
+      
       return (
         <View
           style={{ flexDirection: "row", marginLeft: 8 }}

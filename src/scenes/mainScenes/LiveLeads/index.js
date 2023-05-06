@@ -687,7 +687,6 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         empSelected: empSelected ? [empSelected] : null, // selected employes id active-dropdowns APi
       };
       return payload;
-
       // dispatch(getTargetParametersEmpDataInsights(payload))
     }
   };

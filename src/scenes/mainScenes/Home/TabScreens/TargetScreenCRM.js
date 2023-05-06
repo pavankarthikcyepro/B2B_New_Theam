@@ -1465,7 +1465,7 @@ const TargetScreenCRM = ({ route }) => {
                       >
                         {item.emp_name}
                         {"  "}
-                        {"-   " + item?.roleName}
+                        {"-   " + item.roleName}
                       </Text>
                     </View>
                     <View style={{ flexDirection: "row" }}></View>
@@ -3230,6 +3230,8 @@ const TargetScreenCRM = ({ route }) => {
                                         item.emp_id
                                       );
                                     }
+
+                                    
                                   }
                                 }}
                               >
@@ -3409,7 +3411,7 @@ const TargetScreenCRM = ({ route }) => {
                     bounces={false}
                     scrollEventThrottle={16}
                   >
-                    <View>
+                    <View >
                       <View key={"headers"} style={styles.view3}>
                         {/* <View
                           style={{ width: 100, height: 20, marginRight: 5,alignItems:"center" }}

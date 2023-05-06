@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://dev-api.cyepro.com/";
+export const baseUrl = "http://qa-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -197,6 +197,7 @@ const URL = {
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },
+  GET_CALL_URI: () => sales_url + `/callrecording/saveCallRecordings`,
   GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
     return (
       sales_url +
@@ -351,6 +352,10 @@ const URL = {
 
   GET_DET_FROM_PHONE: (phone, orgId) =>
     sales_url + `/lead/phone/${phone}/${orgId}`,
+
+  GET_DET_COMPLAINT_EMP_DASHBOARD: (empid) =>
+    sales_url + `/complainttracker/getEmpComplaintDashboard/${empid}`,
+
   GET_COMPLAIN_FACTOR_DATA: (orgId) =>
     baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
 
@@ -385,6 +390,14 @@ const URL = {
   GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
     return sales_url + `/booking-amount/lead/${leadId}`;
   },
+  GET_RECORDED_CALLS: (taskId) => {
+    return sales_url + `/callrecording/getCallHistory-urls?recordId=${taskId}`;
+  },
+
+  SAVE_BOOKING_CANCEL_ATTACHMENT: () => {
+    return sales_url + `/payment/saveReceiptdoc`;
+  },
+
   GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
     return sales_url + `/workflow/lead/stage/${universalId}`;
   },
@@ -394,6 +407,14 @@ const URL = {
       `/dms/getAllServiceEventsByFilterWithoutPagination?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
+
+  UPLOAD_ATTACHMENTS: () => {
+    return (
+      notificationServices_url +
+      `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`
+    );
+  },
+
   GENERATE_OTP: () => {
     return notificationServices_url + "/generateOTP";
   },
@@ -403,9 +424,22 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
+  // ORG_HIRARCHY: (orgId, empId) => {
+  //   return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+  // },
+
   ORG_HIRARCHY: (orgId, empId) => {
+    return orgnaizationHirarchy + `/v1/active-levels/${orgId}/${empId}`;
+  },
+  ORG_HIRARCHY2: (orgId, empId) => {
     return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   },
+  ORG_HIRARCHY_DEALDER_DESIGNATIONS: (orgId, empId) => {
+    return (
+      orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`
+    );
+  },
+
   LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
   VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",
   EVENT_DATA: () => dashboard + "/v2/get_events_data",
@@ -421,6 +455,12 @@ const URL = {
     sales_url + "/lead-drop/receptionist/leadlist",
   DROP_ANALYSIS_LIST_REDIRECTIONS_CRM: () =>
     sales_url + "/lead-drop/receptionistManager/leadlist",
+
+  DROP_ANALYSIS_LIST_REDIRECTIONS_XROLE: () =>
+    sales_url + "/lead-drop/XRoleManager/leadlist",
+
+  DROP_ANALYSIS_LIST_REDIRECTIONS_SALESHOME: () =>
+    baseUrl + "dfd/dashboard/leads/redirection",
 
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
@@ -487,6 +527,19 @@ const URL = {
   GET_LEAD_LIST_RECEPTINOST: () => {
     return sales_url + "/lead/receptionist/allByDateNew";
   },
+  GET_LEAD_LIST_XROLE: () => {
+    return sales_url + "/lead/XRoleManager/allByDateNew";
+  },
+  GET_LIVE_LEAD_LIST_RECEPTINOST: () => {
+    return sales_url + "/lead/receptionistLiveLeads/allByDateNew";
+  },
+
+  GET_LIVE_LEAD_LIST_RECEPTINOST_MANAGER: () => {
+    return sales_url + "/lead/receptionistManagerLiveLeads/allByDateNew";
+  },
+  GET_SALES_DASHBOARD_LEADS: () => {
+    return baseUrl + "dfd/dashboard/ebrleads/redirection";
+  },
   GET_LEAD_LIST_CRM: () => {
     return sales_url + "/lead/receptionistManager/allByDateNew";
   },
@@ -501,6 +554,11 @@ const URL = {
   },
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
     return orgnaizationHirarchy + `/getcrmchild/digital/${orgId}/${employeeId}`;
+  },
+  GET_CRM_EMPLOYEES_DROP_DOWN_DATA_RECEP: (orgId, employeeId) => {
+    return (
+      orgnaizationHirarchy + `/getcrmchild/reception/${orgId}/${employeeId}`
+    );
   },
   GET_MAP_COORDINATES_BY_ID: (employeeId, orgId, date) => {
     // return `http://automatestaging-1871827587.ap-south-1.elb.amazonaws.com:8081/sales/employeeTracking/getDetailsByDate/1205/22/2023-01-05`;
@@ -586,6 +644,15 @@ const URL = {
   UPDATE_REF: () => {
     return sales_url + `/lead-customer-reference/update`;
   },
+
+  GET_LEAD_DROP_DETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/lead-drop/leaddropdetails/${leadid}`;
+  },
+
+  GET_LEAD_RECEPDETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/payment/getReceiptdoc/${leadid}`;
+  },
+
   GET_BRANCH: () => {
     return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
   },
@@ -677,6 +744,14 @@ const URL = {
   GET_LEADERBOARD_DATA_branch: (orgId, branchId) => {
     return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
+  GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
+    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId;
+  },
+
+  GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
+  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId;
+  },
+
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
     return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
   },
@@ -754,6 +829,11 @@ const URL = {
     `${dashboard}/v4/get_target_params_for_all_emps_model_source`,
   GET_LIVE_LEADS_SELF: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params_for_emp`,
+
+  GET_LIVE_LEADS_SELF_RECEPTIONIST: () => `${dashboard}/receptionistLiveLeads`,
+
+  GET_LIVE_LEADS_MANAGERDATA: () => `${dashboard}/managerLiveLeads`,
+
   GET_LIVE_LEADS_INSIGHTS: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () =>
@@ -836,12 +916,36 @@ const URL = {
   RECEPTIONIST_MANAGER_DASHBOARD_CRM: () => {
     return dashboard + "/receptionistManagerTeam";
   },
+  RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE: () => {
+    return dashboard + "/SalesManagerDigitalTeam";
+  },
   RECEPTIONIST_MANAGER_TEAM: () => {
     return dashboard + "/receptionistTeam";
   },
   RECEPTIONIST_SOURCE: () => {
     return dashboard + "/receptionist/source";
   },
+  RECEPTIONIST_SOURCE_LIVE: () => {
+    return dashboard + "/liveLeads/source";
+  },
+  RECEPTIONIST_MODEL_LIVE: () => {
+    return dashboard + "/liveLeads/model";
+  },
+
+  XROLE_MODEL_LIVE: () => {
+    return dashboard + "/xrole/model";
+  },
+  XROLE_SOURCE_LIVE: () => {
+    return dashboard + "/xrole/source";
+  },
+
+  CRM_SOURCE_LIVE: () => {
+    return dashboard + "/managerLiveLeads/source";
+  },
+  CRM_MODAL_LIVE: () => {
+    return dashboard + "/managerLiveLeads/model";
+  },
+
   RECEPTIONIST_MODEL: () => {
     return dashboard + "/receptionist/model";
   },

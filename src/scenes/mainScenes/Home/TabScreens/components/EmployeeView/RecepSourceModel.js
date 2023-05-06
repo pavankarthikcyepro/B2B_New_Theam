@@ -17,7 +17,9 @@ import {
   getReceptionistManagerModel,
   getReceptionistManagerSource,
   getReceptionistModel,
+  getReceptionistModelLive,
   getReceptionistSource,
+  getReceptionistSourceLive,
   getSourceModelDataForSelf,
 } from "../../../../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
@@ -25,6 +27,7 @@ import { IconButton } from "react-native-paper";
 import { AppNavigator } from "../../../../../../navigations";
 import { achievementPercentage } from "../../../../../../utils/helperFunctions";
 import AnimLoaderComp from "../../../../../../components/AnimLoaderComp";
+import { useIsFocused } from "@react-navigation/native";
 
 const RecepSourceModel = ({ route, navigation }) => {
   const paramsMetadata = [
@@ -71,8 +74,10 @@ const RecepSourceModel = ({ route, navigation }) => {
       toggleIndex: 0,
     },
   ];
+  const idFocused= useIsFocused();
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
+  const liveLeads_selector = useSelector((state) => state.liveLeadsReducer);
   const {
     empId,
     loggedInEmpId,
@@ -81,7 +86,7 @@ const RecepSourceModel = ({ route, navigation }) => {
     type,
     moduleType,
     role,
-    branchList,
+    branchList, empList, self
   } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -96,67 +101,98 @@ const RecepSourceModel = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef();
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <IconButton
-          icon="arrow-left"
-          color={Colors.WHITE}
-          size={30}
-          onPress={() => {
-            if (role == "Reception") {
-              navigation.pop();
-            } else if (role == "CRM") {
-              navigation.pop();
-            } else {
-              navigation.goBack();
-            }
-          }}
-        />
-      ),
-    });
-  }, [navigation]);
-
   useEffect(async () => {
-    navigation.setOptions({
-      title: headerTitle ? headerTitle : "Source/Model",
-    });
-    if (isSourceIndex !== 0) {
+    navigation.addListener("focus", () => {
       setIsSourceIndex(0);
-    }
-    setIsLoading(true);
-    let newPayload = {
-      orgId: orgId,
-      loggedInEmpId: loggedInEmpId,
-      "startDate": selector.receptionistFilterIds.startDate,
-      "endDate": selector.receptionistFilterIds.endDate,
-      "dealerCodes": selector.receptionistFilterIds.dealerCodes
-    };
-    let payload = {
-      orgId: orgId,
-      branchList: branchList,
-    };
-    if (role == "Reception" || role == "Tele Caller") {
-      dispatch(getReceptionistSource(newPayload));
-      dispatch(getReceptionistModel(newPayload));
-    } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
-      dispatch(getReceptionistManagerSource(newPayload));
-      dispatch(getReceptionistManagerModel(newPayload));
-    } else if (selector.saveCRMfilterObj?.selectedempId){
-      let newPayload2 = {
-        orgId: orgId,
-        loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
-        "startDate": selector.saveCRMfilterObj.startDate,
-        "endDate": selector.saveCRMfilterObj.endDate,
-        "dealerCodes": selector.saveCRMfilterObj.dealerCodes
-      };
-      dispatch(getReceptionistSource(newPayload2));
-      dispatch(getReceptionistModel(newPayload2));
-    }
-     else {
-      dispatch(getReceptionistManagerSource(payload));
-      dispatch(getReceptionistManagerModel(payload));
-    }
+      getTotal(0);
+      setToggleParamsIndex(0);
+      navigation.setOptions({
+        headerLeft: () => (
+          <IconButton
+            icon="arrow-left"
+            color={Colors.WHITE}
+            size={30}
+            onPress={() => {
+              // if (role == "Reception") {
+              //   navigation.pop();
+              // } else if (role == "CRM") {
+              //   navigation.pop();
+              // } else 
+              if (moduleType === "live-leads") {
+                navigation.navigate(
+                  AppNavigator.DrawerStackIdentifiers.liveLeads)
+              } else if (moduleType === "DigitalDashboard"){
+                navigation.navigate(
+                  AppNavigator.DrawerStackIdentifiers.digitalDashboard)
+              }
+              else {
+                navigation.goBack();
+              }
+            }}
+          />
+        ),
+      });
+
+      navigation.setOptions({
+        title: headerTitle ? headerTitle : "Source/Model",
+      });
+      if (isSourceIndex !== 0) {
+        setIsSourceIndex(0);
+      }
+      setIsLoading(true);
+     
+      if (moduleType === "live-leads") {
+        // let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": selector.saveLiveleadObject?.levelSelected }
+        // dispatch(getReceptionistSourceLive(payloadReceptionist));
+        // dispatch(getReceptionistModelLive(payloadReceptionist));
+      } else {
+        let newPayload = {
+          orgId: orgId,
+          loggedInEmpId: loggedInEmpId,
+          "startDate": selector.receptionistFilterIds.startDate,
+          "endDate": selector.receptionistFilterIds.endDate,
+          "dealerCodes": selector.receptionistFilterIds.dealerCodes,
+          "empList":empList? empList : null
+        };
+        let payload = {
+          orgId: orgId,
+          branchList: branchList,
+        };
+       
+        if (role == "Reception" || role == "Tele Caller" || role == "CRE" || role == "Field DSE" || role == "CRM_INd") {
+          dispatch(getReceptionistSource(newPayload));
+          dispatch(getReceptionistModel(newPayload));
+        } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
+          let newPayload3 = {
+            orgId: orgId,
+            loggedInEmpId: loggedInEmpId,
+            "startDate": selector.receptionistFilterIds.startDate,
+            "endDate": selector.receptionistFilterIds.endDate,
+            "dealerCodes": selector.receptionistFilterIds.dealerCodes,
+            "empList": empList ? empList : null,
+            "self": self
+          };
+          dispatch(getReceptionistManagerSource(newPayload3));
+          dispatch(getReceptionistManagerModel(newPayload3));
+        } else if (selector.saveCRMfilterObj?.selectedempId) {
+          let newPayload2 = {
+            orgId: orgId,
+            loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+            "startDate": selector.saveCRMfilterObj.startDate,
+            "endDate": selector.saveCRMfilterObj.endDate,
+            "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+          };
+          dispatch(getReceptionistSource(newPayload2));
+          dispatch(getReceptionistModel(newPayload2));
+        }
+        else {
+          dispatch(getReceptionistManagerSource(payload));
+          dispatch(getReceptionistManagerModel(payload));
+        }
+      }
+    })
+    
+    
   }, [empId, navigation]);
 
   useEffect(() => {
@@ -169,6 +205,28 @@ const RecepSourceModel = ({ route, navigation }) => {
     // data = data.filter((x) => x.toggleIndex === 0);
     setToggleParamsMetaData([...data]);
   }, [isSourceIndex]);
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      if (moduleType === "live-leads") {
+      
+        if (liveLeads_selector.saveLiveleadObject?.levelSelected !== "") {
+          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected }
+          dispatch(getReceptionistSourceLive(payloadReceptionist));
+          dispatch(getReceptionistModelLive(payloadReceptionist));
+        } else {
+          let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId }
+          dispatch(getReceptionistSourceLive(payloadReceptionist));
+          dispatch(getReceptionistModelLive(payloadReceptionist));
+        }
+
+      }
+    })
+    
+  
+    
+  }, [liveLeads_selector.saveLiveleadObject])
+  
 
   useEffect(() => {
     if (selector.sourceModelData) {
