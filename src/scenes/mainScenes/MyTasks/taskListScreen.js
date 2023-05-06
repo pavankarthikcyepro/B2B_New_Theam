@@ -224,7 +224,6 @@ const TaskListScreen = ({ route, navigation }) => {
           renderItem={({ item, index }) => {
             return (
               <View style={{ marginHorizontal: 10 }}>
-                <Text>{index + 1}</Text>
                 <MyTaskNewItem
                   updatedOn={item.updatedOn}
                   name={item.customerName}
