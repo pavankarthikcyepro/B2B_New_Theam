@@ -9,7 +9,6 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  ScrollView,
   Keyboard,
   Image,
   Platform,
@@ -61,6 +60,7 @@ import {
   updateFilterLeadership_selectedDesignation,
   updateFilterLeadership_selectedDesignationName,
   updateLeaderShipFilter,
+  updateLoader,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -1650,6 +1650,7 @@ const HomeScreen = ({ route, navigation }) => {
                       : Colors.RED,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
+                    padding: 14,
                   }}
                 >
                   <Text
@@ -1676,6 +1677,7 @@ const HomeScreen = ({ route, navigation }) => {
                       : Colors.WHITE,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
+                    padding: 14,
                   }}
                 >
                   <Text
