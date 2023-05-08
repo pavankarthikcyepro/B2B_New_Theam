@@ -162,6 +162,11 @@ const ListComponent = ({ route, navigation }) => {
     },
     {
       taskCnt: 0,
+      taskName: "Re Test Drive",
+      myTaskList: [],
+    },
+    {
+      taskCnt: 0,
       taskName: "Test Drive Approval",
       myTaskList: [],
     },
@@ -172,19 +177,16 @@ const ListComponent = ({ route, navigation }) => {
     },
     {
       taskCnt: 0,
-      taskName: "Pre Enquiry Follow Up",
-      myTaskList: [],
-    },
-    {
-      taskCnt: 0,
       taskName: "Re Home Visit",
       myTaskList: [],
     },
     {
       taskCnt: 0,
-      taskName: "Re Test Drive",
+      taskName: "Pre Enquiry Follow Up",
       myTaskList: [],
     },
+   
+   
   ];
 
   useEffect(() => {
@@ -1407,32 +1409,32 @@ const ListComponent = ({ route, navigation }) => {
   };
   const universalCheck = (item, reTestDrive = 0, reHomeVisit = 0, status) => {
     // const myArray = status === "SElF" ? myTasksData : myTeamsData;
-    if (item.taskName === "Test Drive" && reTestDrive > 0) {
-      navigateToList(
-        filterAvailable.selectedFilterLocal,
-        filterAvailable.fromClick,
-        [item.taskName, "Re Test Drive"]
-      );
-      // const mergeTest = myArray.filter((i) => i.taskName === "Re Test Drive");
-      // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
-      // itemClicked({ myTaskList: tempArr });
-    } else if (item.taskName === "Home Visit" && reHomeVisit > 0) {
-      navigateToList(
-        filterAvailable.selectedFilterLocal,
-        filterAvailable.fromClick,
-        [item.taskName, "Re Home Visit"]
-      );
-      // const mergeTest = myArray.filter((i) => i.taskName === "Re Home Visit");
-      // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
-      // itemClicked({ myTaskList: tempArr });
-    } else {
+    // if (item.taskName === "Test Drive" && reTestDrive > 0) {
+    //   navigateToList(
+    //     filterAvailable.selectedFilterLocal,
+    //     filterAvailable.fromClick,
+    //     [item.taskName, "Re Test Drive"]
+    //   );
+    //   // const mergeTest = myArray.filter((i) => i.taskName === "Re Test Drive");
+    //   // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
+    //   // itemClicked({ myTaskList: tempArr });
+    // } else if (item.taskName === "Home Visit" && reHomeVisit > 0) {
+    //   navigateToList(
+    //     filterAvailable.selectedFilterLocal,
+    //     filterAvailable.fromClick,
+    //     [item.taskName, "Re Home Visit"]
+    //   );
+    //   // const mergeTest = myArray.filter((i) => i.taskName === "Re Home Visit");
+    //   // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
+    //   // itemClicked({ myTaskList: tempArr });
+    // } else {
       navigateToList(
         filterAvailable.selectedFilterLocal,
         filterAvailable.fromClick,
         [item.taskName]
       );
       // itemClicked(item);
-    }
+    // }
   };
 
   const itemClicked = (item) => {
@@ -1510,23 +1512,23 @@ const ListComponent = ({ route, navigation }) => {
   };
 
   const renderCount = (item, reTestCount = 0, reHomeVisitCount = 0) => {
-    if (item.taskName === "Test Drive" && reTestCount > 0) {
-      return item.taskCnt + " / " + reTestCount;
-    } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
-      return item.taskCnt + " / " + reHomeVisitCount;
-    } else {
+    // if (item.taskName === "Test Drive" && reTestCount > 0) {
+    //   return item.taskCnt + " / " + reTestCount;
+    // } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
+    //   return item.taskCnt + " / " + reHomeVisitCount;
+    // } else {
       return item.taskCnt;
-    }
+    // }
   };
 
   const renderName = (item, reTestCount = 0, reHomeVisitCount = 0) => {
-    if (item.taskName === "Test Drive" && reTestCount > 0) {
-      return checkForTaskNames(item.taskName) + " / " + "Re Test Drive";
-    } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
-      return checkForTaskNames(item.taskName) + " / " + "Re Home Visit";
-    } else {
+    // if (item.taskName === "Test Drive" && reTestCount > 0) {
+    //   return checkForTaskNames(item.taskName) + " / " + "Re Test Drive";
+    // } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
+    //   return checkForTaskNames(item.taskName) + " / " + "Re Home Visit";
+    // } else {
       return checkForTaskNames(item.taskName);
-    }
+    // }
   };
   const RenderModal = () => {
     return (
@@ -1896,7 +1898,7 @@ const ListComponent = ({ route, navigation }) => {
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
-            if (restrictArray.includes(item.taskName)) return;
+            // if (restrictArray.includes(item.taskName)) return;
             let reTestDriveCount = reTestDriveCountFun(item);
             let reHomeVisit = reHomeVisitCountFun(item);
             const chartHeight = itemWidth - 20;
@@ -1976,7 +1978,7 @@ const ListComponent = ({ route, navigation }) => {
           extraData={myTeamsData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
-            if (restrictArray.includes(item.taskName)) return;
+            // if (restrictArray.includes(item.taskName)) return;
             let reTestDriveCount = reTestDriveCountFun(item);
             let reHomeVisit = reHomeVisitCountFun(item);
             const chartHeight = itemWidth - 20;
