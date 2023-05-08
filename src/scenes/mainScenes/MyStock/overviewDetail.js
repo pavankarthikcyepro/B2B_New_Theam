@@ -72,16 +72,16 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           };
           payload = { ...payload, ...newPayload };
         }
-        if (jsonObj.hrmsRole === "Admin") {
-          const branchName = jsonObj.branchs.filter(
-            (item) => item.branchId === jsonObj.branchId
-          )[0].branchName;
+        // if (jsonObj.hrmsRole === "Admin") {
+        //   const branchName = jsonObj.branchs.filter(
+        //     (item) => item.branchId === jsonObj.branchId
+        //   )[0].branchName;
 
-          let newPayload = {
-            stockyardBranchName: branchName,
-          };
-          payload = { ...payload, ...newPayload };
-        }
+        //   let newPayload = {
+        //     stockyardBranchName: branchName,
+        //   };
+        //   payload = { ...payload, ...newPayload };
+        // }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
@@ -89,18 +89,22 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           };
           if (jsonObj.hrmsRole === "Admin") {
             let newPayload = {
-              stockyardBranchName: selector.dealerCode.name,
+              stockyardBranchName: selector.dealerCode.stockyardName,
             };
             payload = { ...payload, ...newPayload };
           } else {
+            const branchName = jsonObj.branchs.filter(
+              (item) =>
+                item.locationId.toString() ===
+                selector.dealerCode.refParentId.toString()
+            )[0].branchName;
             let newPayload = {
-              branchName: selector.dealerCode.name,
+              branchName: branchName,
             };
             payload = { ...payload, ...newPayload };
           }
           payload = { ...payload, ...data };
         } else {
-
           if (jsonObj.hrmsRole === "Admin") {
             let newPayload = {
               stockyardlocationName: location,

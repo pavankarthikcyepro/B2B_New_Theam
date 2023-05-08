@@ -87,8 +87,13 @@ const VariantDetailScreen = ({ route, navigation }) => {
             };
             payload = { ...payload, ...newPayload };
           } else {
+            const branchName = jsonObj.branchs.filter(
+              (item) =>
+                item.locationId.toString() ===
+                selector.dealerCode.refParentId.toString()
+            )[0].branchName;
             let newPayload = {
-              branchName: selector.dealerCode.name,
+              branchName: branchName,
             };
             payload = { ...payload, ...newPayload };
           }
@@ -151,43 +156,76 @@ const VariantDetailScreen = ({ route, navigation }) => {
 
   const showVariant = async (item, index, lastParameter) => {
     try {
-      let payload = {
-        orgId: item?.orgId.toString(),
-        branchName: item?.branchName,
-        model: route.params?.headerTitle,
-        varient: item?.varient,
-      };
-      if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
-        let data = {
-          maxAge: selector.agingTo,
-          minAge: selector.agingFrom,
-          branchName: selector.dealerCode.name,
-        };
-        payload = { ...payload, ...data };
-      }
-      const response = await client.post(
-        URL.GET_INVENTORY_BY_VEHICLE_COLOR(),
-        payload
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
       );
-      const json = await response.json();
-      if (response.status == "200") {
-        let localData0 = { ...models };
-        let localData =
-          localData0[
-            available
-              ? "varientWise_available_stock"
-              : "varientWise_intransit_stock"
-          ];
-
-        let current = localData[index]?.innerVariant || false;
-        for (let i = 0; i < localData.length; i++) {
-          localData[i].innerVariant = false;
-          if (i === localData.length - 1) {
-            localData[index].innerVariant = !current;
-            localData[index].data = json;
-          }
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let payload = {
+          orgId: item?.orgId.toString(),
+          // branchName: item?.branchName,
+          model: route.params?.headerTitle,
+          varient: item?.varient,
+        };
+        if (jsonObj.hrmsRole === "Admin") {
+          let newPayload = {
+            stockyardBranchName: item?.branchName,
+          };
+          payload = { ...payload, ...newPayload };
+        } else {
+          let newPayload = {
+            branchName: item?.branchName,
+          };
+          payload = { ...payload, ...newPayload };
         }
-        setModels(localData0);
+        if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
+          let data = {
+            maxAge: selector.agingTo,
+            minAge: selector.agingFrom,
+            // branchName: selector.dealerCode.name,
+          };
+          if (jsonObj.hrmsRole === "Admin") {
+            let newPayload = {
+              stockyardBranchName: selector.dealerCode.stockyardName,
+            };
+            payload = { ...payload, ...newPayload };
+          } else {
+            const branchName = jsonObj.branchs.filter(
+              (item) =>
+                item.locationId.toString() ===
+                selector.dealerCode.refParentId.toString()
+            )[0].branchName;
+            let newPayload = {
+              branchName: branchName,
+            };
+            payload = { ...payload, ...newPayload };
+          }
+          payload = { ...payload, ...data };
+        }
+        const response = await client.post(
+          URL.GET_INVENTORY_BY_VEHICLE_COLOR(),
+          payload
+        );
+        const json = await response.json();
+        if (response.status == "200") {
+          let localData0 = { ...models };
+          let localData =
+            localData0[
+              available
+                ? "varientWise_available_stock"
+                : "varientWise_intransit_stock"
+            ];
+
+          let current = localData[index]?.innerVariant || false;
+          for (let i = 0; i < localData.length; i++) {
+            localData[i].innerVariant = false;
+            if (i === localData.length - 1) {
+              localData[index].innerVariant = !current;
+              localData[index].data = json;
+            }
+          }
+          setModels(localData0);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -210,7 +248,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
               style={{
                 ...styles.locationTxt,
                 textDecorationLine: noBorder ? "none" : "underline",
-                color: Colors.RED
+                color: Colors.RED,
               }}
             >
               {item?.varient}

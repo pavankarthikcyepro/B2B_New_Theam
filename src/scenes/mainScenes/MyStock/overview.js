@@ -44,6 +44,7 @@ const OverviewScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
+    console.log(selector.dealerCode);
     if (selector.dealerCode) {
       getInventory(selector.dealerCode);
     } else {
@@ -76,17 +77,17 @@ const OverviewScreen = ({ route, navigation }) => {
             branchName: branchName,
           };
           payload = { ...payload, ...newPayload };
-        } 
-        if (jsonObj.hrmsRole === "Admin") {
-          const branchName = jsonObj.branchs.filter(
-            (item) => item.branchId === jsonObj.branchId
-          )[0].branchName;
+        }
+        // if (jsonObj.hrmsRole === "Admin") {
+        //   const branchName = jsonObj.branchs.filter(
+        //     (item) => item.branchId === jsonObj.branchId
+        //   )[0].branchName;
 
-          let newPayload = {
-            stockyardBranchName: branchName,
-          };
-          payload = { ...payload, ...newPayload };
-        } 
+        //   let newPayload = {
+        //     stockyardBranchName: branchName,
+        //   };
+        //   payload = { ...payload, ...newPayload };
+        // }
         if (selector.agingTo && selector.agingFrom && selector.dealerCode) {
           let data = {
             maxAge: selector.agingTo,
@@ -97,15 +98,21 @@ const OverviewScreen = ({ route, navigation }) => {
               stockyardBranchName: selector.dealerCode.stockyardName,
             };
             payload = { ...payload, ...data2 };
-          } else {
+          }
+          if (jsonObj.hrmsRole !== "Admin") {
+            const branchName = jsonObj.branchs.filter(
+              (item) =>
+                item.locationId.toString() ===
+                selector.dealerCode.refParentId.toString()
+            )[0].branchName;
             let data2 = {
-              branchName: selector.dealerCode.stockyardName,
+              branchName: branchName,
             };
             payload = { ...payload, ...data2 };
           }
           payload = { ...payload, ...data };
         }
-        
+
         const response = await client.post(URL.GET_INVENTORY(), payload);
         const json = await response.json();
         if (json) {

@@ -95,6 +95,7 @@ const MyStockFilter = ({ route, navigation }) => {
     employeeId: "",
     employeeName: "",
     primaryDesignation: "",
+    hrmsRole:"",
   });
   const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
   const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState(
@@ -149,6 +150,7 @@ const MyStockFilter = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
         primaryDesignation: jsonObj.primaryDesignation,
+        hrmsRole: jsonObj.hrmsRole,
       });
     }
   };
@@ -235,12 +237,12 @@ const MyStockFilter = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       for (let i = 0; i < data.length; i++) {
         const id = data[i];
-        newData.push(id);
+        // newData.push(id);
         for (let j = 0; j < jsonObj.branchs.length; j++) {
           const id2 = jsonObj.branchs[j];
-          // if (id2.branchName === id.name) {
-          //   newData.push(id);
-          // }
+          if (id2.locationId.toString() === id.parentId.toString()) {
+            newData.push(id);
+          }
         }
       }
     }
@@ -753,78 +755,85 @@ const MyStockFilter = ({ route, navigation }) => {
                   <View
                     style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}
                   >
-                    <Dropdown
-                      label={"Location"}
-                      visible={true}
-                      onChange={(item) => {
-                        setSelectedLocation(item);
-                        setStockyard(item.stockyardBranches);
-                      }}
-                      data={location || []}
-                      value={selectedLocation ? selectedLocation.name : ""}
-                      labelField={"name"}
-                      valueField={"name"}
-                      placeholder={"Location"}
-                      style={[styles.dropdownElement]}
-                      placeholderStyle={{
-                        color: Colors.GRAY,
-                      }}
-                    />
-                    <Dropdown
-                      label={"Stock Yard"}
-                      visible={true}
-                      underLine
-                      onChange={(item) => {
-                        setSelectedStockyard(item);
-                        // setSelectedLocation(item);
-                      }}
-                      data={stockyard || []}
-                      value={
-                        selectedStockyard ? selectedStockyard.stockyardName : ""
-                      }
-                      labelField={"stockyardName"}
-                      valueField={"stockyardName"}
-                      placeholder={"Stock Yard"}
-                      style={[styles.dropdownElement]}
-                      placeholderStyle={{
-                        color: Colors.GRAY,
-                      }}
-                    />
-                    {/* <FlatList
-                      data={nameKeyList}
-                      listKey="ORG_TABLE"
-                      scrollEnabled={false}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item, index }) => {
-                        const data = totalDataObj[item].sublevels;
-                        let selectedNames = "";
-                        data.forEach((obj, index) => {
-                          if (
-                            obj.selected != undefined &&
-                            obj.selected == true
-                          ) {
-                            selectedNames += obj.name + ", ";
+                    {userData.hrmsRole === "Admin" ? (
+                      <>
+                        <Dropdown
+                          label={"Location"}
+                          visible={true}
+                          onChange={(item) => {
+                            setSelectedLocation(item);
+                            setStockyard(item.stockyardBranches);
+                          }}
+                          data={location || []}
+                          value={selectedLocation ? selectedLocation.name : ""}
+                          labelField={"name"}
+                          valueField={"name"}
+                          placeholder={"Location"}
+                          style={[styles.dropdownElement]}
+                          placeholderStyle={{
+                            color: Colors.GRAY,
+                          }}
+                        />
+                        <Dropdown
+                          label={"Stock Yard"}
+                          visible={true}
+                          underLine
+                          onChange={(item) => {
+                            setSelectedStockyard(item);
+                            // setSelectedLocation(item);
+                          }}
+                          data={stockyard || []}
+                          value={
+                            selectedStockyard
+                              ? selectedStockyard.stockyardName
+                              : ""
                           }
-                        });
+                          labelField={"stockyardName"}
+                          valueField={"stockyardName"}
+                          placeholder={"Stock Yard"}
+                          style={[styles.dropdownElement]}
+                          placeholderStyle={{
+                            color: Colors.GRAY,
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <FlatList
+                        data={nameKeyList}
+                        listKey="ORG_TABLE"
+                        scrollEnabled={false}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item, index }) => {
+                          const data = totalDataObj[item].sublevels;
+                          let selectedNames = "";
+                          data.forEach((obj, index) => {
+                            if (
+                              obj.selected != undefined &&
+                              obj.selected == true
+                            ) {
+                              selectedNames += obj.name + ", ";
+                            }
+                          });
 
-                        if (selectedNames.length > 0) {
-                          selectedNames = selectedNames.slice(
-                            0,
-                            selectedNames.length - 1
+                          if (selectedNames.length > 0) {
+                            selectedNames = selectedNames.slice(
+                              0,
+                              selectedNames.length - 1
+                            );
+                          }
+                          return (
+                            <View>
+                              <DropDownSelectionItem
+                                label={item}
+                                value={selectedNames}
+                                onPress={() => dropDownItemClicked(index)}
+                                takeMinHeight={true}
+                              />
+                            </View>
                           );
-                        }
-                        return (
-                          <View>
-                            <DropDownSelectionItem
-                              label={item}
-                              value={selectedNames}
-                              onPress={() => dropDownItemClicked(index)}
-                              takeMinHeight={true}
-                            />
-                          </View>
-                        );
-                      }}
-                    /> */}
+                        }}
+                      />
+                    )}
                   </View>
                   <View style={styles.submitBtnBckVw}>
                     <Button
@@ -834,7 +843,11 @@ const MyStockFilter = ({ route, navigation }) => {
                       }}
                       style={{ width: buttonWidth }}
                       mode="outlined"
-                      onPress={clearBtnClicked2}
+                      onPress={
+                        userData.hrmsRole === "Admin"
+                          ? clearBtnClicked2
+                          : clearBtnClicked
+                      }
                     >
                       Clear
                     </Button>
@@ -846,7 +859,11 @@ const MyStockFilter = ({ route, navigation }) => {
                       style={{ width: buttonWidth }}
                       contentStyle={{ backgroundColor: Colors.BLACK }}
                       mode="contained"
-                      onPress={() => submitBtnClicked2(null)}
+                      onPress={() =>
+                        userData.hrmsRole === "Admin"
+                          ? submitBtnClicked2(null)
+                          : submitBtnClicked(null)
+                      }
                     >
                       Submit
                     </Button>
