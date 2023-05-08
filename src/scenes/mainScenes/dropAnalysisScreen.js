@@ -1028,7 +1028,7 @@ const DropAnalysisScreen = ({ route, navigation }) => {
     const toggleParamsView = (event) => {
        
      
-        setToggleParamsIndex(event.nativeEvent.selectedSegmentIndex)
+        setToggleParamsIndex(event)
         // const index = event.nativeEvent.selectedSegmentIndex;
         // let data = [...paramsMetadata];
         // if (index !== 2) {
