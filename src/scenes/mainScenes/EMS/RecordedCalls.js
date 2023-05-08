@@ -48,7 +48,7 @@ const RecordedCalls = ({ navigation, route }) => {
       for (let i = 0; i < element.length; i++) {
         const trackObj = {
           url: element[i].assetUrl,
-          date: element[i].callDateTime,
+          date: element[i].start,
           duration: element[i].duration ? Number(element[i].duration) : 0,
         };
         trackArr.push(Object.assign({}, trackObj));
@@ -69,8 +69,7 @@ const RecordedCalls = ({ navigation, route }) => {
   
 
   useEffect(() => {
-    // dispatch(getRecordedCallList(1617175));
-    dispatch(getRecordedCallList(1623166));
+    dispatch(getRecordedCallList(taskId));
     return () => {
       dispatch(clearRecordedCallsData());
       TrackPlayer.reset();
@@ -179,7 +178,7 @@ const RecordedCalls = ({ navigation, route }) => {
           <View>
             <Text style={styles.mobileNumberText}>{item.mobileNo}</Text>
             <Text style={styles.timeText}>
-              {moment(item.callDateTime).format("DD/MM/YYYY HH:MM a")}
+              {moment(item.start).format("DD/MM/YYYY hh:mm a")}
             </Text>
           </View>
           <IconButton
@@ -211,7 +210,6 @@ const RecordedCalls = ({ navigation, route }) => {
                 onSlideCompleted(value, item, index);
               }}
               step={0.5}
-              // thumbImage={require("./../../../assets/images/cy.png")}
               onValueChange={(value) => onSliderValueChange(value, item, index)}
             />
             <View style={styles.timeRow}>
