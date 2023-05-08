@@ -1828,7 +1828,7 @@ const LeadsScreen = ({ route, navigation }) => {
       />
 
       <View style={styles.view1}>
-        <View style={{ width: "80%" }}>
+        <View style={{ width: "90%" }}>
           <DateRangeComp
             fromDate={selectedFromDate}
             toDate={selectedToDate}
@@ -1837,15 +1837,15 @@ const LeadsScreen = ({ route, navigation }) => {
           />
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
-          <View style={styles.filterView}>
-            <Text style={styles.text1}>{"Filter"}</Text>
+          {/* <View style={styles.filterView}> */}
+            {/* <Text style={styles.text1}>{"Filter"}</Text> */}
             <IconButton
               icon={"filter-outline"}
-              size={16}
+              size={23}
               color={Colors.RED}
               style={{ margin: 0, padding: 0 }}
             />
-          </View>
+          {/* </View> */}
         </Pressable>
       </View>
       <View style={styles.view3}>

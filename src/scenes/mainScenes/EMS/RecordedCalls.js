@@ -48,7 +48,7 @@ const RecordedCalls = ({ navigation, route }) => {
       for (let i = 0; i < element.length; i++) {
         const trackObj = {
           url: element[i].assetUrl,
-          date: element[i].start,
+          date: element[i].callDateTime,
           duration: element[i].duration ? Number(element[i].duration) : 0,
         };
         trackArr.push(Object.assign({}, trackObj));
@@ -69,8 +69,8 @@ const RecordedCalls = ({ navigation, route }) => {
   
 
   useEffect(() => {
-    // dispatch(getRecordedCallList(1600453));
-    dispatch(getRecordedCallList(taskId));
+    // dispatch(getRecordedCallList(1617175));
+    dispatch(getRecordedCallList(1623166));
     return () => {
       dispatch(clearRecordedCallsData());
       TrackPlayer.reset();
@@ -179,7 +179,7 @@ const RecordedCalls = ({ navigation, route }) => {
           <View>
             <Text style={styles.mobileNumberText}>{item.mobileNo}</Text>
             <Text style={styles.timeText}>
-              {moment(item.start).format("DD/MM/YYYY HH:MM a")}
+              {moment(item.callDateTime).format("DD/MM/YYYY HH:MM a")}
             </Text>
           </View>
           <IconButton
@@ -234,7 +234,7 @@ const RecordedCalls = ({ navigation, route }) => {
         data={recordingList}
         renderItem={renderItem}
         ListEmptyComponent={noData}
-        contentContainerStyle={[styles.container, { padding: 15 }]}
+        contentContainerStyle={{ padding: 15 }}
         ItemSeparatorComponent={itemSeparator}
       />
       <LoaderComponent visible={selector.isLoading} />
