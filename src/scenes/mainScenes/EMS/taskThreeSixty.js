@@ -277,6 +277,24 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     });
   };
 
+  const checkForEnqFollow = (item, section) => {
+    if (
+      item.taskName == "Enquiry Follow Up" &&
+      section?.title == "Planned Tasks"
+    ) {
+      let formate = "DD/MM/YYYY hh:mm a";
+      const { taskUpdatedTime } = item;
+      const current = moment().format(formate);
+      const startDate = moment(current, formate);
+      const create = moment(taskUpdatedTime).format(formate);
+      const createDate = moment(create, formate);
+      const timeDiff = startDate.diff(createDate, "hours");
+      return timeDiff;
+    } else {
+      return 0;
+    }
+  };
+
   const renderItem = ({ item, index, section }) => {
     let isHistory = section.title == "Planned Tasks";
     let isDotVisible =
@@ -325,27 +343,50 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
       }
 
       return true;
-    };
+    }
 
     const date = moment(item.taskUpdatedTime)
       .format("DD/MM/YY h:mm a")
       .split(" ");
-
-    let radioColor =
+    const radioColor =
       item.taskStatus === "CLOSED" ? Colors.DARK_GREEN : Colors.LIGHT_GRAY2;
+    const isHoursVisible = checkForEnqFollow(item, section) >= 2;
 
     return (
       <View style={styles.itemContainer}>
+        {section.data[index + 1] ? (
+          <View
+            style={[styles.progressColumn, { backgroundColor: radioColor }]}
+          />
+        ) : null}
         <View style={styles.radioContainer}>
           <View style={[styles.radioRound, { backgroundColor: radioColor }]} />
         </View>
         <TouchableOpacity
           onPress={() => itemClicked(item)}
-          style={styles.itemDetailsContainer}
+          style={[
+            styles.itemDetailsContainer,
+            isHoursVisible ? styles.cardBorder : null,
+          ]}
         >
-          <Text style={styles.dateTimeText}>
-            {date[0]} | {date[1] + " " + date[2]}
-          </Text>
+          {isHoursVisible ? (
+            <View style={styles.itemTopRow}>
+              <View style={styles.hourContainer}>
+                <Text style={styles.hourText}>{`>${checkForEnqFollow(
+                  item,
+                  section
+                )}hrs`}</Text>
+              </View>
+              <Text style={styles.dateTimeText}>
+                {date[0]} | {date[1] + " " + date[2]}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.dateTimeText}>
+              {date[0]} | {date[1] + " " + date[2]}
+            </Text>
+          )}
+
           {TaskNameView(item.taskName)}
           <Text style={styles.assigneeNameText}>
             {"Assignee: " + item.assignee?.empName}
@@ -550,6 +591,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
+  progressColumn: {
+    height: "100%",
+    width: 3,
+    backgroundColor: Colors.LIGHT_GRAY2,
+    marginTop: 27,
+    position: "absolute",
+    marginHorizontal: 8
+  },
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -578,6 +627,28 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: Colors.WHITE,
     marginHorizontal: 10,
+    borderRadius: 5,
+  },
+  cardBorder: {
+    borderLeftColor: Colors.PINK,
+    borderLeftWidth: 1.5,
+  },
+  itemTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 3,
+  },
+  hourContainer: {
+    borderRadius: 10,
+    backgroundColor: Colors.PINK,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+  },
+  hourText: {
+    fontSize: 11,
+    fontWeight: "500",
+    color: Colors.WHITE,
   },
   dateTimeText: {
     fontSize: 12,
@@ -690,6 +761,6 @@ const styles = StyleSheet.create({
     height: "80%",
     width: 1,
     backgroundColor: Colors.LIGHT_GRAY2,
-    alignSelf: "center"
+    alignSelf: "center",
   },
 });

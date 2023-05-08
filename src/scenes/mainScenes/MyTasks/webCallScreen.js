@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import WebView from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
-import { getWebCallUri } from '../../../redux/webCallReducer';
+import { clearState, getWebCallUri } from '../../../redux/webCallReducer';
 import { Colors } from '../../../styles';
 
 const WebCallScreen = ({ navigation, route }) => {
@@ -17,6 +17,9 @@ const WebCallScreen = ({ navigation, route }) => {
     const { phone, uniqueId } = route.params;
     let payload = { recordId: uniqueId, mobileNo: phone };
     dispatch(getWebCallUri(payload));
+    return () => {
+      dispatch(clearState());
+    }
   }, []);
   
   useEffect(() => {
