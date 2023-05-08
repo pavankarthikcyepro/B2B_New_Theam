@@ -17,8 +17,10 @@ import { Colors } from "../../../styles";
 
 import {
   delegateTask,
+  getCRM_ManagerLiveLeads,
   getEmployeesList,
   getReportingManagerList,
+  getTargetReceptionistData,
   getUserWiseTargetParameters,
 } from "../../../redux/liveLeadsReducer";
 import { useNavigation } from "@react-navigation/native";
@@ -33,7 +35,10 @@ import {
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import _ from "lodash";
 
+const receptionistRole = ["Reception", "Tele Caller", "CRE"];
+const crmRole = ["CRM"];
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 const boxHeight = 35;
@@ -47,7 +52,13 @@ const ParametersScreen = ({ route }) => {
   const [enqData, setEnqData] = useState(null);
   const [contactData, setContactData] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
-
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+    branchs: [],
+  });
   const [selfInsightsData, setSelfInsightsData] = useState([]);
 
   const [allParameters, setAllParameters] = useState([]);
@@ -203,7 +214,8 @@ const ParametersScreen = ({ route }) => {
         tempCon[0] = params;
         setContactData(tempCon[0]);
       }
-
+      
+      
       setSelfInsightsData([
         tempCon[0],
         tempEnq[0],
@@ -349,7 +361,7 @@ const ParametersScreen = ({ route }) => {
     } catch (error) {
       setIsLoading(false);
     }
-  }, [selector.all_emp_parameters_data]);
+  }, [selector.all_emp_parameters_data, selector.totalParameters]);
 
   useEffect(async () => {
     try {
@@ -363,7 +375,6 @@ const ParametersScreen = ({ route }) => {
         }else{
           filterParameters([])
         }
-       
       }
       setIsLoading(false);
     } catch (error) {
@@ -414,33 +425,34 @@ const ParametersScreen = ({ route }) => {
                   branchName: getBranchName(tempRawData[i].branchId),
                   employeeTargetAchievements: [],
                   tempTargetAchievements: tempRawData[i]?.targetAchievements,
-                targetAchievements: tempRawData[i]?.targetAchievements
+                  targetAchievements: tempRawData[i]?.targetAchievements,
                 });
               // if (i === tempRawData.length - 1) {
-                // localData[index].employeeTargetAchievements = tempRawData;
-                // let newIds = tempRawData.map((emp) => emp.empId);
-                // if (newIds.length >= 2 || true) {
-                //   for (let i = 0; i < newIds.length; i++) {
-                //     const element = newIds[i].toString();
-                //     let tempPayload = getTotalPayload(employeeData, element);
-                //     const response = await client.post(
-                //       URL.GET_LIVE_LEADS_INSIGHTS(),
-                //       tempPayload
-                //     );
-                //     const json = await response.json();
-                //     if (Array.isArray(json)) {
-                //       localData[index].employeeTargetAchievements[
-                //         i
-                //       ].targetAchievements = json;
-                //     }
-                //   }
-                // }
+              // localData[index].employeeTargetAchievements = tempRawData;
+              // let newIds = tempRawData.map((emp) => emp.empId);
+              // if (newIds.length >= 2 || true) {
+              //   for (let i = 0; i < newIds.length; i++) {
+              //     const element = newIds[i].toString();
+              //     let tempPayload = getTotalPayload(employeeData, element);
+              //     const response = await client.post(
+              //       URL.GET_LIVE_LEADS_INSIGHTS(),
+              //       tempPayload
+              //     );
+              //     const json = await response.json();
+              //     if (Array.isArray(json)) {
+              //       localData[index].employeeTargetAchievements[
+              //         i
+              //       ].targetAchievements = json;
+              //     }
+              //   }
+              // }
               // }
             }
           }
-          setFilterParameters([...tempRawData])
+          // setFilterParameters([...tempRawData])
           // alert(JSON.stringify(tempRawData))
-          // setAllParameters([...tempRawData]);
+          setfilterParametersApplied(true);
+          setAllParameters([...tempRawData]);
         }
       );
 
@@ -450,7 +462,7 @@ const ParametersScreen = ({ route }) => {
       //   }
       // }
     }
-  }
+  };
 
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
@@ -555,6 +567,7 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
+   
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -695,6 +708,7 @@ const ParametersScreen = ({ route }) => {
         // }
       }
     } else {
+      
       setAllParameters([...localData]);
     }
   };

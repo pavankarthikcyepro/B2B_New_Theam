@@ -46,7 +46,7 @@ const DropDown = ({
   data = [],
   selectedItems,
   keyId = "",
-  onRequestClose,
+  onRequestClose,isFromSales = false
 }) => {
   const [multipleData, setMultipleData] = useState([]);
 
@@ -76,7 +76,27 @@ const DropDown = ({
       // })
       selectedItems(multipleData, keyId);
     } else {
-      selectedItems(item, keyId, index);
+      if(isFromSales){
+        if (item.selected != undefined) {
+          item.selected = !item.selected;
+        } else {
+          item.selected = true;
+        }
+        // item.selected = true;
+       
+        selectedItems(item, keyId, index);
+      
+      }else{
+        // if (item.selected != undefined) {
+        //   item.selected = !item.selected;
+        // } else {
+        //   item.selected = true;
+        // }
+        item.selected = true;
+       
+        selectedItems(item, keyId, index);
+      }
+     
     }
   };
 

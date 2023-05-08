@@ -39,6 +39,7 @@ import moment from "moment";
 import { showToast } from "../../../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
 import { setNotificationMyTaskAllFilter } from "../../../../redux/notificationReducer";
+import { LoaderComponent } from "../../../../components";
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
@@ -78,8 +79,11 @@ const taskNames = [
   "preenquiryfollowup",
   "prebookingfollowup",
   "bookingfollowup-dse",
+  "retestdrive",
+  "rehomevisit",
 ];
 
+const restrictArray = ["Re Home Visit", "Re Test Drive"];
 const ListComponent = ({ route, navigation }) => {
   const isFocused = useIsFocused();
   const [index, setIndex] = useState(0);
@@ -88,6 +92,12 @@ const ListComponent = ({ route, navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState("TODAY");
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [employeeData, setEmployeeData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [filterAvailable, setFilterAvailable] = useState({
+    selectedFilterLocal: "",
+    fromClick: false,
+  });
+
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.mytaskReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
@@ -96,17 +106,21 @@ const ListComponent = ({ route, navigation }) => {
   );
 
   useEffect(() => {
+    setFilterAvailable({
+      selectedFilterLocal: "",
+      fromClick: false,
+    });
     if (isFocused) {
       if (route.params) {
-       
         if (route.params?.from) {
-          
           dispatch(updateCurrentScreen(route.params.from));
         }
         if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
-         
           setIndex(1);
           changeTab(1);
+        }
+        if (!route.params.isTeam) {
+          setIndex(0);
         }
         initialTask(
           notificationSelector.myTaskAllFilter
@@ -120,11 +134,10 @@ const ListComponent = ({ route, navigation }) => {
         );
         setIsOpenFilter(false);
       } else {
-        
         initialTask(selectedFilter);
       }
     }
-  }, [isFocused, selector.filterIds]);
+  }, [isFocused, selector.filterIds, route.params]);
 
   const defaultData = [
     {
@@ -162,9 +175,19 @@ const ListComponent = ({ route, navigation }) => {
       taskName: "Pre Enquiry Follow Up",
       myTaskList: [],
     },
+    {
+      taskCnt: 0,
+      taskName: "Re Home Visit",
+      myTaskList: [],
+    },
+    {
+      taskCnt: 0,
+      taskName: "Re Test Drive",
+      myTaskList: [],
+    },
   ];
+
   useEffect(() => {
-    
     setSelectedFilter("TODAY");
     setIndex(0);
     initialTask("TODAY");
@@ -181,14 +204,13 @@ const ListComponent = ({ route, navigation }) => {
   // }, [navigation]);
 
   useEffect(() => {
-    
     setMyTasksData([...defaultData]);
     setMyTeamsData([...defaultData]);
     initialTask(selectedFilter);
   }, [index]);
 
-  const initialTask = async (selectedFilterLocal,fromClick) => {
-   
+  const initialTask = async (selectedFilterLocal, fromClick) => {
+    console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -249,8 +271,9 @@ const ListComponent = ({ route, navigation }) => {
             Promise.all([dispatch(getTodayMyTasksListApi(payload))]).then(
               (res) => {
                 let tempData = [...defaultData];
-                const todaysData = res[0].payload?.todaysData[0];
-                const filteredData = todaysData.tasksList.filter((element) => {
+                // const todaysData = res[0].payload?.todaysData[0];
+                const todaysData = res[0].payload;
+                const filteredData = todaysData.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
@@ -262,7 +285,7 @@ const ListComponent = ({ route, navigation }) => {
                       (item) => item.taskName === filteredData[i].taskName
                     );
                     if (index !== -1) {
-                      tempData[index].taskCnt = filteredData[i].taskCnt;
+                      tempData[index].taskCnt = filteredData[i].taskCount;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
@@ -301,78 +324,31 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getTodayTeamTasksListApi(payload))]).then(
               (res) => {
-                let tempArr = [];
-                let tempTaskName = "";
-                let allData = res[0].payload.todaysData;
-                if (allData.length > 0) {
-                  for (
-                    let nameIndex = 0;
-                    nameIndex < taskNames.length;
-                    nameIndex++
-                  ) {
-                    let taskLists = [];
-                    for (let index = 0; index < allData.length; index++) {
-                      if (allData[index].tasksList.length > 0) {
-                        let userWiseTasks = allData[index].tasksList;
-                        for (
-                          let taskIndex = 0;
-                          taskIndex < userWiseTasks.length;
-                          taskIndex++
-                        ) {
-                          let trimName = userWiseTasks[taskIndex].taskName
-                            .toLowerCase()
-                            .trim();
-                          let finalTaskName = trimName.replace(/ /g, "");
-                          if (userWiseTasks[taskIndex].myTaskList.length > 0) {
-                            let allTasks = userWiseTasks[taskIndex].myTaskList;
-                            for (
-                              let innerIndex = 0;
-                              innerIndex < allTasks.length;
-                              innerIndex++
-                            ) {
-                              if (finalTaskName === taskNames[nameIndex]) {
-                                tempTaskName =
-                                  userWiseTasks[taskIndex].taskName;
-                                taskLists.push(allTasks[innerIndex]);
-                              }
-                            }
-                          }
-                        }
-                      }
-                      if (index === allData.length - 1) {
-                        if (taskLists.length > 0) {
-                          tempArr.push({
-                            taskCnt: taskLists.length,
-                            taskName: tempTaskName,
-                            myTaskList: taskLists,
-                          });
-                        }
-                      }
+                let tempData = [...defaultData];
+                const todaysData = res[0].payload;
+                const filteredData = todaysData.filter((element) => {
+                  const trimName = element.taskName.toLowerCase().trim();
+                  const finalTaskName = trimName.replace(/ /g, "");
+                  return taskNames.includes(finalTaskName);
+                });
+                console.log("todaysData", filteredData);
+
+                if (filteredData?.length > 0) {
+                  for (let i = 0; i < filteredData.length; i++) {
+                    let index = -1;
+                    index = tempData.findIndex(
+                      (item) => item.taskName === filteredData[i].taskName
+                    );
+                    if (index !== -1) {
+                      tempData[index].taskCnt = filteredData[i].taskCount;
+                      tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
-                    if (nameIndex === taskNames.length - 1) {
-                      // setMyTeamsData(tempArr);
-                      let tempData = [...defaultData];
-                      if (tempArr.length > 0) {
-                        for (let i = 0; i < tempArr.length; i++) {
-                          let index = -1;
-                          index = tempData.findIndex(
-                            (item) => item.taskName === tempArr[i].taskName
-                          );
-                          if (index !== -1) {
-                            tempData[index].taskCnt = tempArr[i].taskCnt;
-                            tempData[index].myTaskList = tempArr[i].myTaskList;
-                          }
-                          if (i === tempArr.length - 1) {
-                            setMyTeamsData(tempData);
-                          }
-                        }
-                      }
+                    if (i === filteredData.length - 1) {
+                      console.log("sss");
+                      setMyTeamsData(tempData);
                     }
                   }
                 }
-                // else {
-                //     setMyTeamsData([...defaultData]);
-                // }
               }
             );
           }
@@ -404,9 +380,9 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getUpcomingMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload?.upcomingData[0];
+                const todaysData = res[0].payload;
                 let tempData = [...defaultData];
-                const filteredData = todaysData.tasksList.filter((element) => {
+                const filteredData = todaysData.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
@@ -418,7 +394,7 @@ const ListComponent = ({ route, navigation }) => {
                       (item) => item.taskName === filteredData[i].taskName
                     );
                     if (index !== -1) {
-                      tempData[index].taskCnt = filteredData[i].taskCnt;
+                      tempData[index].taskCnt = filteredData[i].taskCount;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
@@ -455,78 +431,27 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getUpcomingTeamTasksListApi(payload))]).then(
               (res) => {
-                // const todaysData = res[0].payload.upcomingData[0];
-                // const filteredData = todaysData.tasksList.filter(element => {
-                //     const trimName = element.taskName.toLowerCase().trim();
-                //     const finalTaskName = trimName.replace(/ /g, "");
-                //     return taskNames.includes(finalTaskName);
-                // });
-                // setMyTeamsData(filteredData);
-                let tempArr = [];
-                let tempTaskName = "";
-                let allData = res[0].payload?.upcomingData;
+                let allData = res[0].payload;
                 if (allData?.length > 0) {
-                  for (
-                    let nameIndex = 0;
-                    nameIndex < taskNames.length;
-                    nameIndex++
-                  ) {
-                    let taskLists = [];
-                    for (let index = 0; index < allData.length; index++) {
-                      if (allData[index].tasksList.length > 0) {
-                        let userWiseTasks = allData[index].tasksList;
-                        for (
-                          let taskIndex = 0;
-                          taskIndex < userWiseTasks.length;
-                          taskIndex++
-                        ) {
-                          let trimName = userWiseTasks[taskIndex].taskName
-                            .toLowerCase()
-                            .trim();
-                          let finalTaskName = trimName.replace(/ /g, "");
-                          if (userWiseTasks[taskIndex].myTaskList.length > 0) {
-                            let allTasks = userWiseTasks[taskIndex].myTaskList;
-                            for (
-                              let innerIndex = 0;
-                              innerIndex < allTasks.length;
-                              innerIndex++
-                            ) {
-                              if (finalTaskName === taskNames[nameIndex]) {
-                                tempTaskName =
-                                  userWiseTasks[taskIndex].taskName;
-                                taskLists.push(allTasks[innerIndex]);
-                              }
-                            }
-                          }
-                        }
+                  const todaysData = res[0].payload;
+                  let tempData = [...defaultData];
+                  const filteredData = todaysData.filter((element) => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                  });
+                  if (filteredData?.length > 0) {
+                    for (let i = 0; i < filteredData.length; i++) {
+                      let index = -1;
+                      index = tempData.findIndex(
+                        (item) => item.taskName === filteredData[i].taskName
+                      );
+                      if (index !== -1) {
+                        tempData[index].taskCnt = filteredData[i].taskCount;
+                        tempData[index].myTaskList = filteredData[i].myTaskList;
                       }
-                      if (index === allData.length - 1) {
-                        if (taskLists.length > 0) {
-                          tempArr.push({
-                            taskCnt: taskLists.length,
-                            taskName: tempTaskName,
-                            myTaskList: taskLists,
-                          });
-                        }
-                      }
-                    }
-                    if (nameIndex === taskNames.length - 1) {
-                      // setMyTeamsData(tempArr);
-                      let tempData = [...defaultData];
-                      if (tempArr.length > 0) {
-                        for (let i = 0; i < tempArr.length; i++) {
-                          let index = -1;
-                          index = tempData.findIndex(
-                            (item) => item.taskName === tempArr[i].taskName
-                          );
-                          if (index !== -1) {
-                            tempData[index].taskCnt = tempArr[i].taskCnt;
-                            tempData[index].myTaskList = tempArr[i].myTaskList;
-                          }
-                          if (i === tempArr.length - 1) {
-                            setMyTeamsData(tempData);
-                          }
-                        }
+                      if (i === filteredData.length - 1) {
+                        setMyTasksData(tempData);
                       }
                     }
                   }
@@ -564,9 +489,9 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getPendingMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload?.pendingData[0];
+                const todaysData = res[0].payload;
                 let tempData = [...defaultData];
-                const filteredData = todaysData.tasksList.filter((element) => {
+                const filteredData = todaysData.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
@@ -578,7 +503,7 @@ const ListComponent = ({ route, navigation }) => {
                       (item) => item.taskName === filteredData[i].taskName
                     );
                     if (index !== -1) {
-                      tempData[index].taskCnt = filteredData[i].taskCnt;
+                      tempData[index].taskCnt = filteredData[i].taskCount;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
@@ -615,79 +540,27 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getPendingTeamTasksListApi(payload))]).then(
               (res) => {
-                // const todaysData = res[0].payload.pendingData[0];
-                // const filteredData = todaysData.tasksList.filter(element => {
-                //     const trimName = element.taskName.toLowerCase().trim();
-                //     const finalTaskName = trimName.replace(/ /g, "");
-                //     return taskNames.includes(finalTaskName);
-                // });
-                // setMyTeamsData(filteredData);
-
-                let tempArr = [];
-                let tempTaskName = "";
-                let allData = res[0].payload?.pendingData;
+                let allData = res[0].payload;
                 if (allData?.length > 0) {
-                  for (
-                    let nameIndex = 0;
-                    nameIndex < taskNames.length;
-                    nameIndex++
-                  ) {
-                    let taskLists = [];
-                    for (let index = 0; index < allData.length; index++) {
-                      if (allData[index].tasksList.length > 0) {
-                        let userWiseTasks = allData[index].tasksList;
-                        for (
-                          let taskIndex = 0;
-                          taskIndex < userWiseTasks.length;
-                          taskIndex++
-                        ) {
-                          let trimName = userWiseTasks[taskIndex].taskName
-                            .toLowerCase()
-                            .trim();
-                          let finalTaskName = trimName.replace(/ /g, "");
-                          if (userWiseTasks[taskIndex].myTaskList.length > 0) {
-                            let allTasks = userWiseTasks[taskIndex].myTaskList;
-                            for (
-                              let innerIndex = 0;
-                              innerIndex < allTasks.length;
-                              innerIndex++
-                            ) {
-                              if (finalTaskName === taskNames[nameIndex]) {
-                                tempTaskName =
-                                  userWiseTasks[taskIndex].taskName;
-                                taskLists.push(allTasks[innerIndex]);
-                              }
-                            }
-                          }
-                        }
+                  const todaysData = res[0].payload;
+                  let tempData = [...defaultData];
+                  const filteredData = todaysData.filter((element) => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                  });
+                  if (filteredData?.length > 0) {
+                    for (let i = 0; i < filteredData.length; i++) {
+                      let index = -1;
+                      index = tempData.findIndex(
+                        (item) => item.taskName === filteredData[i].taskName
+                      );
+                      if (index !== -1) {
+                        tempData[index].taskCnt = filteredData[i].taskCount;
+                        tempData[index].myTaskList = filteredData[i].myTaskList;
                       }
-                      if (index === allData.length - 1) {
-                        if (taskLists.length > 0) {
-                          tempArr.push({
-                            taskCnt: taskLists.length,
-                            taskName: tempTaskName,
-                            myTaskList: taskLists,
-                          });
-                        }
-                      }
-                    }
-                    if (nameIndex === taskNames.length - 1) {
-                      // setMyTeamsData(tempArr);
-                      let tempData = [...defaultData];
-                      if (tempArr.length > 0) {
-                        for (let i = 0; i < tempArr.length; i++) {
-                          let index = -1;
-                          index = tempData.findIndex(
-                            (item) => item.taskName === tempArr[i].taskName
-                          );
-                          if (index !== -1) {
-                            tempData[index].taskCnt = tempArr[i].taskCnt;
-                            tempData[index].myTaskList = tempArr[i].myTaskList;
-                          }
-                          if (i === tempArr.length - 1) {
-                            setMyTeamsData(tempData);
-                          }
-                        }
+                      if (i === filteredData.length - 1) {
+                        setMyTeamsData(tempData);
                       }
                     }
                   }
@@ -725,9 +598,9 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getRescheduleMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload?.rescheduledData[0];
+                const todaysData = res[0].payload;
                 let tempData = [...defaultData];
-                const filteredData = todaysData.tasksList.filter((element) => {
+                const filteredData = todaysData.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
@@ -739,7 +612,7 @@ const ListComponent = ({ route, navigation }) => {
                       (item) => item.taskName === filteredData[i].taskName
                     );
                     if (index !== -1) {
-                      tempData[index].taskCnt = filteredData[i].taskCnt;
+                      tempData[index].taskCnt = filteredData[i].taskCount;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
@@ -777,70 +650,27 @@ const ListComponent = ({ route, navigation }) => {
             Promise.all([
               dispatch(getRescheduleTeamTasksListApi(payload)),
             ]).then((res) => {
-              let tempArr = [];
-              let tempTaskName = "";
-              let allData = res[0].payload.rescheduledData;
+              let allData = res[0].payload;
               if (allData.length > 0) {
-                for (
-                  let nameIndex = 0;
-                  nameIndex < taskNames.length;
-                  nameIndex++
-                ) {
-                  let taskLists = [];
-                  for (let index = 0; index < allData.length; index++) {
-                    if (allData[index].tasksList.length > 0) {
-                      let userWiseTasks = allData[index].tasksList;
-                      for (
-                        let taskIndex = 0;
-                        taskIndex < userWiseTasks.length;
-                        taskIndex++
-                      ) {
-                        let trimName = userWiseTasks[taskIndex].taskName
-                          .toLowerCase()
-                          .trim();
-                        let finalTaskName = trimName.replace(/ /g, "");
-                        if (userWiseTasks[taskIndex].myTaskList.length > 0) {
-                          let allTasks = userWiseTasks[taskIndex].myTaskList;
-                          for (
-                            let innerIndex = 0;
-                            innerIndex < allTasks.length;
-                            innerIndex++
-                          ) {
-                            if (finalTaskName === taskNames[nameIndex]) {
-                              tempTaskName = userWiseTasks[taskIndex].taskName;
-                              taskLists.push(allTasks[innerIndex]);
-                            }
-                          }
-                        }
-                      }
+                const todaysData = res[0].payload;
+                let tempData = [...defaultData];
+                const filteredData = todaysData.filter((element) => {
+                  const trimName = element.taskName.toLowerCase().trim();
+                  const finalTaskName = trimName.replace(/ /g, "");
+                  return taskNames.includes(finalTaskName);
+                });
+                if (filteredData?.length > 0) {
+                  for (let i = 0; i < filteredData.length; i++) {
+                    let index = -1;
+                    index = tempData.findIndex(
+                      (item) => item.taskName === filteredData[i].taskName
+                    );
+                    if (index !== -1) {
+                      tempData[index].taskCnt = filteredData[i].taskCount;
+                      tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
-                    if (index === allData.length - 1) {
-                      if (taskLists.length > 0) {
-                        tempArr.push({
-                          taskCnt: taskLists.length,
-                          taskName: tempTaskName,
-                          myTaskList: taskLists,
-                        });
-                      }
-                    }
-                  }
-                  if (nameIndex === taskNames.length - 1) {
-                    // setMyTeamsData(tempArr);
-                    let tempData = [...defaultData];
-                    if (tempArr.length > 0) {
-                      for (let i = 0; i < tempArr.length; i++) {
-                        let index = -1;
-                        index = tempData.findIndex(
-                          (item) => item.taskName === tempArr[i].taskName
-                        );
-                        if (index !== -1) {
-                          tempData[index].taskCnt = tempArr[i].taskCnt;
-                          tempData[index].myTaskList = tempArr[i].myTaskList;
-                        }
-                        if (i === tempArr.length - 1) {
-                          setMyTeamsData(tempData);
-                        }
-                      }
+                    if (i === filteredData.length - 1) {
+                      setMyTeamsData(tempData);
                     }
                   }
                 }
@@ -850,13 +680,18 @@ const ListComponent = ({ route, navigation }) => {
             });
           }
         } else if (route.params.from === "CLOSED") {
-        
-          if (homeSelector.filterIds?.startDate && homeSelector.filterIds.endDate) {
-           
-            startDate = await homeSelector.filterIds?.startDate ? homeSelector.filterIds?.startDate : startDate;
-            endDate = await homeSelector.filterIds?.endDate ? homeSelector.filterIds?.endDate : endDate
+          if (
+            homeSelector.filterIds?.startDate &&
+            homeSelector.filterIds.endDate
+          ) {
+            startDate = (await homeSelector.filterIds?.startDate)
+              ? homeSelector.filterIds?.startDate
+              : startDate;
+            endDate = (await homeSelector.filterIds?.endDate)
+              ? homeSelector.filterIds?.endDate
+              : endDate;
           }
-          if (fromClick !== undefined && fromClick === true){
+          if (fromClick !== undefined && fromClick === true) {
             if (selectedFilterLocal === "TODAY") {
               startDate = currentDate;
               endDate = currentDate;
@@ -879,17 +714,16 @@ const ListComponent = ({ route, navigation }) => {
               endDate = moment(lastday).format(dateFormat);
             }
           }
-        
-          
-
 
           if (index === 0) {
             let payload = {};
             if (selectedFilterLocal !== "ALL") {
               payload = {
                 orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: true,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : true,
                 dataType: "completedData",
                 startDate: startDate,
                 endDate: endDate,
@@ -900,8 +734,10 @@ const ListComponent = ({ route, navigation }) => {
             } else {
               payload = {
                 orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: true,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : true,
                 dataType: "completedData",
                 ignoreDateFilter: true,
                 salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
@@ -910,9 +746,9 @@ const ListComponent = ({ route, navigation }) => {
             }
             Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
               (res) => {
-                const todaysData = res[0].payload?.completedData[0];
+                const todaysData = res[0].payload;
                 let tempData = [...defaultData];
-                const filteredData = todaysData.tasksList.filter((element) => {
+                const filteredData = todaysData.filter((element) => {
                   const trimName = element.taskName.toLowerCase().trim();
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
@@ -924,7 +760,7 @@ const ListComponent = ({ route, navigation }) => {
                       (item) => item.taskName === filteredData[i].taskName
                     );
                     if (index !== -1) {
-                      tempData[index].taskCnt = filteredData[i].taskCnt;
+                      tempData[index].taskCnt = filteredData[i].taskCount;
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
@@ -935,12 +771,15 @@ const ListComponent = ({ route, navigation }) => {
               }
             );
           } else if (index === 1) {
+            // if (homeSelector.isDSE){
             let payload = {};
             if (selectedFilterLocal !== "ALL") {
               payload = {
                 orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: false,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : false,
                 dataType: "completedData",
                 startDate: route.params.from ? globalStartDate : startDate,
                 endDate: route.params.from ? globalEndDate : endDate,
@@ -951,81 +790,68 @@ const ListComponent = ({ route, navigation }) => {
             } else {
               payload = {
                 orgId: jsonObj.orgId,
-                loggedInEmpId: jsonObj.empId,
-                onlyForEmp: false,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : false,
                 dataType: "completedData",
                 ignoreDateFilter: true,
                 salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
                 branchCodes: selector.filterIds?.dealerCodes || [],
               };
             }
+            // }else{
+            // let payload = {};
+            // if (selectedFilterLocal !== "ALL") {
+
+            //   payload = {
+            //     orgId: jsonObj.orgId,
+            //     loggedInEmpId: jsonObj.empId,
+            //     onlyForEmp:false,
+            //     dataType: "completedData",
+            //     startDate: route.params.from ? globalStartDate : startDate,
+            //     endDate: route.params.from ? globalEndDate : endDate,
+            //     ignoreDateFilter: false,
+            //     salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+            //     branchCodes: selector.filterIds?.dealerCodes || [],
+            //   };
+            // } else {
+            //
+            //   payload = {
+            //     orgId: jsonObj.orgId,
+            //     loggedInEmpId:  jsonObj.empId,
+            //     onlyForEmp:  false,
+            //     dataType: "completedData",
+            //     ignoreDateFilter: true,
+            //     salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+            //     branchCodes: selector.filterIds?.dealerCodes || [],
+            //   };
+            // }
+            // }
+
             Promise.all([dispatch(getCompletedTeamTasksListApi(payload))]).then(
               (res) => {
-                let tempArr = [];
-                let tempTaskName = "";
-                let allData = res[0].payload?.completedData;
+                let allData = res[0].payload;
                 if (allData?.length > 0) {
-                  for (
-                    let nameIndex = 0;
-                    nameIndex < taskNames.length;
-                    nameIndex++
-                  ) {
-                    let taskLists = [];
-                    for (let index = 0; index < allData.length; index++) {
-                      if (allData[index].tasksList.length > 0) {
-                        let userWiseTasks = allData[index].tasksList;
-                        for (
-                          let taskIndex = 0;
-                          taskIndex < userWiseTasks.length;
-                          taskIndex++
-                        ) {
-                          let trimName = userWiseTasks[taskIndex].taskName
-                            .toLowerCase()
-                            .trim();
-                          let finalTaskName = trimName.replace(/ /g, "");
-                          if (userWiseTasks[taskIndex].myTaskList.length > 0) {
-                            let allTasks = userWiseTasks[taskIndex].myTaskList;
-                            for (
-                              let innerIndex = 0;
-                              innerIndex < allTasks.length;
-                              innerIndex++
-                            ) {
-                              if (finalTaskName === taskNames[nameIndex]) {
-                                tempTaskName =
-                                  userWiseTasks[taskIndex].taskName;
-                                taskLists.push(allTasks[innerIndex]);
-                              }
-                            }
-                          }
-                        }
+                  const todaysData = res[0].payload;
+                  let tempData = [...defaultData];
+                  const filteredData = todaysData.filter((element) => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                  });
+                  if (filteredData?.length > 0) {
+                    for (let i = 0; i < filteredData.length; i++) {
+                      let index = -1;
+                      index = tempData.findIndex(
+                        (item) => item.taskName === filteredData[i].taskName
+                      );
+                      if (index !== -1) {
+                        tempData[index].taskCnt = filteredData[i].taskCount;
+                        tempData[index].myTaskList = filteredData[i].myTaskList;
                       }
-                      if (index === allData.length - 1) {
-                        if (taskLists.length > 0) {
-                          tempArr.push({
-                            taskCnt: taskLists.length,
-                            taskName: tempTaskName,
-                            myTaskList: taskLists,
-                          });
-                        }
-                      }
-                    }
-                    if (nameIndex === taskNames.length - 1) {
-                      // setMyTeamsData(tempArr);
-                      let tempData = [...defaultData];
-                      if (tempArr.length > 0) {
-                        for (let i = 0; i < tempArr.length; i++) {
-                          let index = -1;
-                          index = tempData.findIndex(
-                            (item) => item.taskName === tempArr[i].taskName
-                          );
-                          if (index !== -1) {
-                            tempData[index].taskCnt = tempArr[i].taskCnt;
-                            tempData[index].myTaskList = tempArr[i].myTaskList;
-                          }
-                          if (i === tempArr.length - 1) {
-                            setMyTeamsData(tempData);
-                          }
-                        }
+                      if (i === filteredData.length - 1) {
+                        setMyTeamsData(tempData);
                       }
                     }
                   }
@@ -1040,6 +866,405 @@ const ListComponent = ({ route, navigation }) => {
     } catch (error) {}
   };
 
+  const navigateToList = async (
+    selectedFilterLocal,
+    fromClick,
+    taskName = []
+  ) => {
+    try {
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat);
+        let startDate, endDate;
+        if (selectedFilterLocal === "TODAY") {
+          startDate = currentDate;
+          endDate = currentDate;
+        } else if (selectedFilterLocal === "MONTH") {
+          startDate = moment(currentDate, dateFormat)
+            .subtract(0, "months")
+            .startOf("month")
+            .format(dateFormat);
+          endDate = moment(currentDate, dateFormat)
+            .subtract(0, "months")
+            .endOf("month")
+            .format(dateFormat);
+        } else if (selectedFilterLocal === "WEEK") {
+          var curr = new Date(); // get current date
+          var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+          var last = first + 6; // last day is the first day + 6
+          var firstday = new Date(curr.setDate(first)).toUTCString();
+          var lastday = new Date(curr.setDate(last)).toUTCString();
+          startDate = moment(firstday).format(dateFormat);
+          endDate = moment(lastday).format(dateFormat);
+        }
+        if (route.params.from === "TODAY") {
+          if (index === 0) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "todaysData",
+                // "startDate": startDate,
+                // "endDate": endDate,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "todaysData",
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: true,
+            });
+          } else if (index === 1) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "todaysData",
+                // "startDate": startDate,
+                // "endDate": endDate,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "todaysData",
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: false,
+            });
+          }
+        } else if (route.params.from === "UPCOMING") {
+          if (index === 0) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "upcomingData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "upcomingData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+          } else if (index === 1) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "upcomingData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "upcomingData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+          }
+        } else if (route.params.from === "PENDING") {
+          if (index === 0) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "pendingData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "pendingData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: true,
+            });
+          } else if (index === 1) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "pendingData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "pendingData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: false,
+            });
+          }
+        } else if (route.params.from === "RESCHEDULE") {
+          if (index === 0) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "rescheduledData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "rescheduledData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: true,
+            });
+          } else if (index === 1) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "rescheduledData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "rescheduledData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: false,
+            });
+          }
+        } else if (route.params.from === "CLOSED") {
+          if (
+            homeSelector.filterIds?.startDate &&
+            homeSelector.filterIds.endDate
+          ) {
+            startDate = (await homeSelector.filterIds?.startDate)
+              ? homeSelector.filterIds?.startDate
+              : startDate;
+            endDate = (await homeSelector.filterIds?.endDate)
+              ? homeSelector.filterIds?.endDate
+              : endDate;
+          }
+          if (fromClick !== undefined && fromClick === true) {
+            if (selectedFilterLocal === "TODAY") {
+              startDate = currentDate;
+              endDate = currentDate;
+            } else if (selectedFilterLocal === "MONTH") {
+              startDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .startOf("month")
+                .format(dateFormat);
+              endDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .endOf("month")
+                .format(dateFormat);
+            } else if (selectedFilterLocal === "WEEK") {
+              var curr = new Date(); // get current date
+              var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+              var last = first + 6; // last day is the first day + 6
+              var firstday = new Date(curr.setDate(first)).toUTCString();
+              var lastday = new Date(curr.setDate(last)).toUTCString();
+              startDate = moment(firstday).format(dateFormat);
+              endDate = moment(lastday).format(dateFormat);
+            }
+          }
+
+          if (index === 0) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : true,
+                dataType: "completedData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : true,
+                dataType: "completedData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: true,
+            });
+          } else if (index === 1) {
+            // if (homeSelector.isDSE){
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : false,
+                dataType: "completedData",
+                startDate: route.params.from ? globalStartDate : startDate,
+                endDate: route.params.from ? globalEndDate : endDate,
+                ignoreDateFilter: false,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: route.params.selectedEmpId
+                  ? route.params.selectedEmpId
+                  : jsonObj.empId,
+                onlyForEmp: route.params.isself ? route.params.isself : false,
+                dataType: "completedData",
+                ignoreDateFilter: true,
+                salesConsultantId: selector.filterIds?.empLastSelectedIds || [],
+                branchCodes: selector.filterIds?.dealerCodes || [],
+                taskNames: taskName,
+              };
+            }
+            navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, {
+              payload: payload,
+              from: route.params.from,
+              self: false,
+            });
+          }
+        }
+      }
+    } catch (error) {}
+  };
   useEffect(() => {
     let data = {
       // todaysData: selector.myTodayData,
@@ -1180,6 +1405,35 @@ const ListComponent = ({ route, navigation }) => {
     // }
     // dispatch(getMyTasksListApi(payload));
   };
+  const universalCheck = (item, reTestDrive = 0, reHomeVisit = 0, status) => {
+    // const myArray = status === "SElF" ? myTasksData : myTeamsData;
+    if (item.taskName === "Test Drive" && reTestDrive > 0) {
+      navigateToList(
+        filterAvailable.selectedFilterLocal,
+        filterAvailable.fromClick,
+        [item.taskName, "Re Test Drive"]
+      );
+      // const mergeTest = myArray.filter((i) => i.taskName === "Re Test Drive");
+      // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
+      // itemClicked({ myTaskList: tempArr });
+    } else if (item.taskName === "Home Visit" && reHomeVisit > 0) {
+      navigateToList(
+        filterAvailable.selectedFilterLocal,
+        filterAvailable.fromClick,
+        [item.taskName, "Re Home Visit"]
+      );
+      // const mergeTest = myArray.filter((i) => i.taskName === "Re Home Visit");
+      // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
+      // itemClicked({ myTaskList: tempArr });
+    } else {
+      navigateToList(
+        filterAvailable.selectedFilterLocal,
+        filterAvailable.fromClick,
+        [item.taskName]
+      );
+      // itemClicked(item);
+    }
+  };
 
   const itemClicked = (item) => {
     if (item.myTaskList.length > 0) {
@@ -1227,13 +1481,201 @@ const ListComponent = ({ route, navigation }) => {
 
   const removeIsAllFilter = () => {
     dispatch(setNotificationMyTaskAllFilter(false));
-  }
+  };
+
+  const reTestDriveCountFun = (item) => {
+    if (item.taskName === "Test Drive") {
+      const mergeTest = myTasksData.filter(
+        (i) => i.taskName === "Re Test Drive"
+      );
+      if (mergeTest.length > 0) {
+        return mergeTest[0].taskCnt;
+      } else {
+        return 0;
+      }
+    }
+  };
+
+  const reHomeVisitCountFun = (item) => {
+    if (item.taskName === "Home Visit") {
+      const mergeTest = myTasksData.filter(
+        (i) => i.taskName === "Re Home Visit"
+      );
+      if (mergeTest.length > 0) {
+        return mergeTest[0].taskCnt;
+      } else {
+        return 0;
+      }
+    }
+  };
+
+  const renderCount = (item, reTestCount = 0, reHomeVisitCount = 0) => {
+    if (item.taskName === "Test Drive" && reTestCount > 0) {
+      return item.taskCnt + " / " + reTestCount;
+    } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
+      return item.taskCnt + " / " + reHomeVisitCount;
+    } else {
+      return item.taskCnt;
+    }
+  };
+
+  const renderName = (item, reTestCount = 0, reHomeVisitCount = 0) => {
+    if (item.taskName === "Test Drive" && reTestCount > 0) {
+      return checkForTaskNames(item.taskName) + " / " + "Re Test Drive";
+    } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
+      return checkForTaskNames(item.taskName) + " / " + "Re Home Visit";
+    } else {
+      return checkForTaskNames(item.taskName);
+    }
+  };
+  const RenderModal = () => {
+    return (
+      <Modal
+        // animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
+        transparent={true}
+        visible={isOpenFilter}
+        onRequestClose={() => setIsOpenFilter(false)}
+      >
+        <TouchableOpacity
+          style={{ width: "100%", height: "100%" }}
+          activeOpacity={1}
+          onPress={() => {
+            setIsOpenFilter(false);
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <TouchableOpacity
+              style={[
+                styles.btnWrap,
+                {
+                  backgroundColor:
+                    selectedFilter === "TODAY" ? Colors.RED : "#fff",
+                  borderTopLeftRadius: 15,
+                  borderTopRightRadius: 15,
+                  marginTop: 2,
+                },
+              ]}
+              onPress={() => {
+                if (selectedFilter !== "TODAY") {
+                  initialTask("TODAY", true);
+                }
+                removeIsAllFilter();
+                setSelectedFilter("TODAY");
+                setFilterAvailable({
+                  selectedFilterLocal: "TODAY",
+                  fromClick: true,
+                });
+                setIsOpenFilter(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.textWrap,
+                  { color: selectedFilter === "TODAY" ? "#fff" : "#333" },
+                ]}
+              >
+                Today
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.btnWrap,
+                {
+                  backgroundColor:
+                    selectedFilter === "WEEK" ? Colors.RED : "#fff",
+                },
+              ]}
+              onPress={() => {
+                if (selectedFilter !== "WEEK") {
+                  initialTask("WEEK", true);
+                }
+                removeIsAllFilter();
+                setSelectedFilter("WEEK");
+                setFilterAvailable({
+                  selectedFilterLocal: "WEEK",
+                  fromClick: true,
+                });
+                setIsOpenFilter(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.textWrap,
+                  { color: selectedFilter === "WEEK" ? "#fff" : "#333" },
+                ]}
+              >
+                This week
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.btnWrap,
+                {
+                  backgroundColor:
+                    selectedFilter === "MONTH" ? Colors.RED : "#fff",
+                },
+              ]}
+              onPress={() => {
+                if (selectedFilter !== "MONTH") {
+                  initialTask("MONTH", true);
+                }
+                removeIsAllFilter();
+                setSelectedFilter("MONTH");
+                setFilterAvailable({
+                  selectedFilterLocal: "MONTH",
+                  fromClick: true,
+                });
+                setIsOpenFilter(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.textWrap,
+                  { color: selectedFilter === "MONTH" ? "#fff" : "#333" },
+                ]}
+              >
+                This month
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.btnWrap,
+                {
+                  backgroundColor:
+                    selectedFilter === "ALL" ? Colors.RED : "#fff",
+                },
+              ]}
+              onPress={() => {
+                if (selectedFilter !== "ALL") {
+                  initialTask("ALL", true);
+                }
+                removeIsAllFilter();
+                setSelectedFilter("ALL");
+                setFilterAvailable({
+                  selectedFilterLocal: "ALL",
+                  fromClick: true,
+                });
+                setIsOpenFilter(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.textWrap,
+                  { color: selectedFilter === "ALL" ? "#fff" : "#333" },
+                ]}
+              >
+                All
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
 
   return (
     <View style={styles.mainView}>
-      <View
-        style={styles.view2}
-      >
+      <View style={styles.view2}>
         {/* <View style={{ width: "75%" }}>
                     <SegmentedControl
                         values={['My Tasks', 'Team Tasks']}
@@ -1290,6 +1732,7 @@ const ListComponent = ({ route, navigation }) => {
                     backgroundColor: index ? Colors.WHITE : Colors.RED,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
+                    padding: 14,
                   }}
                 >
                   <Text
@@ -1314,6 +1757,7 @@ const ListComponent = ({ route, navigation }) => {
                     backgroundColor: index ? Colors.RED : Colors.WHITE,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
+                    padding: 14,
                   }}
                 >
                   <Text
@@ -1365,6 +1809,7 @@ const ListComponent = ({ route, navigation }) => {
                   backgroundColor: index ? Colors.WHITE : Colors.RED,
                   borderTopLeftRadius: 5,
                   borderBottomLeftRadius: 5,
+                  padding: 14,
                 }}
               >
                 <Text
@@ -1389,6 +1834,7 @@ const ListComponent = ({ route, navigation }) => {
                   backgroundColor: index ? Colors.RED : Colors.WHITE,
                   borderTopRightRadius: 5,
                   borderBottomRightRadius: 5,
+                  padding: 14,
                 }}
               >
                 <Text
@@ -1407,14 +1853,8 @@ const ListComponent = ({ route, navigation }) => {
           (route.params.from !== "TODAY" ? (
             <View style={{ flexDirection: "row" }}>
               <View style={[styles.selfBtnWrap, { width: "75%" }]}>
-                <View
-                  style={styles.selfbtn}
-                >
-                  <Text
-                    style={styles.txt1}
-                  >
-                    Self
-                  </Text>
+                <View style={styles.selfbtn}>
+                  <Text style={styles.txt1}>Self</Text>
                 </View>
               </View>
               {route.params.from !== "TODAY" && (
@@ -1427,25 +1867,15 @@ const ListComponent = ({ route, navigation }) => {
                       style={{ height: 20, width: 10 }}
                       source={require("../../../../assets/images/more_new.png")}
                     />
-                    <Text
-                      style={styles.txt5}
-                    >
-                      Filter
-                    </Text>
+                    <Text style={styles.txt5}>Filter</Text>
                   </TouchableOpacity>
                 </View>
               )}
             </View>
           ) : (
             <View style={[styles.selfBtnWrap]}>
-              <View
-                style={styles.view3}
-              >
-                <Text
-                  style={styles.txt2}
-                >
-                  Self
-                </Text>
+              <View style={styles.view3}>
+                <Text style={styles.txt2}>Self</Text>
               </View>
             </View>
           ))}
@@ -1466,11 +1896,18 @@ const ListComponent = ({ route, navigation }) => {
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
+            if (restrictArray.includes(item.taskName)) return;
+            let reTestDriveCount = reTestDriveCountFun(item);
+            let reHomeVisit = reHomeVisitCountFun(item);
             const chartHeight = itemWidth - 20;
             const overlayViewHeight = chartHeight - 10;
             return (
               <View style={styles.list}>
-                <TouchableOpacity onPress={() => itemClicked(item)}>
+                <TouchableOpacity
+                  onPress={() =>
+                    universalCheck(item, reTestDriveCount, reHomeVisit, "SELF")
+                  }
+                >
                   <View
                     style={[
                       {
@@ -1511,29 +1948,16 @@ const ListComponent = ({ route, navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text
-                          style={styles.txt3}
-                        >
-                          {item.taskCnt}
+                        <Text style={styles.txt3}>
+                          {renderCount(item, reTestDriveCount, reHomeVisit)}
                         </Text>
-                        <Text
-                          style={styles.txt4}
-                        >
-                          {"follow up"}
-                        </Text>
+                        <Text style={styles.txt4}>{"follow up"}</Text>
                       </View>
                     </View>
-                    <View
-                      style={styles.view4}
-                    >
-                      <View
-                        style={styles.emptyView}
-                      ></View>
-                      <Text
-                        style={styles.txt6}
-                        numberOfLines={3}
-                      >
-                        {checkForTaskNames(item.taskName)}
+                    <View style={styles.view4}>
+                      <View style={styles.emptyView}></View>
+                      <Text style={styles.txt6} numberOfLines={3}>
+                        {renderName(item, reTestDriveCount, reHomeVisit)}
                       </Text>
                     </View>
                   </View>
@@ -1552,11 +1976,18 @@ const ListComponent = ({ route, navigation }) => {
           extraData={myTeamsData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
+            if (restrictArray.includes(item.taskName)) return;
+            let reTestDriveCount = reTestDriveCountFun(item);
+            let reHomeVisit = reHomeVisitCountFun(item);
             const chartHeight = itemWidth - 20;
             const overlayViewHeight = chartHeight - 10;
             return (
               <View style={styles.list}>
-                <TouchableOpacity onPress={() => itemClicked(item)}>
+                <TouchableOpacity
+                  onPress={() =>
+                    universalCheck(item, reTestDriveCount, reHomeVisit, "TEAMS")
+                  }
+                >
                   <View
                     style={[
                       {
@@ -1597,29 +2028,16 @@ const ListComponent = ({ route, navigation }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <Text
-                          style={styles.txt3}
-                        >
-                          {item.taskCnt}
+                        <Text style={styles.txt3}>
+                          {renderCount(item, reTestDriveCount, reHomeVisit)}
                         </Text>
-                        <Text
-                          style={styles.txt4}
-                        >
-                          {"follow up"}
-                        </Text>
+                        <Text style={styles.txt4}>{"follow up"}</Text>
                       </View>
                     </View>
-                    <View
-                      style={styles.view4}
-                    >
-                      <View
-                        style={styles.emptyView}
-                      ></View>
-                      <Text
-                        style={styles.txt6}
-                        numberOfLines={2}
-                      >
-                        {checkForTaskNames(item.taskName)}
+                    <View style={styles.view4}>
+                      <View style={styles.emptyView}></View>
+                      <Text style={styles.txt6} numberOfLines={2}>
+                        {renderName(item, reTestDriveCount, reHomeVisit)}
                       </Text>
                     </View>
                   </View>
@@ -1640,131 +2058,10 @@ const ListComponent = ({ route, navigation }) => {
           isLoading={selector.isTeamsTaskLoading}
         />
       )}
-
-      <Modal
-        // animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
-        transparent={true}
-        visible={isOpenFilter}
-        onRequestClose={() => setIsOpenFilter(false)}
-      >
-        <TouchableOpacity
-          style={{ width: "100%", height: "100%" }}
-          activeOpacity={1}
-          onPress={() => {
-            setIsOpenFilter(false);
-          }}
-        >
-          <View style={styles.modalContainer}>
-            <TouchableOpacity
-              style={[
-                styles.btnWrap,
-                {
-                  backgroundColor:
-                    selectedFilter === "TODAY" ? Colors.RED : "#fff",
-                  borderTopLeftRadius: 15,
-                  borderTopRightRadius: 15,
-                  marginTop: 2,
-                },
-              ]}
-              onPress={() => {
-                if (selectedFilter !== "TODAY") {
-                  initialTask("TODAY",true);
-                }
-                removeIsAllFilter();
-                setSelectedFilter("TODAY");
-                setIsOpenFilter(false);
-              }}
-            >
-              <Text
-                style={[
-                  styles.textWrap,
-                  { color: selectedFilter === "TODAY" ? "#fff" : "#333" },
-                ]}
-              >
-                Today
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.btnWrap,
-                {
-                  backgroundColor:
-                    selectedFilter === "WEEK" ? Colors.RED : "#fff",
-                },
-              ]}
-              onPress={() => {
-                if (selectedFilter !== "WEEK") {
-                  initialTask("WEEK", true);
-                }
-                removeIsAllFilter();
-                setSelectedFilter("WEEK");
-                setIsOpenFilter(false);
-              }}
-            >
-              <Text
-                style={[
-                  styles.textWrap,
-                  { color: selectedFilter === "WEEK" ? "#fff" : "#333" },
-                ]}
-              >
-                This week
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.btnWrap,
-                {
-                  backgroundColor:
-                    selectedFilter === "MONTH" ? Colors.RED : "#fff",
-                },
-              ]}
-              onPress={() => {
-                if (selectedFilter !== "MONTH") {
-                  initialTask("MONTH", true);
-                }
-                removeIsAllFilter();
-                setSelectedFilter("MONTH");
-                setIsOpenFilter(false);
-              }}
-            >
-              <Text
-                style={[
-                  styles.textWrap,
-                  { color: selectedFilter === "MONTH" ? "#fff" : "#333" },
-                ]}
-              >
-                This month
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.btnWrap,
-                {
-                  backgroundColor:
-                    selectedFilter === "ALL" ? Colors.RED : "#fff",
-                },
-              ]}
-              onPress={() => {
-                if (selectedFilter !== "ALL") {
-                  initialTask("ALL", true);
-                }
-                removeIsAllFilter();
-                setSelectedFilter("ALL");
-                setIsOpenFilter(false);
-              }}
-            >
-              <Text
-                style={[
-                  styles.textWrap,
-                  { color: selectedFilter === "ALL" ? "#fff" : "#333" },
-                ]}
-              >
-                All
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+      {/* Filter Modal Starts */}
+      <RenderModal />
+      {/* Filter Modal Ends */}
+      <LoaderComponent visible={selector.isLoading} />
     </View>
   );
 };
@@ -1783,10 +2080,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     borderWidth: 1,
     borderRadius: 5,
-    height: 41,
+    // height: 41,
     marginTop: 10,
     justifyContent: "center",
-    width: "80%",
+    width: "90%",
   },
   list: {
     height: 185,
@@ -1830,7 +2127,7 @@ const styles = StyleSheet.create({
   },
   touchable: {
     width: 80,
-    height: 40,
+    // height: 40,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -1838,6 +2135,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     marginLeft: 10,
+    padding: 14,
   },
   selfbtn: {
     width: "100%",
@@ -1846,6 +2144,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
+    padding: 15,
   },
   txt1: {
     fontSize: 16,
@@ -1859,6 +2158,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
+    padding: 15,
   },
   txt2: {
     fontSize: 16,
@@ -1880,13 +2180,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
- emptyView: {
+  emptyView: {
     width: "75%",
     backgroundColor: Colors.DARK_GRAY,
     height: 2,
     marginBottom: 13,
   },
-   txt5: {
+  txt5: {
     fontSize: 16,
     fontWeight: "600",
     color: "#fff",
@@ -1896,5 +2196,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     textAlign: "center",
-  }
+  },
 });
