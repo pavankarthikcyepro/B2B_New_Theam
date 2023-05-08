@@ -372,7 +372,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
           {isHoursVisible ? (
             <View style={styles.itemTopRow}>
               <View style={styles.hourContainer}>
-                <Text style={styles.hourText}>{`>${checkForEnqFollow(
+                <Text style={styles.hourText}>{`Last follow up >${checkForEnqFollow(
                   item,
                   section
                 )}hrs`}</Text>
@@ -641,14 +641,16 @@ const styles = StyleSheet.create({
   },
   hourContainer: {
     borderRadius: 10,
-    backgroundColor: Colors.PINK,
+    backgroundColor: Colors.WHITE,
+    borderWidth: 1,
+    borderColor: Colors.PINK,
     paddingVertical: 2,
     paddingHorizontal: 5,
   },
   hourText: {
     fontSize: 11,
     fontWeight: "500",
-    color: Colors.WHITE,
+    color: Colors.BLACK,
   },
   dateTimeText: {
     fontSize: 12,
