@@ -3726,7 +3726,15 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       default:
         break;
     }
+  }
 
+  function navigateToEMS(params) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+      },
+    });
   }
 
 
