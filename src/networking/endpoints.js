@@ -675,6 +675,12 @@ const URL = {
   GET_MY_TASKS_NEW_DATA: () => {
     return dashboard + "/v2/get_todays_datav2/filter";
   },
+  GET_MY_TASKS_NEW_DATA2: () => {
+    return dashboard + "/v3/get_todays_datav2/filter/counts";
+  },
+  GET_MY_TASKS_NEW_DATA3: () => {
+    return dashboard + "/v3/get_todays_datav2/filter";
+  },
   GET_WORK_FLOW_TASKS: (universalId) => {
     return sales_url + `/workflow/lead/universalId/${universalId}`;
   },
@@ -794,11 +800,15 @@ const URL = {
     return getLeaderBoardData + "/org/" + orgId + "/branchName/" + branchId;
   },
   GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
-    return baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId;
+    return (
+      baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId
+    );
   },
 
   GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
-  return baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId;
+    return (
+      baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId
+    );
   },
 
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
