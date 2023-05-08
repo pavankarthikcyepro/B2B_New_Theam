@@ -128,12 +128,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
     isTracker: "",
   });
   useEffect(() => {
-    getAsyncStorageData();
-    dispatch(getTaskDetailsApi(taskId));
+    // getAsyncStorageData();
+    // dispatch(getTaskDetailsApi(taskId));
   }, []);
 
   useEffect(() => {
     navigation.addListener('focus', () => {
+      getAsyncStorageData();
+      dispatch(getTaskDetailsApi(taskId));
       getCurrentLocation()
       getReasonListData("Home Visit")
     })
