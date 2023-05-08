@@ -424,6 +424,55 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
+
+  SAVEHOMEVISIT: () => {
+    return sales_url + "/task-history/savehomevisit";
+  },
+
+  UPDATELIST_HOME_VISIT: (recordid) => {
+    return sales_url + `/task-history/updateListHV/${recordid}`;
+  },
+
+  UPDATE_HOMEVISIT_WORKFLOW: (recordid) => {
+    return sales_url + `/workflow/updateHomeVisit/${recordid}`;
+  },
+
+  GET_HOME_HISTORY_COUNT: (universalId) => {
+    return (
+      sales_url + `/task-history/get-count-auditHV?customerId=${universalId}`
+    );
+  },
+
+  GET_HOME_VISIT_COUNT_DETAILS: (universalId) => {
+    return (
+      sales_url +
+      `/task-history/get-homevisit-history?customerId=${universalId}`
+    );
+  },
+
+  SAVE_RECHEDULE_REMARKS: () => {
+    return sales_url + "/task-history/saveReScheduleRemark";
+  },
+
+  GET_RECHEDULE_REMARKS: (universalId) => {
+    return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+  },
+
+  GET_WORKFLOW_TASKS: (entityId, taskName) => {
+    return sales_url + `/dms/workflowtask/${entityId}/${taskName}`;
+  },
+  POST_WORKFLOW_TASKS: () => {
+    return sales_url + `/dms/workflowtaskhistory`;
+  },
+  GET_PUT_WORKFLOW_HISTORY: (recordid) => {
+    return sales_url + `/dms/putWorkflowHistory/${recordid}`;
+  },
+
+  
+
+  UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
+    return sales_url + `/task-history/updateList/${recordid}`;
+  },
   // ORG_HIRARCHY: (orgId, empId) => {
   //   return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   // },

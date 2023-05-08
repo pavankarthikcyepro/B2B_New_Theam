@@ -49,7 +49,6 @@ const TaskListScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener("focus", () => {
       // setSearchedData(route.params.data);
-      console.log("NEWPAYLOAD", route.params);
       if (route.params.payload) {
         getTaskList(route.params.payload);
       }
@@ -80,7 +79,6 @@ const TaskListScreen = ({ route, navigation }) => {
       setIsLoading(true);
       const response = await client.post(URL.GET_MY_TASKS_NEW_DATA3(), payload);
       const json = await response.json();
-      console.log("jdon", JSON.stringify(json));
 
       if (json) {
         if (route.params.self) {

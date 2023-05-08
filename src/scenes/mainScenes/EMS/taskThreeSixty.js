@@ -157,8 +157,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     const taskStatus = item.taskStatus;
     const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-    if (item.taskStatus === "CLOSED") {
+    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit") {
       const name = checkForTaskNames(taskName);
+      
       showToast(name + " task has been closed");
       return;
     }

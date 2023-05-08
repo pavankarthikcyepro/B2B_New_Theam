@@ -3,7 +3,7 @@ import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../styles';
 
-export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
+export const DateSelectItem = ({ label, value, disabled = false, onPress, iconsName = "calendar-range" }) => {
     return (
         <Pressable onPress={onPress} disabled={disabled}>
             <View style={styles.container}>
@@ -11,7 +11,7 @@ export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
                 <View style={[styles.view3]}>
                     <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]}>{value ? value : label}</Text>
                     <IconButton
-                        icon="calendar-range"
+                        icon={iconsName}
                         color={disabled ? Colors.GRAY : Colors.BLACK}
                         size={25}
                     />
