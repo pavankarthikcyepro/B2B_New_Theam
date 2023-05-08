@@ -1,35 +1,33 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import {
-    clearState, getTestDriveHistoryDetails
 
-} from "../../../redux/testDriveReducer";
 import { Colors, GlobalStyle } from "../../../styles"
 import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import moment from 'moment';
-const TestDriveHistory = ({ route, navigation }) => {
+import { getHomeVisitAuditDetails } from '../../../redux/homeVisitReducer';
+const HomeVisitHistory = ({ route, navigation }) => {
     const { universalId } = route.params;
     const dispatch = useDispatch();
-    const selector = useSelector((state) => state.testDriveReducer);
+    const selector = useSelector((state) => state.homeVisitReducer);
     const [historyList, setHistoryList] = useState("");
     useEffect(() => {
 
         if (universalId) {
-            dispatch(getTestDriveHistoryDetails(universalId))
+            dispatch(getHomeVisitAuditDetails(universalId))
         }
 
 
     }, [])
 
     useEffect(() => {
-        if (selector.test_drive_history_details_statu === "successs") {
-            setHistoryList(selector.test_drive_history_details);
+        if (selector.home_visit_History_listing) {
+            setHistoryList(selector.home_visit_History_listing);
         }
 
 
-    }, [selector.test_drive_history_details_statu])
+    }, [selector.home_visit_History_listing])
 
 
     function TaskNameView(item) {
@@ -44,15 +42,15 @@ const TestDriveHistory = ({ route, navigation }) => {
                     margin:5
                 }}
             >
-                
-                {item.reTestdriveFlag == "ReTestDrive" ? "Re Test drive" : "Test drive"}
-            </Text>
+                {/* Test drive */}
+                {item.reHomevisitFlag == "ReHomevisit" ? "Re Home Visit" : "Home Visit"}
+            </Text> 
         );
     }
 
     const renderItem = ({ item, index }) => {
        
-        const date = item.testDriveDatetime.split(" ");
+        const date = moment(item.testDriveDatetime).format("DD/MM/YY h:mm a").split(" ");
         let topBcgColor = Colors.LIGHT_GRAY;
         let bottomBcgColor = Colors.LIGHT_GRAY;
         if (historyList[index - 1] !== undefined) {
@@ -104,7 +102,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                         <Text
                             style={styles.txt2}
                         >
-                            {date[1]}
+                            {date[1] + " " + date[2]}
 
                         </Text>
                     </View>
@@ -368,7 +366,7 @@ const TestDriveHistory = ({ route, navigation }) => {
     )
 }
 
-export default TestDriveHistory
+export default HomeVisitHistory
 
 const styles = StyleSheet.create({
 

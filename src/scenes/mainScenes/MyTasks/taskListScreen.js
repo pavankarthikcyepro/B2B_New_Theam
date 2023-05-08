@@ -57,6 +57,10 @@ const TaskListScreen = ({ route, navigation }) => {
         let navigationId = ""
         let taskNameNew = ''
         switch (finalTaskName) {
+            case "retestdrive":
+                navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
+                taskNameNew = 'Re Test Drive'
+                break;
             case "testdrive":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
                 taskNameNew = 'Test Drive'
@@ -76,6 +80,10 @@ const TaskListScreen = ({ route, navigation }) => {
             case "homevisit":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
                 taskNameNew = 'Home Visit'
+                break;
+            case "rehomevisit":
+                navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
+                taskNameNew = 'Re Home Visit'
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
