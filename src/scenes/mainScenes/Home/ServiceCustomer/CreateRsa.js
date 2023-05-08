@@ -392,7 +392,7 @@ const CreateRsa = ({ navigation, route }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnContainer}
-                onPress={() => submit("update")}
+                // onPress={() => submit("update")}
               >
                 <Text style={styles.btnText}>Update</Text>
               </TouchableOpacity>
