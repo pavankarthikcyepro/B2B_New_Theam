@@ -33,6 +33,7 @@ import {
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -66,7 +67,7 @@ const ParametersScreen = ({ route }) => {
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const color = [
+  const color = _.reverse([
     "#9f31bf",
     "#00b1ff",
     "#fb03b9",
@@ -75,7 +76,7 @@ const ParametersScreen = ({ route }) => {
     "#0800ff",
     "#1f93ab",
     "#ec3466",
-  ];
+  ]);
 
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -903,6 +904,107 @@ const ParametersScreen = ({ route }) => {
     );
   };
 
+  const RenderEmployee = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+    return (
+      <View key={`${item.empId} ${index}`}>
+        <View
+          style={{
+            paddingHorizontal: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 12,
+            width: "100%",
+          }}
+        >
+          <Text style={{ fontSize: 12, fontWeight: "600" }}>
+            {item.empName}
+          </Text>
+          <Pressable
+            onPress={() => {
+              navigation.navigate(
+                AppNavigator.HomeStackIdentifiers.sourceModel,
+                {
+                  empId: item.empId,
+                  headerTitle: item.empName,
+                  loggedInEmpId: selector.login_employee_details.empId,
+                  orgId: selector.login_employee_details.orgId,
+                  type: "TEAM",
+                  moduleType: "live-leads",
+                }
+              );
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                color: Colors.BLUE,
+              }}
+            >
+              Source/Model
+            </Text>
+          </Pressable>
+        </View>
+        {/*Source/Model View END */}
+        <View
+          style={[
+            { flexDirection: "row" },
+            item.isOpenInner && {
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: borderColor,
+            },
+          ]}
+        >
+          {/*RIGHT SIDE VIEW*/}
+          <View
+            style={[
+              {
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "column",
+                paddingHorizontal: 5,
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "row",
+              }}
+            >
+              <RenderLevel1NameView
+                level={0}
+                item={item}
+                branchName={getBranchName(item.branchId)}
+                color={borderColor}
+                titleClick={async () => {
+                  await onEmployeeNameClick2(item, index, allData);
+                }}
+              />
+              {renderData(item, borderColor)}
+            </View>
+            {item.isOpenInner &&
+              item.employeeTargetAchievements.length > 0 &&
+              item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
+                return RenderEmployee(
+                  innerItem1,
+                  innerIndex1,
+                  item.employeeTargetAchievements,
+                  levelColors,
+                  hierarchyLevel + 1
+                );
+              })}
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -1096,10 +1198,16 @@ const ParametersScreen = ({ route }) => {
                       </View>
                     );
                   })}
+                {allParameters.length > 0 &&
+                  filterParameters.length == 0 &&
+                  allParameters.map((item, index) => {
+                    return RenderEmployee(item, index, allParameters, color, 0);
+                  })}
 
                 {allParameters.length > 0 &&
                   filterParameters.length == 0 &&
                   allParameters.map((item, index) => {
+                    return;
                     return (
                       <View key={`${item.empId} ${index}`}>
                         <View

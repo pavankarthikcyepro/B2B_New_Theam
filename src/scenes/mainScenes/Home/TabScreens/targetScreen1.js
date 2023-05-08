@@ -40,10 +40,11 @@ import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import TextTicker from "react-native-text-ticker";
 import AnimLoaderComp from "../../../../components/AnimLoaderComp";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
-const color = [
+const color = _.reverse([
   "#9f31bf",
   "#00b1ff",
   "#fb03b9",
@@ -52,7 +53,7 @@ const color = [
   "#0800ff",
   "#1f93ab",
   "#ec3466",
-];
+]);
 const data = [
   {
     id: 0,
@@ -990,6 +991,223 @@ const TargetScreen = ({ route }) => {
     );
   };
 
+  const RenderEmployee = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+    return (
+      <View
+        key={item}
+        style={[
+          {
+            width: "100%",
+            minHeight: 40,
+            flexDirection: "column",
+            overflow: "hidden",
+          },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: borderColor,
+            backgroundColor: "#FFFFFF",
+          },
+        ]}
+      >
+        <View style={[styles.view8]}>
+          <View
+            style={{
+              width: Dimensions.get("screen").width - 40,
+            }}
+          >
+            <View style={styles.view9}>
+              <View style={styles.view10}>
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: "500",
+                  }}
+                >
+                  {item.empName}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                {item?.childCount > 0 && (
+                  <Animated.View
+                    style={{
+                      transform: [
+                        {
+                          translateX: translation,
+                        },
+                      ],
+                    }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor: "lightgrey",
+                        flexDirection: "row",
+                        paddingHorizontal: 7,
+                        borderRadius: 10,
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 5,
+                        alignSelf: "flex-start",
+                        marginLeft: 7,
+                      }}
+                    >
+                      <MaterialIcons
+                        name="person"
+                        size={15}
+                        color={Colors.BLACK}
+                      />
+                      <Text>{item?.childCount}</Text>
+                    </View>
+                  </Animated.View>
+                )}
+                <SourceModelView
+                  onClick={() => {
+                    navigation.navigate(
+                      AppNavigator.HomeStackIdentifiers.sourceModel,
+                      {
+                        empId: item.empId,
+                        headerTitle: item.empName,
+                        type: "TEAM",
+                        moduleType: "home",
+                      }
+                    );
+                  }}
+                  style={{
+                    transform: [
+                      {
+                        translateX: translation,
+                      },
+                    ],
+                  }}
+                />
+              </View>
+            </View>
+            {/*Source/Model View END */}
+            <View
+              style={{
+                flexDirection: "row",
+              }}
+            >
+              <RenderLevel1NameView
+                // level={1}
+                item={item}
+                color={borderColor}
+                navigation={navigation}
+                branchName={getBranchName(item.branchId)}
+                titleClick={async () => {
+                  await onEmployeeNameClick(item, index, allData);
+                }}
+              />
+              {renderData(item, borderColor)}
+            </View>
+          </View>
+          {item.isOpenInner &&
+            item.employeeTargetAchievements.length > 0 &&
+            item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
+              return RenderEmployee(
+                innerItem1,
+                innerIndex1,
+                item.employeeTargetAchievements,
+                levelColors,
+                hierarchyLevel + 1
+              );
+            })}
+        </View>
+      </View>
+    );
+    return (
+      <View
+        key={index}
+        style={[
+          {
+            width: "98%",
+            minHeight: 40,
+            flexDirection: "column",
+          },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: borderColor,
+            backgroundColor: "#FFFFFF",
+            marginHorizontal: 5,
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.view11,
+            {
+              width:
+                Dimensions.get("screen").width - (item.isOpenInner ? 71 : 67),
+            },
+          ]}
+        >
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: "500",
+            }}
+          >
+            {item.empName}
+          </Text>
+          <SourceModelView
+            onClick={() => {
+              navigation.navigate(
+                AppNavigator.HomeStackIdentifiers.sourceModel,
+                {
+                  empId: item.empId,
+                  headerTitle: item.empName,
+                  type: "TEAM",
+                  moduleType: "home",
+                }
+              );
+            }}
+            style={{
+              transform: [
+                {
+                  translateX: translation,
+                },
+              ],
+            }}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+          }}
+        >
+          <RenderLevel1NameView
+            item={item}
+            color={borderColor}
+            navigation={navigation}
+            branchName={getBranchName(item.branchId)}
+            titleClick={async () => {
+              await onEmployeeNameClick(item, index, allData);
+            }}
+          />
+          {renderData(item, borderColor)}
+        </View>
+        {item.isOpenInner &&
+          item.employeeTargetAchievements.length > 0 &&
+          item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
+            return RenderEmployee(
+              innerItem1,
+              innerIndex1,
+              item.employeeTargetAchievements,
+              levelColors,
+              hierarchyLevel + 1
+            );
+          })}
+      </View>
+    );
+  };
+
   return (
     <React.Fragment>
       {!selector.isLoading ? (
@@ -1396,13 +1614,25 @@ const TargetScreen = ({ route }) => {
                     </View>
                     {/* Employee params section */}
                     <View
-                      style={{ height: Dimensions.get("screen").height / 2.7 }}
+                      style={{ height: Dimensions.get("screen").height / 2.7, marginTop:15 }}
                     >
                       <ScrollView
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
                       >
                         {allParameters.length > 0 &&
                           allParameters.map((item, index) => {
+                            return RenderEmployee(
+                              item,
+                              index,
+                              allParameters,
+                              color,
+                              0
+                            );
+                          })}
+
+                        {allParameters.length > 0 &&
+                          allParameters.map((item, index) => {
+                            return;
                             return (
                               <View key={`${item.empId} ${index}`}>
                                 <View
@@ -1668,6 +1898,7 @@ const TargetScreen = ({ route }) => {
                                                         const localParameter =
                                                           localData[index]
                                                             .employeeTargetAchievements;
+
                                                         await onEmployeeNameClick(
                                                           innerItem1,
                                                           innerIndex1,
@@ -1862,6 +2093,10 @@ const TargetScreen = ({ route }) => {
                                                                     innerIndex1
                                                                   ]
                                                                     .employeeTargetAchievements;
+                                                                console.log(
+                                                                  "localParameter",
+                                                                  innerItem2
+                                                                );
                                                                 await onEmployeeNameClick(
                                                                   innerItem2,
                                                                   innerIndex2,
