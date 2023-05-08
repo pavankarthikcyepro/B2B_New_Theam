@@ -790,6 +790,9 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
+          if (userData.isSelfManager === "N" && item.title === "My Stock") {
+            return;
+          }
           const isActive = false;
           const textColor = "gray";
           // const isActive = route?.state?.index == index;
