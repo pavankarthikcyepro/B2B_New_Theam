@@ -197,7 +197,7 @@ const URL = {
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },
-  GET_CALL_URI : () => sales_url + `/callrecording/saveCallRecordings`,
+  GET_CALL_URI: () => sales_url + `/callrecording/saveCallRecordings`,
   GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
     return (
       sales_url +
@@ -427,6 +427,55 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
+
+  SAVEHOMEVISIT: () => {
+    return sales_url + "/task-history/savehomevisit";
+  },
+
+  UPDATELIST_HOME_VISIT: (recordid) => {
+    return sales_url + `/task-history/updateListHV/${recordid}`;
+  },
+
+  UPDATE_HOMEVISIT_WORKFLOW: (recordid) => {
+    return sales_url + `/workflow/updateHomeVisit/${recordid}`;
+  },
+
+  GET_HOME_HISTORY_COUNT: (universalId) => {
+    return (
+      sales_url + `/task-history/get-count-auditHV?customerId=${universalId}`
+    );
+  },
+
+  GET_HOME_VISIT_COUNT_DETAILS: (universalId) => {
+    return (
+      sales_url +
+      `/task-history/get-homevisit-history?customerId=${universalId}`
+    );
+  },
+
+  SAVE_RECHEDULE_REMARKS: () => {
+    return sales_url + "/task-history/saveReScheduleRemark";
+  },
+
+  GET_RECHEDULE_REMARKS: (universalId) => {
+    return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+  },
+
+  GET_WORKFLOW_TASKS: (entityId, taskName) => {
+    return sales_url + `/dms/workflowtask/${entityId}/${taskName}`;
+  },
+  POST_WORKFLOW_TASKS: () => {
+    return sales_url + `/dms/workflowtaskhistory`;
+  },
+  GET_PUT_WORKFLOW_HISTORY: (recordid) => {
+    return sales_url + `/dms/putWorkflowHistory/${recordid}`;
+  },
+
+  
+
+  UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
+    return sales_url + `/task-history/updateList/${recordid}`;
+  },
   // ORG_HIRARCHY: (orgId, empId) => {
   //   return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   // },
@@ -434,7 +483,9 @@ const URL = {
   ORG_HIRARCHY: (orgId, empId) => {
     return orgnaizationHirarchy + `/v1/active-levels/${orgId}/${empId}`;
   },
-
+  ORG_HIRARCHY2: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+  },
   ORG_HIRARCHY_DEALDER_DESIGNATIONS: (orgId, empId) => {
     return (
       orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`
@@ -627,6 +678,12 @@ const URL = {
   GET_MY_TASKS_NEW_DATA: () => {
     return dashboard + "/v2/get_todays_datav2/filter";
   },
+  GET_MY_TASKS_NEW_DATA2: () => {
+    return dashboard + "/v3/get_todays_datav2/filter/counts";
+  },
+  GET_MY_TASKS_NEW_DATA3: () => {
+    return dashboard + "/v3/get_todays_datav2/filter";
+  },
   GET_WORK_FLOW_TASKS: (universalId) => {
     return sales_url + `/workflow/lead/universalId/${universalId}`;
   },
@@ -747,21 +804,13 @@ const URL = {
   },
   GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
     return (
-      baseUrl +
-      "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" +
-      orgId +
-      "/branchName/" +
-      branchId
+      baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId
     );
   },
 
   GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
     return (
-      baseUrl +
-      "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" +
-      orgId +
-      "/branchName/" +
-      branchId
+      baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId
     );
   },
 

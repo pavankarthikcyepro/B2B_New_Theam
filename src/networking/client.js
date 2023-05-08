@@ -8,6 +8,8 @@ let isNetworkDialogopen = false
 import NetInfo, {  } from "@react-native-community/netinfo";
 import Snackbar from 'react-native-snackbar';
 import { Colors } from '../styles';
+import { showToast } from '../utils/toast';
+
 export const client = async (authToken, url, methodType, body, customConfig,isValidate) => {
 
 
@@ -132,17 +134,18 @@ export const client = async (authToken, url, methodType, body, customConfig,isVa
        
             if(!isdiloadopen){
                 isdiloadopen= true;
-                return Alert.alert(
-                    "Authentication failed",
-                    "need to re-start app",
-                    [
-                        { text: "OK", onPress: () => {
-                            isdiloadopen = false;
-                            // BackHandler.exitApp();
-                            RNRestart.Restart();
-                        } }
-                    ]
-                );
+                return Toast();
+                // return Alert.alert(
+                //     "Authentication failed",
+                //     "need to re-start app",
+                //     [
+                //         { text: "OK", onPress: () => {
+                //             isdiloadopen = false;
+                //             // BackHandler.exitApp();
+                //             RNRestart.Restart();
+                //         } }
+                //     ]
+                // );
             }
             
         }
@@ -163,6 +166,11 @@ export const client = async (authToken, url, methodType, body, customConfig,isVa
         console.error('err: ', err, url);
         return Promise.reject(err.message ? err.message : "something wrong")
     }
+}
+
+const Toast = ()=>{
+    showToast("Your session is Expired");
+    RNRestart.Restart();
 }
 
 client.get = async function (endpoint, customConfig = {}, isValidate = true) {

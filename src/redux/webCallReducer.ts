@@ -21,7 +21,13 @@ export const slice = createSlice({
     webCallUriResponse: "",
     webCallUri: "",
   },
-  reducers: {},
+  reducers: {
+    clearState: (state, action) => {
+      state.isLoading = false;
+      state.webCallUriResponse = "";
+      state.webCallUri = "";
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getWebCallUri.pending, (state) => {
@@ -42,5 +48,5 @@ export const slice = createSlice({
   },
 });
 
-export const {} = slice.actions;
+export const { clearState } = slice.actions;
 export default slice.reducer;
