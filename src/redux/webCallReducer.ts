@@ -41,7 +41,7 @@ export const slice = createSlice({
           state.webCallUri = action.payload.token;
           state.webCallUriResponse = "success";
         } else {
-          showToast("Not connecting..");
+          showToast("Call Not Connecting");
         }
       })
       .addCase(getWebCallUri.rejected, (state, action) => {
