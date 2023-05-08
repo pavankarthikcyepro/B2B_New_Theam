@@ -208,7 +208,7 @@ export const DropAnalysisItem = ({
                     {count < 7 && (
                       <View style={styles.hourContainer}>
                         <Text style={styles.hourText}>
-                          {`< `}
+                          {`Followed up < `}
                           <Text style={styles.hourExtraText}>7</Text>
                           <Text style={styles.hourText}>{`Times`}</Text>
                         </Text>
@@ -410,20 +410,22 @@ const styles = StyleSheet.create({
   },
   hourContainer: {
     borderRadius: 15,
-    backgroundColor: Colors.PINK,
+    backgroundColor: Colors.WHITE,
     paddingVertical: 2,
     paddingHorizontal: 5,
     marginLeft: 17,
+    borderColor: Colors.PINK,
+    borderWidth: 1,
   },
   hourText: {
     fontSize: 13,
     fontWeight: "500",
-    color: Colors.WHITE,
+    color: Colors.BLACK,
   },
   hourExtraText: {
     fontSize: 15,
     fontWeight: "500",
-    color: Colors.WHITE,
+    color: Colors.BLACK,
   },
   btn3: {
     // width: 35,
