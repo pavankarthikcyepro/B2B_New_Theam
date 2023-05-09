@@ -60,20 +60,51 @@ const EventFormScreen = () => {
   const [eventStartDate, setEventStartDate] = useState("");
   const [eventEndDate, setEventEndDate] = useState("");
 
+  const [eventNumberError, setEventNumberError] = useState(null);
+  const [eventNameError, setEventNameError] = useState(null);
+  const [eventOrganiserError, setEventOrganiserError] = useState(null);
+  const [eventPlannerLocationError, setEventPlannerLocationError] =
+    useState(null);
+  const [eventPlannerDealerCodeError, setEventPlannerDealerCodeError] =
+    useState(null);
+  const [pincodeError, setPincodeError] = useState(null);
+  const [eventTypeError, setEventTypeError] = useState(null);
+  const [eventCategoryError, setEventCategoryError] = useState(null);
+  const [eventAreaError, setEventAreaError] = useState(null);
+  const [eventLocationError, setEventLocationError] = useState(null);
+  const [districtError, setDistrictError] = useState(null);
+  const [stateError, setStateError] = useState(null);
+  const [eventStartDateError, setEventStartDateError] = useState(null);
+  const [eventEndDateError, setEventEndDateError] = useState(null);
+
   const [rcNumber, setRcNumber] = useState("");
   const [model, setModel] = useState("");
   const [variant, setVariant] = useState("");
   const [color, setColor] = useState("");
   const [fuelType, setFuelType] = useState("");
 
+  const [rcNumberError, setRcNumberError] = useState(null);
+  const [modelError, setModelError] = useState(null);
+  const [variantError, setVariantError] = useState(null);
+  const [colorError, setColorError] = useState(null);
+  const [fuelTypeError, setFuelTypeError] = useState(null);
+
   const [manager, setManager] = useState("");
+  const [managerError, setManagerError] = useState(null);
   const [tl, setTl] = useState("");
+  const [tlError, setTlError] = useState(null);
   const [consultant, setConsultant] = useState("");
+  const [consultantError, setConsultantError] = useState(null);
   const [driver, setDriver] = useState("");
+  const [driverError, setDriverError] = useState(null);
   const [financeExecutive, setFinanceExecutive] = useState("");
+  const [financeExecutiveError, setFinanceExecutiveError] = useState(null);
   const [evaluator, setEvaluator] = useState("");
+  const [evaluatorError, setEvaluatorError] = useState(null);
   const [openAccordian, setOpenAccordian] = useState("1");
+  const [openAccordianError, setOpenAccordianError] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDatePickerError, setShowDatePickerError] = useState(null);
 
   const [budget, setBudget] = useState("");
 
@@ -89,11 +120,160 @@ const EventFormScreen = () => {
     setModalVisible(false);
   };
 
+  const scrollToPos = (itemIndex) => {
+    scrollRef.current.scrollTo({ y: itemIndex * 70 });
+  };
+
   const handleLogin = () => {
     // Handle login logic here
   };
+
+  const validation = () => {
+    let isValid = true;
+    if (!eventNumber || isNaN(eventNumber)) {
+      setEventNumberError("Please enter a valid event number.");
+      isValid = false;
+    }
+    if (!eventName || eventName.length < 3) {
+      setEventNameError(
+        "Please enter a valid event name (at least 3 characters)."
+      );
+      isValid = false;
+    }
+    if (!eventOrganiser || eventOrganiser.length < 3) {
+      setEventOrganiserError(
+        "Please enter a valid event organiser (at least 3 characters)."
+      );
+      isValid = false;
+    }
+    if (!eventPlannerLocation) {
+      setEventPlannerLocationError("Please select an event planner location.");
+      isValid = false;
+    }
+    if (!eventPlannerCode) {
+      setEventPlannerDealerCodeError(
+        "Please select an event planner dealer code."
+      );
+      isValid = false;
+    }
+    if (!pinCode || pinCode.length !== 6) {
+      setPincodeError("Please enter a valid pincode (6 digits).");
+      isValid = false;
+    }
+    if (!eventType) {
+      setEventTypeError("Please select an event type.");
+      isValid = false;
+    }
+    if (!eventCategory) {
+      setEventCategoryError("Please select an event category.");
+      isValid = false;
+    }
+    if (!eventArea) {
+      setEventAreaError("Please enter an event area.");
+      isValid = false;
+    }
+    if (!eventLocation) {
+      setEventLocationError("Please enter an event location.");
+      isValid = false;
+    }
+    if (!district) {
+      setDistrictError("Please enter a district.");
+      isValid = false;
+    }
+    if (!state) {
+      setStateError("Please enter a state.");
+      isValid = false;
+    }
+    if (!eventStartDate) {
+      setEventStartDateError("Please select a start date.");
+      isValid = false;
+    }
+    if (!eventEndDate) {
+      setEventEndDateError("Please select an end date.");
+      isValid = false;
+    }
+
+    if (!rcNumber || rcNumber.length !== 12) {
+      setRcNumberError("Please enter a valid RC number (12 characters).");
+      isValid = false;
+    }
+    if (!model || model.length < 2) {
+      setModelError("Please enter a valid model name (at least 2 characters).");
+      isValid = false;
+    }
+    if (!variant || variant.length < 2) {
+      setVariantError(
+        "Please enter a valid variant name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+    if (!color || color.length < 2) {
+      setColorError("Please enter a valid color name (at least 2 characters).");
+      isValid = false;
+    }
+    if (!fuelType || fuelType.length < 2) {
+      setFuelTypeError(
+        "Please enter a valid fuel type (at least 2 characters)."
+      );
+      isValid = false;
+    }
+
+    if (!manager || manager.length < 2) {
+      setManagerError(
+        "Please enter a valid manager name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+    if (!tl || tl.length < 2) {
+      setTlError(
+        "Please enter a valid team leader name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+    if (!consultant || consultant.length < 2) {
+      setConsultantError(
+        "Please enter a valid consultant name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+    if (!driver || driver.length < 2) {
+      setDriverError(
+        "Please enter a valid driver name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+    if (!financeExecutive || financeExecutive.length < 2) {
+      setFinanceExecutiveError(
+        "Please enter a valid finance executive name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+    if (!evaluator || evaluator.length < 2) {
+      setEvaluatorError(
+        "Please enter a valid evaluator name (at least 2 characters)."
+      );
+      isValid = false;
+    }
+
+    if (!openAccordian) {
+      setOpenAccordianError("Please select an accordion panel.");
+      isValid = false;
+    }
+
+    if (!showDatePicker) {
+      setShowDatePickerError("Please select a date.");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = () => {
+    if (!validation()) {
+    }
     // handle form submission logic
+    scrollToPos(0);
+    setOpenAccordian("2");
   };
 
   const updateAccordian = (selectedIndex) => {
@@ -181,22 +361,34 @@ const EventFormScreen = () => {
                     label={"Event Number*"}
                     value={eventNumber}
                     onChangeText={(text) => {
-                      console.log("tee", text);
                       setEventNumber(text);
+                      setEventNumberError("");
                     }}
+                    error={!!eventNumberError}
+                    errorMsg={eventNumberError}
                   />
                   <TextinputComp
                     key={"2"}
                     style={styles.textInputStyle}
                     label="Event Name*"
                     value={eventName}
-                    onChangeText={(text) => setEventName(text)}
+                    onChangeText={(text) => {
+                      setEventName(text);
+                      setEventNameError("");
+                    }}
+                    error={!!eventNameError}
+                    errorMsg={eventNameError}
                   />
                   <TextinputComp
                     style={styles.textInputStyle}
                     label="Event Organiser*"
                     value={eventOrganiser}
-                    onChangeText={(text) => setEventOrganiser(text)}
+                    onChangeText={(text) => {
+                      setEventOrganiser(text);
+                      setEventOrganiserError("");
+                    }}
+                    error={!!eventOrganiserError}
+                    errorMsg={eventOrganiserError}
                   />
                   <Dropdown
                     placeholder="Event Planner-location*"
@@ -226,7 +418,12 @@ const EventFormScreen = () => {
                     style={styles.textInputStyle}
                     label="PinCode*"
                     value={pinCode}
-                    onChangeText={(text) => setPinCode(text)}
+                    onChangeText={(text) => {
+                      setPinCode(text);
+                      setPincodeError("");
+                    }}
+                    error={!!pincodeError}
+                    errorMsg={pincodeError}
                   />
                   <Dropdown
                     placeholder="Event Type*"
@@ -256,32 +453,46 @@ const EventFormScreen = () => {
                     style={styles.textInputStyle}
                     value={eventArea}
                     label={"Event Area*"}
-                    onChangeText={(text) => setEventArea(text)}
+                    onChangeText={(text) => {
+                      setEventArea(text);
+                      setEventAreaError("");
+                    }}
+                    error={!!eventAreaError}
+                    errorMsg={eventAreaError}
                   />
                   <TextinputComp
                     style={styles.textInputStyle}
                     label="Event Location*"
                     value={eventLocation}
-                    onChangeText={(text) => setEventLocation(text)}
+                    onChangeText={(text) => {
+                      setEventLocation(text);
+                      setEventLocationError("");
+                    }}
+                    error={!!eventLocationError}
+                    errorMsg={eventLocationError}
                   />
                   <TextinputComp
                     style={styles.textInputStyle}
                     label="District*"
                     value={district}
-                    onChangeText={(text) => setDistrict(text)}
+                    onChangeText={(text) => {
+                      setDistrict(text);
+                      setDistrictError("");
+                    }}
+                    error={!!districtError}
+                    errorMsg={districtError}
                   />
                   <TextinputComp
                     style={styles.textInputStyle}
                     label="State*"
                     value={state}
-                    onChangeText={(text) => setState(text)}
+                    onChangeText={(text) => {
+                      setState(text);
+                      setStateError("");
+                    }}
+                    error={!!stateError}
+                    errorMsg={stateError}
                   />
-                  {/* <TouchableOpacity
-          style={styles.textInputStyle}
-          label="Event Start Date*"
-          value={eventStartDate}
-          onChangeText={(text) => setEventStartDate(text)}
-        /> */}
                   <DateSelectItem
                     label={"Event Start Date*"}
                     value={"nmnmn"}
@@ -292,12 +503,6 @@ const EventFormScreen = () => {
                     value={"nmnmn"}
                     onPress={() => {}}
                   />
-                  {/* <TextinputComp
-          style={styles.textInputStyle}
-          label="Event End Date*"
-          value={eventEndDate}
-          onChangeText={(text) => setEventEndDate(text)}
-        /> */}
                 </View>
               </List.Accordion>
 
