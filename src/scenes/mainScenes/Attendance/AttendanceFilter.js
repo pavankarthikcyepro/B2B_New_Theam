@@ -155,10 +155,10 @@ const AttendanceFilter = ({ route, navigation }) => {
         updateSelectedItems(condition[0], 4);
         if (
           selector.selectedDate.startDate &&
-          selector.selectedDate.startDate
+          selector.selectedDate.endDate
         ) {
           setFromDate(selector.selectedDate.startDate);
-          setToDate(selector.selectedDate.startDate);
+          setToDate(selector.selectedDate.endDate);
         }
       }
     }

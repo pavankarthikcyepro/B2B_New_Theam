@@ -1,5 +1,5 @@
 import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Colors, GlobalStyle } from '../../../styles'
 import Entypo from "react-native-vector-icons/FontAwesome";
 import { ComplainTrackerIdentifires } from '../../../navigations/appNavigator';
@@ -10,7 +10,8 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from 'react-redux';
-import { getCountsComplaintsDashboard } from '../../../redux/complaintTrackerReducer';
+import { getCountsComplaintsDashboard, getEmpComplaintDashboard } from '../../../redux/complaintTrackerReducer';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 const data = [
     {
         id: 0,
@@ -179,6 +180,7 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
                 }
 
                 dispatch(getCountsComplaintsDashboard(payload));
+                // dispatch(getEmpComplaintDashboard(payload));
             }
         } catch (error) {
             alert(error);
@@ -216,15 +218,133 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
             </View>)
     }
 
+    const eventListTableRow = useCallback(
+        (
+            empName,AtiveCount,ClosedCount, isViewDetailsVisible=false,isShowUnderLine=false
+        ) => {
+            return (<>
+                <View style={{
+                    flexDirection: "row",
+                    // justifyContent: "space-around",
+                    // alignItems: "center",
+                    // // height: '15%',
+                    // alignContent: "center",
+                    width: "100%",
+                    // backgroundColor:"red"
+                    // marginTop: 5,
+                    // justifyContent:"space-between"
+
+                }}>
+                    <View style={{flex:1}}>
+                        <Text style={styles.TitleTabelText}>{empName}</Text>
+                    </View>
+                    <View style={{flexDirection:"row",flex:1   }}>
+                        <Text style={{
+                            fontSize: 12,
+                            color: Colors.BLACK,
+                            textAlign: "center",
+                            marginEnd: 10,
+                            flex:1
+                            // width: 50,
+                        }}>{AtiveCount}</Text>
+                        <Text style={{
+                            fontSize: 12,
+                            color: Colors.BLACK,
+                            textAlign: "center",
+                            marginEnd: 10,
+                            flex:1
+                            // width: 50,
+                        }}>{ClosedCount}</Text>
+                    </View>
+                    {isViewDetailsVisible ? <Pressable style={{ flexDirection: "row",flex:1 }}
+                     onPress={()=>{
+                        
+                     }}
+                    >
+                        <Text style={[styles.TitleTabelText, { color: Colors.BLUE, textDecorationLine: "underline", textAlign: "center", }]}>Detailed view</Text>
+
+                    </Pressable> : <View style={{ fflexDirection: "row", flex: 1 }}>
+                            <Text style={styles.TitleTabelText}></Text>
+
+                    </View>} 
+                </View>
+
+            </>)
+        }
+    );
+    
+    const renderItemV2 = (item, index) => {
+        
+       
+        return (<>
+           
+            <View style={{
+                width: '100%',
+                padding: 10,
+                // borderColor: index === 0 ? Colors.PURPLE : Colors.BLUE_V2,
+                // borderWidth: 1,
+                borderRadius: 10,
+                justifyContent: "center",
+                marginVertical: 10,
+                backgroundColor:Colors.WHITE
+
+            }}>
+               
+               
+            </View></>)
+    }
+
+
     return (
         <SafeAreaView style={styles.conatiner}>
+            {/* <View style={{ padding: 10, }}>
+                <View
+                    style={{
+                       backgroundColor:Colors.WHITE,
+                       padding:10,
+                    }}
+                >
+                    <View
+                        style={{
+                            padding: 10
+                        }}>
+                        {eventListTableRow("Employee Name", "Active", "Closed")}    
+                    </View>
+                    <View style={{
+                        padding: 10
+                    }}>
+                        <FlatList
+                            data={selector.complaintTrackerDashboardData}
+                            bounces={false}
+                            renderItem={({ item, index }) => {
+
+
+                                return (
+                                    <>
+                                     
+                                        {eventListTableRow(item.employeeName, item.activeCount, item.closedCount, true)}
+                                      
+                                    </>
+                                );
+                            }
+
+
+                            }
+                        />
+                
+
+                    </View>
+                    
+                </View>
+               
+                
+            </View> */}
+
             <View style={{ padding: 10, }}>
                 <FlatList
                     data={data}
                     bounces={false}
                     renderItem={({ item, index }) => renderItem(item, index)}
-                //   contentContainerStyle={styles.titleRow}
-                //   bounces={false}
                 />
             </View>
             {userData.isCRE || userData.isCRM ? <TouchableOpacity
@@ -249,7 +369,7 @@ const styles = StyleSheet.create({
     conatiner: {
         flex: 1,
 
-        backgroundColor: Colors.WHITE,
+        backgroundColor: Colors.LIGHT_GRAY,
     },
     scondView: {
         flexDirection: "column",
@@ -290,5 +410,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     badgeText: { fontSize: 13, color: Colors.PINK, fontWeight: "bold" },
-
+    TitleTabelText: {
+        fontSize: 12,
+        color: Colors.BLACK,
+        textAlign: "left",
+        marginEnd: 10,
+        flex:1
+        // width: 100,
+    },
 })

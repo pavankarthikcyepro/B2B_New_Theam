@@ -334,6 +334,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [isVip, setIsVip] = useState(null);
+  const [isHni, setIsHni] = useState(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -1051,6 +1052,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please select VIP");
       return;
     }
+    if (isHni === null) {
+      showToast("Please select HNI");
+      return;
+    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1389,6 +1394,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
           },
           dmsLeadDto: {
             isVip: isVip ? "Y" : "N",
+            isHni: isHni ? "Y" : "N",
             branchId: jsonObj.branchs[0]?.branchId,
             createdBy: jsonObj.empName,
             enquirySegment: selector.enquiry_segment,
@@ -4138,6 +4144,46 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     value={"No"}
                     status={isVip === null ? false : !isVip}
                     onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is HNI?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isHni}
+                    onPress={() => setIsHni(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isHni === null ? false : !isHni}
+                    onPress={() => setIsHni(false)}
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>

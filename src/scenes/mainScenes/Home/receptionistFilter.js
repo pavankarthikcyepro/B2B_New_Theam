@@ -13,7 +13,7 @@ import {
 import { Colors } from "../../../styles";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
-import { getTargetParametersEmpDataInsights, updateReceptionistFilterids } from "../../../redux/homeReducer";
+import { getTargetParametersEmpDataInsights, updateDealerFilterData, updateReceptionistFilterids } from "../../../redux/homeReducer";
 import * as AsyncStore from "../../../asyncStore";
 import { DatePickerComponent, DropDownComponant } from "../../../components";
 import { DateSelectItem, DropDownSelectionItem } from "../../../pureComponents";
@@ -37,6 +37,7 @@ import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { detectIsOrientationLock } from "../../../utils/helperFunctions";
 import { useIsFocused } from "@react-navigation/native";
 import _ from "lodash";
+import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -138,6 +139,8 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmployeeLoading, setIsEmployeeLoading] = useState(false);
   const [branches, setBranches] = useState([]);
+  const [storeDropDownClickdata, setStoreDropDownClickdata] = useState([]);
+  const [storeDropDownClickIndex, setStoreDropDownClickIndex] = useState(-1);
   useEffect(async () => {
     getAsyncData();
     try {
@@ -205,12 +208,22 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
-    if (nameKeyList.length > 0 && isFocused && selector.receptionistFilterIds?.levelSelected?.length >4) {
-     
-      dropDownItemClicked(4, true);
-    }
-  }, [nameKeyList, userData,isFocused]);
+    if (nameKeyList.length > 0 && isFocused && selector.receptionistFilterIds?.levelSelected?.length > 4) {
 
+      // dropDownItemClicked(4, true);
+    }
+  }, [nameKeyList, userData, isFocused]);
+
+  useEffect(() => {
+    navigation.addListener("focus", () => {
+      if (!_.isEmpty(selector.dealerFilter)) {
+        const temp = { ...selector.dealerFilter };
+        setTotalDataObj(temp);
+
+
+      }
+    });
+  }, [navigation]);
   const dropDownItemClicked = async (index, initalCall = false) => {
     const topRowSelectedIds = [];
     if (index > 0) {
@@ -264,6 +277,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
             };
           });
           updatedMultipleData = nData;
+      
           updateSelectedItems(updatedMultipleData, index, true);
         }
         // let updatedMultipleData = [...newData];
@@ -305,17 +319,87 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
   };
 
   const updateSelectedItems = (data, index, initalCall = false) => {
+    // const totalDataObjLocal = { ...totalDataObj };
+    // if (index > 0) {
+    //   let selectedParendIds = [];
+    //   let unselectedParentIds = [];
+    //   data.forEach((item) => {
+    //     if (item.selected != undefined && item.selected == true) {
+    //       selectedParendIds.push(Number(item.parentId));
+    //     } else {
+    //       unselectedParentIds.push(Number(item.parentId));
+    //     }
+    //   });
+    //   let localIndex = index - 1;
+
+    //   for (localIndex; localIndex >= 0; localIndex--) {
+    //     let selectedNewParentIds = [];
+    //     let unselectedNewParentIds = [];
+
+    //     let key = nameKeyList[localIndex];
+    //     const dataArray = totalDataObjLocal[key].sublevels;
+
+    //     if (dataArray.length > 0) {
+    //       const newDataArry = dataArray.map((subItem, index) => {
+    //         const obj = { ...subItem };
+    //         if (selectedParendIds.includes(Number(obj.id))) {
+    //           obj.selected = true;
+    //           selectedNewParentIds.push(Number(obj.parentId));
+    //         } else if (unselectedParentIds.includes(Number(obj.id))) {
+    //           if (obj.selected == undefined) {
+    //             obj.selected = false;
+    //           }
+    //           unselectedNewParentIds.push(Number(obj.parentId));
+    //         }
+    //         return obj;
+    //       });
+    //       const newOBJ = {
+    //         sublevels: newDataArry,
+    //       };
+    //       totalDataObjLocal[key] = newOBJ;
+    //     }
+    //     selectedParendIds = selectedNewParentIds;
+    //     unselectedParentIds = unselectedNewParentIds;
+    //   }
+    // }
+
+    // let localIndex2 = index + 1;
+    // for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
+    //   let key = nameKeyList[localIndex2];
+    //   const dataArray = totalDataObjLocal[key].sublevels;
+    //   if (dataArray.length > 0) {
+    //     const newDataArry = dataArray.map((subItem, index) => {
+    //       const obj = { ...subItem };
+    //       obj.selected = true; // make it true for both ways auto fill top and bottom
+    //       return obj;
+    //     });
+    //     const newOBJ = {
+    //       sublevels: newDataArry,
+    //     };
+    //     totalDataObjLocal[key] = newOBJ;
+    //   }
+    // }
+
+    // let key = nameKeyList[index];
+    // const newOBJ = {
+    //   sublevels: data,
+    // };
+    // totalDataObjLocal[key] = newOBJ;
+
+
     const totalDataObjLocal = { ...totalDataObj };
     if (index > 0) {
       let selectedParendIds = [];
       let unselectedParentIds = [];
-      data.forEach((item) => {
-        if (item.selected != undefined && item.selected == true) {
-          selectedParendIds.push(Number(item.parentId));
-        } else {
-          unselectedParentIds.push(Number(item.parentId));
-        }
-      });
+      selectedParendIds.push(Number(data.parentId));
+      // data.forEach((item) => {
+      //   if (item.selected != undefined && item.selected == true) {
+      //     selectedParendIds.push(Number(item.parentId));
+      //   } else {
+      //     unselectedParentIds.push(Number(item.parentId));
+      //   }
+      // });
+
       let localIndex = index - 1;
 
       for (localIndex; localIndex >= 0; localIndex--) {
@@ -348,7 +432,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         unselectedParentIds = unselectedNewParentIds;
       }
     }
-   
+
     let localIndex2 = index + 1;
     for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
       let key = nameKeyList[localIndex2];
@@ -356,7 +440,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       if (dataArray.length > 0) {
         const newDataArry = dataArray.map((subItem, index) => {
           const obj = { ...subItem };
-          obj.selected = true; // make it true for both ways auto fill top and bottom
+          obj.selected = false;
           return obj;
         });
         const newOBJ = {
@@ -367,12 +451,160 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     }
 
     let key = nameKeyList[index];
+    var newArr = totalDataObjLocal[key].sublevels;
+    const result = newArr.map((file) => {
+      return { ...file, selected: false };
+    });
+    let objIndex = result.findIndex((obj) => obj.id == data.id);
+    for (let i = 0; i < result.length; i++) {
+      if (objIndex === i) {
+        result[i].selected = true;
+      } else {
+        result[i].selected = false;
+      }
+    }
     const newOBJ = {
-      sublevels: data,
+      sublevels: result,
     };
     totalDataObjLocal[key] = newOBJ;
+
     setTotalDataObj({ ...totalDataObjLocal });
-    initalCall && submitBtnClicked(totalDataObjLocal);
+    dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
+    // initalCall && submitBtnClicked(totalDataObjLocal);
+  };
+
+
+  const updateSelectedItemsSubmit = async (data, index, initalCall = false) => {
+    const totalDataObjLocal = { ...totalDataObj };
+
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      // if (index > 0) {
+      let selectedParendIds = [];
+      let unselectedParentIds = [];
+      selectedParendIds.push(Number(data.parentId));
+      // data.forEach((item) => {
+      //   if (item.selected != undefined && item.selected == true) {
+      //     selectedParendIds.push(Number(item.parentId));
+      //   } else {
+      //     unselectedParentIds.push(Number(item.parentId));
+      //   }
+      // });
+
+      let localIndex = - 1;
+
+      for (localIndex; localIndex >= 0; localIndex--) {
+        let selectedNewParentIds = [];
+        let unselectedNewParentIds = [];
+
+        let key = nameKeyList[localIndex];
+        const dataArray = totalDataObjLocal[key].sublevels;
+
+        if (dataArray.length > 0) {
+          const newDataArry = dataArray.map((subItem, index) => {
+            const obj = { ...subItem };
+            if (selectedParendIds.includes(Number(obj.id))) {
+              obj.selected = true;
+              selectedNewParentIds.push(Number(obj.parentId));
+            } else if (unselectedParentIds.includes(Number(obj.id))) {
+              if (obj.selected == undefined) {
+                obj.selected = false;
+              }
+              unselectedNewParentIds.push(Number(obj.parentId));
+            }
+            return obj;
+          });
+          const newOBJ = {
+            sublevels: newDataArry,
+          };
+          totalDataObjLocal[key] = newOBJ;
+        }
+        selectedParendIds = selectedNewParentIds;
+        unselectedParentIds = unselectedNewParentIds;
+      }
+      // }
+
+      let localIndex2 = index + 1;
+      let selectedParendIds2 = [];
+      let unselectedParentIds2 = [];
+      selectedParendIds2.push(Number(data.id));
+
+      for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
+        let selectedNewParentIds = [];
+        let unselectedNewParentIds = [];
+
+        let key = nameKeyList[localIndex2];
+        const dataArray = totalDataObjLocal[key].sublevels;
+
+        if (dataArray.length > 0) {
+          const newDataArry = dataArray.map((subItem, index) => {
+            //    const obj = { ...subItem };
+            // obj.selected = false;
+            // return obj;
+            const obj = { ...subItem };
+            if (selectedParendIds2.includes(Number(obj.parentId))) {
+
+              // obj.selected = true 
+              selectedNewParentIds.push(Number(obj.id));
+              if (key === "Dealer Code") { // to restrict only users assigned branches selection and auto populate
+                let data = jsonObj.branchs;
+                for (let j = 0; j < jsonObj.branchs.length; j++) {
+                  const id2 = jsonObj.branchs[j];
+                  if (id2.branchName === obj.name) {
+                    obj.selected = true
+                  }
+                }
+
+              } else {
+                obj.selected = true
+              }
+            }
+            //  else if (unselectedParentIds.includes(Number(obj.id))) {
+            //   if (obj.selected == undefined) {
+            //     obj.selected = false;
+            //   }
+            //   unselectedNewParentIds.push(Number(obj.parentId));
+            // }
+            return obj;
+            // const obj = { ...subItem };
+            // obj.selected = true;
+            // return obj;
+          });
+          const newOBJ = {
+            sublevels: newDataArry,
+          };
+          totalDataObjLocal[key] = newOBJ;
+        }
+        selectedParendIds2 = selectedNewParentIds;
+        unselectedParentIds2 = unselectedNewParentIds;
+      }
+
+      let key = nameKeyList[index];
+      var newArr = totalDataObjLocal[key].sublevels;
+      const result = newArr.map((file) => {
+        return { ...file, selected: false };
+      });
+      let objIndex = result.findIndex((obj) => obj.id == data.id);
+      for (let i = 0; i < result.length; i++) {
+        if (objIndex === i) {
+          result[i].selected = true;
+        } else {
+          result[i].selected = false;
+        }
+      }
+      const newOBJ = {
+        sublevels: result,
+      };
+      totalDataObjLocal[key] = newOBJ;
+
+      dispatch(updateDealerFilterData({ ...totalDataObjLocal }));
+      setTotalDataObj({ ...totalDataObjLocal });
+      return { ...totalDataObjLocal }
+      // index == 4 && submitBtnClicked(totalDataObjLocal,"");
+    }
   };
 
   const updateSelectedItemsForEmployeeDropDown = (data, index) => {
@@ -404,37 +636,62 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     setTotalDataObj({ ...totalDataObjLocal });
   };
 
-  const submitBtnClicked = () => {
+  const submitBtnClicked = async () => {
     let i = 0;
     const selectedIds = [];
     const selectedDealerCodeName = [];
-    for (i; i < nameKeyList.length; i++) {
-      let key = nameKeyList[i];
-      const dataArray = totalDataObj[key].sublevels;
-      if (dataArray.length > 0) {
-        dataArray.forEach((item, index) => {
-          if (item.selected != undefined && item.selected == true) {
-            selectedIds.push(item.id);
-            if (item.type === "Level5"){
-              selectedDealerCodeName.push(item.name)
-              
-            }
-            
+    if (!_.isEmpty(storeDropDownClickdata)) {
+
+      let temp = await updateSelectedItemsSubmit(storeDropDownClickdata, storeDropDownClickIndex)
+      if (temp) {
+        for (i; i < nameKeyList.length; i++) {
+          let key = nameKeyList[i];
+          const dataArray = temp[key].sublevels;
+          if (dataArray.length > 0) {
+            dataArray.forEach((item, index) => {
+              if (item.selected != undefined && item.selected == true) {
+                selectedIds.push(item.id);
+                if (item.type === "Level5") {
+                  selectedDealerCodeName.push(item.name)
+
+                }
+
+              }
+            });
           }
-        });
+        }
       }
-    }
-    if (selectedIds.length > 0) {
+    } else {
+      for (i; i < nameKeyList.length; i++) {
+        let key = nameKeyList[i];
+        const dataArray = totalDataObj[key].sublevels;
+        if (dataArray.length > 0) {
+          dataArray.forEach((item, index) => {
+            if (item.selected != undefined && item.selected == true) {
+              selectedIds.push(item.id);
+              if (item.type === "Level5") {
+                selectedDealerCodeName.push(item.name)
+
+              }
+
+            }
+          });
+        }
+      }
+    } 
+  
+    if (selectedIds.length > 0 && !_.isEmpty(selectedDealerCodeName)) {
+   
       // setIsLoading(true);
       // setIsEmployeeLoading(true);
-      getDashboadTableDataFromServer(selectedIds, "LEVEL", selectedDealerCodeName,true);
-    } 
-    // else {
-    //   showToast("Please select any value");
-    // }
+      getDashboadTableDataFromServer(selectedIds, "LEVEL", selectedDealerCodeName, true);
+    }
+    else {
+      showToast("Please select Dealer Code");
+    }
   };
 
-  const getDashboadTableDataFromServer = (selectedIds, from, selectedBranchName = "" ,initialCall = true) => {
+  const getDashboadTableDataFromServer = (selectedIds, from, selectedBranchName = "", initialCall = true) => {
     const payload = {
       startDate: fromDate,
       endDate: toDate,
@@ -457,12 +714,12 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       empId: userData.employeeId,
       selectedIds: selectedIds,
     };
-    
+
     // uncomment once api for emp for crm ready
-    if (userData.hrmsRole == "CRM" && from !== "EMPLOYEE"){
+    if (userData.hrmsRole == "CRM" && from !== "EMPLOYEE") {
       Promise.all([dispatch(getEmployeesDropDownData(payload1))])
         .then(() => {
-      
+
           //     Promise.all([
           //     //   dispatch(getLeadSourceTableList(payload)),
           //     //   dispatch(getVehicleModelTableList(payload)),
@@ -497,7 +754,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       }
       dispatch(updateReceptionistFilterids(obj))
       navigation.navigate("Home");
-   
+
     } else {
       // if (!userData.hrmsRole == "CRM") {}
       // dispatch(updateReceptionistFilterids(selectedBranchName[selectedBranchName.length - 1]))
@@ -508,13 +765,14 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
         levelSelected: selectedIds
       }
       dispatch(updateReceptionistFilterids(obj))
-      if(userData.hrmsRole == "CRM"){
+      
+      if (userData.hrmsRole == "CRM") {
 
-        return ;
-      // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
+        return;
+        // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
       }
       // navigation.goBack(); // NEED TO COMMENT FOR ASSOCIATE FILTER
-     
+
       navigation.navigate("Home");
     }
   };
@@ -525,21 +783,21 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       endDate: toDate,
       loggedInEmpId: userData.employeeId,
     };
-    
-  
+
+
     // if (from == "EMPLOYEE") {
-      // let obj = {
-      //   startDate: fromDate,
-      //   endDate: toDate,
-      //   dealerCodes: selectedBranchName,
-      //   levelSelected: selectedIds
-      // }
-      // dispatch(updateReceptionistFilterids(obj))
-      navigation.navigate("Home");
+    // let obj = {
+    //   startDate: fromDate,
+    //   endDate: toDate,
+    //   dealerCodes: selectedBranchName,
+    //   levelSelected: selectedIds
+    // }
+    // dispatch(updateReceptionistFilterids(obj))
+    navigation.navigate("Home");
 
     // } 
-    
-    
+
+
   };
 
   useEffect(() => {
@@ -559,9 +817,9 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
             });
           });
         }
-       
+
         newDataObj[key] = newArray;
-       
+
       }
       setName(names, newDataObj);
     }
@@ -612,7 +870,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
     if (selectedIds.length > 0) {
       // getDashboadTableDataFromServer(selectedIds, "EMPLOYEE",false);
       getDashboadTableDataFromServerForEmp(selectedIds, "EMPLOYEE", false)
-    } 
+    }
     // else {
     //   showToast("Please select any value");
     // }
@@ -637,14 +895,16 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <DropDownComponant
+      <DropDown
         visible={showDropDownModel}
-        multiple={true}
+        multiple={false}
         headerTitle={"Select"}
         data={dropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownFrom === "ORG_TABLE") {
+            setStoreDropDownClickdata(item)
+            setStoreDropDownClickIndex(selectedItemIndex)
             updateSelectedItems(item, selectedItemIndex);
           } else {
             updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
@@ -655,7 +915,7 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
-        minimumDate={new Date(CurrentMonthFirstDate) }
+        minimumDate={new Date(CurrentMonthFirstDate)}
         maximumDate={new Date(currentDate)}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
@@ -742,16 +1002,16 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                         }
                         if (userData.hrmsRole === "Reception") {
                           // if (item === "Dealer Code") {
-                            return (
-                              <View>
-                                <DropDownSelectionItem
-                                  label={item}
-                                  value={selectedNames}
-                                  onPress={() => dropDownItemClicked(index)}
-                                  takeMinHeight={true}
-                                />
-                              </View>
-                            );
+                          return (
+                            <View>
+                              <DropDownSelectionItem
+                                label={item}
+                                value={selectedNames}
+                                onPress={() => dropDownItemClicked(index)}
+                                takeMinHeight={true}
+                              />
+                            </View>
+                          );
                           // }
                         } else {
                           return (
@@ -875,8 +1135,8 @@ const ReceptionistFilterScreen = ({ route, navigation }) => {
                         </Button>
                       </View>) : (
                         <AcitivityLoader />
-                      ) }
-                    
+                      )}
+
                     </View>
                   )}
                 </View>
@@ -913,3 +1173,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+

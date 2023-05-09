@@ -36,6 +36,16 @@ export const getDetailsFromPoneNumber = createAsyncThunk("COMPLAINTS_TRACKER/get
     return json;
 })
 
+export const getEmpComplaintDashboard = createAsyncThunk("COMPLAINTS_TRACKER/getEmpComplaintDashboard", async (payload, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_DET_COMPLAINT_EMP_DASHBOARD(payload["empId"]),);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getComplainFactorDropDownData = createAsyncThunk("COMPLAINTS_TRACKER/getComplainFactorDropDownData", async (orgid, { rejectWithValue }) => {
 
     const response = await client.get(URL.GET_COMPLAIN_FACTOR_DATA(orgid),);
@@ -308,7 +318,8 @@ export const complaintsSlice = createSlice({
         complaintSubFilterData: "",
         complaintRegisterBranchDropDown:[],
         complaintEmployees:[],
-        complaintManagers: []
+        complaintManagers: [],
+        complaintTrackerDashboardData:[]
     },
     reducers: {
         clearState: (state, action) => {
@@ -360,7 +371,8 @@ export const complaintsSlice = createSlice({
                 state.complaintMainFilterData = "",
                 state.complaintSubFilterData = "",
                 state.complaintEmployees = [],
-                state.complaintManagers = []
+                state.complaintManagers = [],
+                state.complaintTrackerDashboardData = []
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -637,6 +649,25 @@ export const complaintsSlice = createSlice({
             
         })
 
+
+        // Get data from phone number
+        builder.addCase(getEmpComplaintDashboard.pending, (state, action) => {
+            state.isLoading = true;
+            state.complaintTrackerDashboardData = [];
+        })
+        builder.addCase(getEmpComplaintDashboard.fulfilled, (state, action) => {
+            state.isLoading = false;
+
+            if (action.payload) {
+                state.complaintTrackerDashboardData = action.payload;
+            }
+        })
+        builder.addCase(getEmpComplaintDashboard.rejected, (state, action) => {
+            state.isLoading = false;
+            state.complaintTrackerDashboardData = [];
+
+
+        })
 
 
         builder.addCase(getComplainFactorDropDownData.pending, (state, action) => {

@@ -1,7 +1,11 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+<<<<<<< HEAD
 platform :ios, '12.4'
+=======
+platform :ios, '13.0'
+>>>>>>> 4edc26dd003aed1c94a7dc979f4cb22c6fa81744
 
 target 'B2B_NEW_THEME' do
   config = use_native_modules!

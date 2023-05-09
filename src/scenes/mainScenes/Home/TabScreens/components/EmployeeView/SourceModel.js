@@ -389,9 +389,9 @@ const SourceModel = ({ route, navigation }) => {
       </>
     );
   }
-function isEmpty(obj) {
-  return Object.keys(obj).length === 0;
-}
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
   return (
     <>
       <View>
@@ -399,7 +399,7 @@ function isEmpty(obj) {
           style={[
             styles.flexRow,
             styles.justifyAlignCenter,
-            { marginBottom: 8 },
+            // { marginBottom: 8 },
           ]}
         >
           <View style={[styles.flexRow, styles.toggleButtonView]}>
@@ -417,6 +417,7 @@ function isEmpty(obj) {
                 {
                   backgroundColor:
                     isSourceIndex === 1 ? Colors.WHITE : Colors.RED,
+                  padding: 14,
                 },
               ]}
             >
@@ -443,6 +444,7 @@ function isEmpty(obj) {
                 {
                   backgroundColor:
                     isSourceIndex === 1 ? Colors.RED : Colors.WHITE,
+                  padding: 14,
                 },
               ]}
             >
@@ -682,11 +684,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     borderWidth: 1,
     borderRadius: 5,
-    padding: 0.75,
-    height: 35,
-    marginTop: 10,
+    // padding: 0.75,
+    // height: 35,
+    marginVertical: 14,
     justifyContent: "center",
-    width: "70%",
+    width: "95%",
   },
   toggleViewButtons: {
     width: "50%",
