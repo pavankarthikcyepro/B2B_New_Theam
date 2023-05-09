@@ -1074,7 +1074,7 @@ const URL = {
   GET_SERVICE_BOOKING_LIST: (tenantId, vehicleRegNumber) => {
     return (
       baseUrl +
-      `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?page=0&size=20`
+      `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?page=0&size=100`
     );
   },
   GET_SERVICE_QUERY_LIST: (tenantId, vehicleRegNumber) => {
@@ -1086,13 +1086,13 @@ const URL = {
   GET_SERVICE_RSA_LIST: (customerId) => {
     return (
       baseUrl +
-      `vehicle-services/rsa/all?page=0&size=10&customerid=${customerId}`
+      `vehicle-services/rsa/all?page=0&size=100&customerid=${customerId}`
     );
   },
   GET_BOOKED_SLOTS_LIST: (tenantId, vehicleRegNumber, slotId) => {
     return (
       baseUrl +
-      `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?slotId=${slotId}&page=0&size=20`
+      `vehicle-services/api/org/1/customer/${vehicleRegNumber}/appointments?slotId=${slotId}&page=0&size=100`
     );
   },
   GET_SOURCE_TYPE: (tenantId) => {
