@@ -10,6 +10,8 @@ import moment from 'moment';
 import TrackPlayer, { Event, RepeatMode, useProgress, useTrackPlayerEvents } from 'react-native-track-player';
 import Slider from '@react-native-community/slider';
 import { showToast } from '../../../utils/toast';
+import { RefreshControl } from 'react-native';
+import { EmptyListView } from '../../../pureComponents';
 
 let previousPosition = null;
 
@@ -22,6 +24,18 @@ const RecordedCalls = ({ navigation, route }) => {
   const [recordingList, setRecordingList] = useState([]);
   const [onSliding, setOnSliding] = useState(false);
   const [previousActiveIndex, setPreviousActiveIndex] = useState(null);
+
+  useEffect(() => {
+    dispatch(getRecordedCallList(taskId));
+    return () => {
+      dispatch(clearRecordedCallsData());
+      setRecordingList([]);
+      setOnSliding(false);
+      setPreviousActiveIndex(null);
+      TrackPlayer.reset();
+      previousPosition = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -67,28 +81,10 @@ const RecordedCalls = ({ navigation, route }) => {
     }
   }, [selector.recordedCallList]);
   
-
-  useEffect(() => {
-    dispatch(getRecordedCallList(taskId));
-    return () => {
-      dispatch(clearRecordedCallsData());
-      TrackPlayer.reset();
-      previousPosition = null;
-    };
-  }, []);
-  
   useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
     previousPosition = event.position;
   });
   
-  const noData = () => {
-    return (
-      <View style={styles.noDataView}>
-        <Text style={styles.noDataText}>No Records !</Text>
-      </View>
-    );
-  };
-
   const itemSeparator = () => {
     return <View style={styles.itemDivider} />;
   };
@@ -228,14 +224,24 @@ const RecordedCalls = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={recordingList}
-        renderItem={renderItem}
-        ListEmptyComponent={noData}
-        contentContainerStyle={{ padding: 15 }}
-        ItemSeparatorComponent={itemSeparator}
-      />
-      <LoaderComponent visible={selector.isLoading} />
+      {recordingList.length > 0 ? (
+        <FlatList
+          data={recordingList}
+          renderItem={renderItem}
+          contentContainerStyle={{ padding: 15 }}
+          ItemSeparatorComponent={itemSeparator}
+          refreshControl={
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={() => dispatch(getRecordedCallList(taskId))}
+              progressViewOffset={200}
+              tintColor={Colors.PINK}
+            />
+          }
+        />
+      ) : (
+        <EmptyListView title={"No Records !"} isLoading={selector.isLoading} />
+      )}
     </SafeAreaView>
   );
 };
@@ -290,16 +296,6 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GRAY,
   },
 
-  noDataView: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  noDataText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: Colors.BLACK,
-  },
   itemDivider: {
     height: 1,
     width: "100%",
