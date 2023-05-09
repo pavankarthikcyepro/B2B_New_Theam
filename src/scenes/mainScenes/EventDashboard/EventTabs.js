@@ -39,6 +39,7 @@ import SegmentedControl from "@react-native-segmented-control/segmented-control"
 import { RenderGrandTotal } from "../Home/TabScreens/components/RenderGrandTotal";
 import EventInsights from "./Insights";
 import { RenderEmployeeParameters } from "../Home/TabScreens/components/RenderEmployeeParameters";
+import Lottie from "lottie-react-native";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -98,6 +99,8 @@ const EventDashBoardTargetScreen = ({ route }) => {
     orgId: 0,
     branchs: [],
   });
+    const [teamLoader, setTeamLoader] = useState(false);
+    const [teamMember, setTeamMember] = useState("");
   const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
   const scrollViewRef = useRef();
   const paramsMetadata = [
@@ -698,6 +701,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
   };
 
   const onEmployeeNameClick = async (item, index, lastParameter) => {
+    setTeamMember(item.empName);
     if (item.childCount < 1) {
       return;
     }
@@ -712,6 +716,7 @@ const EventDashBoardTargetScreen = ({ route }) => {
     }
 
     if (!current) {
+      setTeamLoader(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -772,11 +777,13 @@ const EventDashBoardTargetScreen = ({ route }) => {
               }
             }
             setAllParameters([...localData]);
+            setTeamLoader(false);
           }
         );
       }
     } else {
       setAllParameters([...localData]);
+      setTeamLoader(false);
     }
   };
 
@@ -792,16 +799,14 @@ const EventDashBoardTargetScreen = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 100);
-  }
+function navigateToEMS(params) {
+  navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+    screen: "EMS",
+    params: {
+      screen: "LEADS",
+    },
+  });
+}
 
   function navigateToDropLostCancel(params) {
     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
@@ -1045,6 +1050,8 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                           )}
                                           color={"#C62159"}
                                           navigation={navigation}
+                                          teamLoader={teamLoader}
+                                          teamMember={teamMember}
                                           titleClick={async () => {
                                             let localData = [...allParameters];
                                             await onEmployeeNameClick(
@@ -1210,6 +1217,8 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                                         branchName={getBranchName(
                                                           innerItem1.branchId
                                                         )}
+                                                        teamLoader={teamLoader}
+                                                        teamMember={teamMember}
                                                         titleClick={async () => {
                                                           const localData = [
                                                             ...allParameters,
@@ -1417,6 +1426,12 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                                                 branchName={getBranchName(
                                                                   innerItem2.branchId
                                                                 )}
+                                                                teamLoader={
+                                                                  teamLoader
+                                                                }
+                                                                teamMember={
+                                                                  teamMember
+                                                                }
                                                                 titleClick={async () => {
                                                                   const localData =
                                                                     [
@@ -1620,6 +1635,12 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                                                           branchName={getBranchName(
                                                                             innerItem3.branchId
                                                                           )}
+                                                                          teamLoader={
+                                                                            teamLoader
+                                                                          }
+                                                                          teamMember={
+                                                                            teamMember
+                                                                          }
                                                                           titleClick={async () => {
                                                                             const localData =
                                                                               [
@@ -1735,6 +1756,12 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                                                                     branchName={getBranchName(
                                                                                       innerItem4.branchId
                                                                                     )}
+                                                                                    teamLoader={
+                                                                                      teamLoader
+                                                                                    }
+                                                                                    teamMember={
+                                                                                      teamMember
+                                                                                    }
                                                                                     titleClick={async () => {
                                                                                       const localData =
                                                                                         [
@@ -1852,6 +1879,12 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                                                                               branchName={getBranchName(
                                                                                                 innerItem5.branchId
                                                                                               )}
+                                                                                              teamLoader={
+                                                                                                teamLoader
+                                                                                              }
+                                                                                              teamMember={
+                                                                                                teamMember
+                                                                                              }
                                                                                               titleClick={async () => {
                                                                                                 const localData =
                                                                                                   [
@@ -1972,6 +2005,12 @@ const EventDashBoardTargetScreen = ({ route }) => {
                                                                                                         branchName={getBranchName(
                                                                                                           innerItem6.branchId
                                                                                                         )}
+                                                                                                        teamLoader={
+                                                                                                          teamLoader
+                                                                                                        }
+                                                                                                        teamMember={
+                                                                                                          teamMember
+                                                                                                        }
                                                                                                         titleClick={async () => {
                                                                                                           const localData =
                                                                                                             [
@@ -2193,6 +2232,8 @@ export const RenderLevel1NameView = ({
   navigation,
   disable = false,
   receptionManager = false,
+  teamLoader = false,
+  teamMember = "",
 }) => {
   return (
     <View
@@ -2207,29 +2248,50 @@ export const RenderLevel1NameView = ({
       <View
         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
       >
-        <TouchableOpacity
-          disabled={disable}
-          style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-          onPress={titleClick}
-        >
-          <Text
+        {teamLoader && teamMember === item?.empName ? (
+          <View
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Lottie
+              source={require("../../../assets/Animations/lf20_qispmsyg.json")}
+              autoPlay
+              loop
+            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            disabled={disable}
+            style={{
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+            onPress={titleClick}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+        )}
         {/* {level === 0 && !!branchName && ( */}
         {branchName ? (
           <View style={{ flexDirection: "row", alignItems: "center" }}>

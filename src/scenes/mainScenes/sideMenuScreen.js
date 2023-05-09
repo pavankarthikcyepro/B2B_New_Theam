@@ -50,7 +50,7 @@ import {
   GROUP_STR,
   TRANSFER_STR,
 } from "../../redux/sideMenuReducer";
-import { clearState } from "../../redux/homeReducer";
+import { clearState, updatereceptionistDataObjectData, updateFilterLevelSelectedData as updateFilterLevelSelectedDataHome, updateDealerFilterData as updateDealerFilterDataHome, updateLiveLeadObjectData as updateLiveLeadObjectDataHOme, updateFilterSelectedData as updateFilterSelectedDataHome, updateDealerFilterData_Recep, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedDataReceptionist, updateReceptionistObjectData, updateCrm_employees_drop_down_data, updateFilterIds, updateEmpDropDown_Local, updateCRMRecepDashboard_employees_drop_down_data, updateEmployeeDropdownData as updateEmployeeDropdownDataHome} from "../../redux/homeReducer";
 import { clearEnqState } from "../../redux/enquiryReducer";
 import { clearLeadDropState } from "../../redux/leaddropReducer";
 import ReactNativeModal from "react-native-modal";
@@ -61,7 +61,8 @@ import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
 import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
-import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData } from "../../redux/liveLeadsReducer";
+import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM, updateDealerFilterData as updateDealerFilterDataLive, updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads } from "../../redux/liveLeadsReducer";
+import { updateFilterSelectedData as updateFilterSelectedDataV3, updateFilterLevelSelectedData as updateFilterLevelSelectedDatav2, updateLiveLeadObjectData as updateLiveLeadObjectDatav2, updateLiveLeadObjectDataCRM as updateLiveLeadObjectDataCRMv2, updateDealerFilterData as updateDealerFilterDataLivev2, updateEmployeeDropdownLiveleadReceptionist } from "../../redux/liveLeadsReducerReceptionist";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -76,8 +77,7 @@ const commonMenu = [
   "Drop Analysis",
   "My Attendance",
   "Download Report",
-  "Complaint Tracker"
-
+  "Complaint Tracker",
 ];
 const salesMenu = [
   ...commonMenu,
@@ -85,11 +85,19 @@ const salesMenu = [
   "Target Planning",
   "Event Dashboard",
   "Geolocation",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 const receptionTelCallerMenu = [
   ...commonMenu,
   "Live Leads",
+  "Digital Payment",
+  "Geolocation",
+];
+const CRMMenu = [
+  ...commonMenu,
+  "Live Leads",
+  "Live Leads Receptionist",
+  "Receptionist Dashboard",
   "Digital Payment",
   "Geolocation",
 ];
@@ -99,10 +107,11 @@ const managerMenu = [
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
+  "Receptionist Dashboard",
   "Target Planning",
   "Task Transfer",
   "Geolocation",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 const mdMenu = [
   ...commonMenu,
@@ -110,9 +119,10 @@ const mdMenu = [
   "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
+  "Receptionist Dashboard",
   "Target Planning",
   "Task Transfer",
-  "Complaint Tracker"
+  "Complaint Tracker",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -270,14 +280,20 @@ const SideMenuScreen = ({ navigation }) => {
     let newFilterData = [];
     if (
       jsonObj.hrmsRole == "Reception" ||
-      jsonObj.hrmsRole == "CRM" ||
+      
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)
       );
-    } else if (
+    }
+    else if (jsonObj.hrmsRole == "CRM"){
+      newFilterData = selector.tableData.filter((item) =>
+        CRMMenu.includes(item.title)
+      );
+    }
+    else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
@@ -307,6 +323,27 @@ const SideMenuScreen = ({ navigation }) => {
       case 99:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
         navigation.navigate(managerMenu[0]);
+        dispatch(updateFilterLevelSelectedDataHome({}));
+        dispatch(updateDealerFilterDataHome({}));
+        dispatch(updateLiveLeadObjectDataHOme({}));
+        dispatch(updateFilterSelectedDataHome({}));
+        dispatch(updateCrm_employees_drop_down_data({}));
+        dispatch(updateFilterSelectedDataReceptionist({}));
+        dispatch(updateFilterLevelSelectedDataReceptionist({}));
+        dispatch(updateDealerFilterData_Recep({}));
+        dispatch(updateCrm_employees_drop_down_data({}))
+        dispatch(
+          updateFilterIds({
+            startDate: "",
+            endDate: "",
+            levelSelected: [],
+            empSelected: [],
+            allEmpSelected: [],
+            employeeName: [],
+          })
+        );
+        dispatch(updateEmpDropDown_Local({}))
+        
         break;
       case 100:
         navigation.navigate(
@@ -347,20 +384,57 @@ const SideMenuScreen = ({ navigation }) => {
         break;
       case 113:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, { emp_id: "", fromScreen: "" });
-        // added empty params to reset & manage APi call in dropanalysis screen 
+        // added empty params to reset & manage APi call in dropanalysis screen
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
           screen: "DROP_ANALYSIS",
-          params: { emp_id: "", fromScreen: "", isForDropped: false, isFilterApplied:false },
+          params: {
+            emp_id: "",
+            fromScreen: "",
+            isForDropped: false,
+            isFilterApplied: false,
+          },
         });
-        
+
         break;
       case 114:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads,{
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeads, {
           fromScreen: "",
           selectedID: "",
           fromDate: "",
           toDate: "",
         });
+        dispatch(updateFilterSelectedDataV2({}))
+        dispatch(updateFilterLevelSelectedData([]));
+        dispatch(updateLiveLeadObjectData({}));
+        dispatch(updateDealerFilterData({}));
+        dispatch(updateLiveLeadObjectDataCRM({}))
+        dispatch(updateDealerFilterDataLive({}))
+        dispatch(updateEmployeeDropdownData({}))
+        dispatch(updateEmployeeDropdownDataHome({}))
+        dispatch(updateEmployeeDropdownDataCRMLiVeLeads({}));
+        break;
+      case 170:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist, {
+          fromScreen: "",
+          selectedID: "",
+          fromDate: "",
+          toDate: "",
+        });
+        dispatch(updateFilterSelectedDataV3({}))
+        dispatch(updateFilterLevelSelectedDatav2([]));
+        dispatch(updateLiveLeadObjectDatav2({}));
+        // dispatch(updateDealerFilterData({}));
+        dispatch(updateLiveLeadObjectDataCRMv2({}))
+        dispatch(updateDealerFilterDataLivev2({}))
+        dispatch(updateEmployeeDropdownLiveleadReceptionist({}))
+        break;
+      case 171:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard);
+        dispatch(updateDealerFilterData_Recep({}))
+        dispatch(updateFilterLevelSelectedDataReceptionist({}))
+        dispatch(updateFilterSelectedDataReceptionist({}))
+        dispatch(updateReceptionistObjectData({}))
+        dispatch(updateCRMRecepDashboard_employees_drop_down_data({}));
         break;
       case 115:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropLostCancel);
@@ -375,6 +449,12 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.digitalDashboard
         );
+        dispatch(updateFilterLevelSelectedDataHome({}));
+        dispatch(updateDealerFilterDataHome({}));
+        dispatch(updateLiveLeadObjectDataHOme({}));
+        dispatch(updateFilterSelectedDataHome({}));
+        dispatch(updateCrm_employees_drop_down_data({}))
+     
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
@@ -383,12 +463,14 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
       case 123:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.complaintTracker);
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.complaintTracker
+        );
         break;
       case 112:
         signOutClicked();
         break;
-      
+
       // case 999:
       //   navigation.navigate("Target Settings");
       //   break;
@@ -423,6 +505,30 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterLevelSelectedData({}));
     dispatch(updateLiveLeadObjectData({}));
     dispatch(updateDealerFilterData({}));
+    dispatch(updatereceptionistDataObjectData({}))
+    dispatch(updateDealerFilterData_Recep({}))
+    dispatch(updateFilterLevelSelectedDataReceptionist({}))
+    dispatch(updateFilterSelectedDataReceptionist({}))
+    dispatch(updateReceptionistObjectData({}))
+    
+    dispatch(updateFilterLevelSelectedDataHome({}));
+    dispatch(updateDealerFilterDataHome({}));
+    dispatch(updateLiveLeadObjectDataHOme({}));
+    dispatch(updateFilterSelectedDataHome({}));
+    dispatch(updateFilterSelectedDataReceptionist({}));
+    dispatch(updateCrm_employees_drop_down_data({}))
+    dispatch(
+      updateFilterIds({
+        startDate: "",
+        endDate: "",
+        levelSelected: [],
+        empSelected: [],
+        allEmpSelected: [],
+        employeeName: [],
+      })
+    );
+    dispatch(updateEmpDropDown_Local({}))
+
     signOut();
   };
 
@@ -529,7 +635,7 @@ const SideMenuScreen = ({ navigation }) => {
             setInitialData(newInitial);
             setImageUri(
               saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-              "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+                "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
             );
           }
           // setDataList(json);
@@ -556,9 +662,9 @@ const SideMenuScreen = ({ navigation }) => {
       const saveProfile = await response.json();
       setImageUri(
         saveProfile.dmsEntity.employeeProfileDtos[0].documentPath ||
-        "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
+          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
       );
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const deleteProfilePic = async () => {
@@ -644,7 +750,7 @@ const SideMenuScreen = ({ navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => { }}
+            onPress={() => {}}
           >
             <>
               <Button
@@ -757,8 +863,8 @@ const SideMenuScreen = ({ navigation }) => {
               source={{
                 uri: imageUri,
               }}
-            // source={imageUri}
-            //  source={require("../../assets/images/bently.png")}
+              // source={imageUri}
+              //  source={require("../../assets/images/bently.png")}
             />
           </TouchableOpacity>
           <View style={styles.profilDetailes}>
@@ -791,6 +897,10 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
+          if (userData.isAttendance === "N" && item.title === "My Attendance")
+            return;
+          if (userData.isGeolocation === "N" && item.title === "Geolocation")
+            return;
           const isActive = false;
           const textColor = "gray";
           // const isActive = route?.state?.index == index;

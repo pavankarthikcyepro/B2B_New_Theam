@@ -63,19 +63,32 @@ export const RenderEmployeeTarget = (parameter) => {
     };
 
     if (isLead) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-      setTimeout(() => {
-        navigation.navigate("LEADS", {
-          param: param === "INVOICE" ? "Retail" : param,
-          employeeDetail: employeeDetail,
-          moduleType,
-        });
-      }, 1000);
-    } else if (isContact) {
-      navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
-        moduleType: "live-leads",
-        employeeDetail: employeeDetail,
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+        screen: "EMS",
+        params: {
+          screen: "LEADS",
+          params: {
+            param: param === "INVOICE" ? "Retail" : param,
+            employeeDetail: employeeDetail,
+            moduleType,
+          },
+        },
       });
+    } else if (isContact) {
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+        screen: "EMS",
+        params: {
+          screen: EmsTopTabNavigatorIdentifiers.preEnquiry,
+          params: {
+            moduleType: "live-leads",
+            employeeDetail: employeeDetail,
+          },
+        },
+      });
+      // navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+      //   moduleType: "live-leads",
+      //   employeeDetail: employeeDetail,
+      // });
     } else if (isDropped) {
       // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {

@@ -28,7 +28,11 @@ import {
   getEnquiryList,
   getLeadsListCRM,
   getLeadsListReceptionist,
+  getLeadsListXrole,
+  getLiveleadsReceptinoist,
+  getLiveleadsReceptinoistManager,
   getMoreEnquiryList,
+  getSalesHomeDashbaordRedirections,
   updateTheCount,
 } from "../../../redux/enquiryReducer";
 import moment from "moment";
@@ -44,7 +48,7 @@ import { getLeadsList } from "../../../redux/enquiryReducer";
 import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
-
+import { EventRegister } from "react-native-event-listeners";
 const EmployeesRoles = [
   "Reception".toLowerCase(),
   "Tele Caller".toLowerCase(),
@@ -127,6 +131,7 @@ const LeadsScreen = ({ route, navigation }) => {
   const [AssignByMe, setAssignByMe] = useState(false);
   const [AssignToMe, setAssignToMe] = useState(false);
   const [isVip, setIsVip] = useState(false);
+  const [isHni, setIsHni] = useState(false);
 
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
@@ -212,7 +217,7 @@ const LeadsScreen = ({ route, navigation }) => {
         const json = await response.json();
         setStageAccess(json);
       }
-    } catch (error) {}
+    } catch (error) { }
   }, [userData]);
 
   const managerFilter = useCallback(
@@ -239,190 +244,347 @@ const LeadsScreen = ({ route, navigation }) => {
     [route?.params, leadsFilterData]
   );
 
-  useEffect(() => {
-    if (route?.params) {
-      const liveLeadsStartDate =
-        route?.params?.moduleType === "live-leads"
-          ? "2021-01-01"
-          : lastMonthFirstDate;
-      const liveLeadsEndDate =
-        route?.params?.moduleType === "live-leads"
-          ? moment().format(dateFormat)
-          : currentDate;
-      if (route?.params?.moduleType === "live-leads") {
-        setRefreshed(false);
+  useEffect(async () => {
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+
+      if (route?.params) {
+        const liveLeadsStartDate =
+          route?.params?.moduleType === "live-leads"
+            ? "2021-01-01"
+            : lastMonthFirstDate;
+        const liveLeadsEndDate =
+          route?.params?.moduleType === "live-leads"
+            ? moment().format(dateFormat)
+            : currentDate;
+        if (route?.params?.moduleType === "live-leads") {
+          setRefreshed(false);
+        } else {
+          setRefreshed(true);
+        }
+        setFromDateState(liveLeadsStartDate);
+        setToDateState(liveLeadsEndDate);
       } else {
-        setRefreshed(true);
+        setFromDateState(lastMonthFirstDate);
+        setToDateState(currentDate);
       }
-      setFromDateState(liveLeadsStartDate);
-      setToDateState(liveLeadsEndDate);
-    } else {
-      setFromDateState(lastMonthFirstDate);
-      setToDateState(currentDate);
-    }
 
-    if (
-      route &&
-      route.params &&
-      route.params.fromScreen &&
-      (route.params.fromScreen === "contacts" ||
-        route.params.fromScreen === "enquiry" ||
-        route.params.fromScreen === "proceedToBookingApproval" ||
-        route.params.fromScreen === "booking" ||
-        route.params.fromScreen === "testDrive" ||
-        route.params.fromScreen === "bookingApproval")
-    ) {
-      setLoader(true);
-    
-      onRefresh();
-    } else if (isFocused) {
-   
-      Promise.all([dispatch(getMenu()), dispatch(getStatus())])
-        .then(async ([res, res2]) => {
-          setLoader(true);
-          let path = res.payload;
-          let path2 = res2.payload;
-          let leadStage = [];
-          let leadStatus = [];
-          let newAre = path2 && path2.filter((e) => e.menu !== "Contact");
-          for (let i = 0; i < newAre.length; i++) {
-            let x = newAre[i].allLeadsSubstagesEntity;
-            for (let j = 0; j < x.length; j++) {
-              if (x[j].leadStage) {
-                leadStage = [...leadStage, ...x[j].leadStage];
+      if (
+        route &&
+        route.params &&
+        route.params.fromScreen &&
+        (route.params.fromScreen === "contacts" ||
+          route.params.fromScreen === "enquiry" ||
+          route.params.fromScreen === "proceedToBookingApproval" ||
+          route.params.fromScreen === "booking" ||
+          route.params.fromScreen === "testDrive" ||
+          route.params.fromScreen === "bookingApproval")
+      ) {
+        setLoader(true);
+
+        onRefresh();
+      } else if (isFocused) {
+
+        Promise.all([dispatch(getMenu()), dispatch(getStatus())])
+          .then(async ([res, res2]) => {
+            setLoader(true);
+            let path = res.payload;
+            let path2 = res2.payload;
+            let leadStage = [];
+            let leadStatus = [];
+            let newAre = path2 && path2.filter((e) => e.menu !== "Contact");
+            for (let i = 0; i < newAre.length; i++) {
+              let x = newAre[i].allLeadsSubstagesEntity;
+              for (let j = 0; j < x.length; j++) {
+                if (x[j].leadStage) {
+                  leadStage = [...leadStage, ...x[j].leadStage];
+                }
               }
             }
-          }
-          leadStage = leadStage.filter(function (item, index, inputArray) {
-            return inputArray.indexOf(item) == index;
-          });
+            leadStage = leadStage.filter(function (item, index, inputArray) {
+              return inputArray.indexOf(item) == index;
+            });
 
-          setDefualtLeadStage(leadStage);
-          setdefualtLeadStatus(leadStatus);
-          const newArr = path.map((v) => ({ ...v, checked: false }));
-          setTempStore(newArr);
-          if (route.params) {
-           
-            // managerFilter(newArr);
-            if (route?.params?.screenName === "DEFAULT") {
-              defualtCall(newArr, leadStage, leadStatus,false);
+            setDefualtLeadStage(leadStage);
+            setdefualtLeadStatus(leadStatus);
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            setTempStore(newArr);
+            if (route.params) {
+
+              // managerFilter(newArr);
+              if (route?.params?.screenName === "DEFAULT") {
+                defualtCall(newArr, leadStage, leadStatus, false);
+              }
+
+            } else {
+
+              defualtCall(newArr, leadStage, leadStatus, false);
             }
-            
-          } else {
-            
-            defualtCall(newArr, leadStage, leadStatus,false);
-          }
-        })
-        .catch((err) => {
-          setLoader(false);
-          setLeadsFilterDropDownText("All");
-          setSubMenu([]);
-        });
-    } else {
-      Promise.all([dispatch(getMenu()), dispatch(getStatus())])
-        .then(async ([res, res2]) => {
-          setLoader(true);
-          let path = res.payload;
-          let path2 = res2.payload;
-          let leadStage = [];
-          let leadStatus = [];
-          let newAre = path2.filter((e) => e.menu !== "Contact");
-          for (let i = 0; i < newAre.length; i++) {
-            let x = newAre[i].allLeadsSubstagesEntity;
-            for (let j = 0; j < x.length; j++) {
-              if (x[j]?.leadStage) {
-                leadStage = [...leadStage, ...x[j].leadStage];
+          })
+          .catch((err) => {
+            setLoader(false);
+            setLeadsFilterDropDownText("All");
+            setSubMenu([]);
+          });
+      } else {
+        Promise.all([dispatch(getMenu()), dispatch(getStatus())])
+          .then(async ([res, res2]) => {
+            setLoader(true);
+            let path = res.payload;
+            let path2 = res2.payload;
+            let leadStage = [];
+            let leadStatus = [];
+            let newAre = path2.filter((e) => e.menu !== "Contact");
+            for (let i = 0; i < newAre.length; i++) {
+              let x = newAre[i].allLeadsSubstagesEntity;
+              for (let j = 0; j < x.length; j++) {
+                if (x[j]?.leadStage) {
+                  leadStage = [...leadStage, ...x[j].leadStage];
+                }
               }
             }
-          }
-          leadStage = leadStage.filter(function (item, index, inputArray) {
-            return inputArray.indexOf(item) == index;
-          });
-          //todo
-          setDefualtLeadStage(leadStage);
-          setdefualtLeadStatus(leadStatus);
-          const newArr = path.map((v) => ({ ...v, checked: false }));
-          setTempStore(newArr);
-          if (route.params) {
-            
-            // managerFilter(newArr);
-            
-            if (route?.params?.screenName === "DEFAULT"){
+            leadStage = leadStage.filter(function (item, index, inputArray) {
+              return inputArray.indexOf(item) == index;
+            });
+            //todo
+            setDefualtLeadStage(leadStage);
+            setdefualtLeadStatus(leadStatus);
+            const newArr = path.map((v) => ({ ...v, checked: false }));
+            setTempStore(newArr);
+            if (route.params) {
+
+              // managerFilter(newArr);
+
+              if (route?.params?.screenName === "DEFAULT") {
+                setLeadsFilterData(newArr);
+                defualtCall(newArr, leadStage, leadStatus, false);
+              }
+            } else {
+
               setLeadsFilterData(newArr);
-              defualtCall(newArr, leadStage, leadStatus,false);
+              defualtCall(newArr, leadStage, leadStatus, false);
             }
-          } else {
-          
-            setLeadsFilterData(newArr);
-            defualtCall(newArr, leadStage, leadStatus,false);
-          }
-        })
-        .catch((err) => {
-          setLoader(false);
-          setLeadsFilterDropDownText("All");
-          setSubMenu([]);
-        });
-    }
-    
-    if (route?.params?.screenName === "Home" || route?.params?.screenName === "TARGETSCREEN1"){
-        //  todo call new api here 
-      
-      // setSearchedData([])
-      let payloadReceptionist = {
-        "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : userData.empId  ,
-        "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
-        "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-        "orgId": userData.orgId,
-        "branchCodes": route.params.dealerCodes,
-        "stageName": route?.params?.params,
-        "selectedEmpId": route?.params?.ignoreSelectedId? [] :route?.params?.selectedEmpId,
-        "limit": 1000,
-        "offset": 0
+          })
+          .catch((err) => {
+            setLoader(false);
+            setLeadsFilterDropDownText("All");
+            setSubMenu([]);
+          });
       }
-      
-      dispatch(getLeadsListReceptionist(payloadReceptionist))
-     
-    }
-    if (route?.params?.screenName === "TargetScreenCRM") {
-      //  todo call new api here 
-      
-      // setSearchedData([])
 
-      if (route?.params?.istotalClick){
+      if (route?.params?.screenName === "Home" || route?.params?.screenName === "TARGETSCREEN1") {
+        //  todo call new api here 
+
+        // setSearchedData([])
         let payloadReceptionist = {
+          "loginEmpId": route?.params?.ignoreSelectedId ? route?.params?.selectedEmpId[0] : jsonObj.empId,
+          "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+          "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+          "orgId": jsonObj.orgId,
+          "branchCodes": route.params.dealerCodes,
+          "stageName": route?.params?.params,
+          "selectedEmpId": route?.params?.ignoreSelectedId ? [] : route?.params?.selectedEmpId,
+          "limit": 1000,
+          "offset": 0
+        }
+        setTimeout(() => {
+          dispatch(getLeadsListReceptionist(payloadReceptionist))
+        }, 2000);
+
+
+      }
+      if (route?.params?.screenName === "TargetScreenCRM") {
+        //  todo call new api here 
+
+        // setSearchedData([])
+
+        if (route?.params?.istotalClick) {
+          let payloadReceptionist = {
+            "loggedInEmpId": route?.params?.parentId,
+            "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+            "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+            "orgId": jsonObj.orgId,
+            // "branchCodes": route.params.dealerCodes,
+            "stageName": route?.params?.params,
+            // "selectedEmpId": route?.params?.selectedEmpId,
+            "limit": 1000,
+            "offset": 0,
+            "self": route.params.self,
+            "dashboardType": route.params.dashboardType
+          }
+          setTimeout(() => {
+            dispatch(getLeadsListCRM(payloadReceptionist))
+          }, 2000);
+
+        } else {
+          let payloadReceptionist = {
+            "loginEmpId": route?.params?.parentId,
+            "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+            "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+            "orgId": jsonObj.orgId,
+            "branchCodes": route.params.dealerCodes,
+            "stageName": route?.params?.params,
+            "selectedEmpId": route?.params?.selectedEmpId,
+            "limit": 1000,
+            "offset": 0
+          }
+          setTimeout(() => {
+            dispatch(getLeadsListReceptionist(payloadReceptionist))
+          }, 2000);
+
+        }
+
+
+      }
+
+      if (route?.params?.screenName === "DigitalHome") {
+        //  todo call new api here 
+
+        // setSearchedData([])
+
+
+        let payload = {
+          "orgId": jsonObj.orgId,
           "loggedInEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-          "orgId": userData.orgId,
-          // "branchCodes": route.params.dealerCodes,
-          "stageName": route?.params?.params,
-          // "selectedEmpId": route?.params?.selectedEmpId,
           "limit": 1000,
-          "offset": 0
+          "offset": 0,
+          "stageName": route?.params?.params,
+          "dashboardType": "digital"
         }
+        setTimeout(() => {
+          dispatch(getLeadsListXrole(payload));
+        }, 2000);
 
-        dispatch(getLeadsListCRM(payloadReceptionist))
-      }else{
-        let payloadReceptionist = {
-          "loginEmpId": route?.params?.parentId,
+
+      }
+
+      if (route?.params?.screenName === "ReceptionistHome") {
+        //  todo call new api here 
+
+        // setSearchedData([])
+
+
+        let payload = {
+          "orgId": jsonObj.orgId,
+          "loggedInEmpId": route?.params?.parentId,
           "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
           "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
-          "orgId": userData.orgId,
-          "branchCodes": route.params.dealerCodes,
-          "stageName": route?.params?.params,
-          "selectedEmpId": route?.params?.selectedEmpId,
           "limit": 1000,
-          "offset": 0
+          "offset": 0,
+          "stageName": route?.params?.params,
+          "dashboardType": "reception"
+        }
+        setTimeout(() => {
+          dispatch(getLeadsListXrole(payload));
+        }, 2000);
+
+
+      }
+
+
+      if (route?.params?.screenName === "ParametersScreen") {
+        const liveLeadsStartDate =
+          route?.params?.moduleType === "live-leadsV2"
+            ? "2021-01-01"
+            : lastMonthFirstDate;
+        const liveLeadsEndDate =
+          route?.params?.moduleType === "live-leadsV2"
+            ? moment().format(dateFormat)
+            : currentDate;
+
+        setFromDateState(liveLeadsStartDate);
+        setToDateState(liveLeadsEndDate);
+
+
+        if (route.params.isCRMOwnDATA) {
+          if (route.params.isgetCRMTotalData) {
+            let payload = {
+              "loggedInEmpId": route?.params?.parentId,
+              "orgId": jsonObj.orgId,
+              "stageName": route?.params?.params,
+              "limit": 1000,
+              "offset": 0,
+              "self": route.params.isgetCRMTotalData
+            }
+
+            setTimeout(() => {
+              dispatch(getLiveleadsReceptinoistManager(payload))
+            }, 2000);
+          } else {
+            let payload = {
+              "loggedInEmpId": route?.params?.parentId,
+              "orgId": jsonObj.orgId,
+              "stageName": route?.params?.params,
+              "limit": 1000,
+              "offset": 0,
+              "self": route.params.isgetCRMTotalData
+            }
+
+            setTimeout(() => {
+              dispatch(getLiveleadsReceptinoistManager(payload))
+            }, 2000);
+          }
+
+        } else {
+
+          let payload = {
+            "loginEmpId": route?.params?.parentId,
+            // "startDate": liveLeadsStartDate,
+            // "endDate": liveLeadsEndDate,
+            "orgId": jsonObj.orgId,
+            "branchList": route.params.dealerCodes,
+            "stageName": route?.params?.params,
+            "selectedEmpId": route?.params?.selectedEmpId,
+            "limit": 1000,
+            "offset": 0
+          }
+          setTimeout(() => {
+            dispatch(getLiveleadsReceptinoist(payload))
+          }, 2000);
+        }
+      }
+
+
+      if (route?.params?.screenName === "TargetScreenSales") {
+        let payload = {
+          "endDate": route.params.endDate ? route.params.endDate : lastMonthLastDate,
+          "loggedInEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
+          "startDate": route.params.startDate ? route.params.startDate : lastMonthFirstDate,
+          "selectedEmpId": route?.params?.selectedEmpId ? route?.params?.selectedEmpId : jsonObj.empId,
+          "levelSelected": route.params.dealerCodes,
+          "pageNo": 0,
+          "size": 5000,
+          "filterValue": "",
+          "isSelf": route?.params?.self,
+          "stageName": route?.params?.params
         }
 
-        dispatch(getLeadsListReceptionist(payloadReceptionist))
+        setTimeout(() => {
+          dispatch(getSalesHomeDashbaordRedirections(payload))
+        }, 2000);
       }
-      
+
 
     }
-   
-
   }, [route.params]);
+
+  useEffect(() => {
+    EventRegister.addEventListener("EMSBOTTOMTAB_CLICKED", (res) => {
+      if (res) {
+        onRefresh();
+      }
+    });
+
+    return () => {
+      EventRegister.removeEventListener();
+    };
+  }, [])
+
 
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
@@ -433,9 +595,9 @@ const LeadsScreen = ({ route, navigation }) => {
   //   });
 
   // }, [navigation, defualtLeadStage]);
-  
 
-  const defualtCall = async (tempStores, leadStage, leadStatus,fromRefrsh = false) => {
+
+  const defualtCall = async (tempStores, leadStage, leadStatus, fromRefrsh = false) => {
     setLeadsFilterData(newArr);
     setSubMenu([]);
     setLeadsFilterDropDownText("All");
@@ -449,7 +611,7 @@ const LeadsScreen = ({ route, navigation }) => {
     });
     setTempLeadStage(leadStage);
     setTempLeadStatus([]);
-    if (fromRefrsh){
+    if (fromRefrsh) {
       onTempFliterRefresh(
         newArr,
         null,
@@ -462,7 +624,7 @@ const LeadsScreen = ({ route, navigation }) => {
         [],
         true
       );
-    }else{
+    } else {
       onTempFliter(
         newArr,
         null,
@@ -476,7 +638,7 @@ const LeadsScreen = ({ route, navigation }) => {
         true
       );
     }
-   
+
     // return
     // await applyLeadsFilter(newArr, lastMonthFirstDate, currentDate);
   };
@@ -501,7 +663,7 @@ const LeadsScreen = ({ route, navigation }) => {
       empId: employeeId,
       status: "",
       offset: offSet,
-      limit: 50,
+      limit: route?.params?.moduleType === "live-leads" ? 50000 : 50,
       leadStage: defualtLeadStage,
       leadStatus: defualtLeadStatus,
     };
@@ -767,14 +929,14 @@ const LeadsScreen = ({ route, navigation }) => {
           const x =
             item === "Delivery"
               ? path.map((object) => {
-                  return { ...object, checked: true };
-                })
+                return { ...object, checked: true };
+              })
               : path.map((object) => {
-                  if (object.subMenu === condition) {
-                    return { ...object, checked: true };
-                  }
-                  return object;
-                });
+                if (object.subMenu === condition) {
+                  return { ...object, checked: true };
+                }
+                return object;
+              });
           setSubMenu([...x]);
           setTempFilterPayload(x);
           onTempFliter(
@@ -814,7 +976,7 @@ const LeadsScreen = ({ route, navigation }) => {
           NewSubMenu(path);
         }
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const NewSubMenu = (item) => {
@@ -915,8 +1077,8 @@ const LeadsScreen = ({ route, navigation }) => {
       let leadStages = defLeadStage
         ? defLeadStage
         : leadStage.length === 0
-        ? defualtLeadStage
-        : leadStage;
+          ? defualtLeadStage
+          : leadStage;
       if (
         leadStages &&
         leadStages.length > 0 &&
@@ -941,11 +1103,11 @@ const LeadsScreen = ({ route, navigation }) => {
         route?.params?.param === "Enquiry"
         //  &&
         // !isRefresh
-      ) { 
-          leadStages = []
+      ) {
+        leadStages = []
         let tempEnquriyArr = ["ENQUIRY", "PREBOOKING"]
         leadStages.push(...tempEnquriyArr)
-        }
+      }
       if (
         leadStages &&
         leadStages.length > 0 &&
@@ -957,11 +1119,11 @@ const LeadsScreen = ({ route, navigation }) => {
         let tempEnquriyArr = ["BOOKING"]
         leadStages.push(...tempEnquriyArr)
       }
-     
+
       let isLive = false;
       if (
         route?.params?.param &&
-        route?.params?.moduleType === "live-leads" 
+        route?.params?.moduleType === "live-leads"
         // &&
         // !isRefresh
       ) {
@@ -1004,13 +1166,13 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50,
+        limit: route?.params?.moduleType === "live-leads" ? 50000 : 50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
           : leadStatus.length === 0
-          ? defualtLeadStatus
-          : leadStatus,
+            ? defualtLeadStatus
+            : leadStatus,
       };
       let data = {
         newPayload,
@@ -1139,10 +1301,10 @@ const LeadsScreen = ({ route, navigation }) => {
           if (invoiceIndex !== -1) {
             leadStages.splice(invoiceIndex, 1);
           }
-       
+
         }
       }
-     
+
       let isLive = false;
       if (
         route?.params?.param &&
@@ -1189,13 +1351,13 @@ const LeadsScreen = ({ route, navigation }) => {
           : jsonObj.empId,
         status: "",
         offset: 0,
-        limit: 50,
+        limit: route?.params?.moduleType === "live-leads" ? 50000 : 50,
         leadStage: leadStages,
         leadStatus: defLeadStatus
           ? defLeadStatus
           : leadStatus.length === 0
-          ? defualtLeadStatus
-          : leadStatus,
+            ? defualtLeadStatus
+            : leadStatus,
       };
       let data = {
         newPayload,
@@ -1300,6 +1462,7 @@ const LeadsScreen = ({ route, navigation }) => {
         <View style={{ marginTop: index == 0 ? 10 : 0 }}>
           <MyTaskNewItem
             IsVip={item.isVip === "Y" ? true : false}
+            IsHni={item.isHni === "Y" ? true : false}
             tdflage={item?.tdflage ? item.tdflage : ""}
             hvflage={item?.hvflage ? item.hvflage : ""}
             showTdHvHighLight={true}
@@ -1315,8 +1478,8 @@ const LeadsScreen = ({ route, navigation }) => {
               item.leadStage === "ENQUIRY"
                 ? "Enq"
                 : item.leadStage === "BOOKING"
-                ? "Book"
-                : "PreBook"
+                  ? "Book"
+                  : "PreBook"
             }
             status={""}
             created={item.modifiedDate}
@@ -1358,6 +1521,7 @@ const LeadsScreen = ({ route, navigation }) => {
                     enqDetails: item,
                     leadStatus: item.leadStatus,
                     leadStage: item.leadStage,
+                    fromScreen:"EMS_TAB"
                   });
                 } else {
                   alert("No Access");
@@ -1378,6 +1542,7 @@ const LeadsScreen = ({ route, navigation }) => {
                   enqDetails: item,
                   leadStatus: item.leadStatus,
                   leadStage: item.leadStage,
+                  fromScreen: "EMS_TAB"
                 });
               }
             }}
@@ -1395,7 +1560,16 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMeLength(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
+      } else if (isVip) {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
@@ -1403,11 +1577,19 @@ const LeadsScreen = ({ route, navigation }) => {
             userData.empName !== i.salesConsultant
         );
         return newData.length;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
       } else {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName 
-          &&
-          userData.empName !== i.salesConsultant
+          (i) =>
+            i.createdBy === userData.empName &&
+            userData.empName !== i.salesConsultant
         );
         return newData.length;
       }
@@ -1418,9 +1600,22 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMeLength(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.isVip === "Y" &&
+            i.isHni === "Y"
+        );
+        return newData.length;
+      } else if (isVip) {
         let newData = data.filter(
           (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+        );
+        return newData.length;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant && i.isHni === "Y"
         );
         return newData.length;
       } else {
@@ -1436,11 +1631,31 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMe(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
         let newData = data.filter(
-          (i) => i.createdBy === userData.empName && i.isVip === "Y"
-          &&
-          userData.empName !== i.salesConsultant
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isVip === "Y" &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.isHni === "Y" &&
+            userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1452,7 +1667,7 @@ const LeadsScreen = ({ route, navigation }) => {
           // &&
           // userData.empName === i.salesConsultant
         );
-        dispatch(updateTheCount(newData.length));
+        dispatch(updateTheCount(""));
         return newData;
       }
     } else {
@@ -1463,9 +1678,24 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMe(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.isVip === "Y" &&
+            i.isHni === "Y"
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip) {
         let newData = data.filter(
           (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni) {
+        let newData = data.filter(
+          (i) => userData.empName === i.salesConsultant && i.isHni === "Y"
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1473,7 +1703,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) => userData.empName === i.salesConsultant
         );
-        dispatch(updateTheCount(newData.length));
+        dispatch(updateTheCount(""));
         return newData;
       }
     } else {
@@ -1484,13 +1714,22 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function OnVip(data) {
     if (data.length > 0) {
-      if (isVip) {
+      if (isVip && isHni) {
+        let newData = data.filter((i) => i.isVip === "Y" && i.isHni === "Y");
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip) {
         let newData = data.filter((i) => i.isVip === "Y");
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni) {
+        let newData = data.filter((i) => i.isHni === "Y");
         dispatch(updateTheCount(newData.length));
         return newData;
       } else {
         let newData = data;
-        dispatch(updateTheCount(newData.length));
+        // dispatch(updateTheCount(newData.length));
+        dispatch(updateTheCount(""));
         return newData;
       }
     } else {
@@ -1570,7 +1809,7 @@ const LeadsScreen = ({ route, navigation }) => {
           cancelClicked={() => {
             setLeadsSubMenuFilterVisible(false);
           }}
-          onChange={(x) => {}}
+          onChange={(x) => { }}
         />
       </View>
 
@@ -1589,7 +1828,7 @@ const LeadsScreen = ({ route, navigation }) => {
       />
 
       <View style={styles.view1}>
-        <View style={{ width: "80%" }}>
+        <View style={{ width: "90%" }}>
           <DateRangeComp
             fromDate={selectedFromDate}
             toDate={selectedToDate}
@@ -1598,19 +1837,19 @@ const LeadsScreen = ({ route, navigation }) => {
           />
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
-          <View style={styles.filterView}>
-            <Text style={styles.text1}>{"Filter"}</Text>
+          {/* <View style={styles.filterView}> */}
+            {/* <Text style={styles.text1}>{"Filter"}</Text> */}
             <IconButton
               icon={"filter-outline"}
-              size={16}
+              size={23}
               color={Colors.RED}
               style={{ margin: 0, padding: 0 }}
             />
-          </View>
+          {/* </View> */}
         </Pressable>
       </View>
       <View style={styles.view3}>
-        <View style={{ width: subMenu?.length > 1 ? "35%" : "70%" }}>
+        <View style={{ width: subMenu?.length > 1 ? "25%" : "50%" }}>
           <Pressable
             onPress={() => {
               setLeadsFilterVisible(true);
@@ -1632,7 +1871,7 @@ const LeadsScreen = ({ route, navigation }) => {
         {subMenu?.length > 1 && (
           <View
             style={{
-              width: "35%",
+              width: "25%",
               alignSelf: "center",
               backgroundColor: "white",
               marginBottom: 5,
@@ -1680,17 +1919,46 @@ const LeadsScreen = ({ route, navigation }) => {
           </View>
         )}
         <View style={{ alignItems: "center", flexDirection: "row" }}>
-          <Text
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: "600",
+              alignItems: "center",
+              flexDirection: "row",
               marginRight: 5,
-              color: Colors.RED,
             }}
           >
-            VIP
-          </Text>
-          <Switch color={Colors.RED} value={isVip} onValueChange={setIsVip} />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "600",
+                color: Colors.RED,
+              }}
+            >
+              VIP
+            </Text>
+            <Switch
+              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+              color={Colors.RED}
+              value={isVip}
+              onValueChange={setIsVip}
+            />
+          </View>
+          <View style={{ alignItems: "center", flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "600",
+                color: Colors.RED,
+              }}
+            >
+              HNI
+            </Text>
+            <Switch
+              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+              color={Colors.RED}
+              value={isHni}
+              onValueChange={setIsHni}
+            />
+          </View>
         </View>
       </View>
       <View style={styles.AssignView}>
@@ -1757,8 +2025,8 @@ const LeadsScreen = ({ route, navigation }) => {
               searchedData.length > 0 && AssignByMe
                 ? onAssignByMe(searchedData)
                 : AssignToMe
-                ? onAssignToMe(searchedData)
-                : OnVip(searchedData)
+                  ? onAssignToMe(searchedData)
+                  : OnVip(searchedData)
             }
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -1926,7 +2194,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   txt1: {
-    width: "80%",
+    width: "70%",
     paddingHorizontal: 5,
     paddingVertical: 2,
     fontSize: 12,

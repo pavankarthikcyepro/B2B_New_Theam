@@ -13,6 +13,28 @@ export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData
   return json;
 })
 
+export const getPreEnquiryDataLiveReceptionist = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryDataLiveReceptionist', async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_LIVE_LEAD_LIST_RECEPTINOST(), payload);
+  const json = await response.json()
+
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getPreEnquiryDataLiveReceptionistManager = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryDataLiveReceptionistManager', async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_LIVE_LEAD_LIST_RECEPTINOST_MANAGER(), payload);
+  const json = await response.json()
+
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 
 export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnquiryData', async (payload, { rejectWithValue }) => {
 
@@ -86,6 +108,62 @@ export const preEnquirySlice = createSlice({
     })
     builder.addCase(getMorePreEnquiryData.rejected, (state) => {
       state.isLoadingExtraData = false;
+    })
+
+
+
+    builder.addCase(getPreEnquiryDataLiveReceptionist.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getPreEnquiryDataLiveReceptionist.fulfilled, (state, action) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        state.pre_enquiry_list_TotalElements = action.payload;
+        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content.length > 0 ? dmsEntityObj.leadDtoPage.content : [];
+
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(getPreEnquiryDataLiveReceptionist.rejected, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      state.isLoading = false;
+    })
+
+    builder.addCase(getPreEnquiryDataLiveReceptionistManager.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getPreEnquiryDataLiveReceptionistManager.fulfilled, (state, action) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        state.pre_enquiry_list_TotalElements = action.payload;
+        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content.length > 0 ? dmsEntityObj.leadDtoPage.content : [];
+
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(getPreEnquiryDataLiveReceptionistManager.rejected, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      state.isLoading = false;
     })
   }
 });

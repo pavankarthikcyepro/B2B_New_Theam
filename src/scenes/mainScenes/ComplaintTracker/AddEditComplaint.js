@@ -741,7 +741,7 @@ const AddEditComplaint = (props) => {
             // });
               setCarModelsList(resolve);
           }
-        //   console.log("manthass ",JSON.stringify([...modalList]));
+        
              
         
         },

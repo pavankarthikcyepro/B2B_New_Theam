@@ -27,6 +27,7 @@ import { TargetDropdown } from "../../../../pureComponents";
 import { Dropdown } from "react-native-element-dropdown";
 import { LoaderComponent } from "../../../../components";
 // import { ScrollView } from "react-native-gesture-handler";
+import Lottie from "lottie-react-native";
 
 import {
   getEmployeesDropDownData,
@@ -160,6 +161,8 @@ const MainParamScreen = ({ route, navigation }) => {
   const [branches, setBranches] = useState([]);
   const [togglePercentage, setTogglePercentage] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
+  const [teamLoader, setTeamLoader] = useState(false);
+  const [teamMember, setTeamMember] = useState("");
   const scrollViewRef = useRef();
   const translation = useRef(new Animated.Value(0)).current;
 
@@ -958,7 +961,9 @@ const MainParamScreen = ({ route, navigation }) => {
         let payload = {
           branch: selectedBranch.value,
           // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
-          employeeId: selectedUser?.employeeId || selectedUser?.empId,
+          employeeId: !selector.isTeam
+            ? jsonObj.empId
+            : selectedUser?.employeeId || selectedUser?.empId,
           endDate: filterData?.toDate ? filterData?.toDate : selector.endDate,
           // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
           retailTarget: retail,
@@ -972,7 +977,6 @@ const MainParamScreen = ({ route, navigation }) => {
           loggedInEmpId: jsonObj.empId,
           recordId: selectedUser?.recordId || ownData?.id,
         };
-
         Promise.all([dispatch(editTargetMapping(payload))])
           .then((response) => {
             setSelectedUser(null);
@@ -1517,6 +1521,7 @@ const MainParamScreen = ({ route, navigation }) => {
   };
 
   const onEmployeeNameClick = async (item, index, lastParameter) => {
+    setTeamMember(item.empName);
     try {
       let localData = [...allParameters];
       let current = lastParameter[index].isOpenInner;
@@ -1527,6 +1532,7 @@ const MainParamScreen = ({ route, navigation }) => {
         }
       }
       if (!current) {
+        setTeamLoader(true);
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -1625,13 +1631,17 @@ const MainParamScreen = ({ route, navigation }) => {
                 }
               }
               setAllParameters([...localData]);
+              setTeamLoader(false);
             }
           );
         }
       } else {
         setAllParameters([...localData]);
+        setTeamLoader(false);
       }
-    } catch (error) {}
+    } catch (error) {
+      setTeamLoader(false);
+    }
   };
 
   function removeDuplicates(arr) {
@@ -2073,6 +2083,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 item={item}
                 branchName={getBranchName(item?.branchId)}
                 color={borderColor}
+                teamLoader={teamLoader}
+                teamMember={teamMember}
                 titleClick={async () => {
                   await onEmployeeNameClick(item, index, allData);
                 }}
@@ -2399,6 +2411,8 @@ const MainParamScreen = ({ route, navigation }) => {
                                     item={item}
                                     branchName={getBranchName(item?.branch)}
                                     color={"#C62159"}
+                                    teamLoader={teamLoader}
+                                    teamMember={teamMember}
                                     titleClick={async () => {
                                       return;
                                     }}
@@ -2519,6 +2533,8 @@ const MainParamScreen = ({ route, navigation }) => {
                                     item={item}
                                     branchName={getBranchName(item?.branchId)}
                                     color={"#C62159"}
+                                    teamLoader={teamLoader}
+                                    teamMember={teamMember}
                                     titleClick={async () => {
                                       let localData = [...allParameters];
                                       await onEmployeeNameClick(
@@ -2646,6 +2662,8 @@ const MainParamScreen = ({ route, navigation }) => {
                                                   branchName={getBranchName(
                                                     innerItem1?.branchId
                                                   )}
+                                                  teamLoader={teamLoader}
+                                                  teamMember={teamMember}
                                                   titleClick={async () => {
                                                     const localData = [
                                                       ...allParameters,
@@ -2783,6 +2801,12 @@ const MainParamScreen = ({ route, navigation }) => {
                                                           level={2}
                                                           item={innerItem2}
                                                           color={"#2C97DE"}
+                                                          teamLoader={
+                                                            teamLoader
+                                                          }
+                                                          teamMember={
+                                                            teamMember
+                                                          }
                                                           branchName={getBranchName(
                                                             innerItem2?.branchId
                                                           )}
@@ -2938,6 +2962,12 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                     branchName={getBranchName(
                                                                       innerItem3?.branchId
                                                                     )}
+                                                                    teamLoader={
+                                                                      teamLoader
+                                                                    }
+                                                                    teamMember={
+                                                                      teamMember
+                                                                    }
                                                                     titleClick={async () => {
                                                                       const localData =
                                                                         [
@@ -3102,6 +3132,12 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                               branchName={getBranchName(
                                                                                 innerItem4?.branchId
                                                                               )}
+                                                                              teamLoader={
+                                                                                teamLoader
+                                                                              }
+                                                                              teamMember={
+                                                                                teamMember
+                                                                              }
                                                                               titleClick={async () => {
                                                                                 const localData =
                                                                                   [
@@ -3269,6 +3305,12 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                         branchName={getBranchName(
                                                                                           innerItem5?.branchId
                                                                                         )}
+                                                                                        teamLoader={
+                                                                                          teamLoader
+                                                                                        }
+                                                                                        teamMember={
+                                                                                          teamMember
+                                                                                        }
                                                                                         titleClick={async () => {
                                                                                           const localData =
                                                                                             [
@@ -3439,6 +3481,12 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                   branchName={getBranchName(
                                                                                                     innerItem6?.branchId
                                                                                                   )}
+                                                                                                  teamLoader={
+                                                                                                    teamLoader
+                                                                                                  }
+                                                                                                  teamMember={
+                                                                                                    teamMember
+                                                                                                  }
                                                                                                   titleClick={async () => {
                                                                                                     const localData =
                                                                                                       [
@@ -5468,6 +5516,8 @@ export const RenderLevel1NameView = ({
   color,
   titleClick,
   disable = false,
+  teamLoader = false,
+  teamMember = "",
 }) => {
   return (
     <View
@@ -5482,29 +5532,50 @@ export const RenderLevel1NameView = ({
       <View
         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
       >
-        <TouchableOpacity
-          disabled={disable}
-          style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-          onPress={titleClick}
-        >
-          <Text
+        {teamLoader && teamMember === item?.empName ? (
+          <View
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Lottie
+              source={require("../../../../assets/Animations/lf20_qispmsyg.json")}
+              autoPlay
+              loop
+            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            disabled={disable}
+            style={{
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+            onPress={titleClick}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+        )}
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <IconButton
             icon="map-marker"

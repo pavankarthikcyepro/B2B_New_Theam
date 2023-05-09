@@ -9,7 +9,6 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
-  ScrollView,
   Keyboard,
   Image,
   Platform,
@@ -57,6 +56,11 @@ import {
   updateIsModalVisible,
   getReceptionistManagerData,
   getCRM_ReceptionistManagerData,
+  updatefilter_drop_down_designations,
+  updateFilterLeadership_selectedDesignation,
+  updateFilterLeadership_selectedDesignationName,
+  updateLeaderShipFilter,
+  updateLoader,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -103,12 +107,13 @@ import Orientation from "react-native-orientation-locker";
 import { useIsFocused } from "@react-navigation/native";
 import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { isReceptionist } from "../../../utils/helperFunctions";
-
+import { ScrollView } from "react-native-gesture-handler";
+import _ from "lodash";
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
-const receptionistRole = ["Reception", "CRM", "Tele Caller","CRE"];
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 
@@ -158,7 +163,7 @@ const HomeScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       getCurrentLocation();
-      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
+      setTargetData().then(() => { }); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
 
@@ -177,10 +182,10 @@ const HomeScreen = ({ route, navigation }) => {
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
         },
-        (error) => {},
+        (error) => { },
         { enableHighAccuracy: true }
       );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -198,69 +203,55 @@ const HomeScreen = ({ route, navigation }) => {
 
   const getDetails = async () => {
     try {
-      var startDate = createDateTime("8:30");
-      var startBetween = createDateTime("11:30");
-      var endBetween = createDateTime("20:30");
-      var endDate = createDateTime("21:30");
-      var now = new Date();
-      var isBetween = startDate <= now && now <= endDate;
       if (true) {
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
         if (employeeData) {
           const jsonObj = JSON.parse(employeeData);
-          dispatch(getNotificationList(jsonObj.empId));
-          var d = new Date();
-          const response = await client.get(
-            URL.GET_ATTENDANCE_EMPID(
-              jsonObj.empId,
-              jsonObj.orgId,
-              monthNamesCap[d.getMonth()]
-            )
-          );
-          const json = await response.json();
-          const response1 = await client.get(
-            URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
-          );
-          const json1 = await response1.json();
-          if (json1?.length>0) {
-            return
-          }
-          if (json.length != 0) {
-            let date = new Date(json[json.length - 1].createdtimestamp);
-            // let dist = getDistanceBetweenTwoPoints(
-            //   officeLocation.latitude,
-            //   officeLocation.longitude,
-            //   initialPosition?.latitude,
-            //   initialPosition?.longitude
-            // );
-            // if (dist > officeRadius) {
-            //   setReason(true); ///true for reason
-            // } else {
-            //   setReason(false);
-            // }
-            if (date.getDate() != new Date().getDate()) {
-              setAttendance(true);
-              // if (startDate <= now && now <= startBetween) {
-              //   setAttendance(true);
-              // } else {
-              //   setAttendance(false);
-              // }
-            } else {
-              // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
-              //   setAttendance(true);
-              // } else {
-              //   setAttendance(false);
-              // }
+          if (jsonObj.isAttendance === "Y") {
+            dispatch(getNotificationList(jsonObj.empId));
+            var d = new Date();
+            const response = await client.get(
+              URL.GET_ATTENDANCE_EMPID(
+                jsonObj.empId,
+                jsonObj.orgId,
+                monthNamesCap[d.getMonth()]
+              )
+            );
+            const json = await response.json();
+            const response1 = await client.get(
+              URL.GET_HOLIDAYS(jsonObj.orgId, currentDate, currentDate)
+            );
+            const json1 = await response1.json();
+            if (json1?.length > 0) {
+              return;
             }
-          } else {
-            setAttendance(true);
-            //  if (startDate <= now && now <= startBetween) {
-            //    setAttendance(true);
-            //  } else {
-            //    setAttendance(false);
-            //  }
+            if (json.length != 0) {
+              let date = new Date(json[json.length - 1].createdtimestamp);
+              // let dist = getDistanceBetweenTwoPoints(
+              //   officeLocation.latitude,
+              //   officeLocation.longitude,
+              //   initialPosition?.latitude,
+              //   initialPosition?.longitude
+              // );
+              // if (dist > officeRadius) {
+              //   setReason(true); ///true for reason
+              // } else {
+              //   setReason(false);
+              // }
+              if (date.getDate() != new Date().getDate()) {
+                setAttendance(true);
+              } else {
+                // if (endBetween <= now && now <= endDate && json.isLogOut == 0) {
+                //   setAttendance(true);
+                // } else {
+                //   setAttendance(false);
+                // }
+              }
+            } else {
+              setAttendance(true);
+            }
           }
         }
       }
@@ -273,42 +264,46 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(async () => {
     if (
       userData.hrmsRole === "Reception" ||
-      userData.hrmsRole === "Tele Caller" || userData.hrmsRole === "CRE"
+      userData.hrmsRole === "Tele Caller" ||
+      userData.hrmsRole === "CRE"
     ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
-        "startDate": selector.receptionistFilterIds.startDate,
-        "endDate": selector.receptionistFilterIds.endDate,
-        "dealerCodes": selector.receptionistFilterIds.dealerCodes
+        startDate: selector.receptionistFilterIds.startDate,
+        endDate: selector.receptionistFilterIds.endDate,
+        dealerCodes: selector.receptionistFilterIds.dealerCodes,
       };
       dispatch(getReceptionistData(payload));
-    } else if (userData.hrmsRole === "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
+    } else if (
+      userData.hrmsRole === "CRM" &&
+      !selector.saveCRMfilterObj?.selectedempId
+    ) {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
       };
       // dispatch(getReceptionistManagerData(payload));
-      dispatch(getCRM_ReceptionistManagerData(payload))
+      dispatch(getCRM_ReceptionistManagerData(payload));
     }
   }, [userData, selector.receptionistFilterIds]);
 
   const setTargetData = async () => {
-    let obj = {
-      empData: (await AsyncStore.getData("TARGET_EMP"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_EMP"))
-        : empData,
-      allEmpData: (await AsyncStore.getData("TARGET_EMP_ALL"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_EMP_ALL"))
-        : allData.employeeTargetAchievements,
-      allTargetData: (await AsyncStore.getData("TARGET_ALL"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_ALL"))
-        : allData.overallTargetAchivements,
-      targetData: (await AsyncStore.getData("TARGET_DATA"))
-        ? JSON.parse(await AsyncStore.getData("TARGET_DATA"))
-        : targetData,
-    };
-    dispatch(updateTargetData(obj));
+    // let obj = {
+    //   empData: (await AsyncStore.getData("TARGET_EMP"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_EMP"))
+    //     : empData,
+    //   allEmpData: (await AsyncStore.getData("TARGET_EMP_ALL"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_EMP_ALL"))
+    //     : allData.employeeTargetAchievements,
+    //   allTargetData: (await AsyncStore.getData("TARGET_ALL"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_ALL"))
+    //     : allData.overallTargetAchivements,
+    //   targetData: (await AsyncStore.getData("TARGET_DATA"))
+    //     ? JSON.parse(await AsyncStore.getData("TARGET_DATA"))
+    //     : targetData,
+    // };
+    // dispatch(updateTargetData(obj));
   };
 
   useEffect(() => {
@@ -379,13 +374,22 @@ const HomeScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
-    getMenuListFromServer();
-    getCustomerType();
-    checkLoginUserAndEnableReportButton();
+    Promise.all([
+      getMenuListFromServer(),
+      getCustomerType(),
+      checkLoginUserAndEnableReportButton(),
+    ])
+      .then(() => {
+        // dispatch(updateLoader(false));
+      })
+      .catch(() => {
+        dispatch(updateLoader(false));
+      });
     // getLoginEmployeeDetailsFromAsyn();
     // }
 
     const unsubscribe = navigation.addListener("focus", () => {
+      dispatch(updateLoader(true));
       getLoginEmployeeDetailsFromAsyn(); //Commented to resolved filter issue for Home Screen
     });
 
@@ -406,23 +410,22 @@ const HomeScreen = ({ route, navigation }) => {
     });
   };
   const moveToFilter = () => {
-
-    if (userData.hrmsRole == "Reception" || userData.hrmsRole == "CRE" || userData.hrmsRole == "Tele Caller") {
-    // if (isReceptionist(userData.hrmsRole)) {
+    if (
+      userData.hrmsRole == "Reception" ||
+      userData.hrmsRole == "CRE" ||
+      userData.hrmsRole == "Tele Caller"
+    ) {
+      // if (isReceptionist(userData.hrmsRole)) {
       navigation.navigate(
         AppNavigator.HomeStackIdentifiers.receptionistFilter,
         {
           isFromLogin: false,
         }
       );
-    }
-    else if (userData.hrmsRole == "CRM"){
-      navigation.navigate(
-        AppNavigator.HomeStackIdentifiers.crmFilter,
-        {
-          isFromLogin: false,
-        }
-      );
+    } else if (userData.hrmsRole == "CRM") {
+      navigation.navigate(AppNavigator.HomeStackIdentifiers.crmFilter, {
+        isFromLogin: false,
+      });
     } else {
       navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, {
         isFromLogin: false,
@@ -523,7 +526,7 @@ const HomeScreen = ({ route, navigation }) => {
             orgId: jsonObj.orgId,
           })
         ),
-      ]).then(() => {});
+      ]).then(() => { });
       if (
         jsonObj?.hrmsRole === "Admin" ||
         jsonObj?.hrmsRole === "Admin Prod" ||
@@ -578,8 +581,8 @@ const HomeScreen = ({ route, navigation }) => {
             : null;
         }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) => {})
-          .catch((y) => {});
+          .then((x) => { })
+          .catch((y) => { });
       }
 
       if (
@@ -603,7 +606,9 @@ const HomeScreen = ({ route, navigation }) => {
 
       if (
         jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
-        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
+        jsonObj?.hrmsRole.toLowerCase().includes("sales consultant") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("reception") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("tele caller")
       ) {
         dispatch(updateIsDSE(true));
       } else {
@@ -666,10 +671,10 @@ const HomeScreen = ({ route, navigation }) => {
           })
         ),
           getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) => {})
-            .catch((y) => {});
+            .then((x) => { })
+            .catch((y) => { });
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) => {});
+        getTargetParametersDataFromServer(payload).catch((y) => { });
       }
     }
   };
@@ -708,10 +713,10 @@ const HomeScreen = ({ route, navigation }) => {
       // dispatch(getVehicleModelTableList(payload)),
       // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
-    ]).then(() => {});
+    ]).then(() => { });
 
     getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => {});
+    getTargetParametersDataFromServer(payload).catch((y) => { });
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -724,7 +729,7 @@ const HomeScreen = ({ route, navigation }) => {
       dispatch(getTaskTableList(payload)),
       dispatch(getSalesData(payload)),
       dispatch(getSalesComparisonData(payload)),
-    ]).then(() => {});
+    ]).then(() => { });
   };
 
   const getTargetParametersDataFromServer = async (payload) => {
@@ -763,8 +768,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpDataInsights(payload1)
       ),
     ])
-      .then(() => {})
-      .catch((y) => {});
+      .then(() => { })
+      .catch((y) => { });
   };
 
   const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -824,8 +829,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpData(payload1)
       ),
     ])
-      .then(() => {})
-      .catch((y) => {});
+      .then(() => { })
+      .catch((y) => { });
   };
 
   useEffect(() => {
@@ -975,7 +980,9 @@ const HomeScreen = ({ route, navigation }) => {
                 if (res[0]?.payload?.downloadUrl) {
                   let path = res[0]?.payload;
                   if (Platform.OS === "android") {
+                    console.log("LLLL",path)
                     for (const property in path) {
+                      console.log("sssss", path[property]);
                       downloadInLocal(path[property]);
                     }
                   }
@@ -1080,25 +1087,31 @@ const HomeScreen = ({ route, navigation }) => {
   };
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
-    navigation.navigate(
-      screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
-    );
+    if (screenName) {
+      navigation.navigate(
+        screenName ? screenName : AppNavigator.TabStackIdentifiers.ems
+      );
+    }
     if (!screenName) {
-      if (selector.saveCRMfilterObj?.selectedempId){
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
-            startDate: selector.saveCRMfilterObj.startDate,
-            endDate: selector.saveCRMfilterObj.endDate,
-            dealerCodes: selector.saveCRMfilterObj.dealerCodes,
-            ignoreSelectedId : true
-          });
-        }, 1000);
-      } else if (userData.hrmsRole === "CRM"){
+      if (selector.saveCRMfilterObj?.selectedempId) {
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selector.saveCRMfilterObj?.selectedempId,
+              startDate: selector.saveCRMfilterObj.startDate,
+              endDate: selector.saveCRMfilterObj.endDate,
+              dealerCodes: selector.saveCRMfilterObj.dealerCodes,
+              ignoreSelectedId: true,
+            },
+          },
+        });
+      } else if (userData.hrmsRole === "CRM") {
         setTimeout(() => {
           navigation.navigate("LEADS", {
             screenName: "TargetScreenCRM",
@@ -1109,28 +1122,30 @@ const HomeScreen = ({ route, navigation }) => {
             startDate: "",
             endDate: "",
             dealerCodes: [],
-            ignoreSelectedId:false,
+            ignoreSelectedId: false,
             parentId: selectedEmpId[0],
-            istotalClick: true
+            istotalClick: true,
           });
         }, 1000);
+      } else {
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+          screen: "EMS",
+          params: {
+            screen: "LEADS",
+            params: {
+              screenName: "Home",
+              params: params,
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: selectedEmpId,
+              startDate: selector.receptionistFilterIds.startDate,
+              endDate: selector.receptionistFilterIds.endDate,
+              dealerCodes: selector.receptionistFilterIds.dealerCodes,
+              ignoreSelectedId: true,
+            },
+          },
+        });
       }
-      else{
-        setTimeout(() => {
-          navigation.navigate("LEADS", {
-            screenName: "Home",
-            params: params,
-            moduleType: "",
-            employeeDetail: "",
-            selectedEmpId: selectedEmpId,
-            startDate: selector.receptionistFilterIds.startDate,
-            endDate: selector.receptionistFilterIds.endDate,
-            dealerCodes: selector.receptionistFilterIds.dealerCodes,
-            ignoreSelectedId: true
-          });
-        }, 1000);
-      }
-      
     }
   }
   function navigateToContact(params) {
@@ -1160,7 +1175,7 @@ const HomeScreen = ({ route, navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <>
               <Button
@@ -1244,19 +1259,29 @@ const HomeScreen = ({ route, navigation }) => {
     );
   };
   function navigateToDropLostCancel(params) {
-    if (selector.saveCRMfilterObj.selectedempId){
-      
+    if (selector.saveCRMfilterObj.selectedempId) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-        params: { emp_id: selector.saveCRMfilterObj.selectedempId[0], fromScreen: "Home", dealercodes: selector.saveCRMfilterObj.dealerCodes, isForDropped: true, isFilterApplied: true },
+        params: {
+          emp_id: selector.saveCRMfilterObj.selectedempId[0],
+          fromScreen: "Home",
+          dealercodes: selector.saveCRMfilterObj.dealerCodes,
+          isForDropped: true,
+          isFilterApplied: true,
+        },
       });
-    }else{
+    } else {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: AppNavigator.DrawerStackIdentifiers.dropAnalysis,
-        params: { emp_id: "", fromScreen: "Home", dealercodes: selector.receptionistFilterIds.dealerCodes, isForDropped: false, isFilterApplied: false },
+        params: {
+          emp_id: "",
+          fromScreen: "Home",
+          dealercodes: selector.receptionistFilterIds.dealerCodes,
+          isForDropped: false,
+          isFilterApplied: false,
+        },
       });
     }
-   
   }
 
   return (
@@ -1294,7 +1319,7 @@ const HomeScreen = ({ route, navigation }) => {
         navigation={navigation}
       />
       <ScrollView
-      nestedScrollEnabled={true}
+        nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, paddingHorizontal: 10 }}
       >
@@ -1505,7 +1530,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.totalDroppedCount > 0 &&
-                   navigateToDropLostCancel()
+                    navigateToDropLostCancel();
                 }}
                 style={styles.view8}
               >
@@ -1558,7 +1583,7 @@ const HomeScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   selector.receptionistData.bookingsCount > 0 &&
-                    navigateToEMS("BOOKING","",[userData.empId]);
+                    navigateToEMS("BOOKING", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1580,7 +1605,8 @@ const HomeScreen = ({ route, navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                  selector.receptionistData.RetailCount > 0 &&
+                    navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
                 }}
                 style={styles.view8}
               >
@@ -1624,6 +1650,7 @@ const HomeScreen = ({ route, navigation }) => {
                       : Colors.RED,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
+                    padding: 14,
                   }}
                 >
                   <Text
@@ -1650,6 +1677,7 @@ const HomeScreen = ({ route, navigation }) => {
                       : Colors.WHITE,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
+                    padding: 14,
                   }}
                 >
                   <Text
@@ -1799,7 +1827,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     paddingHorizontal: 10,
     paddingTop: 5,
-    marginBottom: 7,
+    // marginBottom: 7,
     borderWidth: 1,
     borderRadius: 5,
     backgroundColor: Colors.WHITE,
@@ -1822,7 +1850,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 5,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   rankHeadingText: {
     fontSize: 10,
@@ -1948,7 +1976,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     shadowOpacity: 0.8,
     paddingTop: 5,
-    marginBottom: 7,
+    // marginBottom: 7,
     borderWidth: 1,
     borderRadius: 5,
     backgroundColor: Colors.WHITE,
@@ -2005,7 +2033,7 @@ const styles = StyleSheet.create({
   view8: { flexDirection: "column", alignItems: "center" },
   view9: {
     flexDirection: "row",
-    marginBottom: 2,
+    marginVertical: 15,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -2014,10 +2042,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     borderWidth: 1,
     borderRadius: 5,
-    height: 28,
+    // height: 28,
     marginTop: 2,
     justifyContent: "center",
-    width: "80%",
+    width: "95%",
   },
   touchable2: {
     width: "100%",
@@ -2026,6 +2054,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
+    padding: 10,
   },
 
   txt4: {
