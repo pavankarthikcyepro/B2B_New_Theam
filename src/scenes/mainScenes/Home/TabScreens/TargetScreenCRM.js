@@ -27,6 +27,7 @@ import {
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
   updateEmployeeDataBasedOnDelegate,
+  updateLoader,
 } from "../../../../redux/homeReducer";
 import { RenderGrandTotal } from "./components/RenderGrandTotal";
 import { RenderEmployeeParameters } from "./components/RenderEmployeeParameters";
@@ -566,6 +567,9 @@ const TargetScreenCRM = ({ route }) => {
         tempExw[0],
         tempAcc[0],
       ]);
+      setTimeout(() => {
+        dispatch(updateLoader(false));
+      }, 500);
     } else {
     }
 
