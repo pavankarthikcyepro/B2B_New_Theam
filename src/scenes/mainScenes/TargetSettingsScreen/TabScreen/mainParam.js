@@ -1637,7 +1637,7 @@ const MainParamScreen = ({ route, navigation }) => {
         }
       } else {
         setAllParameters([...localData]);
-        setTeamLoader(false);
+      setTeamLoader(false);
       }
     } catch (error) {
       setTeamLoader(false);

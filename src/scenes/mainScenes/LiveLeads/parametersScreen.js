@@ -36,6 +36,7 @@ import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import _ from "lodash";
+import Lottie from "lottie-react-native";
 
 const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const crmRole = ["CRM"];
@@ -76,7 +77,8 @@ const ParametersScreen = ({ route }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [teamLoader, setTeamLoader] = useState(false);
+  const [teamMember, setTeamMember] = useState("");
   const color = _.reverse([
     "#9f31bf",
     "#00b1ff",
@@ -214,8 +216,7 @@ const ParametersScreen = ({ route }) => {
         tempCon[0] = params;
         setContactData(tempCon[0]);
       }
-      
-      
+
       setSelfInsightsData([
         tempCon[0],
         tempEnq[0],
@@ -564,7 +565,6 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
-   
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -616,7 +616,8 @@ const ParametersScreen = ({ route }) => {
     };
   };
   const onEmployeeNameClick = async (item, index) => {
-    setSelectedName(item.empName); // to display name on click of the left view - first letter
+    setSelectedName(item.empName);
+    setTeamMember(item.empName);
     setTimeout(() => {
       setSelectedName("");
     }, 900);
@@ -629,6 +630,7 @@ const ParametersScreen = ({ route }) => {
       }
     }
     if (!current) {
+      setTeamLoader(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -695,6 +697,7 @@ const ParametersScreen = ({ route }) => {
             }
             // alert(JSON.stringify(localData))
             setAllParameters([...localData]);
+            setTeamLoader(false);
           }
         );
 
@@ -705,12 +708,13 @@ const ParametersScreen = ({ route }) => {
         // }
       }
     } else {
-      
+      setTeamLoader(false);
       setAllParameters([...localData]);
     }
   };
   const onEmployeeNameClick2 = async (item, index, lastParameter) => {
     try {
+      setTeamMember(item.empName);
       let localData = [...allParameters];
       let current = lastParameter[index].isOpenInner;
       setSelectedName(item.empName);
@@ -723,8 +727,8 @@ const ParametersScreen = ({ route }) => {
           lastParameter[index].isOpenInner = !current;
         }
       }
-
       if (!current) {
+        setTeamLoader(true);
         let employeeData = await AsyncStore.getData(
           AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -798,13 +802,17 @@ const ParametersScreen = ({ route }) => {
                 }
               }
               setAllParameters([...localData]);
+              setTeamLoader(false);
             }
           );
         }
       } else {
         setAllParameters([...localData]);
+        setTeamLoader(false);
       }
-    } catch (error) {}
+    } catch (error) {
+      setTeamLoader(false);
+    }
   };
   const paramNameLabels = { preenquiry: "Contacts", invoice: "Retail" };
 
@@ -996,6 +1004,8 @@ const ParametersScreen = ({ route }) => {
                 item={item}
                 branchName={getBranchName(item.branchId)}
                 color={borderColor}
+                teamLoader={teamLoader}
+                teamMember={teamMember}
                 titleClick={async () => {
                   await onEmployeeNameClick2(item, index, allData);
                 }}
@@ -5107,6 +5117,8 @@ export const RenderLevel1NameView = ({
   color,
   titleClick,
   disable = false,
+  teamLoader = false,
+  teamMember = "",
 }) => {
   return (
     <View
@@ -5119,29 +5131,50 @@ export const RenderLevel1NameView = ({
       }}
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity
-          disabled={disable}
-          style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-          onPress={titleClick}
-        >
-          <Text
+        {teamLoader && teamMember === item?.empName ? (
+          <View
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Lottie
+              source={require("../../../assets/Animations/lf20_qispmsyg.json")}
+              autoPlay
+              loop
+            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            disabled={disable}
+            style={{
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+            onPress={titleClick}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+        )}
         {level === 0 && !!branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton
