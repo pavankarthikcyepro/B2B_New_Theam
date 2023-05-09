@@ -34,6 +34,8 @@ import { convertTimeStampToDateString, convertToTime } from '../../../../utils/h
 import { showToast, showToastRedAlert } from '../../../../utils/toast';
 import BookedSlotsListModel from './BookedSlotsListModel';
 
+var isInitial = false;
+
 const CreateCustomerBooking = ({ navigation, route }) => {
   const { currentUserData, isRefreshList, fromType, existingBookingData } =
     route.params;
@@ -69,9 +71,14 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       setExistingData();
     }
 
+    if (existingBookingData) {
+      isInitial = true;
+    }
+
     return () => {
       dispatch(clearStateData());
       clearLocalStorage();
+      isInitial = false;
     };
   }, []);
 
@@ -112,7 +119,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     setSameAddress("unchecked");
     setIsSubmitPress(false);
     setBookedSlotsModal(false);
-  }
+  };
 
   const getCurrentUser = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -139,16 +146,20 @@ const CreateCustomerBooking = ({ navigation, route }) => {
           arr.push(selector.centerCodes[i]);
         }
       }
-      dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE", value: "" }));
+      if (!isInitial) {
+        dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE", value: "" }));
+      }
       dispatch(
         setDropDownData({ key: "SERVICE_CENTER_CODE_LIST", value: [...arr] })
       );
     } else {
-      dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE", value: "" }));
+      if (!isInitial) {
+        dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE", value: "" }));
+      }
       dispatch(setDropDownData({ key: "SERVICE_CENTER_CODE_LIST", value: [] }));
     }
   }, [selector.location, selector.centerCodes]);
-  
+
   useEffect(() => {
     if (selector.serviceType && selector.serviceTypeResponse.length > 0) {
       let serviceIndex = selector.serviceTypeResponse.findIndex(
@@ -173,7 +184,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       }, 500);
     }
   }, [selector.createCustomerBookingResponseStatus]);
-  
+
   useEffect(() => {
     if (selector.rescheduleCustomerBookingResponseStatus == "success") {
       showToastRedAlert("Booking Rescheduled Successfully");
@@ -183,7 +194,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       }, 500);
     }
   }, [selector.rescheduleCustomerBookingResponseStatus]);
-  
+
   useEffect(() => {
     if (selector.cancelCustomerBookingResponseStatus == "success") {
       showToastRedAlert("Booking Cancel Successfully");
@@ -204,7 +215,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       dispatch(getTimeSlots(payload));
     }
   }, [selector.serviceReqDate]);
-  
+
   useEffect(() => {
     if (selector.selectedTimeSlot && selector.bookingTimeSlotsList.length > 0) {
       for (let i = 0; i < selector.bookingTimeSlotsList.length; i++) {
@@ -218,7 +229,6 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       }
     }
   }, [selector.selectedTimeSlot, selector.bookingTimeSlotsList]);
-  
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -305,7 +315,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
 
     dispatch(getDrivers(payload));
   };
-  
+
   const onClickBookedTimeSlot = (item, index) => {
     const { vehicleDetail } = customerInfoSelector?.customerDetailsResponse;
     let payload = {
@@ -415,15 +425,11 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         return selector.subServiceTypeResponse[index]?.id;
       }
       if (type == "driver") {
-        let index = selector.drivers.findIndex(
-          (item) => item.name == value
-        );
+        let index = selector.drivers.findIndex((item) => item.name == value);
         return selector.drivers[index]?.id;
       }
       if (type == "cities") {
-        let index = selector.cities.findIndex(
-          (item) => item.name == value
-        );
+        let index = selector.cities.findIndex((item) => item.name == value);
         return selector.cities[index]?.id;
       }
     }
@@ -451,7 +457,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       remark: selector.cancelRemarks,
     };
     dispatch(cancelCustomerBooking(payload));
-  }; 
+  };
 
   const saveBooking = (submitType = "create") => {
     setIsSubmitPress(true);
@@ -551,7 +557,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
         dateOfBirth: customerDetail.dateOfBirth,
       },
     };
-    
+
     if (pickupRequired || dropRequired) {
       if (!selector.driverName) {
         showToast("Please Select Driver");
@@ -620,7 +626,6 @@ const CreateCustomerBooking = ({ navigation, route }) => {
       };
     }
 
-    
     let payload = {
       tenantId: userData.branchId,
       bookingData: data,
@@ -628,7 +633,7 @@ const CreateCustomerBooking = ({ navigation, route }) => {
     if (submitType == "reschedule") {
       payload.id = existingBookingData.responseId;
       dispatch(rescheduleCustomerBooking(payload));
-    }else{
+    } else {
       dispatch(createCustomerBooking(payload));
     }
   };
@@ -663,6 +668,9 @@ const CreateCustomerBooking = ({ navigation, route }) => {
                   catId: item.id,
                 };
                 dispatch(getSubServiceTypesApi(payload));
+              }
+              if (dropDownKey == "LOCATION") {
+                isInitial = false;
               }
               dispatch(
                 setDropDownData({
