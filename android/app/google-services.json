@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "252064520094",
+    "project_id": "cyepro-373009",
+    "storage_bucket": "cyepro-373009.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252064520094:android:fc0ea2ab96dbb0bd69a88f",
+        "android_client_info": {
+          "package_name": "com.b2b_new_theme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252064520094-dgsl7m1emou0v0doar6t4tivenb7ahev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATKHPIHG7TXAX2JaU9t1ME8eoyW8jPRe4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252064520094-dgsl7m1emou0v0doar6t4tivenb7ahev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

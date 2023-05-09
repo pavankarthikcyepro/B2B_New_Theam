@@ -116,8 +116,6 @@ export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
 
-
-
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
@@ -211,6 +209,15 @@ const URL = {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
   MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+  GET_ROLES_LIST: () => {
+    return roleManagement_url + `/dms/getRoles`;
+  },
+  GET_DESIGNATION_LIST: () => {
+    return roleManagement_url + `/dms/getDesignation`;
+  },
+  SAVE_EMPLOYEE: () => {
+    return roleManagement_url + `/dms/save-employee`;
+  },
   MY_TASKS_RESCHEDULED_HISTORY: (empId) =>
     sales_url + `/task-history/resheduled-update-today?empId=${empId}`,
   CONTACT_DETAILS: (universalId) => {

@@ -17,6 +17,12 @@ public class MainActivity extends ReactActivity {
       intent.putExtra("newConfig", newConfig);       
       this.sendBroadcast(intent);
   }
+
+  @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
   protected String getMainComponentName() {
     return "B2B_NEW_THEME";
   }

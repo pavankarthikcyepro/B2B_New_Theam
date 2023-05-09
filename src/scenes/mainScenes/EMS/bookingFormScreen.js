@@ -3783,6 +3783,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     >
                       <TextInput
                         value={taxPercent}
+                        maxLength={2}
                         disabled={true}
                         editable={false}
                         maxLength={5}
