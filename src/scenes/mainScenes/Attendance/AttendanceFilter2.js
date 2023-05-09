@@ -753,6 +753,7 @@ const FilterScreen2 = ({ route, navigation }) => {
       //     screen: "Home",
       //     params: { from: "Filter" },
       //   });
+      navigation.goBack();
       return;
     }
     if (check.length > 0) {
@@ -775,7 +776,7 @@ const FilterScreen2 = ({ route, navigation }) => {
         })
       );
       dispatch(updateTheTeamAttendanceFilter(selectedIds));
-      navigation.goBack();
+      // navigation.goBack();
     }
     let i = 0;
     const selectedIds = [];
@@ -839,10 +840,12 @@ const FilterScreen2 = ({ route, navigation }) => {
       payload["startDate"] = fromDate;
       payload["endDate"] = toDate;
       Promise.all([dispatch(updateFilterIds(payload))]).then(() => {
-        navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
-          screen: "Home",
-          params: { from: "Filter" },
-        });
+        // navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+        //   screen: "Home",
+        //   params: { from: "Filter" },
+        // });
+              navigation.goBack();
+
       });
       setIsFilterLoading(false);
     } else {
@@ -1061,11 +1064,11 @@ const FilterScreen2 = ({ route, navigation }) => {
 
   const submitBtnForEmployeeData = async () => {
     if (!isFilter) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
-        screen: "Home",
-        params: { from: "Filter" },
-      });
-      return;
+      // navigation.navigate(AppNavigator.TabStackIdentifiers.home, {
+      //   screen: "Home",
+      //   params: { from: "Filter" },
+      // });
+      // return;
     }
     let selectedIds = [];
     let keys = [];

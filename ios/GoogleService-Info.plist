@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>766593333888-r7bv3uii2thi4c43engi04i4cvqpk7k6.apps.googleusercontent.com</string>
+	<string>252064520094-rndlg94nh5tkbsfn3vqvanij0gcsfjop.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.766593333888-r7bv3uii2thi4c43engi04i4cvqpk7k6</string>
+	<string>com.googleusercontent.apps.252064520094-rndlg94nh5tkbsfn3vqvanij0gcsfjop</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAJVDERWJCCWi8G2hBfhSFgaEWaBq2xxOo</string>
+	<string>AIzaSyDo83leX-9rp1VAWYJ2mnOm972JK8zCZV4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>766593333888</string>
+	<string>252064520094</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.cyeone.cyepro</string>
 	<key>PROJECT_ID</key>
-	<string>cyepro-6aec5</string>
+	<string>cyepro-373009</string>
 	<key>STORAGE_BUCKET</key>
-	<string>cyepro-6aec5.appspot.com</string>
+	<string>cyepro-373009.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:766593333888:ios:5efdd92e8c83fc25ae4465</string>
+	<string>1:252064520094:ios:01bc0f6186e1632769a88f</string>
 </dict>
 </plist>

@@ -32,7 +32,7 @@ const TestDriveHistory = ({ route, navigation }) => {
     }, [selector.test_drive_history_details_statu])
 
 
-    function TaskNameView() {
+    function TaskNameView(item) {
 
         return (
             <Text
@@ -44,15 +44,15 @@ const TestDriveHistory = ({ route, navigation }) => {
                     margin:5
                 }}
             >
-                Test drive
-
+                
+                {item.reTestdriveFlag == "ReTestDrive" ? "Re Test drive" : "Test drive"}
             </Text>
         );
     }
 
     const renderItem = ({ item, index }) => {
-
-        const date = moment(item.testDriveDatetime).format("DD/MM/YY h:mm a").split(" ");
+       
+        const date = item.testDriveDatetime.split(" ");
         let topBcgColor = Colors.LIGHT_GRAY;
         let bottomBcgColor = Colors.LIGHT_GRAY;
         if (historyList[index - 1] !== undefined) {
@@ -104,7 +104,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                         <Text
                             style={styles.txt2}
                         >
-                            {date[1] + " " + date[2]}
+                            {date[1]}
 
                         </Text>
                     </View>
@@ -137,7 +137,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     justifyContent: "space-between",
                                 }}
                             >
-                                {TaskNameView()}
+                                {TaskNameView(item)}
 
                             </View>
 
@@ -177,7 +177,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.fuel}
+                                        {item.fuelType}
                                     </Text>
 
                                 </View>  
@@ -190,7 +190,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     <Text
                                         style={styles.txt3}
                                     >
-                                        {item.transmission}
+                                        {item.transmissionType}
                                     </Text>
 
                                 </View>  
@@ -209,7 +209,76 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     </Text>
 
                                 </View>  
-                              
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Mobile No: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.mobileNumber)}
+                                    </Text>
+
+                                </View>  
+                                {item.reason && <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Reason: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.reason)}
+                                    </Text>
+
+                                </View>} 
+                                {item.customerRemarks && <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Customer Remarks: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.customerRemarks)}
+                                    </Text>
+
+                                </View>} 
+                                {item.employeeRemarks && <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Employee remarks: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.employeeRemarks)}
+                                    </Text>
+
+                                </View>} 
+                                <View style={styles.view6}>
+                                    <Text
+                                        style={styles.txt5}
+                                    >
+                                        {"Status: "}
+                                    </Text>
+                                    <Text
+                                        // numberOfLines={3}
+                                        style={styles.txt3}
+                                    >
+                                        {(item.status)}
+                                    </Text>
+
+                                </View>  
                             </View>
 
 

@@ -8,7 +8,9 @@ let isNetworkDialogopen = false;
 import NetInfo from "@react-native-community/netinfo";
 import Snackbar from "react-native-snackbar";
 import { Colors } from "../styles";
+import { showToast } from "../utils/toast";
 import { callLog } from "../CrashListener";
+
 export const client = async (
   authToken,
   url,
@@ -79,7 +81,6 @@ export const client = async (
     if (response.status >= 400) {
       callLog(response);
     }
-
     if (response.status == 401 && isValidate === true) {
       let Refresh_token = await AsyncStore.getData(
         AsyncStore.Keys.REFRESH_TOKEN
@@ -134,16 +135,18 @@ export const client = async (
 
       if (!isdiloadopen) {
         isdiloadopen = true;
-        return Alert.alert("Authentication failed", "need to re-start app", [
-          {
-            text: "OK",
-            onPress: () => {
-              isdiloadopen = false;
-              // BackHandler.exitApp();
-              RNRestart.Restart();
-            },
-          },
-        ]);
+        return Toast();
+        // return Alert.alert(
+        //     "Authentication failed",
+        //     "need to re-start app",
+        //     [
+        //         { text: "OK", onPress: () => {
+        //             isdiloadopen = false;
+        //             // BackHandler.exitApp();
+        //             RNRestart.Restart();
+        //         } }
+        //     ]
+        // );
       }
     }
     // for login api fals credentials
@@ -159,6 +162,11 @@ export const client = async (
     console.error("err: ", err, url);
     return Promise.reject(err.message ? err.message : "something wrong");
   }
+};
+
+const Toast = () => {
+  showToast("Your session is Expired");
+  RNRestart.Restart();
 };
 
 client.get = async function (endpoint, customConfig = {}, isValidate = true) {

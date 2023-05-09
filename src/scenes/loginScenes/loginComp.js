@@ -136,6 +136,7 @@ const LoginScreen = ({ navigation }) => {
     let object = {
       username: employeeId,
       password: password,
+      deviceId: selector.token,
     };
 
     dispatch(postUserData(object));
@@ -265,19 +266,6 @@ const LoginScreen = ({ navigation }) => {
 
   const getCoordinates = async () => {
     try {
-      let coordinates = await AsyncStore.getJsonData(
-        AsyncStore.Keys.COORDINATES
-      );
-      let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-      if (todaysDate != new Date().getDate()) {
-        initialData();
-      } else {
-        var startDate = createDateTime("8:30");
-        var startBetween = createDateTime("9:30");
-        var endBetween = createDateTime("20:30");
-        var endDate = createDateTime("21:30");
-        var now = new Date();
-        var isBetween = startDate <= now && now <= endDate;
         if (true) {
           // setInterval(() => {
           const watchID = Geolocation.getCurrentPosition(
@@ -305,17 +293,6 @@ const LoginScreen = ({ navigation }) => {
                   longitude: lastPosition.coords.longitude,
                 };
                 if (trackingJson.length > 0) {
-                  // let dist = getDistanceBetweenTwoPoints(
-                  //   officeLocation.latitude,
-                  //   officeLocation.longitude,
-                  //   lastPosition?.coords?.latitude,
-                  //   lastPosition?.coords?.longitude
-                  // );
-                  // if (dist > officeRadius) {
-                  //   // sendAlertLocalNotification();
-                  // } else {
-                  //   // seteReason(false);
-                  // }
                   let parsedValue =
                     trackingJson.length > 0
                       ? JSON.parse(
@@ -335,18 +312,6 @@ const LoginScreen = ({ navigation }) => {
                     lastPosition?.coords?.longitude
                   );
                   let distance = dist * 1000;
-
-                  // if (newLatLng && parsedValue) {
-                  //   // if (
-                  //   //   objectsEqual(
-                  //   //     newLatLng,
-                  //   //     parsedValue[parsedValue.length - 1]
-                  //   //   )
-                  //   // ) {
-                  //   //   return;
-                  //   // }
-                  // }
-
                   let newArray = [...parsedValue, ...[newLatLng]];
                   let date = new Date(
                     trackingJson[trackingJson.length - 1]?.createdtimestamp
@@ -359,7 +324,8 @@ const LoginScreen = ({ navigation }) => {
                       orgId: jsonObj?.orgId,
                       empId: jsonObj?.empId,
                       branchId: jsonObj?.branchId,
-                      currentTimestamp: new Date().getTime(),
+                      currentTimestamp:
+                        trackingJson[trackingJson.length - 1]?.createdtimestamp,
                       updateTimestamp: new Date().getTime(),
                       purpose: "",
                       location: JSON.stringify(newArray),
@@ -367,19 +333,6 @@ const LoginScreen = ({ navigation }) => {
                       speed: speed.toString(),
                     };
                     if (speed <= 10 && distance > distanceFilterValue) {
-                      // await AsyncStore.storeJsonData(
-                      //   AsyncStore.Keys.COORDINATES,
-                      //   newArray
-                      // );
-                      // if (speed < 10) {
-                      //   setTimeout(async () => {
-                      //     await client.put(
-                      //       locationUpdate +
-                      //         `/${trackingJson[trackingJson.length - 1].id}`,
-                      //       tempPayload
-                      //     );
-                      //   }, 300000);
-                      // }
                       const response = await client.put(
                         locationUpdate +
                           `/${trackingJson[trackingJson.length - 1].id}`,
@@ -401,10 +354,6 @@ const LoginScreen = ({ navigation }) => {
                       speed: speed.toString(),
                     };
                     if (speed <= 10) {
-                      // await AsyncStore.storeJsonData(
-                      //   AsyncStore.Keys.COORDINATES,
-                      //   newArray
-                      // );
                       const response = await client.post(saveLocation, payload);
                       const json = await response.json();
                     }
@@ -423,10 +372,6 @@ const LoginScreen = ({ navigation }) => {
                     speed: speed.toString(),
                   };
                   if (speed <= 10) {
-                    // await AsyncStore.storeJsonData(
-                    //   AsyncStore.Keys.COORDINATES,
-                    //   newArray
-                    // );
                     const response = await client.post(saveLocation, payload);
                     const json = await response.json();
                   }
@@ -452,7 +397,6 @@ const LoginScreen = ({ navigation }) => {
           setSubscriptionId(watchID);
           // }, 5000);
         }
-      }
     } catch (error) {}
   };
 
@@ -533,8 +477,8 @@ const LoginScreen = ({ navigation }) => {
             }}
           >
             <Image
-              style={{ width: 200, height: getHeight(40) }}
-              resizeMode={"center"}
+              style={{ width: getWidth(80), height: 70 }}
+              resizeMode={"contain"}
               source={require("../../assets/images/logo.png")}
             />
           </View>
