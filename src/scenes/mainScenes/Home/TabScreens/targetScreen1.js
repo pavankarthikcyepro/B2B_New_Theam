@@ -1484,6 +1484,9 @@ const TargetScreen = ({ route }) => {
           </View>} */}
           {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
+              <View style={styles.titleDashboardContainer}>
+                <Text style={styles.dashboardText}>Dashboard</Text>
+              </View>
               <View style={styles.view1}>
                 <SegmentedControl
                   style={{
@@ -3022,9 +3025,9 @@ const TargetScreen = ({ route }) => {
               <>
                 {!receptionistRole.includes(userData.hrmsRole) && (
                   <>
-                  {/* <View style={{paddingVertical: 5, backgroundColor: Colors.LIGHT_GRAY, marginBottom: 10, paddingHorizontal: 50, borderRadius: 50, alignSelf: "center"}}>
-                    <Text style={{fontWeight: "600", fontSize: 15, color:Colors.PINK, textDecorationLine: "underline"}} >Dashboard</Text>
-                  </View> */}
+                  <View style={styles.titleDashboardContainer}>
+                    <Text style={styles.dashboardText}>Dashboard</Text>
+                  </View>
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View style={styles.view13}>
                       <View
@@ -4403,6 +4406,20 @@ const styles = StyleSheet.create({
     height: 15,
     flexDirection: "row",
     paddingRight: 16,
+  },
+  titleDashboardContainer: {
+    paddingVertical: 10,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 70,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "600",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
   },
   txt3: { fontSize: 14, fontWeight: "600" },
   view14: {

@@ -1693,7 +1693,7 @@ const HomeScreen = ({ route, navigation }) => {
               </View>
             </View>
           )}
-          {selector.isDSE && (
+          {/* {selector.isDSE && (
             <View style={styles.view9}>
               <View style={styles.view10}>
                 <TouchableOpacity
@@ -1707,7 +1707,7 @@ const HomeScreen = ({ route, navigation }) => {
                 </TouchableOpacity>
               </View>
             </View>
-          )}
+          )} */}
         </View>
 
         {/* 2222 */}
