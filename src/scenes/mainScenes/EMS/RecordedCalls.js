@@ -165,16 +165,6 @@ const RecordedCalls = ({ navigation, route }) => {
         if (previousActiveIndex != null) {
           await TrackPlayer.reset();
         }
-        TrackPlayer.getQueue()
-          .then(async (res) => {
-            console.log("res -> ", res);
-            if (res.length > 0) {
-              await TrackPlayer.clearNowPlayingMetadata();
-            }
-          })
-          .catch((err) => {
-            console.log("err -> ", err);
-          });
         await TrackPlayer.add([trackObj]);
       }
       await TrackPlayer.seekTo(item.currentDuration);
