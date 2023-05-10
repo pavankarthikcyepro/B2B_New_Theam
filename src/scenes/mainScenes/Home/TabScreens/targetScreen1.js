@@ -3021,6 +3021,10 @@ const TargetScreen = ({ route }) => {
             selfInsightsData.length > 0 && (
               <>
                 {!receptionistRole.includes(userData.hrmsRole) && (
+                  <>
+                  {/* <View style={{paddingVertical: 5, backgroundColor: Colors.LIGHT_GRAY, marginBottom: 10, paddingHorizontal: 50, borderRadius: 50, alignSelf: "center"}}>
+                    <Text style={{fontWeight: "600", fontSize: 15, color:Colors.PINK, textDecorationLine: "underline"}} >Dashboard</Text>
+                  </View> */}
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View style={styles.view13}>
                       <View
@@ -3056,6 +3060,7 @@ const TargetScreen = ({ route }) => {
                       <Text style={styles.txt3}>AR/Day</Text>
                     </View>
                   </View>
+                  </>
                 )}
                 <>
                   {receptionistRole.includes(userData.hrmsRole) &&
