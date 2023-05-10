@@ -109,10 +109,8 @@ import { useIsDrawerOpen } from "@react-navigation/drawer";
 import { isReceptionist } from "../../../utils/helperFunctions";
 import { ScrollView } from "react-native-gesture-handler";
 import _ from "lodash";
-const officeLocation = {
-  latitude: 37.33233141,
-  longitude: -122.0312186,
-};
+import crashlytics from "@react-native-firebase/crashlytics";
+
 const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -162,10 +160,36 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
+      setAttributes();
       getCurrentLocation();
-      setTargetData().then(() => { }); //Commented to resolved filter issue for Home Screen
+      setTargetData().then(() => {}); //Commented to resolved filter issue for Home Screen
     });
   }, [navigation]);
+
+  const setAttributes = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        onSignIn(jsonObj);
+      }
+    } catch (error) {}
+  };
+
+  async function onSignIn(user) {
+    crashlytics().log("User signed in.");
+    await Promise.all([
+      crashlytics().setUserId(user.empId.toString()),
+      crashlytics().setAttribute("credits", "Crash User"),
+      crashlytics().setAttributes({
+        role: user.primaryDesignation,
+        email: user.email,
+        username: user.empName,
+      }),
+    ]);
+  }
 
   const getCurrentLocation = async () => {
     try {
@@ -182,10 +206,10 @@ const HomeScreen = ({ route, navigation }) => {
           let json = JSON.parse(initialPosition);
           setInitialPosition(json.coords);
         },
-        (error) => { },
+        (error) => {},
         { enableHighAccuracy: true }
       );
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -526,7 +550,7 @@ const HomeScreen = ({ route, navigation }) => {
             orgId: jsonObj.orgId,
           })
         ),
-      ]).then(() => { });
+      ]).then(() => {});
       if (
         jsonObj?.hrmsRole === "Admin" ||
         jsonObj?.hrmsRole === "Admin Prod" ||
@@ -581,8 +605,8 @@ const HomeScreen = ({ route, navigation }) => {
             : null;
         }
         getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-          .then((x) => { })
-          .catch((y) => { });
+          .then((x) => {})
+          .catch((y) => {});
       }
 
       if (
@@ -671,10 +695,10 @@ const HomeScreen = ({ route, navigation }) => {
           })
         ),
           getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) => { })
-            .catch((y) => { });
+            .then((x) => {})
+            .catch((y) => {});
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) => { });
+        getTargetParametersDataFromServer(payload).catch((y) => {});
       }
     }
   };
@@ -713,10 +737,10 @@ const HomeScreen = ({ route, navigation }) => {
       // dispatch(getVehicleModelTableList(payload)),
       // dispatch(getEventTableList(payload)),
       // dispatch(getLostDropChartData(payload))
-    ]).then(() => { });
+    ]).then(() => {});
 
     getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => { });
+    getTargetParametersDataFromServer(payload).catch((y) => {});
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -729,7 +753,7 @@ const HomeScreen = ({ route, navigation }) => {
       dispatch(getTaskTableList(payload)),
       dispatch(getSalesData(payload)),
       dispatch(getSalesComparisonData(payload)),
-    ]).then(() => { });
+    ]).then(() => {});
   };
 
   const getTargetParametersDataFromServer = async (payload) => {
@@ -768,8 +792,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpDataInsights(payload1)
       ),
     ])
-      .then(() => { })
-      .catch((y) => { });
+      .then(() => {})
+      .catch((y) => {});
   };
 
   const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -829,8 +853,8 @@ const HomeScreen = ({ route, navigation }) => {
           : getTargetParametersEmpData(payload1)
       ),
     ])
-      .then(() => { })
-      .catch((y) => { });
+      .then(() => {})
+      .catch((y) => {});
   };
 
   useEffect(() => {
@@ -980,7 +1004,7 @@ const HomeScreen = ({ route, navigation }) => {
                 if (res[0]?.payload?.downloadUrl) {
                   let path = res[0]?.payload;
                   if (Platform.OS === "android") {
-                    console.log("LLLL",path)
+                    console.log("LLLL", path);
                     for (const property in path) {
                       console.log("sssss", path[property]);
                       downloadInLocal(path[property]);
@@ -1064,25 +1088,31 @@ const HomeScreen = ({ route, navigation }) => {
         //appendExt: fileExt,
         notification: true,
       };
-      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN).then((token) => {
-        config(options)
-          .fetch("GET", iOSUrl, {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          })
-          .then((res) => {
-            setLoading(false);
-            setTimeout(() => {
-              // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
-              RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
-              // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
-            }, 300);
-          })
-          .catch((errorMessage) => {
-            setLoading(false);
-          });
-      });
+      AsyncStore.getData(AsyncStore.Keys.ACCESS_TOKEN)
+        .then((token) => {
+          config(options)
+            .fetch("GET", iOSUrl, {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            })
+            .then((res) => {
+              console.log("res", res);
+              setLoading(false);
+              setTimeout(() => {
+                // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+                RNFetchBlob.ios.openDocument(res.data); //<---Property to display downloaded file on documaent viewer
+                // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+              }, 300);
+            })
+            .catch((errorMessage) => {
+              console.log(errorMessage);
+              setLoading(false);
+            });
+        })
+        .catch((er) => {
+          console.log(er);
+        });
     }
   };
 
@@ -1175,7 +1205,7 @@ const HomeScreen = ({ route, navigation }) => {
         <View style={styles.newModalContainer}>
           <TouchableWithoutFeedback
             style={styles.actionButtonContainer}
-            onPress={() => { }}
+            onPress={() => {}}
           >
             <>
               <Button

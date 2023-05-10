@@ -83,6 +83,8 @@ import {
   clearState2,
   getEventConfigList,
   getEnquiryTypesApi,
+  postEvalutionApi,
+  postFinanaceApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -289,6 +291,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
+    approverId:""
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -396,6 +399,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       employeeName: "",
       isSelfManager: "",
       isTracker: "",
+      approverId:""
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -547,7 +551,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
+        approverId: jsonObj.approverId
       });
+      
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
@@ -695,6 +701,33 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
     );
   };
+
+  const postEvalutionForm = (universalId)=>{
+    // todo manthan
+    if (selector.buyer_type.length !== 0){
+      let payload = {
+        "universalId":universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = (universalId) => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
 
   useEffect(() => {
     try {
@@ -1679,6 +1712,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               displayCreateEnquiryLeadAlert(
                 json?.dmsEntity?.leadCustomerReference?.referencenumber
               );
+              postEvalutionForm(json?.dmsEntity?.dmsLeadDto?.crmUniversalId);
+              postFinanceForm(json?.dmsEntity?.dmsLeadDto?.crmUniversalId);
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
@@ -1695,6 +1730,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               displayCreateEnquiryLeadAlert(
                 json1?.dmsEntity?.leadCustomerReference?.referencenumber
               );
+              postEvalutionForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId);
+              postFinanceForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId)
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {

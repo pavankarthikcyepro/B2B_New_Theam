@@ -73,7 +73,6 @@ export const getOrganaizationHirarchyList = createAsyncThunk(
   }
 );
 
-
 export const getOrgWiseDesignations = createAsyncThunk(
   "HOME/getOrgWiseDesignations",
   async (payload: any, { rejectWithValue }) => {
@@ -754,7 +753,7 @@ export const getReceptionistDataForRecepDashboard = createAsyncThunk(
   }
 );
 
-// digital dashboard filter cre/tele caller selected 
+// digital dashboard filter cre/tele caller selected
 export const getReceptionistDataDigitalDashboard = createAsyncThunk(
   "HOME/getReceptionistDataDigitalDashboard",
   async (payload, { rejectWithValue }) => {
@@ -907,7 +906,6 @@ export const getXroleModel = createAsyncThunk(
   }
 );
 
-
 // xrole source
 export const getXroleSource = createAsyncThunk(
   "HOME/getXroleSource",
@@ -921,8 +919,7 @@ export const getXroleSource = createAsyncThunk(
   }
 );
 
-
-// live crm 
+// live crm
 export const getCRMSourceLive = createAsyncThunk(
   "HOME/getCRMSourceLive",
   async (payload, { rejectWithValue }) => {
@@ -1060,7 +1057,7 @@ export const homeSlice = createSlice({
       contactsCount: 0,
       enquirysCount: 0,
       totalLostCount: 0,
-      fullResponse:{},
+      fullResponse: {},
     },
     receptionistDataV2: {
       RetailCount: 0,
@@ -1083,7 +1080,8 @@ export const homeSlice = createSlice({
       enquirysCount: 0,
       totalLostCount: 0,
       fullResponse: {},
-    }, receptionistDataDigitalFilter_CRE: {
+    },
+    receptionistDataDigitalFilter_CRE: {
       RetailCount: 0,
       bookingsCount: 0,
       consultantList: [],
@@ -1130,22 +1128,23 @@ export const homeSlice = createSlice({
       levelSelected: "",
       selectedempId: "",
       dealerCodes: "",
-      selectedDesignation:""
+      selectedDesignation: "",
     },
+    newUpdateAvailable: false,
     saveReceptionistfilterObj: {
       startDate: "",
       endDate: "",
       levelSelected: "",
       selectedempId: "",
       dealerCodes: "",
-      selectedDesignation: ""
+      selectedDesignation: "",
     },
     filterSelectedData_recep: {},
     levelSelected_recep: [],
     dealerFilter_recep: {},
     crm_employees_drop_down_data_recep: {},
     employees_drop_down_data_local: {},
-    receptionistData_CRM : {
+    receptionistData_CRM: {
       RetailCount: 0,
       bookingsCount: 0,
       consultantList: [],
@@ -1156,9 +1155,9 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
-    filter_drop_down_designations:{},
-    filter_leadership_selectedDesignation:"",
-    filter_leadership_selectedDesignation_name: ""
+    filter_drop_down_designations: {},
+    filter_leadership_selectedDesignation: "",
+    filter_leadership_selectedDesignation_name: "",
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -1202,6 +1201,9 @@ export const homeSlice = createSlice({
     },
     updateIsDSE: (state, action) => {
       state.isDSE = action.payload;
+    },
+    SetNewUpdateAvailable: (state, action) => {
+      state.newUpdateAvailable = action.payload;
     },
     updateLoader: (state, action) => {
       state.isLoading = action.payload;
@@ -1250,7 +1252,7 @@ export const homeSlice = createSlice({
         contactsCount: 0,
         enquirysCount: 0,
         totalLostCount: 0,
-        fullResponse: {}
+        fullResponse: {},
       };
     },
     updateCrm_employees_drop_down_data: (state, action) => {
@@ -1315,7 +1317,7 @@ export const homeSlice = createSlice({
         contactsCount: 0,
         enquirysCount: 0,
         totalLostCount: 0,
-        fullResponse:{}
+        fullResponse: {},
       };
       state.filterIds = {
         startDate: "",
@@ -1327,7 +1329,7 @@ export const homeSlice = createSlice({
       };
       state.leaderShipFIlterId = [];
       state.receptionistFilterIds = [];
-      state.crm_employees_drop_down_data = {}
+      state.crm_employees_drop_down_data = {};
       state.receptionistDataV2 = {
         RetailCount: 0,
         bookingsCount: 0,
@@ -1337,9 +1339,9 @@ export const homeSlice = createSlice({
         contactsCount: 0,
         enquirysCount: 0,
         totalLostCount: 0,
-        fullResponse: {}
+        fullResponse: {},
       };
-      state.receptionistDataDigitalFilter = {
+      (state.receptionistDataDigitalFilter = {
         RetailCount: 0,
         bookingsCount: 0,
         consultantList: [],
@@ -1349,19 +1351,8 @@ export const homeSlice = createSlice({
         enquirysCount: 0,
         totalLostCount: 0,
         fullResponse: {},
-      } ,
-       state.receptionistDataDigitalFilter_CRE = {
-        RetailCount: 0,
-        bookingsCount: 0,
-        consultantList: [],
-        totalAllocatedCount: 0,
-        totalDroppedCount: 0,
-        contactsCount: 0,
-        enquirysCount: 0,
-        totalLostCount: 0,
-        fullResponse: {},
-      },
-        state.receptionistData_CRM = {
+      }),
+        (state.receptionistDataDigitalFilter_CRE = {
           RetailCount: 0,
           bookingsCount: 0,
           consultantList: [],
@@ -1371,11 +1362,22 @@ export const homeSlice = createSlice({
           enquirysCount: 0,
           totalLostCount: 0,
           fullResponse: {},
-        },
-        state.crm_employees_drop_down_data_recep = {},
-        state.filter_drop_down_designations = {},
-      state.filter_leadership_selectedDesignation_name=""
-      state.filter_leadership_selectedDesignation =""
+        }),
+        (state.receptionistData_CRM = {
+          RetailCount: 0,
+          bookingsCount: 0,
+          consultantList: [],
+          totalAllocatedCount: 0,
+          totalDroppedCount: 0,
+          contactsCount: 0,
+          enquirysCount: 0,
+          totalLostCount: 0,
+          fullResponse: {},
+        }),
+        (state.crm_employees_drop_down_data_recep = {}),
+        (state.filter_drop_down_designations = {}),
+        (state.filter_leadership_selectedDesignation_name = "");
+      state.filter_leadership_selectedDesignation = "";
       // state.dealerFilter= { }
     },
   },
@@ -1489,14 +1491,13 @@ export const homeSlice = createSlice({
       .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {})
 
       // dealer and branch ranking designtaion filter
-      .addCase(getOrgWiseDesignations.pending, (state, action) => { })
+      .addCase(getOrgWiseDesignations.pending, (state, action) => {})
       .addCase(getOrgWiseDesignations.fulfilled, (state, action) => {
         if (action.payload) {
           state.filter_drop_down_designations = action.payload;
         }
       })
-      .addCase(getOrgWiseDesignations.rejected, (state, action) => { })
-
+      .addCase(getOrgWiseDesignations.rejected, (state, action) => {})
 
       // Get Lead Source Table List
       .addCase(getLeadSourceTableList.pending, (state, action) => {
@@ -1626,20 +1627,16 @@ export const homeSlice = createSlice({
 
       // Get Employees Drop Down Data
       .addCase(getEmployeesDropDownData.pending, (state, action) => {
-        
-        
         // state.employees_drop_down_data = {};
         // state.employees_drop_down_data_local ={};
       })
       .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
         if (action.payload) {
-          
           state.employees_drop_down_data = action.payload;
           state.employees_drop_down_data_local = action.payload;
         }
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
-        
         // state.employees_drop_down_data = {};
         // state.employees_drop_down_data_local = {};
       })
@@ -1657,19 +1654,27 @@ export const homeSlice = createSlice({
         state.crm_employees_drop_down_data = {};
       })
 
-       // Get  Receptionist Employees Drop Down Data
-      .addCase(getReceptionistEmployeesDropDownData.pending, (state, action) => {
-        state.crm_employees_drop_down_data_recep = {};
-      })
-      .addCase(getReceptionistEmployeesDropDownData.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.crm_employees_drop_down_data_recep = action.payload;
+      // Get  Receptionist Employees Drop Down Data
+      .addCase(
+        getReceptionistEmployeesDropDownData.pending,
+        (state, action) => {
+          state.crm_employees_drop_down_data_recep = {};
         }
-      })
-      .addCase(getReceptionistEmployeesDropDownData.rejected, (state, action) => {
-        state.crm_employees_drop_down_data_recep = {};
-      })
-
+      )
+      .addCase(
+        getReceptionistEmployeesDropDownData.fulfilled,
+        (state, action) => {
+          if (action.payload) {
+            state.crm_employees_drop_down_data_recep = action.payload;
+          }
+        }
+      )
+      .addCase(
+        getReceptionistEmployeesDropDownData.rejected,
+        (state, action) => {
+          state.crm_employees_drop_down_data_recep = {};
+        }
+      )
 
       // Get Sales Data
       .addCase(getSalesData.pending, (state, action) => {
@@ -1941,25 +1946,35 @@ export const homeSlice = createSlice({
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
 
-      .addCase(getReceptionistDataForRecepDashboard.pending, (state) => { state.isLoading = true; })
-      .addCase(getReceptionistDataForRecepDashboard.fulfilled, (state, action) => {
-        const dataObj = action.payload;
-        state.isLoading = false;
-        state.receptionistData_ReceptionistDashboard_xrole = {
-          RetailCount: dataObj.RetailCount,
-          bookingsCount: dataObj.bookingsCount,
-          consultantList: dataObj.consultantList,
-          totalAllocatedCount: dataObj.totalAllocatedCount,
-          totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.contactsCount,
-          enquirysCount: dataObj.enquirysCount,
-          totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
-        };
+      .addCase(getReceptionistDataForRecepDashboard.pending, (state) => {
+        state.isLoading = true;
       })
-      .addCase(getReceptionistDataForRecepDashboard.rejected, (state, action) => { state.isLoading = false; })
+      .addCase(
+        getReceptionistDataForRecepDashboard.fulfilled,
+        (state, action) => {
+          const dataObj = action.payload;
+          state.isLoading = false;
+          state.receptionistData_ReceptionistDashboard_xrole = {
+            RetailCount: dataObj.RetailCount,
+            bookingsCount: dataObj.bookingsCount,
+            consultantList: dataObj.consultantList,
+            totalAllocatedCount: dataObj.totalAllocatedCount,
+            totalDroppedCount: dataObj.totalDroppedCount,
+            contactsCount: dataObj.contactsCount,
+            enquirysCount: dataObj.enquirysCount,
+            totalLostCount: dataObj.totalLostCount,
+            fullResponse: dataObj,
+          };
+        }
+      )
+      .addCase(
+        getReceptionistDataForRecepDashboard.rejected,
+        (state, action) => {
+          state.isLoading = false;
+        }
+      )
 
-      // digital dashboard filter cre/tele caller selected 
+      // digital dashboard filter cre/tele caller selected
       .addCase(getReceptionistDataDigitalDashboard.pending, (state) => {
         state.receptionistDataDigitalFilter_CRE = {
           RetailCount: 0,
@@ -1971,35 +1986,41 @@ export const homeSlice = createSlice({
           enquirysCount: 0,
           totalLostCount: 0,
           fullResponse: {},
-        }
-       })
-      .addCase(getReceptionistDataDigitalDashboard.fulfilled, (state, action) => {
-        const dataObj = action.payload;
-        state.receptionistDataDigitalFilter_CRE = {
-          RetailCount: dataObj.RetailCount,
-          bookingsCount: dataObj.bookingsCount,
-          consultantList: dataObj.consultantList,
-          totalAllocatedCount: dataObj.totalAllocatedCount,
-          totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.contactsCount,
-          enquirysCount: dataObj.enquirysCount,
-          totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
         };
       })
-      .addCase(getReceptionistDataDigitalDashboard.rejected, (state, action) => {
-        state.receptionistDataDigitalFilter_CRE = {
-          RetailCount: 0,
-          bookingsCount: 0,
-          consultantList: [],
-          totalAllocatedCount: 0,
-          totalDroppedCount: 0,
-          contactsCount: 0,
-          enquirysCount: 0,
-          totalLostCount: 0,
-          fullResponse: {},
+      .addCase(
+        getReceptionistDataDigitalDashboard.fulfilled,
+        (state, action) => {
+          const dataObj = action.payload;
+          state.receptionistDataDigitalFilter_CRE = {
+            RetailCount: dataObj.RetailCount,
+            bookingsCount: dataObj.bookingsCount,
+            consultantList: dataObj.consultantList,
+            totalAllocatedCount: dataObj.totalAllocatedCount,
+            totalDroppedCount: dataObj.totalDroppedCount,
+            contactsCount: dataObj.contactsCount,
+            enquirysCount: dataObj.enquirysCount,
+            totalLostCount: dataObj.totalLostCount,
+            fullResponse: dataObj,
+          };
         }
-       })
+      )
+      .addCase(
+        getReceptionistDataDigitalDashboard.rejected,
+        (state, action) => {
+          state.receptionistDataDigitalFilter_CRE = {
+            RetailCount: 0,
+            bookingsCount: 0,
+            consultantList: [],
+            totalAllocatedCount: 0,
+            totalDroppedCount: 0,
+            contactsCount: 0,
+            enquirysCount: 0,
+            totalLostCount: 0,
+            fullResponse: {},
+          };
+        }
+      )
 
       .addCase(getReceptionistManagerData.pending, (state) => {})
       .addCase(getReceptionistManagerData.fulfilled, (state, action) => {
@@ -2032,10 +2053,12 @@ export const homeSlice = createSlice({
           fullResponse: dataObj,
         };
       })
-      .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => { })
+      .addCase(getCRM_ReceptionistManagerData.rejected, (state, action) => {})
 
       // CRM receptionist Dashboard
-      .addCase(getCRM_ReceptionistDashborad.pending, (state) => { state.isLoading = true; })
+      .addCase(getCRM_ReceptionistDashborad.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(getCRM_ReceptionistDashborad.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.isLoading = false;
@@ -2048,30 +2071,38 @@ export const homeSlice = createSlice({
           contactsCount: dataObj.totalPreInquiryCount,
           enquirysCount: dataObj.totalEnquiryCount,
           totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
+          fullResponse: dataObj,
         };
       })
-      .addCase(getCRM_ReceptionistDashborad.rejected, (state, action) => { state.isLoading = false; })
+      .addCase(getCRM_ReceptionistDashborad.rejected, (state, action) => {
+        state.isLoading = false;
+      })
 
       // for digital dashboard filter case
-      .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => { })
-      .addCase(getCRM_ReceptionistManagerDataDigital.fulfilled, (state, action) => {
-        const dataObj = action.payload;
-        state.receptionistDataDigitalFilter = {
-          RetailCount: dataObj.totalRetailCount,
-          bookingsCount: dataObj.totalBookingCount,
-          consultantList: dataObj.manager,
-          totalAllocatedCount: dataObj.enquirysCount,
-          totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.totalPreInquiryCount,
-          enquirysCount: dataObj.totalEnquiryCount,
-          totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
-        };
-      })
-      .addCase(getCRM_ReceptionistManagerDataDigital.rejected, (state, action) => { })
+      .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => {})
+      .addCase(
+        getCRM_ReceptionistManagerDataDigital.fulfilled,
+        (state, action) => {
+          const dataObj = action.payload;
+          state.receptionistDataDigitalFilter = {
+            RetailCount: dataObj.totalRetailCount,
+            bookingsCount: dataObj.totalBookingCount,
+            consultantList: dataObj.manager,
+            totalAllocatedCount: dataObj.enquirysCount,
+            totalDroppedCount: dataObj.totalDroppedCount,
+            contactsCount: dataObj.totalPreInquiryCount,
+            enquirysCount: dataObj.totalEnquiryCount,
+            totalLostCount: dataObj.totalLostCount,
+            fullResponse: dataObj,
+          };
+        }
+      )
+      .addCase(
+        getCRM_ReceptionistManagerDataDigital.rejected,
+        (state, action) => {}
+      )
 
-      .addCase(get_xrole_SalesManagerDigitalTeam.pending, (state) => { })
+      .addCase(get_xrole_SalesManagerDigitalTeam.pending, (state) => {})
       .addCase(get_xrole_SalesManagerDigitalTeam.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistData = {
@@ -2083,32 +2114,41 @@ export const homeSlice = createSlice({
           contactsCount: dataObj.totalPreInquiryCount,
           enquirysCount: dataObj.totalEnquiryCount,
           totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
+          fullResponse: dataObj,
         };
       })
-      .addCase(get_xrole_SalesManagerDigitalTeam.rejected, (state, action) => { })
-
+      .addCase(
+        get_xrole_SalesManagerDigitalTeam.rejected,
+        (state, action) => {}
+      )
 
       .addCase(get_xrole_SalesManagerReceptinistTeam.pending, (state) => {
         state.isLoading = true;
-       })
-      .addCase(get_xrole_SalesManagerReceptinistTeam.fulfilled, (state, action) => {
-        const dataObj = action.payload;
-        state.isLoading = false;
-        state.receptionistDataV2 = {
-          RetailCount: dataObj.totalRetailCount,
-          bookingsCount: dataObj.totalBookingCount,
-          consultantList: dataObj.manager,
-          totalAllocatedCount: dataObj.enquirysCount,
-          totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.totalPreInquiryCount,
-          enquirysCount: dataObj.totalEnquiryCount,
-          totalLostCount: dataObj.totalLostCount,
-          fullResponse: dataObj
-        };
       })
-      .addCase(get_xrole_SalesManagerReceptinistTeam.rejected, (state, action) => { state.isLoading = false; })
-
+      .addCase(
+        get_xrole_SalesManagerReceptinistTeam.fulfilled,
+        (state, action) => {
+          const dataObj = action.payload;
+          state.isLoading = false;
+          state.receptionistDataV2 = {
+            RetailCount: dataObj.totalRetailCount,
+            bookingsCount: dataObj.totalBookingCount,
+            consultantList: dataObj.manager,
+            totalAllocatedCount: dataObj.enquirysCount,
+            totalDroppedCount: dataObj.totalDroppedCount,
+            contactsCount: dataObj.totalPreInquiryCount,
+            enquirysCount: dataObj.totalEnquiryCount,
+            totalLostCount: dataObj.totalLostCount,
+            fullResponse: dataObj,
+          };
+        }
+      )
+      .addCase(
+        get_xrole_SalesManagerReceptinistTeam.rejected,
+        (state, action) => {
+          state.isLoading = false;
+        }
+      )
 
       .addCase(getReceptionistSource.pending, (state) => {})
       .addCase(getReceptionistSource.fulfilled, (state, action) => {
@@ -2118,21 +2158,20 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistSource.rejected, (state, action) => {})
 
       // live receptinist/tele caller / cre
-      .addCase(getReceptionistSourceLive.pending, (state) => { })
+      .addCase(getReceptionistSourceLive.pending, (state) => {})
       .addCase(getReceptionistSourceLive.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistSource = dataObj;
       })
-      .addCase(getReceptionistSourceLive.rejected, (state, action) => { })
+      .addCase(getReceptionistSourceLive.rejected, (state, action) => {})
 
       // xrole source
-      .addCase(getXroleSource.pending, (state) => { })
+      .addCase(getXroleSource.pending, (state) => {})
       .addCase(getXroleSource.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistSource = dataObj;
       })
-      .addCase(getXroleSource.rejected, (state, action) => { })
-
+      .addCase(getXroleSource.rejected, (state, action) => {})
 
       .addCase(getReceptionistManagerSource.pending, (state) => {})
       .addCase(getReceptionistManagerSource.fulfilled, (state, action) => {
@@ -2146,40 +2185,38 @@ export const homeSlice = createSlice({
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModel.rejected, (state, action) => {})
-      
+
       // live receptinist/tele caller / cre
-      .addCase(getReceptionistModelLive.pending, (state) => { })
+      .addCase(getReceptionistModelLive.pending, (state) => {})
       .addCase(getReceptionistModelLive.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistModel = dataObj;
       })
-      .addCase(getReceptionistModelLive.rejected, (state, action) => { })
+      .addCase(getReceptionistModelLive.rejected, (state, action) => {})
 
       // xrole model
-      .addCase(getXroleModel.pending, (state) => { })
+      .addCase(getXroleModel.pending, (state) => {})
       .addCase(getXroleModel.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistModel = dataObj;
       })
-      .addCase(getXroleModel.rejected, (state, action) => { })
-
+      .addCase(getXroleModel.rejected, (state, action) => {})
 
       // live crm
-      .addCase(getCRMModelLive.pending, (state) => { })
+      .addCase(getCRMModelLive.pending, (state) => {})
       .addCase(getCRMModelLive.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistModel = dataObj;
       })
-      .addCase(getCRMModelLive.rejected, (state, action) => { })
+      .addCase(getCRMModelLive.rejected, (state, action) => {})
 
       // live crm
-      .addCase(getCRMSourceLive.pending, (state) => { })
+      .addCase(getCRMSourceLive.pending, (state) => {})
       .addCase(getCRMSourceLive.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistSource = dataObj;
       })
-      .addCase(getCRMSourceLive.rejected, (state, action) => { })
-
+      .addCase(getCRMSourceLive.rejected, (state, action) => {})
 
       .addCase(getReceptionistManagerModel.pending, (state) => {})
       .addCase(getReceptionistManagerModel.fulfilled, (state, action) => {
@@ -2216,8 +2253,6 @@ export const homeSlice = createSlice({
     builder.addCase(getDesignationDropdown.rejected, (state, action) => {
       state.isLoading = false;
     });
-
-    
   },
 });
 
@@ -2231,12 +2266,26 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
-  updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData,updateDealerFilterData_Recep,updateFilterLevelSelectedDataReceptionist,updateFilterSelectedDataReceptionist
-  ,updateReceptionistObjectData,updateEmpDropDown_Local,updateCrm_employees_drop_down_data,
-  updateCRMRecepDashboard_employees_drop_down_data, updateEmployeeDropdownData, updateFilterLeadership_selectedDesignation
-  , updateFilterLeadership_selectedDesignationName, updatefilter_drop_down_designations,
-    updateLoader,
-
+  updateEmpDropDown,
+  updateLeaderShipFilter,
+  updateReceptionistFilterids,
+  updateDealerFilterData,
+  updateFilterLevelSelectedData,
+  updateFilterSelectedData,
+  updateLiveLeadObjectData,
+  updatereceptionistDataObjectData,
+  updateDealerFilterData_Recep,
+  updateFilterLevelSelectedDataReceptionist,
+  updateFilterSelectedDataReceptionist,
+  updateReceptionistObjectData,
+  updateEmpDropDown_Local,
+  updateCrm_employees_drop_down_data,
+  updateCRMRecepDashboard_employees_drop_down_data,
+  updateEmployeeDropdownData,
+  updateFilterLeadership_selectedDesignation,
+  updateFilterLeadership_selectedDesignationName,
+  updatefilter_drop_down_designations,
+  updateLoader,
+  SetNewUpdateAvailable,
 } = homeSlice.actions;
 export default homeSlice.reducer;

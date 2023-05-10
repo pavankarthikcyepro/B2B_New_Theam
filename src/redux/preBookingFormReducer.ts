@@ -466,6 +466,33 @@ export const getOtherPricesDropDown = createAsyncThunk(
   }
 );
 
+
+export const postFinanaceApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postFinanaceApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_FINANCE(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const postEvalutionApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postEvalutionApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_EVALUTION(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface CustomerDetailModel {
   key: string;
   text: string;
