@@ -1025,6 +1025,18 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
+    const currentTime = new Date();
+    const curettime = moment(currentTime, "HH:mm");
+   
+    let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
+   
+    if (0 > preferredTimeDiffwithCurrent) {
+      showToast("Customer preffered Time should be greater than Current Time.");
+      return;
+    }
+  
+
+
     if (
       selectedVehicleDetails.vehicleId === 0 ||
       selectedVehicleDetails.varientId === 0
@@ -1669,6 +1681,8 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
+   
+
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1691,6 +1705,16 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Actual End Time Should not be less than Actual Start Time");
       return;
     }
+    const currentTime = new Date();
+    const curettime = moment(currentTime, "HH:mm");
+
+    let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
+
+    if (0 > preferredTimeDiffwithCurrent) {
+      showToast("Customer preffered Time should be greater than Current Time.");
+      return;
+    }
+   
 
     if (
       selectedVehicleDetails.vehicleId === 0 ||

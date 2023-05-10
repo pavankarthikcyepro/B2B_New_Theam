@@ -266,6 +266,10 @@ const URL = {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
+  
+  POST_FINANCE: () => sales_url + "/dms/finance",
+  POST_EVALUTION: () => sales_url + "/dms/evaluation",
+
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",
   GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {

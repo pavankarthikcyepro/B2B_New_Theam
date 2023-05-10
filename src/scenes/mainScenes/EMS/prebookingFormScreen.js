@@ -76,6 +76,8 @@ import {
   getRulesConfiguration,
   getOtherPricesDropDown,
   getEnquiryTypesApi,
+  postEvalutionApi,
+  postFinanaceApi,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -291,6 +293,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     isSelfManager: "",
     isTracker: "",
     branchId: 0,
+    approverId: ""
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -647,6 +650,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       isSelfManager: "",
       isTracker: "",
       branchId: 0,
+      approverId: ""
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -1074,6 +1078,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
         branchId: jsonObj.branchId,
+        approverId: jsonObj.approverId
       });
 
       const payload = {
@@ -1834,6 +1839,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     return false;
   };
 
+  const postEvalutionForm = () => {
+    // todo manthan
+    if (selector.buyer_type.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = () => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
+
   const submitClicked = async () => {
     Keyboard.dismiss();
     setIsSubmitPress(true);
@@ -2259,6 +2291,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
+    postEvalutionForm();
+    postFinanceForm();
     if (isEdit) {
       setIsLoading(true);
       Promise.all([
