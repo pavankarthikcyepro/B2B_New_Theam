@@ -36,15 +36,22 @@ import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
 import Orientation from "react-native-orientation-locker";
+import { registerCrashListener } from "./CrashListener";
 import TrackPlayer from "react-native-track-player";
 
 enableScreens();
 
 const AppScreen = () => {
+  
+  useEffect(() => {
+    registerCrashListener();
+  }, []);
+
   useEffect(async () => {
     Orientation.lockToPortrait();
     await TrackPlayer.setupPlayer();
   }, []);
+
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
