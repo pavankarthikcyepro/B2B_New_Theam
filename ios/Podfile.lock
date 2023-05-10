@@ -401,11 +401,7 @@ PODS:
     - React-Core
   - react-native-maps (1.7.1):
     - React-Core
-<<<<<<< HEAD
-  - react-native-netinfo (9.3.9):
-=======
   - react-native-netinfo (9.3.10):
->>>>>>> fad6e082d7877c1afa683bd62670ec9b86c8a5e9
     - React-Core
   - react-native-orientation-locker (1.5.0):
     - React-Core
@@ -422,12 +418,9 @@ PODS:
     - React-Core
   - react-native-switch-audio-output (1.1.2):
     - React
-<<<<<<< HEAD
-=======
   - react-native-track-player (3.2.0):
     - React-Core
     - SwiftAudioEx (= 0.15.3)
->>>>>>> fad6e082d7877c1afa683bd62670ec9b86c8a5e9
   - react-native-webview (11.26.1):
     - React-Core
   - React-perflogger (0.64.4)
@@ -851,13 +844,8 @@ SPEC CHECKSUMS:
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
-<<<<<<< HEAD
-  react-native-maps: 7135a33610202745d08fdf151ce6b0d01952a99c
-  react-native-netinfo: 22c082970cbd99071a4e5aa7a612ac20d66b08f0
-=======
   react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
   react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
->>>>>>> fad6e082d7877c1afa683bd62670ec9b86c8a5e9
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
@@ -865,10 +853,7 @@ SPEC CHECKSUMS:
   react-native-simple-toast: 8ee5d23f0b92b935ab7434cdb65159ce12dfb4b7
   react-native-slider: d3ae4270cf8a8cc45a69912db0cc42b151560d5a
   react-native-switch-audio-output: d435f857bfe73f9b6263c7101432ea2785b854d7
-<<<<<<< HEAD
-=======
   react-native-track-player: 0c26d981b5097910486cbbeb6d8f5352d41be069
->>>>>>> fad6e082d7877c1afa683bd62670ec9b86c8a5e9
   react-native-webview: 9f111dfbcfc826084d6c507f569e5e03342ee1c1
   React-perflogger: 5a890ca0911669421b7611661e9b58f91c805f5c
   React-RCTActionSheet: bd180e0879f8424a73650c5c28fbef4f3b5b27fb
@@ -897,11 +882,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
-<<<<<<< HEAD
-  RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
-=======
   RNSnackbar: f30f4bb47184d7cb39470f624cc5010507f43e6c
->>>>>>> fad6e082d7877c1afa683bd62670ec9b86c8a5e9
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
   SwiftAudioEx: 83eabba2940924fc1c0d5cb0896049921365229c
@@ -909,6 +890,6 @@ SPEC CHECKSUMS:
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: b4d82a8894308ccd6ef7e8a533adac75e06a5ab2
+PODFILE CHECKSUM: abe724e6ae3dd68bc29548c072fb6bc6d2294774
 
 COCOAPODS: 1.12.0
