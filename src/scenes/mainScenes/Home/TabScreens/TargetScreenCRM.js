@@ -3384,7 +3384,8 @@ const TargetScreenCRM = ({ route }) => {
       {!selector.isLoading ? (
         <ScrollView style={styles.container}>
           {receptionistRole.includes(userData.hrmsRole) ? (
-            selector.isTeam ? (
+            // selector.isTeam ?
+             (
               <View>
                 <View style={styles.view1}>
                   <View style={styles.view2}>

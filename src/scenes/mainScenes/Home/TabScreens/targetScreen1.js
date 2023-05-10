@@ -3104,6 +3104,7 @@ const TargetScreen = ({ route }) => {
                         </View>
                       )}
 
+                      {/* manthan old code receptions/tele/cre */}
                       {/* CRM exisiting code start */}
                       {!CRMRole.includes(userData.hrmsRole) && (
                         <>
@@ -3657,7 +3658,12 @@ const TargetScreen = ({ route }) => {
                           </ScrollView>
                         </>
                       )}
+                          {/* manthan old code receptions/tele/cre end */}
 
+                          {/* {!CRMRole.includes(userData.hrmsRole) && (<>
+
+
+                          </>)} */}
                       {/* CRM exisiting code end */}
                     </>
                   ) : null}
