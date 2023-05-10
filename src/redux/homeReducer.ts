@@ -65,13 +65,13 @@ export const getOrganaizationHirarchyList = createAsyncThunk(
       URL.ORG_HIRARCHY(payload.orgId, payload.empId)
     );
     const json = await response.json();
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
     return json;
   }
 );
-
 
 export const getOrgWiseDesignations = createAsyncThunk(
   "HOME/getOrgWiseDesignations",
@@ -1155,9 +1155,9 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
-    filter_drop_down_designations:{},
-    filter_leadership_selectedDesignation:"",
-    filter_leadership_selectedDesignation_name: ""
+    filter_drop_down_designations: {},
+    filter_leadership_selectedDesignation: "",
+    filter_leadership_selectedDesignation_name: "",
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -1373,11 +1373,11 @@ export const homeSlice = createSlice({
           enquirysCount: 0,
           totalLostCount: 0,
           fullResponse: {},
-        },
-        state.crm_employees_drop_down_data_recep = {},
-        state.filter_drop_down_designations = {},
-      state.filter_leadership_selectedDesignation_name=""
-      state.filter_leadership_selectedDesignation =""
+        }),
+        (state.crm_employees_drop_down_data_recep = {}),
+        (state.filter_drop_down_designations = {}),
+        (state.filter_leadership_selectedDesignation_name = "");
+      state.filter_leadership_selectedDesignation = "";
       // state.dealerFilter= { }
     },
   },
@@ -1491,14 +1491,13 @@ export const homeSlice = createSlice({
       .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {})
 
       // dealer and branch ranking designtaion filter
-      .addCase(getOrgWiseDesignations.pending, (state, action) => { })
+      .addCase(getOrgWiseDesignations.pending, (state, action) => {})
       .addCase(getOrgWiseDesignations.fulfilled, (state, action) => {
         if (action.payload) {
           state.filter_drop_down_designations = action.payload;
         }
       })
-      .addCase(getOrgWiseDesignations.rejected, (state, action) => { })
-
+      .addCase(getOrgWiseDesignations.rejected, (state, action) => {})
 
       // Get Lead Source Table List
       .addCase(getLeadSourceTableList.pending, (state, action) => {
@@ -2254,8 +2253,6 @@ export const homeSlice = createSlice({
     builder.addCase(getDesignationDropdown.rejected, (state, action) => {
       state.isLoading = false;
     });
-
-    
   },
 });
 
@@ -2269,13 +2266,26 @@ export const {
   clearState,
   updateTargetData,
   updateFilterIds,
-  updateEmpDropDown, updateLeaderShipFilter, updateReceptionistFilterids,updateDealerFilterData,updateFilterLevelSelectedData,
-  updateFilterSelectedData,updateLiveLeadObjectData,updatereceptionistDataObjectData,updateDealerFilterData_Recep,updateFilterLevelSelectedDataReceptionist,updateFilterSelectedDataReceptionist
-  ,updateReceptionistObjectData,updateEmpDropDown_Local,updateCrm_employees_drop_down_data,
-  updateCRMRecepDashboard_employees_drop_down_data, updateEmployeeDropdownData, updateFilterLeadership_selectedDesignation
-  , updateFilterLeadership_selectedDesignationName, updatefilter_drop_down_designations,
-    updateLoader,  SetNewUpdateAvailable,
-
-
+  updateEmpDropDown,
+  updateLeaderShipFilter,
+  updateReceptionistFilterids,
+  updateDealerFilterData,
+  updateFilterLevelSelectedData,
+  updateFilterSelectedData,
+  updateLiveLeadObjectData,
+  updatereceptionistDataObjectData,
+  updateDealerFilterData_Recep,
+  updateFilterLevelSelectedDataReceptionist,
+  updateFilterSelectedDataReceptionist,
+  updateReceptionistObjectData,
+  updateEmpDropDown_Local,
+  updateCrm_employees_drop_down_data,
+  updateCRMRecepDashboard_employees_drop_down_data,
+  updateEmployeeDropdownData,
+  updateFilterLeadership_selectedDesignation,
+  updateFilterLeadership_selectedDesignationName,
+  updatefilter_drop_down_designations,
+  updateLoader,
+  SetNewUpdateAvailable,
 } = homeSlice.actions;
 export default homeSlice.reducer;

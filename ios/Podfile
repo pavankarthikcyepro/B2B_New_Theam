@@ -7,16 +7,12 @@ target 'B2B_NEW_THEME' do
   config = use_native_modules!
     pod 'Firebase', :modular_headers => true
     pod 'FirebaseCore', :modular_headers => true
-    # pod 'FirebaseCoreInternal', :modular_headers => true
-    # pod 'FirebaseCoreExtension', :modular_headers => true
-    # pod 'FirebaseInstallations', :modular_headers => true
-    # pod 'GoogleDataTransport', :modular_headers => true
-    # pod 'nanopb', :modular_headers => true
-    pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
-    pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
     pod 'FirebaseCoreInternal', :modular_headers => true
     pod 'GoogleUtilities', :modular_headers => true
+    pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
+    pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
     pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+    
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods

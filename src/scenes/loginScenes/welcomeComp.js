@@ -50,7 +50,7 @@ const WelcomeScreen = ({ navigation }) => {
   useEffect(async () => {
     const token = await messaging().getToken();
     console.log("OOOOO", token);
-    Clipboard.setString(token);
+    // Clipboard.setString(token);
     messaging().requestPermission();
     messaging().onMessage(async (remoteMessage) => {
       console.log(
