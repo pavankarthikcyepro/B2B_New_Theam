@@ -143,7 +143,7 @@ const MyTasksScreen = ({ navigation }) => {
         });
         const payload = {
           orgId: jsonObj.orgId,
-          branchId: jsonObj.branchId,
+          empId: jsonObj.empId,
         };
         dispatch(getOrganizationHierarchyList(payload))
           .then((res) => {
@@ -268,7 +268,7 @@ const MyTasksScreen = ({ navigation }) => {
     //   body: JSON.stringify(payload),
     // })
     await client
-      .post(URL.GET_MY_TASKS_NEW_DATA(), payload)
+      .post(URL.GET_MY_TASKS_NEW_DATA2(), payload)
       .then((json) => json.json())
       .then((resp) => {
         setResponse(resp);

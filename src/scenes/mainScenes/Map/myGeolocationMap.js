@@ -101,7 +101,7 @@ const GeolocationMapScreen = ({ route }) => {
         var result = [];
         for (var i = 0; i < arr.length - 1; i++) {
           result.push(
-            getDistanceBetweenTwoPoints(
+            getDistanceFromLatLonInKm(
               arr[i].latitude,
               arr[i].longitude,
               arr[i + 1].latitude,
@@ -109,19 +109,19 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
-        const startNameResponse = await client.get(
-          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
-        );
-        const startJson = await startNameResponse.json();
-        const endNameResponse = await client.get(
-          URL.ADDRESS_NAME(
-            arr[arr.length - 1].latitude,
-            arr[arr.length - 1].longitude
-          )
-        );
-        const endJson = await endNameResponse.json();
-        setStartAddress(startJson.results[0].formatted_address);
-        setEndAddress(endJson.results[0].formatted_address);
+        // const startNameResponse = await client.get(
+        //   URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        // );
+        // const startJson = await startNameResponse.json();
+        // const endNameResponse = await client.get(
+        //   URL.ADDRESS_NAME(
+        //     arr[arr.length - 1].latitude,
+        //     arr[arr.length - 1].longitude
+        //   )
+        // );
+        // const endJson = await endNameResponse.json();
+        // setStartAddress(startJson.results[0].formatted_address);
+        // setEndAddress(endJson.results[0].formatted_address);
         setDistance(result);
         setLoading(false);
       } else {
@@ -142,7 +142,7 @@ const GeolocationMapScreen = ({ route }) => {
   function sumArray(array) {
     const ourArray = array;
     let sum = 0;
-
+    console.log("array",array);
     for (let i = 0; i < ourArray.length; i += 1) {
       sum += ourArray[i];
     }
@@ -189,7 +189,7 @@ const GeolocationMapScreen = ({ route }) => {
         var result = [];
         for (var i = 0; i < arr.length - 1; i++) {
           result.push(
-            getDistanceBetweenTwoPoints(
+            getDistanceFromLatLonInKm(
               arr[i].latitude,
               arr[i].longitude,
               arr[i + 1].latitude,
@@ -197,19 +197,19 @@ const GeolocationMapScreen = ({ route }) => {
             )
           );
         }
-        const startNameResponse = await client.get(
-          URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
-        );
-        const startJson = await startNameResponse.json();
-        const endNameResponse = await client.get(
-          URL.ADDRESS_NAME(
-            arr[arr.length - 1].latitude,
-            arr[arr.length - 1].longitude
-          )
-        );
-        const endJson = await endNameResponse.json();
-        setStartAddress(startJson.results[0].formatted_address);
-        setEndAddress(endJson.results[0].formatted_address);
+        // const startNameResponse = await client.get(
+        //   URL.ADDRESS_NAME(arr[0].latitude, arr[0].longitude)
+        // );
+        // const startJson = await startNameResponse.json();
+        // const endNameResponse = await client.get(
+        //   URL.ADDRESS_NAME(
+        //     arr[arr.length - 1].latitude,
+        //     arr[arr.length - 1].longitude
+        //   )
+        // );
+        // const endJson = await endNameResponse.json();
+        // setStartAddress(startJson.results[0].formatted_address);
+        // setEndAddress(endJson.results[0].formatted_address);
         setDistance(result);
         setLoading(false);
       } else {
@@ -235,76 +235,24 @@ const GeolocationMapScreen = ({ route }) => {
     return Math.abs(parseFloat(diff).toFixed(2));
   }
 
-  const position = [
-    { latitude: 37.37457281, longitude: -122.14588663 },
-    { latitude: 37.37709618, longitude: -122.14869624 },
-    { latitude: 37.38009618, longitude: -122.15169624 },
-    { latitude: 37.38409618, longitude: -122.15469624 },
-  ];
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const earthRadius = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1); // deg2rad below
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = earthRadius * c; // Distance in km
+  return distance;
+}
 
-  const addIcon = () => {
-    return (
-      <Svg
-        width="30px"
-        height="30px"
-        // viewBox="0 0 40 56"
-        viewBox="0 0 24 24"
-        // fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        // fill="#FFF"
-        // opacity="0.6"
-      >
-        <G opacity="0.4">
-          <Path
-            d="M9.25 11H14.75"
-            stroke="#292D32"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          />
-          <Path
-            d="M12 13.75V8.25"
-            stroke="#292D32"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          />
-        </G>
-        <Path
-          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
-          stroke="#292D32"
-          stroke-width="1.5"
-        />
-      </Svg>
-    );
-  };
-
-  const tickIcon = () => {
-    return (
-      <Svg
-        width="30px"
-        height="30px"
-        // viewBox="0 0 40 56"
-        viewBox="0 0 24 24"
-        // fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        // fill="#FFF"
-        // opacity="0.6"
-      >
-        <Path
-          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
-          stroke="#292D32"
-          stroke-width="1.5"
-        />
-        <Path
-          opacity="0.4"
-          d="M9.25 11.5L10.75 13L14.75 9"
-          stroke="#292D32"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </Svg>
-    );
-  };
+  function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -348,12 +296,12 @@ const GeolocationMapScreen = ({ route }) => {
                 coordinate={marker}
                 tracksViewChanges={false}
                 // icon={require("../../../assets/images/cyepro-tick.svg")}
-                // style={{
-                //   height: 15,
-                //   width: 15,
-                //   // padding:5,
-                //   // flex:1
-                // }}
+                style={{
+                  height: 15,
+                  width: 15,
+                  // padding:5,
+                  // flex:1
+                }}
                 // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
                 image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
                 // title={marker}
@@ -362,7 +310,7 @@ const GeolocationMapScreen = ({ route }) => {
                 {/* <View
                   style={{ width: 33, height: Platform.OS === "ios" ? 59 : 37 }}
                 >
-                  {addIcon()}
+                  {IconMarker()}
                 </View> */}
                 {/* <Svg width={40} height={30}>
                   <Image
@@ -551,3 +499,93 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
+
+
+  const tickIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+        <Path
+          opacity="0.4"
+          d="M9.25 11.5L10.75 13L14.75 9"
+          stroke="#292D32"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </Svg>
+    );
+  };
+
+  const IconMarker = () => {
+    return (
+      <Svg
+        version="1.0"
+        xmlns="http://www.w3.org/2000/svg"
+        width="30.000000pt"
+        height="30.000000pt"
+        viewBox="0 0 80.000000 128.000000"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {" "}
+        <G
+          transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+          fill="#000000"
+          stroke="none"
+        >
+          {" "}
+          <Path d="M310 1196 c-145 -42 -241 -147 -270 -293 -24 -120 36 -294 171 -497 61 -91 180 -245 189 -245 3 0 37 41 76 92 155 199 253 378 280 507 46 224 -113 432 -341 446 -33 2 -80 -2 -105 -10z m243 -49 c155 -76 222 -248 167 -428 -28 -95 -72 -180 -155 -304 -72 -107 -156 -215 -167 -215 -12 0 -166 206 -208 280 -44 76 -108 217 -119 262 -37 156 21 312 144 386 71 43 109 52 201 49 64 -3 93 -9 137 -30z" />{" "}
+          <Path d="M345 987 c-69 -40 -95 -77 -99 -142 -6 -100 104 -186 198 -155 42 13 89 65 106 113 21 66 -21 147 -97 186 -27 14 -82 13 -108 -2z m146 -56 c33 -33 39 -45 39 -82 0 -134 -156 -188 -239 -83 -15 19 -21 41 -21 77 0 44 4 53 39 88 35 35 44 39 91 39 47 0 56 -4 91 -39z" />{" "}
+        </G>{" "}
+      </Svg>
+    );
+  };
+
+
+  const addIcon = () => {
+    return (
+      <Svg
+        width="30px"
+        height="30px"
+        // viewBox="0 0 40 56"
+        viewBox="0 0 24 24"
+        // fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        // fill="#FFF"
+        // opacity="0.6"
+      >
+        <G opacity="0.4">
+          <Path
+            d="M9.25 11H14.75"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <Path
+            d="M12 13.75V8.25"
+            stroke="#292D32"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </G>
+        <Path
+          d="M3.61971 8.49C5.58971 -0.169998 18.4197 -0.159997 20.3797 8.5C21.5297 13.58 18.3697 17.88 15.5997 20.54C13.5897 22.48 10.4097 22.48 8.38971 20.54C5.62971 17.88 2.46971 13.57 3.61971 8.49Z"
+          stroke="#292D32"
+          stroke-width="1.5"
+        />
+      </Svg>
+    );
+  };

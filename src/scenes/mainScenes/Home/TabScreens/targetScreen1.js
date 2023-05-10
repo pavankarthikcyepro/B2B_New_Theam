@@ -26,6 +26,7 @@ import {
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
   updateEmployeeDataBasedOnDelegate,
+  updateLoader,
 } from "../../../../redux/homeReducer";
 import { RenderGrandTotal } from "./components/RenderGrandTotal";
 import { RenderEmployeeParameters } from "./components/RenderEmployeeParameters";
@@ -40,6 +41,8 @@ import URL from "../../../../networking/endpoints";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import TextTicker from "react-native-text-ticker";
 import AnimLoaderComp from "../../../../components/AnimLoaderComp";
+import Lottie from "lottie-react-native";
+import _ from "lodash";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -53,7 +56,26 @@ const color = [
   "#1f93ab",
   "#ec3466",
 ];
-const receptionistRole = ["Reception", "CRM", "Tele Caller"];
+const data = [
+  {
+    id: 0,
+    name: "Enquiry",
+  },
+  {
+    id: 1,
+    name: "Booking",
+  },
+  {
+    id: 2,
+    name: "Retail",
+  },
+  {
+    id: 3,
+    name: "Lost",
+  },
+];
+const receptionistRole = ["Reception", "CRM", "Tele Caller", "CRE"];
+const CRMRole = ["CRM"];
 const TargetScreen = ({ route }) => {
   const navigation = useNavigation();
   const selector = useSelector((state) => state.homeReducer);
@@ -108,6 +130,8 @@ const TargetScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const translation = useRef(new Animated.Value(0)).current;
   const [slideRight, setSlideRight] = useState();
+  const [teamLoader, setTeamLoader] = useState(false);
+  const [teamMember, setTeamMember] = useState("");
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
@@ -427,6 +451,7 @@ const TargetScreen = ({ route }) => {
         tempExw[0],
         tempAcc[0],
       ]);
+      dispatch(updateLoader(false));
     } else {
     }
 
@@ -553,20 +578,40 @@ const TargetScreen = ({ route }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        let myParams;
         if (selector.all_emp_parameters_data.length > 0) {
-          let myParams = [
-            ...selector.all_emp_parameters_data.filter(
-              (item) => item.empId === jsonObj.empId
-            ),
-          ];
-          myParams[0] = {
-            ...myParams[0],
-            isOpenInner: false,
-            employeeTargetAchievements: [],
-            targetAchievements: selector.totalParameters,
-            tempTargetAchievements: myParams[0]?.targetAchievements,
-          };
-          setAllParameters(myParams);
+          if (!_.isEmpty(selector.filterIds?.empSelected)) {
+            myParams = [
+              ...selector.all_emp_parameters_data.filter(
+                (item) => item.empId == selector.filterIds?.empSelected[0]
+              ),
+            ];
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: selector.totalParameters,
+              tempTargetAchievements: myParams[0]?.targetAchievements,
+            };
+
+            setAllParameters(myParams);
+          } else {
+            myParams = [
+              ...selector.all_emp_parameters_data.filter(
+                (item) => item.empId === jsonObj.empId
+              ),
+            ];
+            myParams[0] = {
+              ...myParams[0],
+              isOpenInner: false,
+              employeeTargetAchievements: [],
+              targetAchievements: selector.totalParameters,
+              tempTargetAchievements: myParams[0]?.targetAchievements,
+            };
+
+            setAllParameters(myParams);
+          }
+
           // setMyParameters(myParams);
           // let tempParams = [
           //   ...selector.all_emp_parameters_data.filter(
@@ -604,7 +649,7 @@ const TargetScreen = ({ route }) => {
     } catch (error) {
       setIsLoading(false);
     }
-  }, [selector.all_emp_parameters_data]);
+  }, [selector.all_emp_parameters_data, selector.totalParameters]);
 
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -786,7 +831,92 @@ const TargetScreen = ({ route }) => {
     };
   };
 
+  useEffect(() => {
+    // if (selector.filterIds?.empSelected[0]){
+    //   // getDataAfterFilter()
+    // }
+  }, [selector.filterIds]);
+
+  const getDataAfterFilter = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const dateFormat = "YYYY-MM-DD";
+      const currentDate = moment().format(dateFormat);
+      const monthFirstDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .startOf("month")
+        .format(dateFormat);
+      const monthLastDate = moment(currentDate, dateFormat)
+        .subtract(0, "months")
+        .endOf("month")
+        .format(dateFormat);
+      let payload = {
+        orgId: jsonObj.orgId,
+        selectedEmpId: selector.filterIds?.empSelected[0],
+        endDate: monthLastDate,
+        loggedInEmpId: jsonObj.empId,
+        empId: selector.filterIds?.empSelected[0],
+        startDate: monthFirstDate,
+        levelSelected: null,
+        pageNo: 0,
+        size: 100,
+      };
+      Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
+        async (res) => {
+          let tempRawData = [];
+          tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
+            (emp) => emp.empId == selector.filterIds?.empSelected[0]
+          );
+          if (tempRawData.length > 0) {
+            for (let i = 0; i < tempRawData.length; i++) {
+              (tempRawData[i].empName = tempRawData[i].empName),
+                (tempRawData[i] = {
+                  ...tempRawData[i],
+                  isOpenInner: false,
+                  branchName: getBranchName(tempRawData[i].branchId),
+                  employeeTargetAchievements: [],
+                  tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                  targetAchievements: tempRawData[i]?.targetAchievements,
+                });
+              // if (i === tempRawData.length - 1) {
+              // localData[index].employeeTargetAchievements = tempRawData;
+              // let newIds = tempRawData.map((emp) => emp.empId);
+              // if (newIds.length >= 2 || true) {
+              //   for (let i = 0; i < newIds.length; i++) {
+              //     const element = newIds[i].toString();
+              //     let tempPayload = getTotalPayload(employeeData, element);
+              //     const response = await client.post(
+              //       URL.GET_LIVE_LEADS_INSIGHTS(),
+              //       tempPayload
+              //     );
+              //     const json = await response.json();
+              //     if (Array.isArray(json)) {
+              //       localData[index].employeeTargetAchievements[
+              //         i
+              //       ].targetAchievements = json;
+              //     }
+              //   }
+              // }
+              // }
+            }
+          }
+          // setFilterParameters([...tempRawData])
+          // alert(JSON.stringify(tempRawData))
+          // setAllParameters([...tempRawData]);
+        }
+      );
+
+      // if (localData[index].employeeTargetAchievements.length > 0) {
+      //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+      //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+      //   }
+      // }
+    }
+  };
+
   const onEmployeeNameClick = async (item, index, lastParameter) => {
+    setTeamMember(item?.empName);
     let localData = [...allParameters];
     let current = lastParameter[index].isOpenInner;
     for (let i = 0; i < lastParameter.length; i++) {
@@ -796,6 +926,7 @@ const TargetScreen = ({ route }) => {
       }
     }
     if (!current) {
+      setTeamLoader(true);
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -844,11 +975,13 @@ const TargetScreen = ({ route }) => {
               }
             }
             setAllParameters([...localData]);
+            setTeamLoader(false);
           }
         );
       }
     } else {
       setAllParameters([...localData]);
+      setTeamLoader(false);
     }
   };
 
@@ -864,20 +997,116 @@ const TargetScreen = ({ route }) => {
     setToggleParamsIndex(index);
   };
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    setTimeout(() => {
-      navigation.navigate("LEADS", {
-        // param: param === "INVOICE" ? "Retail" : param,
-        // moduleType: "home",
-        // employeeDetail: "",
-      });
-    }, 1000);
+  function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
+   navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+        params: {
+          screenName: "TARGETSCREEN1",
+          params: params,
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: selectedEmpId,
+          startDate: selector.receptionistFilterIds.startDate,
+          endDate: selector.receptionistFilterIds.endDate,
+          dealerCodes: selector.receptionistFilterIds.dealerCodes,
+          ignoreSelectedId: false,
+        },
+      },
+    });
   }
 
   function navigateToDropLostCancel(params) {
-    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: "DROP_ANALYSIS",
+      params: {
+        emp_id: params,
+        fromScreen: "targetScreen1",
+        dealercodes: selector.receptionistFilterIds.dealerCodes,
+      },
+    });
   }
+  const renderItem = (item, index) => {
+    return (
+      <View
+        style={{
+          width: 300,
+          padding: 10,
+          borderColor:
+            index === 0
+              ? Colors.PURPLE
+              : index === 2
+              ? Colors.RED
+              : index === 3
+              ? Colors.YELLOW
+              : Colors.BLUE_V2,
+          borderWidth: 1,
+          borderRadius: 10,
+          justifyContent: "center",
+          marginVertical: 10,
+          // marginStart:'8%'
+        }}
+      >
+        <View style={styles.scondView}>
+          <Text
+            style={{
+              fontSize: 16,
+              // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+              color: Colors.BLACK,
+              fontWeight: "700",
+              paddingVertical: 10,
+            }}
+          >
+            {item.name}
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => {
+              {
+                item.id === 0
+                  ? selector.receptionistData.enquirysCount > 0 &&
+                    navigateToEMS("ENQUIRY", "", [userData.empId])
+                  : item.id === 1
+                  ? navigateToEMS("BOOKING", "", [userData.empId])
+                  : item.id === 2
+                  ? selector.receptionistData.RetailCount > 0 &&
+                    navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                  : item.id === 3
+                  ? navigateToDropLostCancel([userData.empId])
+                  : null;
+              }
+            }}
+          >
+            {item.id === 0 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.enquirysCount}{" "}
+              </Text>
+            ) : item.id === 1 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.bookingsCount}{" "}
+              </Text>
+            ) : item.id === 2 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.RetailCount}{" "}
+              </Text>
+            ) : item.id === 3 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.receptionistData.totalLostCount}{" "}
+              </Text>
+            ) : (
+              <Text style={styles.txt10}>0</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <React.Fragment>
       {!selector.isLoading ? (
@@ -913,9 +1142,59 @@ const TargetScreen = ({ route }) => {
                   >
                     <View>
                       <View key={"headers"} style={styles.view3}>
-                        <View
+                        {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
-                        ></View>
+                        ></View> */}
+                        {/* <View
+                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
+                          >
+                            <Text style={{
+                              fontSize: 10,
+                              color: Colors.RED,
+                              fontWeight: "600",
+                              alignSelf: "center",
+                              textAlign: "center",
+
+                              // marginTop: 10
+                            }}>Employee</Text>
+
+                          </View> */}
+                        <View
+                          style={{
+                            width: 100,
+                            height: 20,
+                            marginRight: 5,
+                            alignItems: "flex-start",
+                            marginLeft: 10,
+                          }}
+                        >
+                          <View
+                            style={[
+                              styles.itemBox,
+                              {
+                                width: 55,
+                              },
+                            ]}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.RED,
+                                fontSize: 12,
+                              }}
+                            >
+                              Employee
+                            </Text>
+                          </View>
+                          {/* <Text style={{
+                            fontSize: 10,
+                            color: Colors.RED,
+                            fontWeight: "600",
+                            alignSelf: "center",
+                            textAlign: "center",
+                            height:30
+                            // marginTop: 10
+                          }}>Employee</Text> */}
+                        </View>
                         <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
@@ -948,7 +1227,6 @@ const TargetScreen = ({ route }) => {
                       >
                         {receptionistTeamParameters.length > 0 &&
                           receptionistTeamParameters.map((item, index) => {
-                            console.log("item -> ", item);
                             return (
                               <View key={`${item.empName} ${index}`}>
                                 <View
@@ -997,6 +1275,8 @@ const TargetScreen = ({ route }) => {
                                         item={item}
                                         branchName={item.branch}
                                         color={"#C62159"}
+                                        teamLoader={teamLoader}
+                                        teamMember={teamMember}
                                         receptionManager={true}
                                         navigation={navigation}
                                         titleClick={async () => {}}
@@ -1252,9 +1532,45 @@ const TargetScreen = ({ route }) => {
                   <View>
                     {/* TOP Header view */}
                     <View key={"headers"} style={styles.view3}>
-                      <View
+                      {/* <View
                         style={{ width: 100, height: 20, marginRight: 5 }}
-                      ></View>
+                      ></View> */}
+                      <View
+                        style={{
+                          width: 100,
+                          height: 20,
+                          marginRight: 5,
+                          alignItems: "flex-start",
+                          marginLeft: 10,
+                        }}
+                      >
+                        <View
+                          style={[
+                            styles.itemBox,
+                            {
+                              width: 55,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.RED,
+                              fontSize: 12,
+                            }}
+                          >
+                            Employee
+                          </Text>
+                        </View>
+                        {/* <Text style={{
+                            fontSize: 10,
+                            color: Colors.RED,
+                            fontWeight: "600",
+                            alignSelf: "center",
+                            textAlign: "center",
+                            height:30
+                            // marginTop: 10
+                          }}>Employee</Text> */}
+                      </View>
                       <View style={styles.view4}>
                         {toggleParamsMetaData.map((param) => {
                           return (
@@ -1353,11 +1669,9 @@ const TargetScreen = ({ route }) => {
                                           AppNavigator.HomeStackIdentifiers
                                             .sourceModel,
                                           {
-                                            empId: item.empId,
+                                            empId:  item.empId,
                                             headerTitle: item.empName,
-                                            loggedInEmpId:
-                                              selector.login_employee_details
-                                                .empId,
+                                            loggedInEmpId: selector.login_employee_details.empId,
                                             orgId:
                                               selector.login_employee_details
                                                 .orgId,
@@ -1365,6 +1679,21 @@ const TargetScreen = ({ route }) => {
                                             moduleType: "home",
                                           }
                                         );
+                                        // navigation.navigate(
+                                        //   AppNavigator.HomeStackIdentifiers
+                                        //     .sourceModel,
+                                        //   {
+                                        //     empId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : item.empId,
+                                        //     headerTitle: item.empName,
+                                        //     loggedInEmpId:
+                                        //       !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : item.empId,
+                                        //     orgId:
+                                        //       selector.login_employee_details
+                                        //         .orgId,
+                                        //     type: "TEAM",
+                                        //     moduleType: "home",
+                                        //   }
+                                        // );
                                       }}
                                       style={{
                                         transform: [
@@ -1399,6 +1728,8 @@ const TargetScreen = ({ route }) => {
                                         color={"#C62159"}
                                         navigation={navigation}
                                         stopLocation={true}
+                                        teamLoader={teamLoader}
+                                        teamMember={teamMember}
                                         titleClick={async () => {
                                           let localData = [...allParameters];
                                           await onEmployeeNameClick(
@@ -1549,6 +1880,8 @@ const TargetScreen = ({ route }) => {
                                                       branchName={getBranchName(
                                                         innerItem1.branchId
                                                       )}
+                                                      teamLoader={teamLoader}
+                                                      teamMember={teamMember}
                                                       titleClick={async () => {
                                                         const localData = [
                                                           ...allParameters,
@@ -1737,6 +2070,12 @@ const TargetScreen = ({ route }) => {
                                                               branchName={getBranchName(
                                                                 innerItem2.branchId
                                                               )}
+                                                              teamLoader={
+                                                                teamLoader
+                                                              }
+                                                              teamMember={
+                                                                teamMember
+                                                              }
                                                               titleClick={async () => {
                                                                 const localData =
                                                                   [
@@ -1938,6 +2277,12 @@ const TargetScreen = ({ route }) => {
                                                                         branchName={getBranchName(
                                                                           innerItem3.branchId
                                                                         )}
+                                                                        teamLoader={
+                                                                          teamLoader
+                                                                        }
+                                                                        teamMember={
+                                                                          teamMember
+                                                                        }
                                                                         titleClick={async () => {
                                                                           const localData =
                                                                             [
@@ -2132,6 +2477,12 @@ const TargetScreen = ({ route }) => {
                                                                                   branchName={getBranchName(
                                                                                     innerItem4.branchId
                                                                                   )}
+                                                                                  teamLoader={
+                                                                                    teamLoader
+                                                                                  }
+                                                                                  teamMember={
+                                                                                    teamMember
+                                                                                  }
                                                                                   titleClick={async () => {
                                                                                     const localData =
                                                                                       [
@@ -2328,6 +2679,12 @@ const TargetScreen = ({ route }) => {
                                                                                             branchName={getBranchName(
                                                                                               innerItem5.branchId
                                                                                             )}
+                                                                                            teamLoader={
+                                                                                              teamLoader
+                                                                                            }
+                                                                                            teamMember={
+                                                                                              teamMember
+                                                                                            }
                                                                                             titleClick={async () => {
                                                                                               const localData =
                                                                                                 [
@@ -2472,6 +2829,12 @@ const TargetScreen = ({ route }) => {
                                                                                                       branchName={getBranchName(
                                                                                                         innerItem6.branchId
                                                                                                       )}
+                                                                                                      teamLoader={
+                                                                                                        teamLoader
+                                                                                                      }
+                                                                                                      teamMember={
+                                                                                                        teamMember
+                                                                                                      }
                                                                                                       titleClick={async () => {
                                                                                                         const localData =
                                                                                                           [
@@ -2658,6 +3021,10 @@ const TargetScreen = ({ route }) => {
             selfInsightsData.length > 0 && (
               <>
                 {!receptionistRole.includes(userData.hrmsRole) && (
+                  <>
+                  {/* <View style={{paddingVertical: 5, backgroundColor: Colors.LIGHT_GRAY, marginBottom: 10, paddingHorizontal: 50, borderRadius: 50, alignSelf: "center"}}>
+                    <Text style={{fontWeight: "600", fontSize: 15, color:Colors.PINK, textDecorationLine: "underline"}} >Dashboard</Text>
+                  </View> */}
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View style={styles.view13}>
                       <View
@@ -2693,462 +3060,605 @@ const TargetScreen = ({ route }) => {
                       <Text style={styles.txt3}>AR/Day</Text>
                     </View>
                   </View>
+                  </>
                 )}
                 <>
                   {receptionistRole.includes(userData.hrmsRole) &&
                   !selector.isTeam ? (
                     <>
-                      <View style={styles.view14}>
-                        <SourceModelView
-                          style={{ alignSelf: "flex-end" }}
-                          onClick={() => {
-                            navigation.navigate("RECEP_SOURCE_MODEL", {
-                              empId: userData.empId,
-                              headerTitle: "Source/Model",
-                              loggedInEmpId: userData.empId,
-                              orgId: userData.orgId,
-                              role: userData.hrmsRole,
-                            });
-                          }}
-                        />
-                      </View>
-                      <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={styles.recBoxContainer}>
-                          <View style={styles.view15}>
-                            <View
+                      {CRMRole.includes(userData.hrmsRole) && (
+                        <View style={{ paddingHorizontal: "8%" }}>
+                          <View style={styles.newView}>
+                            <Text
                               style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                width: "35%",
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: Colors.BLUE,
+                                marginLeft: 8,
                               }}
                             >
-                              <Text
-                                style={{
-                                  fontSize: 14,
-                                  fontWeight: "500",
-                                }}
-                              >
-                                {"Consultant Name"}
-                              </Text>
-                            </View>
-
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                width: "60%",
+                              Leads Allocated
+                            </Text>
+                            <SourceModelView
+                              style={{ alignSelf: "flex-end" }}
+                              onClick={() => {
+                                navigation.navigate("RECEP_SOURCE_MODEL", {
+                                  empId: userData.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId: userData.empId,
+                                  orgId: userData.orgId,
+                                  role: userData.hrmsRole,
+                                });
                               }}
-                            >
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Enq"}
-                              </Text>
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Bkg"}
-                              </Text>
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Retail"}
-                              </Text>
-                              <Text
-                                style={{ ...styles.txt4, width: "25%" }}
-                                numberOfLines={2}
-                              >
-                                {"Lost"}
-                              </Text>
-                            </View>
+                            />
                           </View>
+                          {/* todo */}
                           <FlatList
-                            data={selector.receptionistData.consultantList}
-                            style={{ marginTop: 10 }}
-                            nestedScrollEnabled
-                            renderItem={({ item }) => {
-                              Array.prototype.random = function () {
-                                return this[
-                                  Math.floor(Math.random() * this.length)
-                                ];
-                              };
-                              let selectedColor = color.random();
-                              return (
-                                <View style={styles.view16}>
-                                  <View style={styles.view17}>
-                                    <Text numberOfLines={1}>
-                                      {item?.emp_name}
+                            data={data}
+                            bounces={false}
+                            renderItem={({ item, index }) =>
+                              renderItem(item, index)
+                            }
+                            contentContainerStyle={{ width: "100%" }}
+                          />
+                        </View>
+                      )}
+
+                      {/* CRM exisiting code start */}
+                      {!CRMRole.includes(userData.hrmsRole) && (
+                        <>
+                          <View style={styles.view14}>
+                            <SourceModelView
+                              style={{ alignSelf: "flex-end" }}
+                              onClick={() => {
+                                navigation.navigate("RECEP_SOURCE_MODEL", {
+                                  empId: userData.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId: userData.empId,
+                                  orgId: userData.orgId,
+                                  role: userData.hrmsRole,
+                                });
+                              }}
+                            />
+                          </View>
+                          <ScrollView showsVerticalScrollIndicator={false}>
+                            <View style={styles.recBoxContainer}>
+                              <View style={styles.view15}>
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "35%",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      fontWeight: "500",
+                                    }}
+                                  >
+                                    {"Consultant Name"}
+                                  </Text>
+                                </View>
+
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    width: "60%",
+                                  }}
+                                >
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Enq"}
+                                  </Text>
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Bkg"}
+                                  </Text>
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Retail"}
+                                  </Text>
+                                  <Text
+                                    style={{ ...styles.txt4, width: "25%" }}
+                                    numberOfLines={2}
+                                  >
+                                    {"Lost"}
+                                  </Text>
+                                </View>
+                              </View>
+                              <FlatList
+                                data={selector.receptionistData.consultantList}
+                                style={{ marginTop: 10 }}
+                                nestedScrollEnabled
+                                renderItem={({ item }) => {
+                                  Array.prototype.random = function () {
+                                    return this[
+                                      Math.floor(Math.random() * this.length)
+                                    ];
+                                  };
+                                  let selectedColor = color.random();
+                                  return (
+                                    <View style={styles.view16}>
+                                      <View style={styles.view17}>
+                                        <Text numberOfLines={1}>
+                                          {item?.emp_name}
+                                        </Text>
+                                      </View>
+                                      <View style={styles.view18}>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              item?.enquiryCount > 0 &&
+                                                navigateToEMS("ENQUIRY", "", [
+                                                  item.emp_id,
+                                                ]);
+                                            }}
+                                            style={{
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.enquiryCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
+                                            }}
+                                          >
+                                            {item?.enquiryCount}
+                                          </Text>
+                                        </View>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              item?.bookingCount > 0 &&
+                                                navigateToEMS("BOOKING", "", [
+                                                  item.emp_id,
+                                                ]);
+                                            }}
+                                            style={{
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.bookingCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
+                                            }}
+                                          >
+                                            {item?.bookingCount}
+                                          </Text>
+                                        </View>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              item?.retailCount > 0 &&
+                                                navigateToEMS(
+                                                  "INVOICECOMPLETED",
+                                                  "",
+                                                  [item.emp_id]
+                                                );
+                                            }}
+                                            style={{
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.retailCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
+                                            }}
+                                          >
+                                            {item?.retailCount}
+                                          </Text>
+                                        </View>
+                                        <View
+                                          style={{
+                                            minWidth: 45,
+                                            height: 25,
+                                            borderColor: Colors.GRAY,
+                                            borderWidth: 1,
+                                            borderRadius: 8,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <Text
+                                            onPress={() => {
+                                              navigateToDropLostCancel([
+                                                item.emp_id,
+                                              ]);
+                                            }}
+                                            style={{
+                                              padding: 2,
+                                              textDecorationLine:
+                                                item?.droppedCount > 0
+                                                  ? "underline"
+                                                  : "none",
+                                              color: Colors.PINK,
+                                            }}
+                                          >
+                                            {item?.droppedCount}
+                                          </Text>
+                                        </View>
+                                      </View>
+                                    </View>
+                                  );
+                                }}
+                              />
+                              <View style={styles.view16}>
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "35%",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 15,
+                                      fontWeight: "600",
+                                      color: "#00b1ff",
+                                    }}
+                                  >
+                                    {"          Total"}
+                                  </Text>
+                                </View>
+                                <View style={styles.view18}>
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .enquirysCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToEMS(
+                                            "ENQUIRY",
+                                            "",
+                                            empIdArry
+                                          );
+                                        }
+                                      }}
+                                      style={{
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .enquirysCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
+                                      }}
+                                    >
+                                      {selector.receptionistData.enquirysCount}
                                     </Text>
                                   </View>
-                                  <View style={styles.view18}>
-                                    <View
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .bookingsCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToEMS(
+                                            "BOOKING",
+                                            "",
+                                            empIdArry
+                                          );
+                                        }
+                                      }}
                                       style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .bookingsCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
                                       }}
                                     >
-                                      <Text
-                                        onPress={() => {
-                                          item?.enquiryCount > 0 &&
-                                            navigateToEMS();
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            item?.enquiryCount > 0
-                                              ? "underline"
-                                              : "none",
-                                        }}
-                                      >
-                                        {item?.enquiryCount}
-                                      </Text>
-                                    </View>
-                                    <View
+                                      {selector.receptionistData.bookingsCount}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .RetailCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToEMS(
+                                            "INVOICECOMPLETED",
+                                            "",
+                                            empIdArry
+                                          );
+                                        }
+                                      }}
                                       style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .RetailCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
                                       }}
                                     >
-                                      <Text
-                                        onPress={() => {
-                                          item?.bookingCount > 0 &&
-                                            navigateToEMS();
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            item?.bookingCount > 0
-                                              ? "underline"
-                                              : "none",
-                                        }}
-                                      >
-                                        {item?.bookingCount}
-                                      </Text>
-                                    </View>
-                                    <View
+                                      {selector.receptionistData.RetailCount}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.view20}>
+                                    <Text
+                                      onPress={() => {
+                                        if (
+                                          selector.receptionistData
+                                            .totalLostCount > 0
+                                        ) {
+                                          let empIdArry = [];
+                                          const temp =
+                                            selector.receptionistData.consultantList.map(
+                                              (item) => {
+                                                empIdArry.push(item.emp_id);
+                                              }
+                                            );
+                                          navigateToDropLostCancel([
+                                            ...empIdArry,
+                                          ]);
+                                        }
+                                      }}
                                       style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
+                                        padding: 2,
+                                        textDecorationLine:
+                                          selector.receptionistData
+                                            .totalLostCount > 0
+                                            ? "underline"
+                                            : "none",
+                                        color: Colors.PINK,
                                       }}
                                     >
-                                      <Text
-                                        onPress={() => {
-                                          item?.retailCount > 0 &&
-                                            navigateToEMS();
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            item?.retailCount > 0
-                                              ? "underline"
-                                              : "none",
-                                        }}
-                                      >
-                                        {item?.retailCount}
-                                      </Text>
-                                    </View>
-                                    <View
-                                      style={{
-                                        minWidth: 45,
-                                        height: 25,
-                                        borderColor: Colors.RED,
-                                        borderWidth: 1,
-                                        borderRadius: 8,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                      }}
-                                    >
-                                      <Text
-                                        onPress={() => {
-                                          navigateToDropLostCancel();
-                                        }}
-                                        style={{
-                                          padding: 2,
-                                          textDecorationLine:
-                                            item?.droppedCount > 0
-                                              ? "underline"
-                                              : "none",
-                                        }}
-                                      >
-                                        {item?.droppedCount}
-                                      </Text>
-                                    </View>
+                                      {selector.receptionistData.totalLostCount}
+                                    </Text>
                                   </View>
                                 </View>
-                              );
-                            }}
-                          />
-                          <View style={styles.view16}>
-                            <View
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                width: "35%",
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 15,
-                                  fontWeight: "600",
-                                  color: "#00b1ff",
-                                }}
-                              >
-                                {"          Total"}
-                              </Text>
-                            </View>
-                            <View style={styles.view18}>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    selector.receptionistData.enquirysCount >
-                                      0 && navigateToEMS();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.enquirysCount >
-                                      0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.enquirysCount}
-                                </Text>
-                              </View>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    navigateToDropLostCancel();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.bookingsCount >
-                                      0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.bookingsCount}
-                                </Text>
-                              </View>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    selector.receptionistData.RetailCount > 0 &&
-                                      navigateToEMS();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.RetailCount > 0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.RetailCount}
-                                </Text>
-                              </View>
-                              <View style={styles.view20}>
-                                <Text
-                                  onPress={() => {
-                                    navigateToDropLostCancel();
-                                  }}
-                                  style={{
-                                    padding: 2,
-                                    textDecorationLine:
-                                      selector.receptionistData.totalLostCount >
-                                      0
-                                        ? "underline"
-                                        : "none",
-                                  }}
-                                >
-                                  {selector.receptionistData.totalLostCount}
-                                </Text>
                               </View>
                             </View>
-                          </View>
-                        </View>
-                        <View style={styles.view21}>
-                          <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text style={styles.txt5}>E2B</Text>
-                            {selector.receptionistData.bookingsCount !== null &&
-                            selector.receptionistData.enquirysCount !== null ? (
-                              <Text
-                                style={{
-                                  color:
-                                    Math.floor(
-                                      (parseInt(
-                                        selector.receptionistData.bookingsCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    ) > 40
-                                      ? "#14ce40"
-                                      : "#ff0000",
-                                  fontSize: 12,
-                                  marginRight: 4,
-                                }}
+                            <View style={styles.view21}>
+                              <View
+                                style={{ ...styles.statWrap, width: "33%" }}
                               >
-                                {parseInt(
-                                  selector.receptionistData.bookingsCount
-                                ) === 0 ||
-                                parseInt(
-                                  selector.receptionistData.enquirysCount
-                                ) === 0
-                                  ? 0
-                                  : Math.round(
-                                      (parseInt(
-                                        selector.receptionistData.bookingsCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    )}
-                                %
-                              </Text>
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#ff0000",
-                                  fontSize: 12,
-                                }}
+                                <Text style={styles.txt5}>E2B</Text>
+                                {selector.receptionistData.bookingsCount !==
+                                  null &&
+                                selector.receptionistData.enquirysCount !==
+                                  null ? (
+                                  <Text
+                                    style={{
+                                      color:
+                                        Math.floor(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .bookingsCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                            100
+                                        ) > 40
+                                          ? "#14ce40"
+                                          : "#ff0000",
+                                      fontSize: 12,
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {parseInt(
+                                      selector.receptionistData.bookingsCount
+                                    ) === 0 ||
+                                    parseInt(
+                                      selector.receptionistData.enquirysCount
+                                    ) === 0
+                                      ? 0
+                                      : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .bookingsCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                            100
+                                        )}
+                                    %
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#ff0000",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    0%
+                                  </Text>
+                                )}
+                              </View>
+                              <View
+                                style={{ ...styles.statWrap, width: "33%" }}
                               >
-                                0%
-                              </Text>
-                            )}
-                          </View>
-                          <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text style={styles.txt6}>B2R</Text>
-                            {selector.receptionistData.bookingsCount !== null &&
-                            selector.receptionistData.RetailCount !== null ? (
-                              <Text
-                                style={{
-                                  color:
-                                    Math.floor(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .bookingsCount
-                                        )) *
-                                        100
-                                    ) > 40
-                                      ? "#14ce40"
-                                      : "#ff0000",
-                                  fontSize: 12,
-                                  marginRight: 4,
-                                }}
+                                <Text style={styles.txt6}>B2R</Text>
+                                {selector.receptionistData.bookingsCount !==
+                                  null &&
+                                selector.receptionistData.RetailCount !==
+                                  null ? (
+                                  <Text
+                                    style={{
+                                      color:
+                                        Math.floor(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .bookingsCount
+                                            )) *
+                                            100
+                                        ) > 40
+                                          ? "#14ce40"
+                                          : "#ff0000",
+                                      fontSize: 12,
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {parseInt(
+                                      selector.receptionistData.RetailCount
+                                    ) === 0 ||
+                                    parseInt(
+                                      selector.receptionistData.bookingsCount
+                                    ) === 0
+                                      ? 0
+                                      : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .bookingsCount
+                                            )) *
+                                            100
+                                        )}
+                                    %
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#ff0000",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    0%
+                                  </Text>
+                                )}
+                              </View>
+                              <View
+                                style={{ ...styles.statWrap, width: "33%" }}
                               >
-                                {parseInt(
-                                  selector.receptionistData.RetailCount
-                                ) === 0 ||
-                                parseInt(
-                                  selector.receptionistData.bookingsCount
-                                ) === 0
-                                  ? 0
-                                  : Math.round(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .bookingsCount
-                                        )) *
-                                        100
-                                    )}
-                                %
-                              </Text>
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#ff0000",
-                                  fontSize: 12,
-                                }}
-                              >
-                                0%
-                              </Text>
-                            )}
-                          </View>
-                          <View style={{ ...styles.statWrap, width: "33%" }}>
-                            <Text style={styles.txt6}>E2R</Text>
-                            {selector.receptionistData.enquirysCount !== null &&
-                            selector.receptionistData.RetailCount !== null ? (
-                              <Text
-                                style={{
-                                  color:
-                                    Math.floor(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    ) > 40
-                                      ? "#14ce40"
-                                      : "#ff0000",
-                                  fontSize: 12,
-                                  marginRight: 4,
-                                }}
-                              >
-                                {parseInt(
-                                  selector.receptionistData.enquirysCount
-                                ) === 0 ||
-                                parseInt(
-                                  selector.receptionistData.RetailCount
-                                ) === 0
-                                  ? 0
-                                  : Math.round(
-                                      (parseInt(
-                                        selector.receptionistData.RetailCount
-                                      ) /
-                                        parseInt(
-                                          selector.receptionistData
-                                            .enquirysCount
-                                        )) *
-                                        100
-                                    )}
-                                %
-                              </Text>
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#ff0000",
-                                  fontSize: 12,
-                                }}
-                              >
-                                0%
-                              </Text>
-                            )}
-                          </View>
-                        </View>
-                      </ScrollView>
+                                <Text style={styles.txt6}>E2R</Text>
+                                {selector.receptionistData.enquirysCount !==
+                                  null &&
+                                selector.receptionistData.RetailCount !==
+                                  null ? (
+                                  <Text
+                                    style={{
+                                      color:
+                                        Math.floor(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                            100
+                                        ) > 40
+                                          ? "#14ce40"
+                                          : "#ff0000",
+                                      fontSize: 12,
+                                      marginRight: 4,
+                                    }}
+                                  >
+                                    {parseInt(
+                                      selector.receptionistData.enquirysCount
+                                    ) === 0 ||
+                                    parseInt(
+                                      selector.receptionistData.RetailCount
+                                    ) === 0
+                                      ? 0
+                                      : Math.round(
+                                          (parseInt(
+                                            selector.receptionistData
+                                              .RetailCount
+                                          ) /
+                                            parseInt(
+                                              selector.receptionistData
+                                                .enquirysCount
+                                            )) *
+                                            100
+                                        )}
+                                    %
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#ff0000",
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    0%
+                                  </Text>
+                                )}
+                              </View>
+                            </View>
+                          </ScrollView>
+                        </>
+                      )}
+
+                      {/* CRM exisiting code end */}
                     </>
                   ) : null}
                 </>
@@ -3175,6 +3685,7 @@ const TargetScreen = ({ route }) => {
                           type={togglePercentage}
                           navigation={navigation}
                           moduleType={"home"}
+                          userData={userData}
                         />
                       </View>
                     </>
@@ -3587,6 +4098,8 @@ export const RenderLevel1NameView = ({
   disable = false,
   receptionManager = false,
   stopLocation = false,
+  teamLoader = false,
+  teamMember = "",
 }) => {
   return (
     <View
@@ -3601,29 +4114,50 @@ export const RenderLevel1NameView = ({
       <View
         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
       >
-        <TouchableOpacity
-          disabled={disable}
-          style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-          onPress={titleClick}
-        >
-          <Text
+        {teamLoader && teamMember === item?.empName ? (
+          <View
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Lottie
+              source={require("../../../../assets/Animations/lf20_qispmsyg.json")}
+              autoPlay
+              loop
+            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            disabled={disable}
+            style={{
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+            onPress={titleClick}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+        )}
         {/* {level === 0 && !!branchName && ( */}
         {branchName ? (
           <TouchableOpacity
@@ -3897,7 +4431,7 @@ const styles = StyleSheet.create({
   txt4: {
     fontSize: 13,
     fontWeight: "500",
-    textAlign: "center"
+    textAlign: "center",
   },
   view16: {
     flexDirection: "row",
@@ -3958,5 +4492,21 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: Colors.WHITE,
+  },
+  scondView: {
+    flexDirection: "column",
+    marginHorizontal: 10,
+  },
+  txt10: {
+    fontSize: 16,
+    color: Colors.BLACK,
+    fontWeight: "600",
+    textDecorationLine: "underline",
+  },
+  newView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 10,
+    marginRight: 10,
   },
 });

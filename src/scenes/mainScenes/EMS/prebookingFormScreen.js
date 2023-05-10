@@ -76,6 +76,8 @@ import {
   getRulesConfiguration,
   getOtherPricesDropDown,
   getEnquiryTypesApi,
+  postEvalutionApi,
+  postFinanaceApi,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -291,6 +293,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     isSelfManager: "",
     isTracker: "",
     branchId: 0,
+    approverId: ""
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -408,6 +411,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
   const [receiptDocModel, setReceiptDocModel] = useState(false);
+  const [isVip, setIsVip] = useState(null);
+  const [isHni, setIsHni] = useState(null);
 
   // Edit buttons shows
   useEffect(() => {
@@ -418,7 +423,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ) {
       const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
       let isEditFlag = false;
-
+      setIsVip(
+        selector.pre_booking_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
+      setIsHni(
+        selector.pre_booking_details_response.dmsLeadDto.isHni === "Y"
+          ? true
+          : false
+      );
       if (
         uploadedImagesDataObj.receipt &&
         uploadedImagesDataObj.receipt.fileName
@@ -636,6 +650,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       isSelfManager: "",
       isTracker: "",
       branchId: 0,
+      approverId: ""
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -1063,6 +1078,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
         branchId: jsonObj.branchId,
+        approverId: jsonObj.approverId
       });
 
       const payload = {
@@ -1564,7 +1580,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Buyer_Type_Data]);
         break;
       case "CUSTOMER_TYPE":
-          if (selector.customer_types_data?.length === 0) {
+        if (selector.customer_types_data?.length === 0) {
           showToast("No Customer Types found");
           return;
         }
@@ -1822,6 +1838,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     return false;
   };
+
+  const postEvalutionForm = () => {
+    // todo manthan
+    if (selector.buyer_type.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = () => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
 
   const submitClicked = async () => {
     Keyboard.dismiss();
@@ -2248,6 +2291,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
+    postEvalutionForm();
+    postFinanceForm();
     if (isEdit) {
       setIsLoading(true);
       Promise.all([
@@ -2326,6 +2371,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dmsLeadDto.lastName = selector.last_name;
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.email = selector.email;
+      dmsLeadDto.isVip = isVip ? "Y" : "N";
+      dmsLeadDto.isHni = isHni ? "Y" : "N";
       dmsLeadDto.model =
         selectedModel.length > 0 ? selectedModel[0].model : selector.model;
       const employeeData = await AsyncStore.getData(
@@ -2935,7 +2982,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToast("Please upload receipt doc");
           return;
         }
-
+        
         const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
         let paymentDate = "";
         if (paymentMode === "InternetBanking") {
@@ -3021,6 +3068,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     payload.paymentName = "Booking Advance Amount";
     payload.amount = bookingAmount;
     payload.leadId = leadId;
+    payload.receiptDate = convertDateStringToMilliseconds(new Date());
 
     const finalPayload = [payload];
     dispatch(postBookingAmountApi(finalPayload));
@@ -3181,6 +3229,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
     dmsLeadDto.leadStage = "BOOKING";
     dmsLeadDto.referencenumber = refNumber;
+    dmsLeadDto.dmsAttachments = mapDmsAttachments([]);
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
@@ -4118,6 +4167,90 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     },
                   ]}
                 ></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    disabled={!isInputsEditable()}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    disabled={!isInputsEditable()}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={[GlobalStyle.underline]}></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is HNI?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isHni}
+                    disabled={!isInputsEditable()}
+                    onPress={() => setIsHni(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    disabled={!isInputsEditable()}
+                    status={isHni === null ? false : !isHni}
+                    onPress={() => setIsHni(false)}
+                  />
+                </View>
+                <Text style={[GlobalStyle.underline]}></Text>
                 {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
                     <DateSelectItem
@@ -5699,6 +5832,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <TextInput
                       editable={isInputsEditable()}
                       value={taxPercent}
+                      maxLength={2}
                       style={[
                         {
                           fontSize: 14,
@@ -5708,6 +5842,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             : Colors.GRAY,
                         },
                       ]}
+                      maxLength={5}
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         setTaxPercent(text);
@@ -6844,6 +6979,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <View>
+                    <DateSelectItem
+                      label={"Receipt Date*"}
+                      value={moment().format("DD/MM/YYYY")}
+                      onPress={() => dispatch(setDatePicker("RECEIPT_DATE"))}
+                      disabled={true}
+                    />
+                    <Text style={GlobalStyle.underline} />
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Receipt Doc*"}
@@ -7655,7 +7797,7 @@ const styles = StyleSheet.create({
   },
   chooseTitleText: {
     marginTop: 15,
-    alignSelf: "center"
+    alignSelf: "center",
   },
   photoOptionBtn: {
     borderRadius: 5,

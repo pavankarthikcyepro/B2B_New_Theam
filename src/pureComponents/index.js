@@ -1,5 +1,5 @@
 
-import { RadioTextItem } from "./radioTextItem";
+import { RadioTextItem, RadioTextItem2 } from "./radioTextItem";
 import { CustomerAccordianHeaderItem } from "./customerAccordianHeaderItem";
 import { ImageSelectItem } from "./imageSelectItem";
 import { DateSelectItem, NumberInput } from "./dateSelectItem";
@@ -32,4 +32,5 @@ export {
   DropDownSelectionItemV2,
   DropDownSelectionItemV3,
   NumberInput,
+  RadioTextItem2,
 };

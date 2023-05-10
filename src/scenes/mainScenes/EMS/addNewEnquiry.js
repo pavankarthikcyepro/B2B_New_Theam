@@ -83,6 +83,8 @@ import {
   clearState2,
   getEventConfigList,
   getEnquiryTypesApi,
+  postEvalutionApi,
+  postFinanaceApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -289,6 +291,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
+    approverId:""
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -333,6 +336,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
+  const [isVip, setIsVip] = useState(null);
+  const [isHni, setIsHni] = useState(null);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -393,6 +399,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       employeeName: "",
       isSelfManager: "",
       isTracker: "",
+      approverId:""
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -544,7 +551,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
+        approverId: jsonObj.approverId
       });
+      
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
@@ -692,6 +701,33 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
     );
   };
+
+  const postEvalutionForm = (universalId)=>{
+    // todo manthan
+    if (selector.buyer_type.length !== 0){
+      let payload = {
+        "universalId":universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = (universalId) => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
 
   useEffect(() => {
     try {
@@ -1045,6 +1081,14 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please fill Sub Source Of Enquiry");
       return;
     }
+    if (isVip === null) {
+      showToast("Please select VIP");
+      return;
+    }
+    if (isHni === null) {
+      showToast("Please select HNI");
+      return;
+    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1382,6 +1426,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             companyName: selector.company_name,
           },
           dmsLeadDto: {
+            isVip: isVip ? "Y" : "N",
+            isHni: isHni ? "Y" : "N",
             branchId: jsonObj.branchs[0]?.branchId,
             createdBy: jsonObj.empName,
             enquirySegment: selector.enquiry_segment,
@@ -1628,7 +1674,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
         // if aadhar number
         if (!aadharArr.length && selector.adhaar_number) {
-         let newObj = {
+          let newObj = {
             ...dmsAttachmentsObj,
             documentNumber: selector.adhaar_number,
             documentType: "aadhar",
@@ -1666,6 +1712,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               displayCreateEnquiryLeadAlert(
                 json?.dmsEntity?.leadCustomerReference?.referencenumber
               );
+              postEvalutionForm(json?.dmsEntity?.dmsLeadDto?.crmUniversalId);
+              postFinanceForm(json?.dmsEntity?.dmsLeadDto?.crmUniversalId);
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
@@ -1682,6 +1730,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               displayCreateEnquiryLeadAlert(
                 json1?.dmsEntity?.leadCustomerReference?.referencenumber
               );
+              postEvalutionForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId);
+              postFinanceForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId)
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
@@ -4094,7 +4144,86 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   }
                   isDropDownIconShow={false}
                 />
-
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is HNI?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isHni}
+                    onPress={() => setIsHni(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isHni === null ? false : !isHni}
+                    onPress={() => setIsHni(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
                   value={selector.buyer_type}

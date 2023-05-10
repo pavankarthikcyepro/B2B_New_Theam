@@ -81,27 +81,52 @@ const AttendanceFromSelf = ({
   const [DealerCodes, setDealerCodes] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedDealerCode, setSelectedDealerCode] = useState("");
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const date = new Date();
+    const hour = date.getHours();
+
+    if (hour >= 5 && hour < 12) {
+      setGreeting("Good Morning");
+    } else if (hour >= 12 && hour < 18) {
+      setGreeting("Good Afternoon");
+    } else {
+      setGreeting("Good Evening");
+    }
+  }, []);
+
 
   useEffect(async () => {
-    if (selector.filter_drop_down_data) {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        setDropDownData(selector.filter_drop_down_data);
-        var vals = jsonObj.branchs.map(function (a) {
-          return a.branchName;
-        });
-        let branchs = selector.filter_drop_down_data[
-          "Dealer Code"
-        ]?.sublevels?.filter((i) => vals.includes(i.name) == true);
-        setDealerCodes(
-          selector.filter_drop_down_data["Dealer Code"]?.sublevels
-        );
-        setLocation(selector.filter_drop_down_data["Location"]?.sublevels);
-      }
+    try {
+         if (selector.filter_drop_down_data) {
+           let employeeData = await AsyncStore.getData(
+             AsyncStore.Keys.LOGIN_EMPLOYEE
+           );
+           if (employeeData) {
+             const jsonObj = JSON.parse(employeeData);
+             const response = await client.get(
+               URL.ORG_HIRARCHY2(jsonObj.orgId, jsonObj.empId)
+             );
+             const json = await response.json();
+              if (json) {
+                 setDropDownData(json);
+                 var vals = jsonObj.branchs.map(function (a) {
+                   return a.branchName;
+                 });
+                 let branchs = json["Dealer Code"]?.sublevels?.filter(
+                   (i) => vals.includes(i.name) == true
+                 );
+                 setDealerCodes(json["Dealer Code"]?.sublevels);
+                 setLocation(json["Location"]?.sublevels);
+              }
+            
+           }
+         }
+    } catch (error) {
+      
     }
+ 
   }, [selector.filter_drop_down_data]);
 
   useEffect(() => {
@@ -419,13 +444,7 @@ const AttendanceFromSelf = ({
                 {"Hi, " + userData.empName}
               </Text>
               {}
-              <Text style={styles.greetingText}>
-                {isBetween
-                  ? "Good Morning,"
-                  : isAfterNoon
-                  ? "Good Afternoon,"
-                  : "Good Evening,"}
-              </Text>
+              <Text style={styles.greetingText}>{greeting}</Text>
               {present || !active ? (
                 <Text style={styles.greetingText}>
                   {!punched
@@ -470,8 +489,8 @@ const AttendanceFromSelf = ({
                   onChange={(item) => {
                     setSelectedLocation(item);
                   }}
-                  data={location || []}
-                  value={selectedLocation ? selectedLocation.name : ""}
+                  data={location}
+                  value={selectedLocation}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Location"}
@@ -479,20 +498,19 @@ const AttendanceFromSelf = ({
                   placeholderStyle={{
                     color: Colors.GRAY,
                   }}
+                  selectedTextStyle={styles.selectedTextStyle}
                 />
                 <Dropdown
                   label={"Dealer Code"}
-                  value={selectedDealerCode ? selectedDealerCode.name : ""}
+                  value={selectedDealerCode}
                   visible={true}
                   underLine
                   onChange={(item) => {
                     setSelectedDealerCode(item);
                   }}
-                  data={
-                    DealerCodes.filter(
-                      (i) => i.refParentId == selectedLocation.id
-                    ) || []
-                  }
+                  data={DealerCodes.filter(
+                    (i) => i?.refParentId == selectedLocation?.id
+                  )}
                   labelField={"name"}
                   valueField={"name"}
                   placeholder={"Dealer Code"}
@@ -500,6 +518,7 @@ const AttendanceFromSelf = ({
                   placeholderStyle={{
                     color: Colors.GRAY,
                   }}
+                  selectedTextStyle={styles.selectedTextStyle}
                 />
               </View>
             )}
@@ -844,13 +863,15 @@ const styles = StyleSheet.create({
     height: 50,
     width: "40%",
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: "500",
     backgroundColor: Colors.WHITE,
     marginTop: 10,
     borderRadius: 6,
-    padding: 15,
+    paddingVertical: 15,
+    paddingHorizontal:15,
     color: Colors.BLACK,
     borderBottomColor: Colors.BLACK,
     borderBottomWidth: 1,
+    zIndex:1555
   },
 });

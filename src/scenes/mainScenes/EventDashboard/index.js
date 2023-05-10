@@ -269,7 +269,7 @@ const EventDashBoardScreen = ({ route, navigation }) => {
       });
       const payload = {
         orgId: jsonObj.orgId,
-        branchId: jsonObj.branchId,
+        empId: jsonObj.empId,
       };
       setHeaderText(jsonObj.empName);
       const dateFormat = "YYYY-MM-DD";

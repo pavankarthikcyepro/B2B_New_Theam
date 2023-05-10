@@ -13,6 +13,11 @@ const ACCESSORIES = require("./Icons/accessories.png");
 const LEAD_ALLOCATION = require("./Icons/lead_allocation.png");
 const LOCATION_PIN = require("./images/local.png");
 const LOCATION_PIN2 = require("./images/local2.png");
+const VIP_ICON = require("./Icons/vip-pass.png");
+const VIP_ICON2 = require("./Icons/crown.png");
+const VIP_ICON3 = require("./Icons/VIPGrey.png");
+const VIP_ICON4 = require("./Icons/VIPGold.png");
+const VIP_ICON5 = require("./Icons/VIPLogo.png");
 
 export {
   DOWN_ARROW,
@@ -30,4 +35,9 @@ export {
   LEAD_ALLOCATION,
   LOCATION_PIN,
   LOCATION_PIN2,
+  VIP_ICON,
+  VIP_ICON2,
+  VIP_ICON3,
+  VIP_ICON4,
+  VIP_ICON5,
 };

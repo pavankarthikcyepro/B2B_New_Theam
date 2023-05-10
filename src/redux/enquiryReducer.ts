@@ -1,29 +1,32 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
-import { client } from '../networking/client';
+import { client } from "../networking/client";
 
-export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (payload, { rejectWithValue }) => {
+export const getEnquiryList = createAsyncThunk(
+  "ENQUIRY/getEnquiryList",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
+    const json = await response.json();
 
-  const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
-  const json = await response.json()
-
-  if (!response.ok) {
-    return rejectWithValue(json);
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList", async (payload, { rejectWithValue }) => {
+export const getMoreEnquiryList = createAsyncThunk(
+  "ENQUIRY/getMoreEnquiryList",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
 
-  const response = await client.post(URL.GET_LEAD_LIST_2(), payload);
-  
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
-
+);
 
 export const getLeadsList = createAsyncThunk(
   "ENQUIRY/getLeadsList",
@@ -42,6 +45,114 @@ export const getLeadsList = createAsyncThunk(
   }
 );
 
+
+export const getLeadsListReceptionist = createAsyncThunk(
+  "ENQUIRY/getLeadsListReceptionist",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LEAD_LIST_RECEPTINOST();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+
+export const getLeadsListXrole = createAsyncThunk(
+  "ENQUIRY/getLeadsListXrole",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LEAD_LIST_XROLE();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+
+export const getLiveleadsReceptinoist = createAsyncThunk(
+  "ENQUIRY/getLiveleadsReceptinoist",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LIVE_LEAD_LIST_RECEPTINOST();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getLiveleadsReceptinoistManager = createAsyncThunk(
+  "ENQUIRY/getLiveleadsReceptinoistManager",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LIVE_LEAD_LIST_RECEPTINOST_MANAGER();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getSalesHomeDashbaordRedirections = createAsyncThunk(
+  "ENQUIRY/getSalesHomeDashbaordRedirections",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_SALES_DASHBOARD_LEADS();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+export const getLeadsListCRM = createAsyncThunk(
+  "ENQUIRY/getLeadsListCRM",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LEAD_LIST_CRM();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const enquirySlice = createSlice({
   name: "ENQUIRY",
   initialState: {
@@ -51,35 +162,40 @@ const enquirySlice = createSlice({
     isLoading: false,
     isLoadingExtraData: false,
     status: "",
-    leadList:[],
-    leadList_status:"",
-    leadList_totoalElemntData: []
+    leadList: [],
+    leadList_status: "",
+    leadList_totoalElemntData: [],
+    updateCount: "",
   },
   reducers: {
     clearEnqState: (state, action) => {
-      state.enquiry_list =  [],
-      state.pageNumber =  0,
-      state.totalPages =  1,
-      state.isLoading =  false,
-      state.isLoadingExtraData =  false,
-      state.status =  "",
-      state.leadList = [],
-        state.leadList_status = "",
-        state.leadList_totoalElemntData = []
+      (state.enquiry_list = []),
+        (state.pageNumber = 0),
+        (state.totalPages = 1),
+        (state.isLoading = false),
+        (state.isLoadingExtraData = false),
+        (state.status = ""),
+        (state.leadList = []),
+        (state.leadList_status = ""),
+        (state.leadList_totoalElemntData = []),
+        (state.updateCount = "")
+    },
+    updateTheCount: (state, action) => {
+      state.updateCount = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryList.pending, (state) => {
-      state.totalPages = 1
-      state.pageNumber = 0
-      state.enquiry_list = []
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.enquiry_list = [];
       state.isLoading = true;
-    })
+    });
     builder.addCase(getEnquiryList.fulfilled, (state, action) => {
       const dmsEntityObj = action.payload?.dmsEntity;
-      state.totalPages = 1
-      state.pageNumber = 0
-      state.enquiry_list = []
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.enquiry_list = [];
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
@@ -87,23 +203,23 @@ const enquirySlice = createSlice({
       }
       state.isLoading = false;
       state.status = "sucess";
-    })
+    });
     builder.addCase(getEnquiryList.rejected, (state, action) => {
-      state.totalPages = 1
-      state.pageNumber = 0
-      state.enquiry_list = []
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.enquiry_list = [];
       state.isLoading = false;
       state.status = "failed";
-    })
+    });
     builder.addCase(getMoreEnquiryList.pending, (state) => {
       // state.totalPages = 1
       // state.pageNumber = 0
       state.isLoadingExtraData = true;
-    })
+    });
     builder.addCase(getMoreEnquiryList.fulfilled, (state, action) => {
       const dmsEntityObj = action.payload?.dmsEntity;
-      state.totalPages = 1
-      state.pageNumber = 0
+      state.totalPages = 1;
+      state.pageNumber = 0;
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
@@ -112,36 +228,191 @@ const enquirySlice = createSlice({
       }
       state.status = "sucess";
       state.isLoadingExtraData = false;
-
-    })
+    });
     builder.addCase(getMoreEnquiryList.rejected, (state, action) => {
       state.isLoadingExtraData = false;
       state.status = "failed";
-    })
+    });
 
     builder.addCase(getLeadsList.pending, (state, action) => {
       state.leadList = [];
-      state.leadList_status ="pending";
+      state.leadList_status = "pending";
     });
     builder.addCase(getLeadsList.fulfilled, (state, action) => {
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
-      //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         const content = dmsEntityObj.leadDtoPage.content;
         state.leadList = content;
         state.leadList_totoalElemntData = action.payload;
         state.leadList_status = "success";
         // state.enquiry_list = [...state.enquiry_list, ...content];
       }
-    
     });
     builder.addCase(getLeadsList.rejected, (state, action) => {
       state.leadList = [];
       state.leadList_status = "rejected";
     });
+
+    builder.addCase(getLeadsListReceptionist.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLeadsListReceptionist.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    builder.addCase(getLeadsListReceptionist.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+
+    builder.addCase(getLeadsListXrole.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLeadsListXrole.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    builder.addCase(getLeadsListXrole.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLeadsListCRM.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLeadsListCRM.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    builder.addCase(getLeadsListCRM.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLiveleadsReceptinoist.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLiveleadsReceptinoist.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLiveleadsReceptinoist.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+
+    builder.addCase(getLiveleadsReceptinoistManager.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLiveleadsReceptinoistManager.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLiveleadsReceptinoistManager.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+
+
+    builder.addCase(getSalesHomeDashbaordRedirections.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getSalesHomeDashbaordRedirections.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getSalesHomeDashbaordRedirections.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    
+  
   }
 });
 
-export const { clearEnqState } = enquirySlice.actions;
+export const { clearEnqState, updateTheCount } = enquirySlice.actions;
 export default enquirySlice.reducer;

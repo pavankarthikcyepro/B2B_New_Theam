@@ -466,6 +466,33 @@ export const getOtherPricesDropDown = createAsyncThunk(
   }
 );
 
+
+export const postFinanaceApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postFinanaceApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_FINANCE(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const postEvalutionApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postEvalutionApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_EVALUTION(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -927,7 +954,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
-
           break;
         case "TRANSACTION_DATE":
           state.transaction_date = selectedDate;
@@ -1316,7 +1342,6 @@ const prebookingFormSlice = createSlice({
         tentativeDeliveryDate,
         "DD/MM/YYYY"
       );
-
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
     },

@@ -62,7 +62,7 @@ export const getMyTasksListApi = createAsyncThunk(
       onlyForEmp: true,
     };
 
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -80,7 +80,7 @@ export const getMyTeamsTasksListApi = createAsyncThunk(
       onlyForEmp: false,
     };
 
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -93,7 +93,7 @@ export const getMyTeamsTasksListApi = createAsyncThunk(
 export const getTodayMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getTodayMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -106,7 +106,7 @@ export const getTodayMyTasksListApi = createAsyncThunk(
 export const getUpcomingMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getUpcomingMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -119,7 +119,7 @@ export const getUpcomingMyTasksListApi = createAsyncThunk(
 export const getPendingMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -132,7 +132,7 @@ export const getPendingMyTasksListApi = createAsyncThunk(
 export const getRescheduleMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getRescheduleMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -145,7 +145,7 @@ export const getRescheduleMyTasksListApi = createAsyncThunk(
 export const getCompletedMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getCompletedMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -158,7 +158,7 @@ export const getCompletedMyTasksListApi = createAsyncThunk(
 export const getTodayTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getTodayTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -171,7 +171,7 @@ export const getTodayTeamTasksListApi = createAsyncThunk(
 export const getUpcomingTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getUpcomingTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -184,7 +184,7 @@ export const getUpcomingTeamTasksListApi = createAsyncThunk(
 export const getPendingTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -197,7 +197,7 @@ export const getPendingTeamTasksListApi = createAsyncThunk(
 export const getRescheduleTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getRescheduleTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -210,7 +210,7 @@ export const getRescheduleTeamTasksListApi = createAsyncThunk(
 export const getCompletedTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getCompletedTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -224,7 +224,7 @@ export const getOrganizationHierarchyList = createAsyncThunk(
   "MY_TASKS/getOrganizationHierarchyList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.get(
-      URL.ORG_HIRARCHY(payload.orgId, payload.branchId)
+      URL.ORG_HIRARCHY(payload.orgId, payload.empId)
     );
     const json = await response.json();
     if (!response.ok) {
@@ -301,6 +301,8 @@ export const mytaskSlice = createSlice({
     currentScreen: "",
     filter_drop_down_data: {},
     employees_drop_down_data: {},
+    employees_drop_down_data_Local: {},
+    filterSelectedData: {},
     filterIds: {
       dealerCodes: [],
       levelSelectedIds: [],
@@ -324,9 +326,16 @@ export const mytaskSlice = createSlice({
     updateEmpDropDown: (state, action) => {
       state.employees_drop_down_data = {};
     },
+    updateEmpDropDown_local: (state, action) => {
+      state.employees_drop_down_data_Local = {};
+    },
+    updateFilterSelectedData: (state, action) => {
+      state.filterSelectedData = action.payload;
+    },
     myTaskClearState: (state, action) => {
       state.filter_drop_down_data = {};
       state.employees_drop_down_data = {};
+      state.employees_drop_down_data_Local = {};
       state.filterIds = {
         dealerCodes: [],
         levelSelectedIds: [],
@@ -589,14 +598,17 @@ export const mytaskSlice = createSlice({
     builder
       .addCase(getEmployeesDropDownData.pending, (state, action) => {
         state.employees_drop_down_data = {};
+        state.employees_drop_down_data_Local = {};
       })
       .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
         if (action.payload) {
           state.employees_drop_down_data = action.payload;
+          state.employees_drop_down_data_Local = action.payload;
         }
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
         state.employees_drop_down_data = {};
+        state.employees_drop_down_data_Local = {};
       });
 
     // Task History rescheduled today
@@ -611,6 +623,6 @@ export const {
   updateFilterIds,
   updateCurrentScreen,
   updateEmpDropDown,
-  myTaskClearState,
+  myTaskClearState, updateEmpDropDown_local,updateFilterSelectedData
 } = mytaskSlice.actions;
 export default mytaskSlice.reducer;

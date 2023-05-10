@@ -87,6 +87,8 @@ import {
   updatedmsLeadProduct,
   clearState2,
   getEnquiryTypesApi,
+  postFinanaceApi,
+  postEvalutionApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -290,6 +292,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
+    approverId:""
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -328,6 +331,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [eventConfigRes, setEventConfigRes] = useState([]);
+  const [isVip, setIsVip] = useState(null);
+  const [isHni, setIsHni] = useState(null);
 
   // todo
   useLayoutEffect(() => {
@@ -551,6 +556,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
+        approverId: jsonObj.approverId
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -755,6 +761,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.enquiry_details_response) {
       setShowPreBookingBtn(false);
+      setIsVip(
+        selector.enquiry_details_response.dmsLeadDto.isVip === "Y"
+          ? true
+          : false
+      );
+      setIsHni(
+        selector.enquiry_details_response.dmsLeadDto.isHni === "Y"
+          ? true
+          : false
+      );
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -1115,6 +1131,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return false;
   };
 
+  const postEvalutionForm = () => {
+    // todo manthan
+    if (selector.buyer_type.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = () => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
+
   const submitClicked = async () => {
     //Personal Intro
     setIsSubmitPress(true);
@@ -1135,6 +1178,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         scrollToPos(0);
         setOpenAccordian("2");
         showToast("Please select Gender");
+        setIsSubmitPress(false);
         return;
       }
     }
@@ -1143,6 +1187,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in firstname");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1150,6 +1195,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1157,6 +1203,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select enquiry segment");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1164,6 +1211,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select customer type");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1171,6 +1219,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please fill  Buyer type");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1195,6 +1244,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent pincode");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1202,12 +1252,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent Urban or Rural");
+      setIsSubmitPress(false);
       return;
     }
 
     if (checkModelSelection()) {
       scrollToPos(4);
       setOpenAccordian("4");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1220,6 +1272,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(4);
       setOpenAccordian("4");
       showToast("Select is Primary for atleast one vehicle");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1228,6 +1281,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(5);
       setOpenAccordian("5");
       showToast("Please fill required fields in Finance Details");
+      setIsSubmitPress(false);
       return;
     }
     // if (selector.retail_finance === "In House") {
@@ -1293,6 +1347,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         scrollToPos(8);
         setOpenAccordian("8");
         showToast("Please enter alphabetics only in color ");
+        setIsSubmitPress(false);
         return;
       }
     }
@@ -1306,6 +1361,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           scrollToPos(9);
           setOpenAccordian("9");
           showToast("Please enter alphabetics only in color ");
+          setIsSubmitPress(false);
           return;
         }
       }
@@ -1313,12 +1369,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         scrollToPos(9);
         setOpenAccordian("9");
         showToast("Please fill reg no is mandatory");
+        setIsSubmitPress(false);
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
         scrollToPos(9);
         setOpenAccordian("9");
         showToast("Please enter proper model other name");
+        setIsSubmitPress(false);
         return;
       }
 
@@ -1333,6 +1391,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             scrollToPos(9);
             setOpenAccordian("9");
             showToast("Please enter the proper Hypothication name");
+            setIsSubmitPress(false);
             return;
           }
         }
@@ -1341,6 +1400,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             scrollToPos(9);
             setOpenAccordian("9");
             showToast("Please enter the proper Hypothication branch");
+            setIsSubmitPress(false);
             return;
           }
         }
@@ -1353,6 +1413,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           scrollToPos(7);
           setOpenAccordian("7");
           showToast("please enter the validate Dealership name");
+          setIsSubmitPress(false);
           return;
         }
       }
@@ -1370,6 +1431,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(6);
       setOpenAccordian("6");
       showToast("Please enter proper PAN number");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1377,6 +1439,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(6);
       setOpenAccordian("6");
       showToast("Please enter proper Aadhaar number");
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1387,10 +1450,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       scrollToPos(6);
       setOpenAccordian("6");
       showToast("Please enter proper gstin number");
+      setIsSubmitPress(false);
       return;
     }
 
     if (!selector.enquiry_details_response) {
+      setIsSubmitPress(false);
       return;
     }
 
@@ -1412,7 +1477,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.dmsLeadProducts = carModelsList;
-
+      dmsLeadDto.isVip = isVip ? "Y" : "N";
+      dmsLeadDto.isHni = isHni ? "Y" : "N";
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
       dmsLeadDto.model = primaryModel[0].model;
 
@@ -1537,6 +1603,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    postEvalutionForm();
+    postFinanceForm();
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
@@ -2293,46 +2361,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.update_enquiry_details_response]);
 
-
   useEffect(() => {
-    if (leadStatus === "ENQUIRYCOMPLETED" &&
+    if (
+      leadStatus === "ENQUIRYCOMPLETED" &&
       leadStage === "ENQUIRY" &&
       carModelsList &&
-      carModelsList.length >0){
-      navigation.setOptions(
-        {
-         
-          headerRight: () => (
-            <TouchableOpacity
+      carModelsList.length > 0
+    ) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity
+            style={{
+              width: 110,
+              height: 30,
+              borderRadius: 15,
+              borderColor: Colors.RED,
+              borderWidth: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 5,
+              flexDirection: "row",
+            }}
+            onPress={() => {
+              navigateToProforma();
+            }}
+          >
+            <Text
               style={{
-                width: 110,
-                height: 30,
-                borderRadius: 15,
-                borderColor: Colors.RED,
-                borderWidth: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 5,
-                flexDirection: "row",
+                fontSize: 12,
+                fontWeight: "600",
+                color: "#fff",
+                marginLeft: 5,
               }}
-              onPress={()=>{navigateToProforma()}}
             >
-             
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color: "#fff",
-                  marginLeft: 5,
-                }}
-              >Proforma Invoice</Text>
-              {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
-            </TouchableOpacity>
-          ),
-        });
-      }
-  }, [leadStatus, carModelsList])
-  
+              Proforma Invoice
+            </Text>
+            {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [leadStatus, carModelsList]);
+
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
       let endUrl =
@@ -3264,7 +3334,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-
             {/* {leadStatus === "ENQUIRYCOMPLETED" &&
               leadStage === "ENQUIRY" &&
               carModelsList &&
@@ -3838,7 +3907,86 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                   isDropDownIconShow={false}
                 />
-
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is VIP?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isVip}
+                    onPress={() => setIsVip(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isVip === null ? false : !isVip}
+                    onPress={() => setIsVip(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    alignContent: "flex-start",
+                    paddingTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      marginLeft: 12,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    {"Is HNI?*"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    // height: 65,
+                    paddingLeft: 12,
+                    backgroundColor: Colors.WHITE,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={isHni}
+                    onPress={() => setIsHni(true)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={isHni === null ? false : !isHni}
+                    onPress={() => setIsHni(false)}
+                  />
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
                   value={selector.buyer_type}
@@ -6218,6 +6366,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={{ width: 120 }}
                 color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
+                disabled={isSubmitPress}
                 onPress={submitClicked}
               >
                 Submit
@@ -6534,7 +6683,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "flex-end",
     marginVertical: 6,
-    marginBottom:10
+    marginBottom: 10,
   },
   tochable1: {
     width: 140,
