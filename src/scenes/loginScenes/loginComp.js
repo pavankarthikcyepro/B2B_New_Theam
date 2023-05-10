@@ -69,11 +69,6 @@ import {
   setBranchName,
 } from "../../utils/helperFunctions";
 
-// import { TextInput } from 'react-native-paper';
-const officeLocation = {
-  latitude: 37.33233141,
-  longitude: -122.0312186,
-};
 
 const LoginScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.loginReducer);
@@ -87,7 +82,6 @@ const LoginScreen = ({ navigation }) => {
     return () => {
       clearWatch();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const clearWatch = () => {

@@ -2063,7 +2063,9 @@ const ListComponent = ({ route, navigation }) => {
       {/* Filter Modal Starts */}
       <RenderModal />
       {/* Filter Modal Ends */}
-      <LoaderComponent visible={selector.isLoading} />
+      <LoaderComponent
+        visible={selector.isLoading || selector.isTeamsTaskLoading}
+      />
     </View>
   );
 };

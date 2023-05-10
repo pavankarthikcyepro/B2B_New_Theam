@@ -557,7 +557,7 @@ export const mytaskSlice = createSlice({
 
     builder.addCase(getRescheduleTeamTasksListApi.pending, (state) => {
       state.teamReData = [];
-      state.isTeamsTaskLoading = false;
+      state.isTeamsTaskLoading = true;
     });
     builder.addCase(
       getRescheduleTeamTasksListApi.fulfilled,
@@ -573,7 +573,7 @@ export const mytaskSlice = createSlice({
 
     builder.addCase(getCompletedTeamTasksListApi.pending, (state) => {
       state.teamReData = [];
-      state.isTeamsTaskLoading = false;
+      state.isTeamsTaskLoading = true;
     });
     builder.addCase(getCompletedTeamTasksListApi.fulfilled, (state, action) => {
       state.teamReData = action.payload.completedData;
