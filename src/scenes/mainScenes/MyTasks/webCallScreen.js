@@ -5,6 +5,9 @@ import WebView from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearState, getWebCallUri } from '../../../redux/webCallReducer';
 import { Colors } from '../../../styles';
+import CallDetectorManager from "react-native-call-detection";
+
+let callDetector = "";
 
 const WebCallScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -15,11 +18,13 @@ const WebCallScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const { phone, uniqueId } = route.params;
+    startListenerTapped();
     let payload = { recordId: uniqueId, mobileNo: phone };
     dispatch(getWebCallUri(payload));
     return () => {
       dispatch(clearState());
-    }
+      stopListenerTapped();
+    };
   }, []);
   
   useEffect(() => {
@@ -28,14 +33,39 @@ const WebCallScreen = ({ navigation, route }) => {
     }
   }, [selector.webCallUriResponse]);
 
+  const startListenerTapped = () => {
+    callDetector = new CallDetectorManager(
+      (event, phoneNumber) => {
+        if (event === "Disconnected") {
+        } else if (event === "Connected") {
+          sendDataToWebView();
+        } else if (event === "Missed") {
+        }
+      },
+      false,
+      () => {},
+      {
+        title: "Phone State Permission",
+        message:
+          "This app needs access to your phone state in order to react and/or to adapt to incoming calls.",
+      }
+    );
+  };
+
+  const stopListenerTapped = () => {
+    callDetector && callDetector.dispose();
+  };
+
   const onMessage = (m) => {
     const messageData = JSON.parse(m);
-    console.log(messageData);
-    console.log(messageData.msg);
     if (messageData.close) {
       navigation.goBack();
     }
   };
+
+  const sendDataToWebView = () => {
+    webViewRef.current.postMessage("ENDCALL");
+  }
 
   return (
     <View style={styles.container}>

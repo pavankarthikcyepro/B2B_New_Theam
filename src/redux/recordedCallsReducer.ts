@@ -33,9 +33,9 @@ export const recordedCallsReducer = createSlice({
       })
       .addCase(getRecordedCallList.fulfilled, (state, action) => {
         state.isLoading = false;
-        if (action?.payload?.dmsEntity?.callhistory) {
-          const { callhistory } = action.payload.dmsEntity;
-          state.recordedCallList = callhistory.reverse();
+        if (action?.payload?.dmsEntity?.callRecording) {
+          const { callRecording } = action.payload.dmsEntity;
+          state.recordedCallList = callRecording.reverse();
         }
       })
       .addCase(getRecordedCallList.rejected, (state, action) => {
