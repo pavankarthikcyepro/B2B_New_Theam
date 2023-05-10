@@ -12,7 +12,7 @@
 		0F8C7DFC29C2F8D200393A1E /* libreact-native-maps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F8C7DFB29C2F8D200393A1E /* libreact-native-maps.a */; };
 		0F8C7E0A29C31B5A00393A1E /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8C7E0829C31B5A00393A1E /* icon.png */; };
 		0FD76F5B29E6C3BE0060C720 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0FD76F5A29E6C3BE0060C720 /* GoogleService-Info.plist */; };
-		11576CD99EA4FD2B34863751 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		11576CD99EA4FD2B34863751 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		12F93DCD831FE91A48FBF803 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6144485E80DD531E2857F8E2 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -89,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11576CD99EA4FD2B34863751 /* (null) in Frameworks */,
+				11576CD99EA4FD2B34863751 /* BuildFile in Frameworks */,
 				12F93DCD831FE91A48FBF803 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,6 +269,7 @@
 				593F43DDDD47524BECF5F7B6 /* [CP] Embed Pods Frameworks */,
 				0F8CA7A02D24AFCC3F96D013 /* [CP] Copy Pods Resources */,
 				B2898691AC5897438600A791 /* [CP-User] [RNFB] Core Configuration */,
+				959F4884D082FCE5F2D37C42 /* [CP-User] [RNFB] Crashlytics Configuration */,
 			);
 			buildRules = (
 			);
@@ -460,6 +461,20 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		959F4884D082FCE5F2D37C42 /* [CP-User] [RNFB] Crashlytics Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Crashlytics Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
+		};
 		B2898691AC5897438600A791 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -626,7 +641,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2.5;
-				DEVELOPMENT_TEAM = Z92J9VC4FS;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = B2B_NEW_THEME/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -668,7 +683,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2.5;
-				DEVELOPMENT_TEAM = Z92J9VC4FS;
+				DEVELOPMENT_TEAM = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = B2B_NEW_THEME/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

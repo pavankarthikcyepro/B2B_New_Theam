@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  Button,
   Clipboard,
   Platform,
 } from "react-native";
@@ -38,7 +39,8 @@ import PushNotification from "react-native-push-notification";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import { updateToken } from "../../redux/loginReducer";
 import messaging from "@react-native-firebase/messaging";
-import firebase from "@react-native-firebase/app";
+import crashlytics from "@react-native-firebase/crashlytics";
+import { firebase } from "@react-native-firebase/app";
 
 const WelcomeScreen = ({ navigation }) => {
   const { signOut } = React.useContext(AuthContext);
@@ -48,7 +50,7 @@ const WelcomeScreen = ({ navigation }) => {
   useEffect(async () => {
     const token = await messaging().getToken();
     console.log("OOOOO", token);
-    Clipboard.setString(token);
+    // Clipboard.setString(token);
     messaging().requestPermission();
     messaging().onMessage(async (remoteMessage) => {
       console.log(
@@ -186,6 +188,11 @@ const WelcomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     // checkAppUpdate();
+  }, []);
+
+  useEffect(() => {
+    firebase.initializeApp({});
+    crashlytics().setCrashlyticsCollectionEnabled(true);
   }, []);
 
   const loginButtonClicked = () => {

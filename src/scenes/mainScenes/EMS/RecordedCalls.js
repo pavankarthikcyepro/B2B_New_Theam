@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  RefreshControl,
+} from "react-native";
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
 import { useState } from 'react';
@@ -12,16 +19,35 @@ import Slider from '@react-native-community/slider';
 import { showToast } from '../../../utils/toast';
 
 let previousPosition = null;
+let showLoader = true;
 
 const RecordedCalls = ({ navigation, route }) => {
   const { taskId } = route.params;
   const { position, duration } = useProgress(500);
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.recordedCallsReducer);
-  
+
   const [recordingList, setRecordingList] = useState([]);
   const [onSliding, setOnSliding] = useState(false);
   const [previousActiveIndex, setPreviousActiveIndex] = useState(null);
+
+  useEffect(() => {
+    dispatch(getRecordedCallList(taskId));
+    return () => {
+      dispatch(clearRecordedCallsData());
+      setRecordingList([]);
+      showLoader = true;
+      resetData();
+    };
+  }, []);
+  
+  useEffect(() => {
+    if (!selector.isLoading) {
+      showLoader = true;
+    } else {
+      showLoader = false;
+    }
+  }, [selector.isLoading]);
 
   useEffect(() => {
     if (
@@ -39,7 +65,7 @@ const RecordedCalls = ({ navigation, route }) => {
       }
     }
   }, [position, duration]);
-  
+
   useEffect(async () => {
     if (selector.recordedCallList.length > 0) {
       let trackArr = [];
@@ -48,7 +74,7 @@ const RecordedCalls = ({ navigation, route }) => {
       for (let i = 0; i < element.length; i++) {
         const trackObj = {
           url: element[i].assetUrl,
-          date: element[i].callDateTime,
+          date: element[i].start,
           duration: element[i].duration ? Number(element[i].duration) : 0,
         };
         trackArr.push(Object.assign({}, trackObj));
@@ -66,22 +92,18 @@ const RecordedCalls = ({ navigation, route }) => {
       setRecordingList([...currentTrackArr]);
     }
   }, [selector.recordedCallList]);
-  
 
-  useEffect(() => {
-    // dispatch(getRecordedCallList(1617175));
-    dispatch(getRecordedCallList(1623166));
-    return () => {
-      dispatch(clearRecordedCallsData());
-      TrackPlayer.reset();
-      previousPosition = null;
-    };
-  }, []);
-  
   useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
     previousPosition = event.position;
   });
-  
+
+  const resetData = () => {
+    setOnSliding(false);
+    setPreviousActiveIndex(null);
+    TrackPlayer.reset();
+    previousPosition = null;
+  }
+
   const noData = () => {
     return (
       <View style={styles.noDataView}>
@@ -158,19 +180,19 @@ const RecordedCalls = ({ navigation, route }) => {
 
   const convertSecToTime = (value) => {
     return moment.utc(value * 1000).format("mm:ss");
-  }
+  };
 
   const onSliderValueChange = (value, item, index) => {
     let element = recordingList;
     element[index].currentDuration = value;
     setRecordingList(Object.assign([], element));
-  }; 
-  
+  };
+
   const onSlideCompleted = (value, item, index) => {
-    if(item.isPlay){
+    if (item.isPlay) {
       TrackPlayer.seekTo(value);
     }
-  }; 
+  };
 
   const renderItem = ({ item, index }) => {
     return (
@@ -179,7 +201,7 @@ const RecordedCalls = ({ navigation, route }) => {
           <View>
             <Text style={styles.mobileNumberText}>{item.mobileNo}</Text>
             <Text style={styles.timeText}>
-              {moment(item.callDateTime).format("DD/MM/YYYY HH:MM a")}
+              {moment(item.start).format("DD/MM/YYYY hh:mm a")}
             </Text>
           </View>
           <IconButton
@@ -211,7 +233,6 @@ const RecordedCalls = ({ navigation, route }) => {
                 onSlideCompleted(value, item, index);
               }}
               step={0.5}
-              // thumbImage={require("./../../../assets/images/cy.png")}
               onValueChange={(value) => onSliderValueChange(value, item, index)}
             />
             <View style={styles.timeRow}>
@@ -236,8 +257,20 @@ const RecordedCalls = ({ navigation, route }) => {
         ListEmptyComponent={noData}
         contentContainerStyle={{ padding: 15 }}
         ItemSeparatorComponent={itemSeparator}
+        refreshControl={
+          <RefreshControl
+            refreshing={showLoader && selector.isLoading}
+            onRefresh={() => {
+              resetData();
+              dispatch(getRecordedCallList(taskId));
+              showLoader = false;
+            }}
+            progressViewOffset={200}
+            tintColor={Colors.PINK}
+          />
+        }
       />
-      <LoaderComponent visible={selector.isLoading} />
+      {showLoader ? <LoaderComponent visible={selector.isLoading} /> : null}
     </SafeAreaView>
   );
 };
@@ -262,7 +295,7 @@ const styles = StyleSheet.create({
   numberRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   mobileNumberText: {
     fontWeight: "600",
