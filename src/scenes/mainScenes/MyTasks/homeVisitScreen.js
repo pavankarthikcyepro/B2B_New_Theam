@@ -912,9 +912,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
           maximumDate={selector.maxDate}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
-            if (Platform.OS === "android") {
-              //setDatePickerVisible(false);
-            }
+           
+            // if (Platform.OS === "android") {
+            //   //setDatePickerVisible(false);
+            // }
             let formatDate = "";
             if (selectedDate) {
               if (selector.datePickerKey == "date"){
@@ -929,16 +930,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
               if (selector.datePickerKeyId == "ACTUAL_START_TIME"){
                 
                 if (compare(convertToDate(selectedDate), selector.actual_start_time)  == 0){
-                  setIsUpdateBtnVisible(true);
+                  setTimeout(() => {
+                    setIsUpdateBtnVisible(true);  
+                  }, 500);
+                  
                 }else{
-                  setIsUpdateBtnVisible(false);
+                  setTimeout(() => {
+                    setIsUpdateBtnVisible(false);    
+                  }, 500);
+                
                 }
               }
               
             }
             dispatch(updateSelectedDate({ key: "", text: formatDate }));
           }}
-          onRequestClose={() => dispatch(setDatePicker())}
+          onRequestClose={() => dispatch(setDatePicker(""))}
         />
       
         
