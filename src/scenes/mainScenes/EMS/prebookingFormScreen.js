@@ -5832,6 +5832,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <TextInput
                       editable={isInputsEditable()}
                       value={taxPercent}
+                      maxLength={2}
                       style={[
                         {
                           fontSize: 14,

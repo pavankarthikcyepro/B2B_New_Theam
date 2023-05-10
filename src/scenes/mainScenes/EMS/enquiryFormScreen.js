@@ -6366,8 +6366,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={{ width: 120 }}
                 color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
-                onPress={submitClicked}
                 disabled={isSubmitPress}
+                onPress={submitClicked}
               >
                 Submit
               </Button>

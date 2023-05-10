@@ -8,7 +8,7 @@ import { showAlertMessage, showToastRedAlert } from "../utils/toast";
 
 interface LoginState {
   employeeId: string;
-  password: string; 
+  password: string;
   securePassword: boolean;
   showLoginErr: boolean;
   showPasswordErr: boolean;
@@ -21,12 +21,13 @@ interface LoginState {
   showLoader: boolean;
   offlineStatus: string;
   menuListStatus: string;
-  empIdStatus:String;
+  empIdStatus: String;
   userData: object;
   empId: string;
   menuList: any;
   login_employee_details: any;
   branchesList: any;
+  token: string;
 }
 
 interface ErrorMessage {
@@ -53,10 +54,11 @@ const initialState: LoginState = {
   userData: {},
   empId: "",
   menuListStatus: "",
-  empIdStatus:"",
+  empIdStatus: "",
   menuList: [],
   login_employee_details: {},
   branchesList: [],
+  token: "",
 };
 
 export const postUserData = createAsyncThunk(
@@ -64,10 +66,10 @@ export const postUserData = createAsyncThunk(
   async (inputData, { rejectWithValue }) => {
     const response = await client.post(URL.LOGIN(), inputData, {}, false);
     console.log("response", response);
-    
+
     const json = await response.json();
     console.log("JSON", json);
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -93,7 +95,7 @@ export const getEmpId = createAsyncThunk(
     const response = await client.get(URL.GET_EMPID(name));
     const json = await response.json();
     if (!response.ok) {
-      alert('not ok')
+      alert("not ok");
       return rejectWithValue(json);
     }
     return json;
@@ -122,7 +124,7 @@ export const getCustomerTypeList = createAsyncThunk(
       return rejectWithValue(json);
     }
     return json;
-  } 
+  }
 );
 
 export const getCarModalList = createAsyncThunk(
@@ -153,7 +155,7 @@ export const loginSlice = createSlice({
       state.userData = {};
       state.empId = "";
       state.menuListStatus = "";
-      state.empIdStatus="";
+      state.empIdStatus = "";
       state.branchesList = [];
     },
     clearUserNameAndPass: (state, action) => {
@@ -191,6 +193,9 @@ export const loginSlice = createSlice({
         state.passwordErrMessage = action.payload.message;
       }
     },
+    updateToken: (state, action) => {
+      state.token = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -201,7 +206,6 @@ export const loginSlice = createSlice({
       .addCase(postUserData.fulfilled, (state, action) => {
         const dataObj = action.payload;
         if (dataObj.status == "200") {
-          
           state.status = "sucess";
           state.isLoading = false;
           state.authToken = dataObj.accessToken;
@@ -210,10 +214,15 @@ export const loginSlice = createSlice({
           // state.employeeId = "";
           // state.password = "";
           AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.accessToken);
-          AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
-          AsyncStore.storeData(AsyncStore.Keys.ACCESS_TOKEN, dataObj.accessToken);
-          AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, dataObj.refreshToken);
-        
+          AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "true");
+          AsyncStore.storeData(
+            AsyncStore.Keys.ACCESS_TOKEN,
+            dataObj.accessToken
+          );
+          AsyncStore.storeData(
+            AsyncStore.Keys.REFRESH_TOKEN,
+            dataObj.refreshToken
+          );
         } else if (dataObj.reason) {
           showAlertMessage("Failed", "Incorrect Password");
           state.isLoading = false;
@@ -250,12 +259,10 @@ export const loginSlice = createSlice({
         state.offlineStatus = "completed";
       })
       .addCase(getEmpId.pending, (state) => {
-
         state.isLoading = true;
         state.empIdStatus = "pending";
       })
       .addCase(getEmpId.fulfilled, (state, action) => {
-
         const empEntityObj = action.payload?.dmsEntity;
         if (empEntityObj) {
           const data = empEntityObj.empId;
@@ -272,7 +279,6 @@ export const loginSlice = createSlice({
         state.empIdStatus = "completed";
       })
       .addCase(getEmpId.rejected, (state) => {
-
         state.isLoading = false;
         state.empIdStatus = "completed";
       })
@@ -344,7 +350,8 @@ export const {
   updatePassword,
   updateSecurePassword,
   showErrorMessage,
-  clearUserNameAndPass
+  clearUserNameAndPass,
+  updateToken,
 } = loginSlice.actions;
 
 export default loginSlice.reducer;

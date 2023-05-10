@@ -1132,6 +1132,7 @@ export const homeSlice = createSlice({
       dealerCodes: "",
       selectedDesignation:""
     },
+    newUpdateAvailable: false,
     saveReceptionistfilterObj: {
       startDate: "",
       endDate: "",
@@ -1202,6 +1203,9 @@ export const homeSlice = createSlice({
     },
     updateIsDSE: (state, action) => {
       state.isDSE = action.payload;
+    },
+    SetNewUpdateAvailable: (state, action) => {
+      state.newUpdateAvailable = action.payload;
     },
     updateLoader: (state, action) => {
       state.isLoading = action.payload;
@@ -2236,7 +2240,8 @@ export const {
   ,updateReceptionistObjectData,updateEmpDropDown_Local,updateCrm_employees_drop_down_data,
   updateCRMRecepDashboard_employees_drop_down_data, updateEmployeeDropdownData, updateFilterLeadership_selectedDesignation
   , updateFilterLeadership_selectedDesignationName, updatefilter_drop_down_designations,
-    updateLoader,
+    updateLoader,  SetNewUpdateAvailable,
+
 
 } = homeSlice.actions;
 export default homeSlice.reducer;
