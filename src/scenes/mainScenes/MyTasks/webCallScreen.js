@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, PermissionsAndroid, Platform } from 'react-native';
 import WebView from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearState, getWebCallUri } from '../../../redux/webCallReducer';
@@ -18,15 +18,31 @@ const WebCallScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const { phone, uniqueId } = route.params;
-    startListenerTapped();
     let payload = { recordId: uniqueId, mobileNo: phone };
+    if (Platform.OS == "android") {
+      askPermission();
+    } else {
+      startListenerTapped();
+    }
     dispatch(getWebCallUri(payload));
     return () => {
       dispatch(clearState());
       stopListenerTapped();
     };
   }, []);
-  
+
+  const askPermission = async () => {
+    try {
+      const permissions = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
+      );
+      if (permissions == "granted") {
+        startListenerTapped();
+      }
+    } catch (err) {
+    }
+  };
+
   useEffect(() => {
     if (selector.webCallUriResponse == "success") {
       setCallUri(selector.webCallUri);
@@ -65,7 +81,7 @@ const WebCallScreen = ({ navigation, route }) => {
 
   const sendDataToWebView = () => {
     webViewRef.current.postMessage("ENDCALL");
-  }
+  };
 
   return (
     <View style={styles.container}>

@@ -112,15 +112,15 @@ const RecordedCalls = ({ navigation, route }) => {
   };
 
   const onVolume = async (item, index) => {
-    const element = recordingList;
-    element[index].isMute = !element[index].isMute;
-    setRecordingList([...element]);
-
     if (item.isMute) {
       TrackPlayer.setVolume(0);
     } else {
       TrackPlayer.setVolume(1);
     }
+    const element = recordingList;
+    element[index].isMute = !element[index].isMute;
+    setRecordingList([...element]);
+
   };
 
   const onPlayerEvents = async (item, index) => {
@@ -210,6 +210,10 @@ const RecordedCalls = ({ navigation, route }) => {
       statusText = "NO ANSWER";
     }
 
+    if (item.internal_status.includes("480")) {
+      statusText = "SWITCHED OFF";
+    }
+
     return (
       <View key={index} style={styles.itemContainer}>
         <View style={styles.numberRow}>
@@ -219,13 +223,13 @@ const RecordedCalls = ({ navigation, route }) => {
               {moment(item.callDateTime).format("DD/MM/YYYY hh:mm a")}
             </Text>
           </View>
-          {item.internal_status == "OK" && (
+          {item.assetUrl ? (
             <IconButton
               icon={item.isMute ? "volume-off" : "volume-high"}
               size={25}
               onPress={() => onVolume(item, index)}
             />
-          )}
+          ) : null}
         </View>
 
         <Text
@@ -237,7 +241,7 @@ const RecordedCalls = ({ navigation, route }) => {
           {statusText}
         </Text>
 
-        {item.internal_status == "OK" && (
+        {item.assetUrl ? (
           <View style={styles.row1}>
             <IconButton
               icon={
@@ -277,7 +281,7 @@ const RecordedCalls = ({ navigation, route }) => {
               </View>
             </View>
           </View>
-        )}
+        ) : null}
       </View>
     );
   };
