@@ -46,7 +46,7 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
         <Image source={icon} style={styles.iconContainer} />
         <View style={{ margin: 5, flex: 1 }}>
           {secStr ? (
-            <ReadMore numberOfLines={4} style={styles.title}>
+            <ReadMore numberOfLines={6} style={styles.title}>
               {firstStr}
               <Text
                 style={[
@@ -61,8 +61,8 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
               <Text style={styles.title}>{thirdStr}</Text>
             </ReadMore>
           ) : (
-            <ReadMore numberOfLines={4} style={styles.title}>
-              {title}
+            <ReadMore numberOfLines={6} style={styles.title}>
+              <Text>{title}</Text>
             </ReadMore>
           )}
         </View>

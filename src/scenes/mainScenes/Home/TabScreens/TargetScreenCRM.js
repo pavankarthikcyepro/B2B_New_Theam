@@ -3386,6 +3386,9 @@ const TargetScreenCRM = ({ route }) => {
           {receptionistRole.includes(userData.hrmsRole) ? (
             selector.isTeam ? (
               <View>
+                <View style={styles.titleDashboardContainer}>
+                  <Text style={styles.dashboardText}>Dashboard</Text>
+                </View>
                 <View style={styles.view1}>
                   <View style={styles.view2}>
                     <View style={styles.percentageToggleView}></View>
@@ -3415,7 +3418,7 @@ const TargetScreenCRM = ({ route }) => {
                     bounces={false}
                     scrollEventThrottle={16}
                   >
-                    <View >
+                    <View>
                       <View key={"headers"} style={styles.view3}>
                         {/* <View
                           style={{ width: 100, height: 20, marginRight: 5,alignItems:"center" }}
@@ -3749,7 +3752,7 @@ const TargetScreenCRM = ({ route }) => {
                     </View>
                     {/* Employee params section */}
                     <View
-                      style={{ height: Dimensions.get("screen").height / 2.7 }}
+                      style={{ height: Dimensions.get("screen").height / 3 }}
                     >
                       <ScrollView
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
@@ -5199,6 +5202,9 @@ const TargetScreenCRM = ({ route }) => {
                     <>
                       {CRMRole.includes(userData.hrmsRole) && (
                         <View style={{ paddingHorizontal: "8%" }}>
+                          <View style={styles.titleDashboardContainer}>
+                            <Text style={styles.dashboardText}>Dashboard</Text>
+                          </View>
                           <View style={styles.newView}>
                             <Text
                               style={{
@@ -6720,6 +6726,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.BLACK,
     fontWeight: "600",
+    textDecorationLine: "underline",
+  },
+  titleDashboardContainer: {
+    paddingVertical: 10,
+    backgroundColor: Colors.LIGHT_GRAY,
+    paddingHorizontal: 70,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "600",
+    fontSize: 20,
+    color: Colors.PINK,
     textDecorationLine: "underline",
   },
   newView: {

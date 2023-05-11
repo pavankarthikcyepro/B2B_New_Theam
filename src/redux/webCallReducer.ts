@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
+import { showToast } from "../utils/toast";
 
 export const getWebCallUri = createAsyncThunk(
   "WEB_CALL_SLICE/getWebCallUri",
@@ -39,11 +40,18 @@ export const slice = createSlice({
         if (action?.payload?.token) {
           state.webCallUri = action.payload.token;
           state.webCallUriResponse = "success";
+        } else {
+          showToast("Call Not Connecting");
         }
       })
-      .addCase(getWebCallUri.rejected, (state) => {
+      .addCase(getWebCallUri.rejected, (state, action) => {
         state.isLoading = false;
         state.webCallUriResponse = "failed";
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
       });
   },
 });

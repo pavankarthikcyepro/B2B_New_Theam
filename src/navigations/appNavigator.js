@@ -1758,13 +1758,7 @@ const EventDashboardNavigator = ({ navigation }) => {
     </EventDashboardStack.Navigator>
   );
 };
-// const MainStackNavigator = createStackNavigator();
 
-// const MainStackNavigator = ({ navigation }) => {
-//     return (
-
-//     )
-// }
 const MainStack = createStackNavigator();
 
 const MainStackNavigator = ({ navigation }) => {

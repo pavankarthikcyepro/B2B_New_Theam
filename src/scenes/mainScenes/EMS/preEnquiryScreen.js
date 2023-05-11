@@ -594,10 +594,11 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               leadStatus={item.leadStatus}
               needStatus={"YES"}
               onItemPress={() => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.task360,
-                  { universalId: item.universalId, itemData: item }
-                );
+                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
+                  universalId: item.universalId,
+                  itemData: item,
+                  mobileNo: item.phone,
+                });
               }}
               onDocPress={() => {
                 navigation.navigate(

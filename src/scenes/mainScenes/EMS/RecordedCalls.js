@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  RefreshControl,
+} from "react-native";
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
 import { useState } from 'react';
@@ -12,46 +19,62 @@ import Slider from '@react-native-community/slider';
 import { showToast } from '../../../utils/toast';
 
 let previousPosition = null;
+let previousActiveIndex = null;
+let showLoader = true;
 
 const RecordedCalls = ({ navigation, route }) => {
   const { taskId } = route.params;
   const { position, duration } = useProgress(500);
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.recordedCallsReducer);
-  
+
   const [recordingList, setRecordingList] = useState([]);
   const [onSliding, setOnSliding] = useState(false);
-  const [previousActiveIndex, setPreviousActiveIndex] = useState(null);
+
+  useEffect(() => {
+    dispatch(getRecordedCallList(taskId));
+    return () => {
+      dispatch(clearRecordedCallsData());
+      setRecordingList([]);
+      showLoader = true;
+      resetData();
+    };
+  }, []);
+
+  useEffect(async () => {
+    await TrackPlayer.setRepeatMode(RepeatMode.Track);
+  }, []);
+
+  useEffect(() => {
+    if (!selector.isLoading) {
+      showLoader = true;
+    } else {
+      showLoader = false;
+    }
+  }, [selector.isLoading]);
 
   useEffect(() => {
     if (
-      previousPosition == 0 ||
-      previousPosition == null ||
-      previousPosition > position
+      (previousPosition == 0 ||
+        previousPosition == null ||
+        previousPosition > position)
     ) {
       if (recordingList.length > 0 && !onSliding) {
         previousPosition = 0;
-        let element = recordingList;
+        const element = recordingList;
         let playingIndex = element.findIndex((val) => val.isPlay == true);
-        if (playingIndex >= 0) {
+        if (playingIndex >= 0 && position != 0 && duration != 0) {
           element[playingIndex].currentDuration = position;
         }
       }
     }
   }, [position, duration]);
-  
+
   useEffect(async () => {
     if (selector.recordedCallList.length > 0) {
-      let trackArr = [];
       let currentTrackArr = [];
       const element = selector.recordedCallList;
       for (let i = 0; i < element.length; i++) {
-        const trackObj = {
-          url: element[i].assetUrl,
-          date: element[i].callDateTime,
-          duration: element[i].duration ? Number(element[i].duration) : 0,
-        };
-        trackArr.push(Object.assign({}, trackObj));
         const currentTrackObj = {
           ...element[i],
           currentDuration: 0,
@@ -61,27 +84,21 @@ const RecordedCalls = ({ navigation, route }) => {
         };
         currentTrackArr.push(Object.assign({}, currentTrackObj));
       }
-      await TrackPlayer.add(trackArr);
-      await TrackPlayer.setRepeatMode(RepeatMode.Track);
       setRecordingList([...currentTrackArr]);
     }
   }, [selector.recordedCallList]);
-  
 
-  useEffect(() => {
-    // dispatch(getRecordedCallList(1617175));
-    dispatch(getRecordedCallList(1623166));
-    return () => {
-      dispatch(clearRecordedCallsData());
-      TrackPlayer.reset();
-      previousPosition = null;
-    };
-  }, []);
-  
   useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
     previousPosition = event.position;
   });
-  
+
+  const resetData = () => {
+    setOnSliding(false);
+    TrackPlayer.reset();
+    previousPosition = null;
+    previousActiveIndex = null;
+  };
+
   const noData = () => {
     return (
       <View style={styles.noDataView}>
@@ -95,35 +112,29 @@ const RecordedCalls = ({ navigation, route }) => {
   };
 
   const onVolume = async (item, index) => {
-    let element = recordingList;
+    const element = recordingList;
     element[index].isMute = !element[index].isMute;
     setRecordingList([...element]);
-
-    if (item.isPlay) {
-      await TrackPlayer.pause();
-      await TrackPlayer.skip(index);
-      await TrackPlayer.seekTo(item.currentDuration);
-
-      if (item.isMute) {
-        TrackPlayer.setVolume(0);
-      } else {
-        TrackPlayer.setVolume(1);
-      }
-      await TrackPlayer.play();
+    
+    if (item.isMute) {
+      TrackPlayer.setVolume(0);
+    } else {
+      TrackPlayer.setVolume(1);
     }
   };
 
   const onPlayerEvents = async (item, index) => {
-    if (item.duration <= 0) {
+    if (item.duration <= 0 || !item.assetUrl) {
       showToast("Recording Not Available");
       return;
     }
 
-    let element = recordingList;
+    const element = recordingList;
     if (previousActiveIndex != index) {
-      await TrackPlayer.clearNowPlayingMetadata();
       for (let i = 0; i < element.length; i++) {
-        element[i].currentDuration = 0;
+        if (index != i) {
+          element[i].currentDuration = 0;
+        }
       }
     }
     if (!item.isPlay) {
@@ -136,8 +147,6 @@ const RecordedCalls = ({ navigation, route }) => {
     if (item.isPlay) {
       isPlay = false;
     } else {
-      await TrackPlayer.skip(index);
-      await TrackPlayer.seekTo(item.currentDuration);
       isPlay = true;
     }
 
@@ -147,83 +156,132 @@ const RecordedCalls = ({ navigation, route }) => {
       } else {
         TrackPlayer.setVolume(1);
       }
+      if (previousActiveIndex != index) {
+        const trackObj = {
+          url: item.assetUrl,
+          date: item.start,
+          duration: item.duration ? Number(item.duration) : 0,
+        };
+        if (previousActiveIndex != null) {
+          await TrackPlayer.reset();
+        }
+        await TrackPlayer.add([trackObj]);
+      }
+      await TrackPlayer.seekTo(item.currentDuration);
       await TrackPlayer.play();
     } else {
       await TrackPlayer.pause();
     }
+
     element[index].isPlay = isPlay;
     setRecordingList([...element]);
-    setPreviousActiveIndex(index);
+    previousActiveIndex = index;
   };
 
   const convertSecToTime = (value) => {
     return moment.utc(value * 1000).format("mm:ss");
-  }
+  };
 
   const onSliderValueChange = (value, item, index) => {
     let element = recordingList;
     element[index].currentDuration = value;
     setRecordingList(Object.assign([], element));
-  }; 
-  
+  };
+
   const onSlideCompleted = (value, item, index) => {
-    if(item.isPlay){
+    if (item.isPlay) {
       TrackPlayer.seekTo(value);
     }
-  }; 
+  };
 
   const renderItem = ({ item, index }) => {
+    let statusText = "NO ANSWER";
+    switch (item.status) {
+      case "ANSWERED":
+        statusText = "ANSWER";
+        break;
+
+      default:
+        statusText = item.status;
+        break;
+    }
+
+    if (!statusText) {
+      statusText = "NO ANSWER";
+    }
+
+    if (item.internal_status.includes("480")) {
+      statusText = "SWITCHED OFF";
+    }
+
     return (
       <View key={index} style={styles.itemContainer}>
         <View style={styles.numberRow}>
           <View>
             <Text style={styles.mobileNumberText}>{item.mobileNo}</Text>
             <Text style={styles.timeText}>
-              {moment(item.callDateTime).format("DD/MM/YYYY HH:MM a")}
+              {moment(item.callDateTime).format("DD/MM/YYYY hh:mm a")}
             </Text>
           </View>
-          <IconButton
-            icon={item.isMute ? "volume-off" : "volume-high"}
-            size={25}
-            onPress={() => onVolume(item, index)}
-          />
-        </View>
-        <View style={styles.row1}>
-          <IconButton
-            icon={item.isPlay ? "pause-circle-outline" : "play-circle-outline"}
-            size={45}
-            style={styles.playIcon}
-            color={Colors.LIGHT_GRAY2}
-            onPress={() => onPlayerEvents(item, index)}
-          />
-
-          <View style={{ flex: 1 }}>
-            <Slider
-              style={styles.sliderContainer}
-              value={item.currentDuration}
-              maximumValue={item.duration}
-              thumbTintColor={Colors.PINK}
-              minimumTrackTintColor={Colors.PINK}
-              maximumTrackTintColor={Colors.LIGHT_GRAY2}
-              onSlidingStart={(value) => setOnSliding(true)}
-              onSlidingComplete={(value) => {
-                setOnSliding(false);
-                onSlideCompleted(value, item, index);
-              }}
-              step={0.5}
-              // thumbImage={require("./../../../assets/images/cy.png")}
-              onValueChange={(value) => onSliderValueChange(value, item, index)}
+          {item.assetUrl ? (
+            <IconButton
+              icon={item.isMute ? "volume-off" : "volume-high"}
+              size={25}
+              onPress={() => onVolume(item, index)}
             />
-            <View style={styles.timeRow}>
-              <Text style={[styles.durationTimeText, { marginLeft: 7 }]}>
-                {convertSecToTime(item.currentDuration)}
-              </Text>
-              <Text style={styles.durationTimeText}>
-                {convertSecToTime(item.duration)}
-              </Text>
+          ) : null}
+        </View>
+
+        <Text
+          style={[
+            styles.callStatusText,
+            statusText == "ANSWER" ? { color: Colors.GREEN_V2 } : null,
+          ]}
+        >
+          {statusText}
+        </Text>
+
+        {item.assetUrl ? (
+          <View style={styles.row1}>
+            <IconButton
+              icon={
+                item.isPlay ? "pause-circle-outline" : "play-circle-outline"
+              }
+              size={45}
+              style={styles.playIcon}
+              color={Colors.LIGHT_GRAY2}
+              onPress={() => onPlayerEvents(item, index)}
+            />
+
+            <View style={{ flex: 1 }}>
+              <Slider
+                style={styles.sliderContainer}
+                value={item.currentDuration}
+                maximumValue={item.duration}
+                thumbTintColor={Colors.PINK}
+                minimumTrackTintColor={Colors.PINK}
+                maximumTrackTintColor={Colors.LIGHT_GRAY2}
+                onSlidingStart={(value) => setOnSliding(true)}
+                onSlidingComplete={(value) => {
+                  setOnSliding(false);
+                  onSlideCompleted(value, item, index);
+                }}
+                step={0.5}
+                onValueChange={(value) =>
+                  onSliderValueChange(value, item, index)
+                }
+              />
+              <View style={styles.timeRow}>
+                <Text style={[styles.durationTimeText, { marginLeft: 7 }]}>
+                  {convertSecToTime(item.currentDuration)}
+                </Text>
+                <Text style={styles.durationTimeText}>
+                  {convertSecToTime(item.duration)}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
+        ) : null}
       </View>
     );
   };
@@ -232,12 +290,25 @@ const RecordedCalls = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <FlatList
         data={recordingList}
+        keyExtractor={(item, index) => item.uniqId}
         renderItem={renderItem}
         ListEmptyComponent={noData}
         contentContainerStyle={{ padding: 15 }}
         ItemSeparatorComponent={itemSeparator}
+        refreshControl={
+          <RefreshControl
+            refreshing={showLoader && selector.isLoading}
+            onRefresh={() => {
+              resetData();
+              dispatch(getRecordedCallList(taskId));
+              showLoader = false;
+            }}
+            progressViewOffset={200}
+            tintColor={Colors.PINK}
+          />
+        }
       />
-      <LoaderComponent visible={selector.isLoading} />
+      {showLoader ? <LoaderComponent visible={selector.isLoading} /> : null}
     </SafeAreaView>
   );
 };
@@ -256,13 +327,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  callStatusText: {
+    fontSize: 12,
+    color: Colors.CORAL,
+    marginVertical: 5,
+  },
   playIcon: {
     margin: -10,
   },
   numberRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
   },
   mobileNumberText: {
     fontWeight: "600",

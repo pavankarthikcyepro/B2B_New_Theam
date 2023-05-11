@@ -87,6 +87,8 @@ import {
   updatedmsLeadProduct,
   clearState2,
   getEnquiryTypesApi,
+  postFinanaceApi,
+  postEvalutionApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -290,6 +292,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
+    approverId:""
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -553,6 +556,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
+        approverId: jsonObj.approverId
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -1127,6 +1131,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return false;
   };
 
+  const postEvalutionForm = () => {
+    // todo manthan
+    if (selector.buyer_type.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = () => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
+
   const submitClicked = async () => {
     //Personal Intro
     setIsSubmitPress(true);
@@ -1572,6 +1603,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    postEvalutionForm();
+    postFinanceForm();
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
@@ -1583,14 +1616,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       };
       Promise.all([
         dispatch(updateEnquiryDetailsApi(formData)),
-        dispatch(customerLeadRef(refPayload)),
+        // dispatch(customerLeadRef(refPayload)),// commented cust-ref api here 
       ]).then(async (res) => {
-        const payload = {
-          refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
-          orgId: jsonObj.orgId,
-          stageCompleted: "ENQUIRY",
-        };
-        dispatch(updateRef(payload));
+        // const payload = {
+        //   refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+        //   orgId: jsonObj.orgId,
+        //   stageCompleted: "ENQUIRY",
+        // };
+        // dispatch(updateRef(payload));
       });
     }
   };
@@ -2318,6 +2351,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.update_enquiry_details_response === "success") {
+      const payload = {
+        refNo: selector.refNo,
+        orgId: userData.orgId,
+        stageCompleted: "ENQUIRY",
+      };
+      dispatch(updateRef(payload));// added this api here 
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
         // showToastSucess("Successfully Enquiry Dropped");
         // getEnquiryListFromServer();
@@ -6333,8 +6372,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={{ width: 120 }}
                 color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
-                onPress={submitClicked}
                 disabled={isSubmitPress}
+                onPress={submitClicked}
               >
                 Submit
               </Button>

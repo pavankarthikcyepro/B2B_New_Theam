@@ -21,11 +21,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>tel</string>
@@ -33,6 +33,7 @@
 		<string>googlegmail</string>
 		<string>ms-outlook</string>
 		<string>mailto</string>
+		<string>itms-apps</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -50,17 +51,15 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) requires permission to capture photos</string>
+	<string>$(PRODUCT_NAME) requires permission to capture photos. Granting access will allow you to take photos and add them to attachment fields.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>App requires background tracking</string>
+	<string>$(PRODUCT_NAME) required to gain permission to access location services on app uses location services. </string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>App requires background tracking</string>
+	<string>$(PRODUCT_NAME) required to gain permission to access location services on app in the background and should describe how your app uses location services.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>App requires background tracking</string>
-	<key>NSMotionUsageDescription</key>
-	<string>App requires motion tracking</string>
+	<string>Required to access the location to mark in map</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(PRODUCT_NAME) requires permission to select photos</string>
+	<string>$(PRODUCT_NAME) requires permission to select photos. Granting access will allow you to add them to attachment fields.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
