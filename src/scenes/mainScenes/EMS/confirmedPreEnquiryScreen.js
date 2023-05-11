@@ -421,7 +421,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         if (selector.change_enquiry_status === "success") {
             if (selector.change_enquiry_response) {
                 displayCreateEnquiryAlert(selector.change_enquiry_response);
-                getReferenceNumber();
+                updateRefNumber();
+                // getReferenceNumber();
             }
         }
     }, [selector.change_enquiry_status, selector.change_enquiry_response])
@@ -436,7 +437,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 {
                     text: 'OK', onPress: () => {
 
-                        updateRefNumber()
+                        // updateRefNumber()
                     }
                 }
             ],
