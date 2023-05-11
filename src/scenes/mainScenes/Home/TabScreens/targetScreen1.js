@@ -1484,6 +1484,9 @@ const TargetScreen = ({ route }) => {
           </View>} */}
           {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
+              <View style={styles.titleDashboardContainer}>
+                <Text style={styles.dashboardText}>Dashboard</Text>
+              </View>
               <View style={styles.view1}>
                 <SegmentedControl
                   style={{
@@ -1600,7 +1603,7 @@ const TargetScreen = ({ route }) => {
                     </View>
                     {/* Employee params section */}
                     <View
-                      style={{ height: Dimensions.get("screen").height / 2.7 }}
+                      style={{ height: Dimensions.get("screen").height / 3 }}
                     >
                       <ScrollView
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
@@ -1669,9 +1672,11 @@ const TargetScreen = ({ route }) => {
                                           AppNavigator.HomeStackIdentifiers
                                             .sourceModel,
                                           {
-                                            empId:  item.empId,
+                                            empId: item.empId,
                                             headerTitle: item.empName,
-                                            loggedInEmpId: selector.login_employee_details.empId,
+                                            loggedInEmpId:
+                                              selector.login_employee_details
+                                                .empId,
                                             orgId:
                                               selector.login_employee_details
                                                 .orgId,
@@ -3022,44 +3027,44 @@ const TargetScreen = ({ route }) => {
               <>
                 {!receptionistRole.includes(userData.hrmsRole) && (
                   <>
-                  {/* <View style={{paddingVertical: 5, backgroundColor: Colors.LIGHT_GRAY, marginBottom: 10, paddingHorizontal: 50, borderRadius: 50, alignSelf: "center"}}>
-                    <Text style={{fontWeight: "600", fontSize: 15, color:Colors.PINK, textDecorationLine: "underline"}} >Dashboard</Text>
-                  </View> */}
-                  <View style={{ flexDirection: "row", marginVertical: 8 }}>
-                    <View style={styles.view13}>
-                      <View
-                        style={[
-                          styles.percentageToggleView,
-                          { marginVertical: -8 },
-                        ]}
-                      >
-                        <PercentageToggleControl
-                          toggleChange={(x) => setTogglePercentage(x)}
+                    <View style={styles.titleDashboardContainer}>
+                      <Text style={styles.dashboardText}>Dashboard</Text>
+                    </View>
+                    <View style={{ flexDirection: "row", marginVertical: 8 }}>
+                      <View style={styles.view13}>
+                        <View
+                          style={[
+                            styles.percentageToggleView,
+                            { marginVertical: -8 },
+                          ]}
+                        >
+                          <PercentageToggleControl
+                            toggleChange={(x) => setTogglePercentage(x)}
+                          />
+                        </View>
+
+                        <SourceModelView
+                          onClick={() => {
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.sourceModel,
+                              {
+                                empId: selector.login_employee_details.empId,
+                                headerTitle: "Source/Model",
+                                loggedInEmpId:
+                                  selector.login_employee_details.empId,
+                                type: selector.isDSE ? "SELF" : "INSIGHTS",
+                                moduleType: "home",
+                              }
+                            );
+                          }}
                         />
                       </View>
-
-                      <SourceModelView
-                        onClick={() => {
-                          navigation.navigate(
-                            AppNavigator.HomeStackIdentifiers.sourceModel,
-                            {
-                              empId: selector.login_employee_details.empId,
-                              headerTitle: "Source/Model",
-                              loggedInEmpId:
-                                selector.login_employee_details.empId,
-                              type: selector.isDSE ? "SELF" : "INSIGHTS",
-                              moduleType: "home",
-                            }
-                          );
-                        }}
-                      />
+                      <View style={{ width: "30%", flexDirection: "row" }}>
+                        <Text style={styles.txt3}>Balance</Text>
+                        <View style={{ marginRight: 15 }}></View>
+                        <Text style={styles.txt3}>AR/Day</Text>
+                      </View>
                     </View>
-                    <View style={{ width: "30%", flexDirection: "row" }}>
-                      <Text style={styles.txt3}>Balance</Text>
-                      <View style={{ marginRight: 15 }}></View>
-                      <Text style={styles.txt3}>AR/Day</Text>
-                    </View>
-                  </View>
                   </>
                 )}
                 <>
@@ -3107,6 +3112,9 @@ const TargetScreen = ({ route }) => {
                       {/* CRM exisiting code start */}
                       {!CRMRole.includes(userData.hrmsRole) && (
                         <>
+                          <View style={styles.titleDashboardContainer}>
+                            <Text style={styles.dashboardText}>Dashboard</Text>
+                          </View>
                           <View style={styles.view14}>
                             <SourceModelView
                               style={{ alignSelf: "flex-end" }}
@@ -4403,6 +4411,20 @@ const styles = StyleSheet.create({
     height: 15,
     flexDirection: "row",
     paddingRight: 16,
+  },
+  titleDashboardContainer: {
+    paddingVertical: 10,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 70,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "600",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
   },
   txt3: { fontSize: 14, fontWeight: "600" },
   view14: {

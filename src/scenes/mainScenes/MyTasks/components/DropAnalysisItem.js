@@ -205,7 +205,7 @@ export const DropAnalysisItem = ({
                       />
                       <Text style={styles.txt7}>{count}</Text>
                     </View>
-                    {count < 7 && (
+                    {leadStatus === "ENQUIRYCOMPLETED" && count < 7 && (
                       <View style={styles.hourContainer}>
                         <Text style={styles.hourText}>
                           {`Followed up < `}

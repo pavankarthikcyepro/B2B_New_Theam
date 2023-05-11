@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
   package="com.b2b_new_theme">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,6 +14,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
     <uses-feature android:name="android.hardware.microphone" android:required="true" />
     <queries> <intent> <action android:name="android.intent.action.SEND_MULTIPLE" />
         <data android:mimeType="*/*" /> </intent> </queries>
@@ -23,7 +26,8 @@
       android:roundIcon="@mipmap/cy"
       android:allowBackup="false"
       android:usesCleartextTraffic="true" 
-      android:theme="@style/AppTheme">
+      android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"
                     android:value="false"/>
         <!-- Change the resource name to your App's accent color - or any other color you want -->
