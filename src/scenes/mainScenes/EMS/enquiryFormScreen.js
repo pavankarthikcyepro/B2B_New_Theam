@@ -1616,14 +1616,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       };
       Promise.all([
         dispatch(updateEnquiryDetailsApi(formData)),
-        dispatch(customerLeadRef(refPayload)),
+        // dispatch(customerLeadRef(refPayload)),// commented cust-ref api here 
       ]).then(async (res) => {
-        const payload = {
-          refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
-          orgId: jsonObj.orgId,
-          stageCompleted: "ENQUIRY",
-        };
-        dispatch(updateRef(payload));
+        // const payload = {
+        //   refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+        //   orgId: jsonObj.orgId,
+        //   stageCompleted: "ENQUIRY",
+        // };
+        // dispatch(updateRef(payload));
       });
     }
   };
@@ -2351,6 +2351,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.update_enquiry_details_response === "success") {
+      const payload = {
+        refNo: selector.refNo,
+        orgId: userData.orgId,
+        stageCompleted: "ENQUIRY",
+      };
+      dispatch(updateRef(payload));// added this api here 
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
         // showToastSucess("Successfully Enquiry Dropped");
         // getEnquiryListFromServer();
