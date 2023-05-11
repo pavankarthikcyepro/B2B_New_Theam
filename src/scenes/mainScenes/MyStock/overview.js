@@ -1,5 +1,12 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
@@ -40,17 +47,22 @@ const OverviewScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       dispatch(updateCurrentScreen("OVERVIEW"));
+      if (selector.dealerCode) {
+        getInventory(selector.dealerCode);
+      } else {
+        getInventory();
+      }
     });
-  }, [navigation]);
+  }, [navigation, selector.dealerCode]);
 
-  useEffect(() => {
-    console.log(selector.dealerCode);
-    if (selector.dealerCode) {
-      getInventory(selector.dealerCode);
-    } else {
-      getInventory();
-    }
-  }, [selector.dealerCode]);
+  // useEffect(() => {
+  //   console.log(selector.dealerCode);
+  //   if (selector.dealerCode) {
+  //     getInventory(selector.dealerCode);
+  //   } else {
+  //     getInventory();
+  //   }
+  // }, [selector.dealerCode]);
 
   // useEffect(() => {
   //   getInventory();
@@ -204,22 +216,20 @@ const OverviewScreen = ({ route, navigation }) => {
             }}
             style={{ ...styles.valueTxt, textDecorationLine: "none" }}
           >
-            {item.stockValue || "0.0"}
+            {parseFloat(item.stockValue).toFixed(0) || "0"}
           </Text>
         </View>
-        <View style={styles.valueBox}>
-          <Text
-            onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
-                headerTitle: item.name,
-                available: available,
-              });
-            }}
-            style={styles.valueTxt}
-          >
-            {item.count}
-          </Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate(MyStockTopTabNavigatorIdentifiers.detail, {
+              headerTitle: item.name,
+              available: available,
+            });
+          }}
+          style={styles.valueBox}
+        >
+          <Text style={styles.valueTxt}>{item.count}</Text>
+        </TouchableOpacity>
       </View>
     );
   };

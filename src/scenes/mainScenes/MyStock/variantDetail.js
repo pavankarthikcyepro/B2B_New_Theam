@@ -238,7 +238,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
     return (
       <>
         <View style={{ ...styles.boxView }}>
-          <View style={{ width: "20%" }}>
+          <View style={{ width: isSelfManager === "Y" ? "40%" : "20%" }}>
             <Text
               numberOfLines={1}
               onPress={() => {
@@ -254,15 +254,20 @@ const VariantDetailScreen = ({ route, navigation }) => {
               {item?.varient}
             </Text>
           </View>
-          <View style={styles.parameterTitleView}>
+          <View
+            style={[
+              styles.parameterTitleView,
+              { width: isSelfManager === "Y" ? "60%" : "80%" },
+            ]}
+          >
             <Text
               numberOfLines={1}
               style={[
                 styles.valueTxt,
-                { width: isSelfManager === "Y" ? "45%" : "20%" },
+                { width: isSelfManager === "Y" ? "30%" : "20%" },
               ]}
             >
-              {item.stockValue || "0.0"}
+              {parseFloat(item.stockValue).toFixed(0) || "0"}
             </Text>
             {isSelfManager !== "Y" && (
               <>
@@ -278,7 +283,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
               numberOfLines={1}
               style={[
                 styles.valueTxt,
-                { width: isSelfManager === "Y" ? "45%" : "20%" },
+                { width: isSelfManager === "Y" ? "30%" : "20%" },
               ]}
             >
               {item.electricCount || 0}
@@ -315,12 +320,17 @@ const VariantDetailScreen = ({ route, navigation }) => {
 
     return (
       <View style={styles.boxView1}>
-        <View style={{ width: "20%" }}>
+        <View style={{ width: isSelfManager === "Y" ? "40%" : "20%" }}>
           <Text numberOfLines={1} style={styles.locationTxt1}>
             {item1.colourName}
           </Text>
         </View>
-        <View style={styles.parameterTitleView}>
+        <View
+          style={[
+            styles.parameterTitleView,
+            { width: isSelfManager === "Y" ? "60%" : "80%" },
+          ]}
+        >
           <Text
             numberOfLines={1}
             style={[
@@ -328,7 +338,7 @@ const VariantDetailScreen = ({ route, navigation }) => {
               { width: isSelfManager === "Y" ? "45%" : "20%" },
             ]}
           >
-            {item1.stockValue || "0.0"}
+            {parseFloat(item1.stockValue).toFixed(0) || "0.0"}
           </Text>
           {isSelfManager !== "Y" && (
             <>
@@ -365,20 +375,45 @@ const VariantDetailScreen = ({ route, navigation }) => {
         <LoaderComponent visible={loading} onRequestClose={() => {}} />
         <View style={styles.mainView}>
           <View style={styles.titleView}>
-            <View style={{ width: "20%" }}>
-              <Text style={{ ...styles.titleText, width: "100%" }}>
+            <View style={{ width: isSelfManager === "Y" ? "40%" : "20%" }}>
+              <Text
+                style={{
+                  ...styles.titleText,
+                  width: "100%",
+                  alignSelf: "flex-start",
+                }}
+              >
                 {"Variant"}
               </Text>
             </View>
-            <View style={styles.parameterTitleView}>
-              <Text style={styles.titleText}>{"₹ Stock Value"}</Text>
+            <View
+              style={[
+                styles.parameterTitleView,
+                { width: isSelfManager === "Y" ? "60%" : "80%" },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.titleText,
+                  { width: isSelfManager === "Y" ? "100%" : "20%" },
+                ]}
+              >
+                {"₹ Stock Value"}
+              </Text>
               {isSelfManager !== "Y" && (
                 <>
                   <Text style={styles.titleText}>{"Petrol"}</Text>
                   <Text style={styles.titleText}>{"Diesel"}</Text>
                 </>
               )}
-              <Text style={styles.titleText}>{"Electric"}</Text>
+              <Text
+                style={[
+                  styles.titleText,
+                  { width: isSelfManager === "Y" ? "100%" : "20%" },
+                ]}
+              >
+                {"Electric"}
+              </Text>
               {isSelfManager !== "Y" && (
                 <Text style={styles.titleText}>{"Total"}</Text>
               )}

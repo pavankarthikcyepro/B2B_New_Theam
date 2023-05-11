@@ -200,7 +200,7 @@ const AvailableScreen = ({ route, navigation }) => {
           </Text>
         </View>
         <View style={styles.parameterTitleView}>
-          <Text style={styles.valueTxt}>{item.stockValue || "0.0"}</Text>
+          <Text style={styles.valueTxt}>{parseFloat(item.stockValue).toFixed(0) || "0"}</Text>
           {isSelfManager !== "Y" && (
             <>
               <Text style={styles.valueTxt}>{item.petrolCount || 0}</Text>

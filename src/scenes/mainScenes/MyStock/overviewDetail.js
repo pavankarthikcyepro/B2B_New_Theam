@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
@@ -195,22 +202,20 @@ const OverviewDetailScreen = ({ route, navigation }) => {
         </View>
         <View>
           <Text style={{ ...styles.valueTxt, textDecorationLine: "none" }}>
-            {item.stockValue || "0.0"}
+            {parseFloat(item.stockValue).toFixed(0) || "0"}
           </Text>
         </View>
-        <View style={styles.valueBox}>
-          <Text
-            onPress={() => {
-              navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
-                headerTitle: item.name,
-                available: available,
-              });
-            }}
-            style={styles.valueTxt}
-          >
-            {item.count || 0}
-          </Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate(MyStockTopTabNavigatorIdentifiers.available, {
+              headerTitle: item.name,
+              available: available,
+            });
+          }}
+          style={styles.valueBox}
+        >
+          <Text style={styles.valueTxt}>{item.count || 0}</Text>
+        </TouchableOpacity>
       </View>
     );
   };
