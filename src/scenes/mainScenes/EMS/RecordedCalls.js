@@ -112,15 +112,15 @@ const RecordedCalls = ({ navigation, route }) => {
   };
 
   const onVolume = async (item, index) => {
+    const element = recordingList;
+    element[index].isMute = !element[index].isMute;
+    setRecordingList([...element]);
+    
     if (item.isMute) {
       TrackPlayer.setVolume(0);
     } else {
       TrackPlayer.setVolume(1);
     }
-    const element = recordingList;
-    element[index].isMute = !element[index].isMute;
-    setRecordingList([...element]);
-
   };
 
   const onPlayerEvents = async (item, index) => {
