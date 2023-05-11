@@ -28,15 +28,8 @@ export const RenderEmployeeParameters = (parameter) => {
     }
   };
 
-  const {
-    params,
-    item,
-    color,
-    displayType,
-    navigation,
-    moduleType,
-    hideTgt = false,
-  } = parameter;
+  const { params, item, color, displayType, navigation, moduleType, hideTgt = false } =
+    parameter;
   const paramsData = params.map(({ paramName }) => paramName);
   const navigableParams = [
     "PreEnquiry",
@@ -49,7 +42,7 @@ export const RenderEmployeeParameters = (parameter) => {
   ];
 
   function navigateToEmsScreen(param) {
-    
+
     const leads = ["enquiry", "booking", "invoice"];
     const isDropped = param.toLowerCase() === "dropped";
     const isContact = param.toLowerCase() === "preenquiry";
@@ -62,65 +55,58 @@ export const RenderEmployeeParameters = (parameter) => {
     };
     if (isLead) {
       if (moduleType !== "live-leads") {
-        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-          screen: "EMS",
-          params: {
-            screen: "LEADS",
-            params: {
-              screenName: "TargetScreenSales",
-              params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
-              moduleType: "",
-              employeeDetail: "",
-              selectedEmpId: item.empId,
-              startDate: "",
-              endDate: "",
-              dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected)
-                ? selector.filterIds?.levelSelected
-                : [],
-              ignoreSelectedId: false,
-              parentId: "",
-              istotalClick: true,
-              self: item.isOpenInner,
-            },
-          },
-        });
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            screenName: "TargetScreenSales",
+            params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
+            moduleType: "",
+            employeeDetail: "",
+            selectedEmpId: item.empId,
+            startDate: "",
+            endDate: "",
+            dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+            ignoreSelectedId: false,
+            parentId: "",
+            istotalClick: true,
+            self: item.isOpenInner
+          });
+        }, 1000);
       } else {
-        navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-          screen: "EMS",
-          params: {
-            screen: "LEADS",
-            params: {
-              param: param === "INVOICE" ? "Retail" : param,
-              employeeDetail: employeeDetail,
-              moduleType: "live-leads",
-            },
-          },
-        });
+        navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+        setTimeout(() => {
+          navigation.navigate("LEADS", {
+            param: param === "INVOICE" ? "Retail" : param,
+            employeeDetail: employeeDetail,
+            moduleType: "live-leads",
+          });
+        }, 1000);
       }
+
     } else if (isContact) {
-       navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-         screen: "EMS",
-         params: {
-           screen: EmsTopTabNavigatorIdentifiers.preEnquiry,
-           param: {
-             employeeDetail: employeeDetail,
-             moduleType: "live-leads",
-             selectedEmpId: "",
-           },
-         },
-       });
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+      setTimeout(() => {
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+          // param: param === "INVOICE" ? "Retail" : param,
+          employeeDetail: employeeDetail,
+          moduleType: "live-leads",
+          selectedEmpId: ""
+        });
+      }, 1000);
+      // navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
+      //   moduleType: "live-leads",
+      //   employeeDetail: employeeDetail,
+      // });
     } else if (isDropped) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
         screen: "DROP_ANALYSIS",
         params: {
           emp_id: item.empId,
           fromScreen: "targetSaleshome",
-          dealercodes: !_.isEmpty(selector.filterIds?.levelSelected)
-            ? selector.filterIds?.levelSelected
-            : [],
+          dealercodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
           isFilterApplied: true,
           parentId: "",
-          isSelf: item.isOpenInner,
+          isSelf: item.isOpenInner
         },
       });
     } else if (param === "Test Drive" || param === "Home Visit") {
@@ -130,21 +116,12 @@ export const RenderEmployeeParameters = (parameter) => {
           screenName: "TargetScreenSales",
           // selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected) ? selector.filterIds?.empSelected[0] : "",
           selectedEmpId: item.empId,
-          isself: item.isOpenInner
-            ? item.isOpenInner
-            : item.roleName === "Field DSE"
-            ? true
-            : false,
+          isself: item.isOpenInner ? item.isOpenInner : item.roleName === "Field DSE" ? true : false,
           startDate: "",
           endDate: "",
-          dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected)
-            ? selector.filterIds?.levelSelected
-            : [],
-          isTeam: item.isOpenInner
-            ? false
-            : item.roleName === "Field DSE"
-            ? false
-            : true,
+          dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected) ? selector.filterIds?.levelSelected : [],
+          isTeam: item.isOpenInner ? false : item.roleName === "Field DSE" ? false : true
+
         });
       }, 2000);
     }
@@ -156,43 +133,43 @@ export const RenderEmployeeParameters = (parameter) => {
         const selectedParameter = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
-                (x) => x.paramName === param
-              )[0]
+              (x) => x.paramName === param
+            )[0]
             : item?.targetAchievements?.filter((x) => x.paramName === param)[0]
           : item?.targetAchievements?.filter((x) => x.paramName === param)[0];
         const enq = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
-                (item) => item.paramName === "Enquiry"
-              )[0]
-            : item?.targetAchievements?.filter(
-                (item) => item.paramName === "Enquiry"
-              )[0]
-          : item?.targetAchievements?.filter(
               (item) => item.paramName === "Enquiry"
-            )[0];
+            )[0]
+            : item?.targetAchievements?.filter(
+              (item) => item.paramName === "Enquiry"
+            )[0]
+          : item?.targetAchievements?.filter(
+            (item) => item.paramName === "Enquiry"
+          )[0];
         const ret = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
-                (item) => item.paramName === "INVOICE"
-              )[0]
-            : item?.targetAchievements?.filter(
-                (item) => item.paramName === "INVOICE"
-              )[0]
-          : item?.targetAchievements?.filter(
               (item) => item.paramName === "INVOICE"
-            )[0];
+            )[0]
+            : item?.targetAchievements?.filter(
+              (item) => item.paramName === "INVOICE"
+            )[0]
+          : item?.targetAchievements?.filter(
+            (item) => item.paramName === "INVOICE"
+          )[0];
         const acc = item?.isOpenInner
           ? item?.tempTargetAchievements
             ? item?.tempTargetAchievements?.filter(
-                (item) => item.paramName === "Accessories"
-              )[0]
-            : item?.targetAchievements?.filter(
-                (item) => item.paramName === "Accessories"
-              )[0]
-          : item?.targetAchievements?.filter(
               (item) => item.paramName === "Accessories"
-            )[0];
+            )[0]
+            : item?.targetAchievements?.filter(
+              (item) => item.paramName === "Accessories"
+            )[0]
+          : item?.targetAchievements?.filter(
+            (item) => item.paramName === "Accessories"
+          )[0];
         // const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
         return (
           <Fragment key={`${index}`}>
@@ -233,7 +210,7 @@ export const RenderEmployeeParameters = (parameter) => {
                         ? selectedParameter?.achievment
                         : selectedParameter.paramName == "DROPPED" ||
                           selectedParameter?.target > 0
-                        ? `${achievementPercentage(
+                          ? `${achievementPercentage(
                             selectedParameter?.achievment,
                             selectedParameter?.target,
                             param,
@@ -241,13 +218,13 @@ export const RenderEmployeeParameters = (parameter) => {
                             ret,
                             acc
                           )}%`
-                        : `${selectedParameter?.achievment}%`
+                          : `${selectedParameter?.achievment}%`
                       : 0}
                   </Text>
                 </View>
                 {selectedParameter &&
-                !hideTgt &&
-                selectedParameter?.paramName !== "DROPPED" ? (
+                  !hideTgt &&
+                  selectedParameter?.paramName !== "DROPPED" ? (
                   <Text
                     style={[
                       styles.totalText,
@@ -256,8 +233,8 @@ export const RenderEmployeeParameters = (parameter) => {
                           moduleType === "live-leads"
                             ? 66
                             : param === "Accessories"
-                            ? 63
-                            : 53,
+                              ? 63
+                              : 53,
                         backgroundColor:
                           selectedParameter?.paramName !== "DROPPED"
                             ? "lightgray"
@@ -297,7 +274,7 @@ export const RenderEmployeeParameters = (parameter) => {
                       ? displayType === 0
                         ? selectedParameter?.achievment
                         : selectedParameter?.target > 0
-                        ? achievementPercentage(
+                          ? achievementPercentage(
                             selectedParameter?.achievment,
                             selectedParameter?.target,
                             param,
@@ -305,7 +282,7 @@ export const RenderEmployeeParameters = (parameter) => {
                             ret,
                             acc
                           )
-                        : selectedParameter?.achievment
+                          : selectedParameter?.achievment
                       : 0}
                   </Text>
                 </View>
