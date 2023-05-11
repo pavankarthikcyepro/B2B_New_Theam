@@ -1038,7 +1038,7 @@ export const homeSlice = createSlice({
     totalParameters: [],
     employee_list: [],
     reporting_manager_list: [],
-    isLoading: false,
+    isLoading: true,
     isEventLoading: false,
     leaderboard_list: [],
     branchrank_list: [],

@@ -1669,9 +1669,11 @@ const TargetScreen = ({ route }) => {
                                           AppNavigator.HomeStackIdentifiers
                                             .sourceModel,
                                           {
-                                            empId:  item.empId,
+                                            empId: item.empId,
                                             headerTitle: item.empName,
-                                            loggedInEmpId: selector.login_employee_details.empId,
+                                            loggedInEmpId:
+                                              selector.login_employee_details
+                                                .empId,
                                             orgId:
                                               selector.login_employee_details
                                                 .orgId,
@@ -3022,44 +3024,44 @@ const TargetScreen = ({ route }) => {
               <>
                 {!receptionistRole.includes(userData.hrmsRole) && (
                   <>
-                  {/* <View style={{paddingVertical: 5, backgroundColor: Colors.LIGHT_GRAY, marginBottom: 10, paddingHorizontal: 50, borderRadius: 50, alignSelf: "center"}}>
+                    {/* <View style={{paddingVertical: 5, backgroundColor: Colors.LIGHT_GRAY, marginBottom: 10, paddingHorizontal: 50, borderRadius: 50, alignSelf: "center"}}>
                     <Text style={{fontWeight: "600", fontSize: 15, color:Colors.PINK, textDecorationLine: "underline"}} >Dashboard</Text>
                   </View> */}
-                  <View style={{ flexDirection: "row", marginVertical: 8 }}>
-                    <View style={styles.view13}>
-                      <View
-                        style={[
-                          styles.percentageToggleView,
-                          { marginVertical: -8 },
-                        ]}
-                      >
-                        <PercentageToggleControl
-                          toggleChange={(x) => setTogglePercentage(x)}
+                    <View style={{ flexDirection: "row", marginVertical: 8 }}>
+                      <View style={styles.view13}>
+                        <View
+                          style={[
+                            styles.percentageToggleView,
+                            { marginVertical: -8 },
+                          ]}
+                        >
+                          <PercentageToggleControl
+                            toggleChange={(x) => setTogglePercentage(x)}
+                          />
+                        </View>
+
+                        <SourceModelView
+                          onClick={() => {
+                            navigation.navigate(
+                              AppNavigator.HomeStackIdentifiers.sourceModel,
+                              {
+                                empId: selector.login_employee_details.empId,
+                                headerTitle: "Source/Model",
+                                loggedInEmpId:
+                                  selector.login_employee_details.empId,
+                                type: selector.isDSE ? "SELF" : "INSIGHTS",
+                                moduleType: "home",
+                              }
+                            );
+                          }}
                         />
                       </View>
-
-                      <SourceModelView
-                        onClick={() => {
-                          navigation.navigate(
-                            AppNavigator.HomeStackIdentifiers.sourceModel,
-                            {
-                              empId: selector.login_employee_details.empId,
-                              headerTitle: "Source/Model",
-                              loggedInEmpId:
-                                selector.login_employee_details.empId,
-                              type: selector.isDSE ? "SELF" : "INSIGHTS",
-                              moduleType: "home",
-                            }
-                          );
-                        }}
-                      />
+                      <View style={{ width: "30%", flexDirection: "row" }}>
+                        <Text style={styles.txt3}>Balance</Text>
+                        <View style={{ marginRight: 15 }}></View>
+                        <Text style={styles.txt3}>AR/Day</Text>
+                      </View>
                     </View>
-                    <View style={{ width: "30%", flexDirection: "row" }}>
-                      <Text style={styles.txt3}>Balance</Text>
-                      <View style={{ marginRight: 15 }}></View>
-                      <Text style={styles.txt3}>AR/Day</Text>
-                    </View>
-                  </View>
                   </>
                 )}
                 <>
@@ -4057,10 +4059,15 @@ const TargetScreen = ({ route }) => {
           )}
         </View>
       ) : (
-        <LoaderComponent
-          visible={selector.isLoading}
-          onRequestClose={() => {}}
-        />
+        // <LoaderComponent
+        //   visible={selector.isLoading}
+        //   onRequestClose={() => {}}
+        // />
+        <View
+          style={{ flex: 1 }}
+        >
+          <AnimLoaderComp visible={selector.isLoading} />
+        </View>
       )}
     </React.Fragment>
   );
