@@ -201,7 +201,7 @@ const AppScreen = () => {
               currentTimestamp: new Date().getTime(),
               updateTimestamp: new Date().getTime(),
               purpose: "",
-              location: JSON.stringify(finalArray),
+              location: JSON.stringify([{ longitude, latitude }]),
               kmph: speed.toString(),
               speed: speed.toString(),
               isStart: "true",
@@ -267,8 +267,13 @@ const AppScreen = () => {
             hasObjectWithCurrentDate1
           )} with the same date as the current hasObjectWithCurrentDate1date.`
         );
-        if (hasObjectWithCurrentDate.isStart === "true") {
-          const tempArray = JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "false"
+        ) {
+          const tempArray = JSON.parse(
+            JSON.parse(hasObjectWithCurrentDate.location)
+          );
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
