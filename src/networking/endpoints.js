@@ -980,6 +980,10 @@ const URL = {
   RECEPTIONIST_DASHBOARD: () => {
     return dashboard + "/receptionist";
   },
+
+  RECEPTIONIST_DASHBOARDV2: () => {
+    return dashboard + "/receptionist/tree";
+  },
   RECEPTIONIST_MANAGER_DASHBOARD: () => {
     return dashboard + "/receptionistManager";
   },

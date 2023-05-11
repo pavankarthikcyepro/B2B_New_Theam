@@ -61,6 +61,7 @@ import {
   updateFilterLeadership_selectedDesignationName,
   updateLeaderShipFilter,
   updateLoader,
+  getReceptionistDataV2,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -298,7 +299,7 @@ const HomeScreen = ({ route, navigation }) => {
         endDate: selector.receptionistFilterIds.endDate,
         dealerCodes: selector.receptionistFilterIds.dealerCodes,
       };
-      dispatch(getReceptionistData(payload));
+      dispatch(getReceptionistDataV2(payload));
     } else if (
       userData.hrmsRole === "CRM" &&
       !selector.saveCRMfilterObj?.selectedempId

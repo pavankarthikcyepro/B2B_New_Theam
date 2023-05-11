@@ -728,6 +728,19 @@ export const getSourceModelDataForTeam = createAsyncThunk(
   }
 );
 
+
+export const getReceptionistDataV2 = createAsyncThunk(
+  "HOME/getReceptionistDataV2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.getReceptionistDataV2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getReceptionistData = createAsyncThunk(
   "HOME/getReceptionistData",
   async (payload, { rejectWithValue }) => {
@@ -1058,6 +1071,7 @@ export const homeSlice = createSlice({
       enquirysCount: 0,
       totalLostCount: 0,
       fullResponse: {},
+
     },
     receptionistDataV2: {
       RetailCount: 0,
@@ -1945,6 +1959,24 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getReceptionistData.rejected, (state, action) => {})
+
+      .addCase(getReceptionistDataV2.pending, (state) => { })
+      .addCase(getReceptionistDataV2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistData = {
+          RetailCount: dataObj.RetailCount,
+          bookingsCount: dataObj.bookingsCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.contactsCount,
+          enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj,
+        };
+      })
+      .addCase(getReceptionistDataV2.rejected, (state, action) => { })
+
 
       .addCase(getReceptionistDataForRecepDashboard.pending, (state) => {
         state.isLoading = true;

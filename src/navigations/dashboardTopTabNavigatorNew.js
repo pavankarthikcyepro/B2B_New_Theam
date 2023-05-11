@@ -32,6 +32,7 @@ const tabBarOptions = {
   }
 }
 const receptionistRole = ["CRM"];
+const receptionistRoleV2 = ["Reception", "CRM", "Tele Caller", "CRE"];
 const DashboardTopTabNavigatorNew = () => {
   const [userData, setUserData] = useState({
     empId: 0,
@@ -54,7 +55,7 @@ const DashboardTopTabNavigatorNew = () => {
   }, []);
   return (
       <View>
-      {receptionistRole.includes(userData.hrmsRole) ? 
+      {receptionistRoleV2.includes(userData.hrmsRole) ? 
 
         <TargetScreenCRM />
          : 
