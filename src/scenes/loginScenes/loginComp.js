@@ -251,6 +251,7 @@ const LoginScreen = ({ navigation }) => {
 
   const getCoordinates = async () => {
     try {
+      return
         if (true) {
           // setInterval(() => {
           const watchID = Geolocation.getCurrentPosition(

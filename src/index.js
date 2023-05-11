@@ -26,7 +26,7 @@ import {
 } from "./service";
 import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
-import {
+import URL, {
   getDetailsByempIdAndorgId,
   locationUpdate,
   saveLocation,
@@ -38,9 +38,11 @@ import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
 import Orientation from "react-native-orientation-locker";
 import TrackPlayer from "react-native-track-player";
+import moment from "moment";
 
 enableScreens();
-
+const dateFormat = "YYYY-MM-DD";
+const currentDateMoment = moment().format(dateFormat);
 const AppScreen = () => {
   useEffect(async () => {
     Orientation.lockToPortrait();
@@ -108,8 +110,15 @@ const AppScreen = () => {
     const { longitude, latitude, speed } = lastPosition.coords;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      // const trackingResponse = await client.get(
+      //   getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+      // );
       const trackingResponse = await client.get(
-        getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+        URL.GET_MAP_COORDINATES_BY_ID(
+          jsonObj.empId,
+          jsonObj.orgId,
+          currentDateMoment
+        )
       );
       const trackingJson = await trackingResponse.json();
       const currentDate = new Date();
@@ -126,11 +135,18 @@ const AppScreen = () => {
       if (hasObjectWithCurrentDate) {
         console.log(
           `There is an object named ${JSON.stringify(
-            hasObjectWithCurrentDate
+            hasObjectWithCurrentDate.isStart
           )} with the same date as the current date.`
         );
-        if (hasObjectWithCurrentDate.purpose === "START") {
-          const tempArray = JSON.parse(hasObjectWithCurrentDate.location);
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "false"
+        ) {
+          const tempArray =JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
+          console.log(
+            "TeyhasObjectWithCurrentDatepe",
+             tempArray
+          );
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
@@ -139,7 +155,7 @@ const AppScreen = () => {
             latitude,
             longitude
           );
-          if (distance >= 50) {
+          if (distance >= 10) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -149,10 +165,12 @@ const AppScreen = () => {
                 hasObjectWithCurrentDate.createdtimestamp
               ).getTime(),
               updateTimestamp: new Date().getTime(),
-              purpose: "START",
+              purpose: "",
               location: JSON.stringify(finalArray),
               kmph: speed.toString(),
               speed: speed.toString(),
+              isStart: "true",
+              isEnd: "false",
             };
             const response = await client.put(
               locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
@@ -161,8 +179,11 @@ const AppScreen = () => {
             const json = await response.json();
           }
         }
-        if (hasObjectWithCurrentDate.purpose === "END") {
-          const tempArray = JSON.parse(hasObjectWithCurrentDate.location);
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "true"
+        ) {
+          const tempArray = JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
@@ -179,10 +200,12 @@ const AppScreen = () => {
               branchId: jsonObj?.branchId,
               currentTimestamp: new Date().getTime(),
               updateTimestamp: new Date().getTime(),
-              purpose: "START",
+              purpose: "",
               location: JSON.stringify(finalArray),
               kmph: speed.toString(),
               speed: speed.toString(),
+              isStart: "true",
+              isEnd: "false",
             };
             const response = await client.post(saveLocation, payload);
             const json = await response.json();
@@ -199,10 +222,12 @@ const AppScreen = () => {
           branchId: jsonObj?.branchId,
           currentTimestamp: new Date().getTime(),
           updateTimestamp: new Date().getTime(),
-          purpose: "START",
+          purpose: "",
           location: JSON.stringify([{ longitude, latitude }]),
           kmph: speed.toString(),
           speed: speed.toString(),
+          isStart: "true",
+          isEnd: "false",
         };
         const response = await client.post(saveLocation, payload);
         const json = await response.json();
@@ -214,8 +239,15 @@ const AppScreen = () => {
     const { longitude, latitude, speed } = lastPosition.coords;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      // const trackingResponse = await client.get(
+      //   getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+      // );
       const trackingResponse = await client.get(
-        getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+        URL.GET_MAP_COORDINATES_BY_ID(
+          jsonObj.empId,
+          jsonObj.orgId,
+          currentDateMoment
+        )
       );
       const trackingJson = await trackingResponse.json();
       const currentDate = new Date();
@@ -233,10 +265,10 @@ const AppScreen = () => {
         console.log(
           `There is an object named ${JSON.stringify(
             hasObjectWithCurrentDate1
-          )} with the same date as the current date.`
+          )} with the same date as the current hasObjectWithCurrentDate1date.`
         );
-        if (hasObjectWithCurrentDate.purpose === "START") {
-          const tempArray = JSON.parse(hasObjectWithCurrentDate.location);
+        if (hasObjectWithCurrentDate.isStart === "true") {
+          const tempArray = JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
@@ -245,6 +277,7 @@ const AppScreen = () => {
             latitude,
             longitude
           );
+          console.log("distanssssce", distance);
           if (distance >= 50) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
@@ -255,10 +288,12 @@ const AppScreen = () => {
                 hasObjectWithCurrentDate.createdtimestamp
               ).getTime(),
               updateTimestamp: new Date().getTime(),
-              purpose: "END",
+              purpose: "",
               location: JSON.stringify(finalArray),
               kmph: speed.toString(),
               speed: speed.toString(),
+              isStart: "true",
+              isEnd: "true",
             };
             const response = await client.put(
               locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
@@ -287,7 +322,7 @@ const AppScreen = () => {
             const employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
-            console.log("speedfff", speed);
+            console.log("SPEDDd", speed);
             if (speed >= 10) {
               checkTheDate(employeeData, lastPosition);
             }
