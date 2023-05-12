@@ -79,20 +79,41 @@ const TripListScreen = ({ route, navigation }) => {
         }}
         style={styles.element}
       >
-        <Text style={{ fontSize: 20, fontWeight: "600", marginBottom: 10 }}>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "700",
+            marginBottom: 10,
+            color: Colors.RED,
+          }}
+        >
           {"Trip No. " + (index + 1)}
         </Text>
-        <Text style={{ fontSize: 13, fontWeight: "500", marginBottom: 2 }}>
-          {"Start Time: " +
-            moment(item.createdtimestamp)
+        <Text
+          style={{
+            fontSize: 13,
+            fontWeight: "500",
+            marginBottom: 2,
+            color: Colors.BLACK,
+          }}
+        >
+          {"Start Time :  " +
+            moment(item?.createdtimestamp)
               .utcOffset("+05:30")
-              .format("YYYY-MM-DD hh:mm:ssa")}
+              .format("YYYY-MM-DD    hh:mm A")}
         </Text>
-        <Text style={{ fontSize: 13, fontWeight: "500", marginBottom: 2 }}>
-          {"End Time: " +
-            moment(item.updatedtimestamp)
+        <Text
+          style={{
+            fontSize: 13,
+            fontWeight: "500",
+            marginBottom: 2,
+            color: Colors.BLACK,
+          }}
+        >
+          {"End Time   :  " +
+            moment(item?.updatedtimestamp)
               .utcOffset("+05:30")
-              .format("YYYY-MM-DD hh:mm:ssa")}
+              .format("YYYY-MM-DD    hh:mm A")}
         </Text>
       </TouchableOpacity>
     );
@@ -115,21 +136,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: Colors.WHITE,
+    backgroundColor: Colors.LIGHT_GRAY,
   },
   element: {
     marginVertical: 10,
-    backgroundColor: Colors.LIGHT_GRAY,
     width: "95%",
     paddingVertical: 10,
     paddingHorizontal: 10,
     alignSelf: "center",
     borderRadius: 10,
-    shadowColor: Colors.LIGHT_PINK,
+    shadowColor: Colors.BLACK,
     shadowOffset: { width: 3, height: 5 },
     shadowOpacity: 0.4,
     shadowRadius: 2,
-    borderWidth: 0.3,
-    borderColor: Colors.GRAY,
+    backgroundColor: Colors.WHITE,
+    elevation: 3,
+    marginHorizontal: 5,
+    marginVertical: 6,
+    position: "relative",
   },
 });

@@ -1734,7 +1734,7 @@ const ListComponent = ({ route, navigation }) => {
                     backgroundColor: index ? Colors.WHITE : Colors.RED,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
-                    padding: 14,
+                    padding: 8,
                   }}
                 >
                   <Text
@@ -1759,7 +1759,7 @@ const ListComponent = ({ route, navigation }) => {
                     backgroundColor: index ? Colors.RED : Colors.WHITE,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
-                    padding: 14,
+                    padding: 8,
                   }}
                 >
                   <Text
@@ -1811,7 +1811,7 @@ const ListComponent = ({ route, navigation }) => {
                   backgroundColor: index ? Colors.WHITE : Colors.RED,
                   borderTopLeftRadius: 5,
                   borderBottomLeftRadius: 5,
-                  padding: 14,
+                  padding: 8,
                 }}
               >
                 <Text
@@ -1836,7 +1836,7 @@ const ListComponent = ({ route, navigation }) => {
                   backgroundColor: index ? Colors.RED : Colors.WHITE,
                   borderTopRightRadius: 5,
                   borderBottomRightRadius: 5,
-                  padding: 14,
+                  padding: 8,
                 }}
               >
                 <Text
@@ -1913,7 +1913,7 @@ const ListComponent = ({ route, navigation }) => {
                   <View
                     style={[
                       {
-                        height: 180,
+                        height: 150,
                         width: itemWidth,
                         backgroundColor: Colors.WHITE,
                         flexDirection: "column",
@@ -1927,7 +1927,7 @@ const ListComponent = ({ route, navigation }) => {
                     <View
                       style={{
                         width: itemWidth - 10,
-                        height: 120,
+                        height: 100,
                         justifyContent: "center",
                         alignItems: "center",
                       }}
@@ -1993,7 +1993,7 @@ const ListComponent = ({ route, navigation }) => {
                   <View
                     style={[
                       {
-                        height: 180,
+                        height: 150,
                         width: itemWidth,
                         backgroundColor: Colors.WHITE,
                         flexDirection: "column",
@@ -2007,7 +2007,7 @@ const ListComponent = ({ route, navigation }) => {
                     <View
                       style={{
                         width: itemWidth - 10,
-                        height: 120,
+                        height: 100,
                         justifyContent: "center",
                         alignItems: "center",
                       }}
@@ -2088,7 +2088,7 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   list: {
-    height: 185,
+    height: 170,
     width: baseItemWidth,
     paddingBottom: 5,
     backgroundColor: Colors.WHITE,
@@ -2137,7 +2137,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     marginLeft: 10,
-    padding: 14,
+    padding: 10,
   },
   selfbtn: {
     width: "100%",
@@ -2146,7 +2146,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
-    padding: 15,
+    padding: 8,
   },
   txt1: {
     fontSize: 16,
@@ -2160,7 +2160,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
-    padding: 15,
+    padding: 8,
   },
   txt2: {
     fontSize: 16,
