@@ -2,7 +2,7 @@
 import { RadioTextItem, RadioTextItem2 } from "./radioTextItem";
 import { CustomerAccordianHeaderItem } from "./customerAccordianHeaderItem";
 import { ImageSelectItem } from "./imageSelectItem";
-import { DateSelectItem } from "./dateSelectItem";
+import { DateSelectItem, NumberInput } from "./dateSelectItem";
 import { DateSelectItemForTargetSettings } from "./dateSelectItemTarget";
 import { EmptyListView } from "./emptyListView";
 import { PreEnquiryItem } from "./preEnquiryItem";
@@ -31,5 +31,6 @@ export {
   DateSelectItemForTargetSettings,
   DropDownSelectionItemV2,
   DropDownSelectionItemV3,
+  NumberInput,
   RadioTextItem2,
 };
