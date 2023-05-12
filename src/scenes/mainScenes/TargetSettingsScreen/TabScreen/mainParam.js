@@ -3805,7 +3805,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 placeholder={"Select branch"}
                 searchPlaceholder="Search..."
                 value={selector.isTeam ? defaultBranch : Number(defaultBranch)}
-                disable={defaultBranch !== null}
+                // disable={defaultBranch !== null}
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
                 onChange={async (item) => {
