@@ -790,6 +790,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     let branchId = await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
       return branchId
     });
+    const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
     let payload = {
       "address": customerAddress,
       "reason": selector.reason === 'Others' ? otherReason : selector.reason,
@@ -800,7 +801,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       "employeeRemarks": selector.employee_remarks,
       "actualStartTime": convertDateStringToMillisecondsUsingMoment(selector.actual_start_time),
       "actualEndTime":"",
-      "nextFlowupTime": convertDateStringToMillisecondsUsingMoment(selector.next_follow_up_Time) ,
+      "nextFlowupTime": moment(nextFollowuptime).valueOf() ,
       "status": status,
       "customerId": selector.task_details_response?.universalId,
       "entityId": selector.task_details_response.entityId,
