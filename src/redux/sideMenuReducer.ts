@@ -16,6 +16,7 @@ export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
 export const GEOLOCATION = "GEOLOCATION";
 export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
+export const MY_STOCK = "MY_STOCK";
 export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
 export const COMPLAINT_TRACKER = "REPORT_DOWNLOAD";
 
@@ -67,6 +68,12 @@ const data = [
     title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
+  },
+  {
+    title: "My Stock",
+    icon: MY_STOCK,
+    screen: 120,
     pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   // {

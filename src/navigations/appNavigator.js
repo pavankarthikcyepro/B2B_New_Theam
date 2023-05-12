@@ -114,6 +114,7 @@ import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
 import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
+import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
 import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
@@ -408,6 +409,7 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  myStock: "MY_STOCK",
   reportDownload:"REPORT_DOWNLOAD",
   complaintTracker:"COMPLAINT_TRACKER",
   receptionistDashboard: "RECEPTIONIST_DASHBOARD",
@@ -1619,6 +1621,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
             // headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
           }
         }
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.myStock}
+        component={MyStockMainTopTabNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.geolocation}
