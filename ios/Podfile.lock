@@ -17,9 +17,12 @@ PODS:
     - FirebaseAnalytics (~> 8.8.0)
   - Firebase/CoreOnly (8.8.0):
     - FirebaseCore (= 8.8.0)
+<<<<<<< HEAD
   - Firebase/Crashlytics (8.8.0):
     - Firebase/CoreOnly
     - FirebaseCrashlytics (~> 8.8.0)
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - Firebase/Messaging (8.8.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 8.8.0)
@@ -52,6 +55,7 @@ PODS:
     - nanopb (~> 2.30908.0)
   - FirebaseCoreInternal (10.8.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
+<<<<<<< HEAD
   - FirebaseCrashlytics (8.8.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
@@ -59,6 +63,8 @@ PODS:
     - GoogleUtilities/Environment (~> 7.4)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - FirebaseInstallations (8.15.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
@@ -401,9 +407,9 @@ PODS:
     - React-Core
   - react-native-mail (6.1.1):
     - React-Core
-  - react-native-maps (1.4.0):
+  - react-native-maps (1.7.1):
     - React-Core
-  - react-native-netinfo (9.3.7):
+  - react-native-netinfo (9.3.10):
     - React-Core
   - react-native-orientation-locker (1.5.0):
     - React-Core
@@ -411,7 +417,7 @@ PODS:
     - React-Core
   - react-native-safe-area-context (3.4.1):
     - React-Core
-  - react-native-segmented-control (2.4.0):
+  - react-native-segmented-control (2.4.1):
     - React-Core
   - react-native-simple-toast (1.1.4):
     - React-Core
@@ -496,11 +502,11 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNCAsyncStorage (1.17.11):
+  - RNCAsyncStorage (1.18.1):
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
-  - RNCPushNotificationIOS (1.10.1):
+  - RNCPushNotificationIOS (1.11.0):
     - React-Core
   - RNDateTimePicker (3.5.2):
     - React-Core
@@ -509,10 +515,13 @@ PODS:
   - RNFBApp (12.9.3):
     - Firebase/CoreOnly (= 8.8.0)
     - React-Core
+<<<<<<< HEAD
   - RNFBCrashlytics (12.9.3):
     - Firebase/Crashlytics (= 8.8.0)
     - React-Core
     - RNFBApp
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - RNFBMessaging (12.9.3):
     - Firebase/Messaging (= 8.8.0)
     - React-Core
@@ -523,10 +532,10 @@ PODS:
     - React-Core
   - RNReanimated (1.13.4):
     - React-Core
-  - RNScreens (3.19.0):
+  - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
-  - RNSnackbar (2.4.0):
+  - RNSnackbar (2.6.0):
     - React-Core
   - RNSVG (12.5.1):
     - React-Core
@@ -621,7 +630,10 @@ DEPENDENCIES:
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+<<<<<<< HEAD
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -641,7 +653,10 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreInternal
+<<<<<<< HEAD
     - FirebaseCrashlytics
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
     - FirebaseInstallations
     - FirebaseMessaging
     - Flipper
@@ -778,8 +793,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-device-info"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
+<<<<<<< HEAD
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics"
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNFS:
@@ -804,13 +822,20 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
+<<<<<<< HEAD
   FBReactNativeSpec: f5fe96af935c9bdf5dab61ad944e910c02c3a7fd
+=======
+  FBReactNativeSpec: 31da7dbb2452fbc9427dc5ed832e8d4ebcf45b2f
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
   FirebaseAnalytics: 5506ea8b867d8423485a84b4cd612d279f7b0b8a
   FirebaseCore: 98b29e3828f0a53651c363937a7f7d92a19f1ba2
   FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
   FirebaseCoreInternal: fa2899eb1f340054858d289e5a0fb935a0a74e52
+<<<<<<< HEAD
   FirebaseCrashlytics: 3660c045c8e45cc4276110562a0ef44cf43c8157
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
   FirebaseMessaging: 419b5c9d84f294a753c6501d8cfb9ced1ce37304
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
@@ -850,12 +875,12 @@ SPEC CHECKSUMS:
   react-native-html-to-pdf: 4c5c6e26819fe202971061594058877aa9b25265
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-mail: 8fdcd3aef007c33a6877a18eb4cf7447a1d4ce4a
-  react-native-maps: 7135a33610202745d08fdf151ce6b0d01952a99c
-  react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
+  react-native-maps: 667f9b975549c6fa9b1631bf859440f68ebd3b8f
+  react-native-netinfo: ccbe1085dffd16592791d550189772e13bf479e2
   react-native-orientation-locker: 851f6510d8046ea2f14aa169b1e01fcd309a94ba
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
-  react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
+  react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
   react-native-simple-toast: 8ee5d23f0b92b935ab7434cdb65159ce12dfb4b7
   react-native-slider: d3ae4270cf8a8cc45a69912db0cc42b151560d5a
   react-native-switch-audio-output: d435f857bfe73f9b6263c7101432ea2785b854d7
@@ -876,19 +901,22 @@ SPEC CHECKSUMS:
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
+  RNCAsyncStorage: b90b71f45b8b97be43bc4284e71a6af48ac9f547
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
-  RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
+  RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNDeviceInfo: 475a4c447168d0ad4c807e48ef5e0963a0f4eb1b
   RNFBApp: aa6a864798daa054bda002bb3d6905800d6d4156
+<<<<<<< HEAD
   RNFBCrashlytics: 295c74fb438878398eae6f3a5f3d1cb0656da75f
+=======
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   RNFBMessaging: 8d3dc5212a844b0c2d4552382394aad046d551fe
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
-  RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
-  RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
+  RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
+  RNSnackbar: f30f4bb47184d7cb39470f624cc5010507f43e6c
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
   SwiftAudioEx: 83eabba2940924fc1c0d5cb0896049921365229c
@@ -896,6 +924,10 @@ SPEC CHECKSUMS:
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
+<<<<<<< HEAD
 PODFILE CHECKSUM: abe724e6ae3dd68bc29548c072fb6bc6d2294774
+=======
+PODFILE CHECKSUM: fba02f971ad3731ac8c2a7f0bc4efad4ed9b8483
+>>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0
