@@ -68,12 +68,15 @@ import {
   setBranchId,
   setBranchName,
 } from "../../utils/helperFunctions";
+import moment from "moment";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
   latitude: 37.33233141,
   longitude: -122.0312186,
 };
+const dateFormat = "YYYY-MM-DD";
+const currentDateMoment = moment().format(dateFormat);
 
 const LoginScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.loginReducer);
