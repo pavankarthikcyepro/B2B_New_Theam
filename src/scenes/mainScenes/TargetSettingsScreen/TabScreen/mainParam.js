@@ -2000,6 +2000,123 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }
 
+  const RenderEmployee = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+    return (
+      <View key={`${item.empId} ${index}`}>
+        <View
+          style={{
+            paddingHorizontal: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 12,
+            width: Dimensions.get("screen").width - 28,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "capitalize",
+              }}
+            >
+              {item?.empName}
+              {item.childCount > 1 ? "  |" : ""}
+            </Text>
+            {item.childCount > 1 && (
+              <View
+                style={{
+                  backgroundColor: "lightgrey",
+                  flexDirection: "row",
+                  paddingHorizontal: 7,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 5,
+                  alignSelf: "flex-start",
+                  marginLeft: 7,
+                }}
+              >
+                <MaterialIcons name="person" size={15} color={Colors.BLACK} />
+                <Text>{item.childCount}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+        {/*Source/Model View END */}
+        <View
+          style={[
+            { flexDirection: "row" },
+            item?.isOpenInner && {
+              borderRadius: 10,
+              borderWidth: 2,
+              borderColor: borderColor,
+              marginHorizontal: 6,
+              overflow: "hidden",
+            },
+          ]}
+        >
+          {/*RIGHT SIDE VIEW*/}
+          <View
+            style={[
+              {
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "column",
+                paddingHorizontal: 2,
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "row",
+              }}
+            >
+              <RenderLevel1NameView
+                level={0}
+                item={item}
+                branchName={getBranchName(item?.branchId)}
+                color={borderColor}
+                teamLoader={teamLoader}
+                teamMember={teamMember}
+                titleClick={async () => {
+                  await onEmployeeNameClick(item, index, allData);
+                }}
+              />
+              <View
+                style={{
+                  width: "100%",
+                  height: boxHeight,
+                  flexDirection: "row",
+                  alignSelf: "center",
+                  backgroundColor: "red",
+                }}
+              >
+                {renderData(item, borderColor)}
+              </View>
+            </View>
+            {item.isOpenInner &&
+              item.employeeTargetAchievements.length > 0 &&
+              item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
+                return RenderEmployee(
+                  innerItem1,
+                  innerIndex1,
+                  item.employeeTargetAchievements,
+                  levelColors,
+                  hierarchyLevel + 1
+                );
+              })}
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <>
       {true && (
@@ -2232,10 +2349,21 @@ const MainParamScreen = ({ route, navigation }) => {
                           </View>
                         );
                       })}
-
                     {allParameters.length > 0 &&
                       filterParameters.length == 0 &&
                       allParameters.map((item, index) => {
+                        return RenderEmployee(
+                          item,
+                          index,
+                          allParameters,
+                          color,
+                          0
+                        );
+                      })}
+                    {allParameters.length > 0 &&
+                      filterParameters.length == 0 &&
+                      allParameters.map((item, index) => {
+                        return;
                         return (
                           <View>
                             <View
