@@ -17,12 +17,9 @@ PODS:
     - FirebaseAnalytics (~> 8.8.0)
   - Firebase/CoreOnly (8.8.0):
     - FirebaseCore (= 8.8.0)
-<<<<<<< HEAD
   - Firebase/Crashlytics (8.8.0):
     - Firebase/CoreOnly
     - FirebaseCrashlytics (~> 8.8.0)
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - Firebase/Messaging (8.8.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 8.8.0)
@@ -55,7 +52,6 @@ PODS:
     - nanopb (~> 2.30908.0)
   - FirebaseCoreInternal (10.8.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-<<<<<<< HEAD
   - FirebaseCrashlytics (8.8.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
@@ -63,8 +59,6 @@ PODS:
     - GoogleUtilities/Environment (~> 7.4)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - FirebaseInstallations (8.15.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
@@ -515,13 +509,10 @@ PODS:
   - RNFBApp (12.9.3):
     - Firebase/CoreOnly (= 8.8.0)
     - React-Core
-<<<<<<< HEAD
   - RNFBCrashlytics (12.9.3):
     - Firebase/Crashlytics (= 8.8.0)
     - React-Core
     - RNFBApp
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - RNFBMessaging (12.9.3):
     - Firebase/Messaging (= 8.8.0)
     - React-Core
@@ -630,10 +621,7 @@ DEPENDENCIES:
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
-<<<<<<< HEAD
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -653,10 +641,7 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreInternal
-<<<<<<< HEAD
     - FirebaseCrashlytics
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
     - FirebaseInstallations
     - FirebaseMessaging
     - Flipper
@@ -793,11 +778,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-device-info"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
-<<<<<<< HEAD
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics"
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNFS:
@@ -822,20 +804,13 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: fa8275d5086566e22a26ddc385ab5772e7f9b1bd
-<<<<<<< HEAD
-  FBReactNativeSpec: f5fe96af935c9bdf5dab61ad944e910c02c3a7fd
-=======
   FBReactNativeSpec: 31da7dbb2452fbc9427dc5ed832e8d4ebcf45b2f
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
   FirebaseAnalytics: 5506ea8b867d8423485a84b4cd612d279f7b0b8a
   FirebaseCore: 98b29e3828f0a53651c363937a7f7d92a19f1ba2
   FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
   FirebaseCoreInternal: fa2899eb1f340054858d289e5a0fb935a0a74e52
-<<<<<<< HEAD
   FirebaseCrashlytics: 3660c045c8e45cc4276110562a0ef44cf43c8157
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
   FirebaseMessaging: 419b5c9d84f294a753c6501d8cfb9ced1ce37304
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
@@ -907,10 +882,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNDeviceInfo: 475a4c447168d0ad4c807e48ef5e0963a0f4eb1b
   RNFBApp: aa6a864798daa054bda002bb3d6905800d6d4156
-<<<<<<< HEAD
   RNFBCrashlytics: 295c74fb438878398eae6f3a5f3d1cb0656da75f
-=======
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
   RNFBMessaging: 8d3dc5212a844b0c2d4552382394aad046d551fe
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
@@ -924,10 +896,6 @@ SPEC CHECKSUMS:
   Yoga: d1fc3575b8b68891ff5ef3c276daa855e841eb32
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-<<<<<<< HEAD
 PODFILE CHECKSUM: abe724e6ae3dd68bc29548c072fb6bc6d2294774
-=======
-PODFILE CHECKSUM: fba02f971ad3731ac8c2a7f0bc4efad4ed9b8483
->>>>>>> 696ea6c10cc1e5c4cab42e70448dc2826be09e83
 
 COCOAPODS: 1.12.0
