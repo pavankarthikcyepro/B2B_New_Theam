@@ -140,11 +140,7 @@ const AppScreen = () => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
-        console.log(
-          `There is an object named ${JSON.stringify(
-            hasObjectWithCurrentDate.isStart
-          )} with the same date as the current date.`
-        );
+        
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
@@ -269,11 +265,7 @@ const AppScreen = () => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
-        console.log(
-          `There is an object named ${JSON.stringify(
-            hasObjectWithCurrentDate1
-          )} with the same date as the current hasObjectWithCurrentDate1date.`
-        );
+        
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
