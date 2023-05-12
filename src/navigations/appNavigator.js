@@ -790,7 +790,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.mytasks}
         component={MyTasksScreen}
         options={{
-          title: "My Tasks",
+          title: "Task Dashboard",
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
