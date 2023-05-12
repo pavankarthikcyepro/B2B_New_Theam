@@ -1945,7 +1945,35 @@ const TestDriveScreen = ({ route, navigation }) => {
   }
 
   const reTestDrivePutCallupdateList = (status) => {
-    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
+      "DD-MM-YYYY"
+    );
+    let prefferedTime = "";
+    // let actualStartTime = "";
+    // let actualEndTime = "";
+
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+      // const startTime = moment(selector.actual_start_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      // const endTime = moment(selector.actual_end_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      prefferedTime = date + " " + preffTime;
+      // actualStartTime = date + " " + startTime;
+      // actualEndTime = date + " " + endTime;
+    } else {
+      prefferedTime = date + " " + selector.customer_preferred_time;
+      // actualStartTime = date + " " + selector.actual_start_time;
+      // actualEndTime = date + " " + selector.actual_end_time;
+    }
+
+    // const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
     const location = addressType === 1 ? "showroom" : "customer";
@@ -1980,7 +2008,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       "source": "ShowroomWalkin",
       "startTime": moment(startTime).valueOf(),
       "status": status,
-      "testDriveDatetime": moment(preferredTime).valueOf(),
+      "testDriveDatetime": prefferedTime,
       "varientId": varientId,
       "vehicleId": vehicleId,
       "driverId": selectedDriverDetails.id.toString(),
