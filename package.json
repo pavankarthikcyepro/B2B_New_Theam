@@ -47,7 +47,7 @@
     "prop-types": "^15.7.2",
     "react": "17.0.1",
     "react-native": "^0.64.2",
-    "react-native-background-actions": "^2.6.7",
+    "react-native-background-actions": "^3.0.0",
     "react-native-calendars": "^1.1291.1",
     "react-native-call-detection": "^1.9.0",
     "react-native-chart-kit": "^6.11.0",
