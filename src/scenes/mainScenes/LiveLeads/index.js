@@ -994,7 +994,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                               : Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
-                            padding: 14,
+                            padding: 8,
                           }}
                         >
                           <Text
@@ -1023,7 +1023,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                               : Colors.WHITE,
                             borderTopRightRadius: 5,
                             borderBottomRightRadius: 5,
-                            padding: 14,
+                            padding: 8,
                           }}
                         >
                           <Text
@@ -1048,8 +1048,12 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                         marginBottom: 15,
                         justifyContent: "center",
                         alignItems: "center",
+                        marginTop: 15,
                       }}
                     >
+                      {/* <View style={styles.titleDashboardContainer}>
+                        <Text style={styles.dashboardText}>Dashboard</Text>
+                      </View> */}
                       <View
                         style={{
                           flexDirection: "row",
@@ -1073,7 +1077,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
                             backgroundColor: Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
-                            padding: 15,
+                            padding: 8,
                           }}
                         >
                           <Text
@@ -1134,7 +1138,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
   },
   shadow: {
     //   overflow: 'hidden',
@@ -1263,4 +1267,18 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   rankIcon: { width: 25, height: 25 },
+  titleDashboardContainer: {
+    paddingVertical: 10,
+    backgroundColor: "#e5e5e5",
+    marginBottom: 10,
+    paddingHorizontal: 70,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
+  },
 });

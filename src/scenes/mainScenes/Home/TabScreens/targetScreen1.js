@@ -1755,7 +1755,7 @@ const TargetScreen = ({ route }) => {
                           })}
                         {allParameters.length > 0 &&
                           allParameters.map((item, index) => {
-                            return
+                            return;
                             return (
                               <View key={`${item.empId} ${index}`}>
                                 <View
@@ -3171,6 +3171,9 @@ const TargetScreen = ({ route }) => {
             !selector.isLoading &&
             selfInsightsData.length > 0 && (
               <>
+                <View style={styles.titleDashboardContainer}>
+                  <Text style={styles.dashboardText}>Dashboard</Text>
+                </View>
                 {!receptionistRole.includes(userData.hrmsRole) && (
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View style={styles.view13}>
@@ -4204,8 +4207,7 @@ const TargetScreen = ({ route }) => {
         </View>
       ) : (
         <View style={{ flex: 1 }}>
-          <AnimLoaderComp visible={selector.isLoading}
-           />
+          <AnimLoaderComp visible={selector.isLoading} />
         </View>
         // <LoaderComponent
         //   visible={selector.isLoading}
@@ -4556,15 +4558,16 @@ const styles = StyleSheet.create({
     paddingRight: 16,
   },
   titleDashboardContainer: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     backgroundColor: Colors.LIGHT_GRAY,
     marginBottom: 10,
-    paddingHorizontal: 70,
+    paddingHorizontal: 45,
     borderRadius: 50,
     alignSelf: "center",
+    
   },
   dashboardText: {
-    fontWeight: "600",
+    fontWeight: "bold",
     fontSize: 20,
     color: Colors.PINK,
     textDecorationLine: "underline",

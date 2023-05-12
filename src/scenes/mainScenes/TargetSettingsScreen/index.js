@@ -489,7 +489,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                               : Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
-                            padding: 14,
+                            padding: 8,
                           }}
                         >
                           <Text
@@ -518,7 +518,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                               : Colors.WHITE,
                             borderTopRightRadius: 5,
                             borderBottomRightRadius: 5,
-                            padding: 14,
+                            padding: 8,
                           }}
                         >
                           <Text
@@ -571,7 +571,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                             backgroundColor: Colors.RED,
                             borderTopLeftRadius: 5,
                             borderBottomLeftRadius: 5,
-                            padding: 14,
+                            padding: 8,
                           }}
                         >
                           <Text
