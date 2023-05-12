@@ -291,11 +291,7 @@ const LoginScreen = ({ navigation }) => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
-        console.log(
-          `LOGINThere is an object named ${JSON.stringify(
-            hasObjectWithCurrentDate.isStart
-          )} with the same date as the current date.`
-        );
+       
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
@@ -303,7 +299,7 @@ const LoginScreen = ({ navigation }) => {
           const tempArray = JSON.parse(
             JSON.parse(hasObjectWithCurrentDate.location)
           );
-          console.log("LOGINTeyhasObjectWithCurrentDatepe", tempArray);
+          
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
@@ -371,9 +367,7 @@ const LoginScreen = ({ navigation }) => {
           }
         }
       } else {
-        console.log(
-          "LOGIN    There is no object with the same date as the current date."
-        );
+       
         const payload = {
           id: 0,
           orgId: jsonObj?.orgId,
@@ -421,11 +415,7 @@ const LoginScreen = ({ navigation }) => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
-        console.log(
-          `LOGIN There is an object named ${JSON.stringify(
-            hasObjectWithCurrentDate1
-          )} with the same date as the current hasObjectWithCurrentDate1date.`
-        );
+       
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
@@ -441,7 +431,7 @@ const LoginScreen = ({ navigation }) => {
             latitude,
             longitude
           );
-          console.log("LOGIN distanssssce", distance);
+         
           if (distance >= 50) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
@@ -467,9 +457,7 @@ const LoginScreen = ({ navigation }) => {
           }
         }
       } else {
-        console.log(
-          " LOGIN There is no object with the same date as the current End date."
-        );
+      
       }
     }
   };

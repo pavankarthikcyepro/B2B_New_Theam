@@ -68,6 +68,18 @@ export const savehomevisit = createAsyncThunk("HOME_VISIT_SLICE/savehomevisit", 
     return json;
 })
 
+// save home visit
+export const savehomevisitForAllbtn = createAsyncThunk("HOME_VISIT_SLICE/savehomevisitForAllbtn", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.SAVEHOMEVISIT(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
 // get home visit counts
 export const getHomeVisitCounts = createAsyncThunk("HOME_VISIT_SLICE/getHomeVisitCounts", async (payload, { rejectWithValue }) => {
 
@@ -554,6 +566,24 @@ const slice = createSlice({
             state.re_home_visitResubmit_response = "rejected";
         })
 
+
+        // home visit savehomevisit for all btn
+        builder.addCase(savehomevisitForAllbtn.pending, (state, action) => {
+            state.isLoading = true;
+            // state.re_home_visitResubmit_response = "pendig"
+
+        })
+        builder.addCase(savehomevisitForAllbtn.fulfilled, (state, action) => {
+            state.isLoading = false;
+            if (action.payload) {
+                // state.re_home_visitResubmit_response = "success";
+            }
+
+        })
+        builder.addCase(savehomevisitForAllbtn.rejected, (state, action) => {
+            state.isLoading = false;
+            // state.re_home_visitResubmit_response = "rejected";
+        })
 
 
         // home visit savehomevisit
