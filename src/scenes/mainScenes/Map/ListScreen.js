@@ -79,15 +79,21 @@ const TripListScreen = ({ route, navigation }) => {
         }}
         style={{
           marginVertical: 10,
-          backgroundColor: Colors.LIGHT_PINK,
+          backgroundColor: Colors.LIGHT_GRAY,
           width: "95%",
           paddingVertical: 10,
           paddingHorizontal: 10,
           alignSelf: "center",
           borderRadius: 10,
+          shadowColor: Colors.LIGHT_PINK,
+          shadowOffset: { width: 3, height: 5 },
+          shadowOpacity: 0.4,
+          shadowRadius: 2,
+          borderWidth: 0.3,
+          borderColor: Colors.GRAY,
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: "600", marginBottom: 10 }}>
+        <Text style={{ fontSize: 20, fontWeight: "600", marginBottom: 10 }}>
           {"Trip No. " + (index + 1)}
         </Text>
         <Text style={{ fontSize: 13, fontWeight: "500", marginBottom: 2 }}>

@@ -314,6 +314,7 @@ const AppScreen = () => {
       }
     }
   };
+  
   const getCoordinates = async () => {
     try {
       if (true) {
