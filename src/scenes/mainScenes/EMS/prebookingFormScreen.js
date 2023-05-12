@@ -7392,7 +7392,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       >
         <View style={styles.modelMainContainer}>
           <View style={styles.modelContainer}>
-            <View style={styles.closeContainer}>
+            <TouchableOpacity onPress={() => {
+              setReceiptDocModel(false);
+              // setIsEdit(true);
+              setShowApproveRejectBtn(true);
+              // new conditions
+              setIsEditButtonShow(false);
+              setIsSubmitCancelButtonShow(true);
+            }}
+              style={styles.TochableClose}>
+              <View style={styles.closeVIew}>
+                <Text style={{ fontSize: 16 }}>{'X'}</Text>
+              </View>
+            </TouchableOpacity>
+            {/* <View style={styles.closeContainer}
+             >
               <IconButton
                 icon="close-circle"
                 color={Colors.RED}
@@ -7407,7 +7421,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   setIsSubmitCancelButtonShow(true);
                 }}
               />
-            </View>
+            </View> */}
 
             <View style={styles.recDocTitleContainer}>
               <Text style={styles.recDocTitleText}>
@@ -7807,4 +7821,11 @@ const styles = StyleSheet.create({
   photoOptionBtnText: {
     color: Colors.WHITE,
   },
+  TochableClose: { position: 'absolute', right: -40, top: -40, padding: 30 },
+  closeVIew: {
+
+  borderRadius: 15, width: 30, height: 30, 
+    borderColor: Colors.PINK, borderWidth: 1, backgroundColor: Colors.PINK,
+      justifyContent: 'center', alignItems: 'center'
+}
 });
