@@ -36,6 +36,7 @@
     "@react-navigation/native": "^5.9.8",
     "@react-navigation/stack": "^5.14.9",
     "@reduxjs/toolkit": "^1.6.0",
+    "haversine": "^1.1.1",
     "link": "^1.4.0",
     "lodash": "^4.17.21",
     "lottie-ios": "3.2.3",

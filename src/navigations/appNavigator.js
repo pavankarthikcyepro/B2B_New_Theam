@@ -142,6 +142,8 @@ import HomeVisitHistory from "../scenes/mainScenes/MyTasks/homeVisitHistory";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
 import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
+import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
+import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -428,9 +430,10 @@ export const HomeStackIdentifiers = {
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
   location: "MAP_TRACKER",
+  map: "MAP",
   receptionistFilter: "REECEPTION_FILTER",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
-  crmFilter:"CRM_FILTER",
+  crmFilter: "CRM_FILTER",
   laderfilterScreen_new: "LEADER_FLITER_SCREEN_NEW",
 };
 
@@ -586,7 +589,14 @@ const HomeStackNavigator = ({ navigation }) => {
       />
       <MainDrawerNavigator.Screen
         name={HomeStackIdentifiers.location}
-        component={MapScreen}
+        component={TripListScreen}
+        options={{
+          title: "Trip List",
+        }}
+      />
+      <MainDrawerNavigator.Screen
+        name={HomeStackIdentifiers.map}
+        component={GeolocationMapScreen}
         options={{
           title: "Map",
         }}
