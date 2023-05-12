@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
+  ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -373,84 +374,85 @@ const GeolocationMapScreen = ({ route }) => {
         )}
       </View>
       <View style={styles.bottomView}>
-        <View
-          style={{
-            flexDirection: "column",
-            // justifyContent: "space-around",
-            marginBottom: 15,
-          }}
-        >
-          <View style={{ flexDirection: "row", marginVertical: 10 }}>
-            <View style={{ width: "15%" }}>
-              <Text style={{ ...styles.columnsTitle }}>{"Start"}</Text>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View
+            style={{
+              flexDirection: "column",
+              // justifyContent: "space-around",
+              marginBottom: 15,
+            }}
+          >
+            <View style={{ flexDirection: "row", marginVertical: 10 }}>
+              <View style={{ width: "15%" }}>
+                <Text style={{ ...styles.columnsTitle }}>{"Start"}</Text>
+              </View>
+              <View style={{ width: "85%" }}>
+                <Text style={{ ...styles.valueTxt }}>{startAddress}</Text>
+              </View>
             </View>
-            <View style={{ width: "85%" }}>
-              <Text style={{ ...styles.valueTxt }}>{startAddress}</Text>
+            <View style={{ flexDirection: "row", marginVertical: 10 }}>
+              <View style={{ width: "15%" }}>
+                <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
+                  {"Goal"}
+                </Text>
+              </View>
+              <View style={{ width: "85%" }}>
+                <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
+                  {endAddress}
+                </Text>
+              </View>
             </View>
           </View>
-          <View style={{ flexDirection: "row", marginVertical: 10 }}>
-            <View style={{ width: "15%" }}>
-              <Text style={{ ...styles.columnsTitle, marginVertical: 15 }}>
-                {"Goal"}
-              </Text>
-            </View>
-            <View style={{ width: "85%" }}>
-              <Text style={{ ...styles.valueTxt, marginVertical: 15 }}>
-                {endAddress}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.tableRow}>
-          <View style={styles.colums}>
-            <View style={styles.innerRow}>
-              <MaterialCommunityIcons
-                name="map-marker-distance"
-                size={20}
-                color={Colors.RED}
-              />
-              <Text style={styles.columnsTitle}>{"Travel Distance"}</Text>
-            </View>
-            {/* {distance > 0 ? (
+          <View style={styles.tableRow}>
+            <View style={styles.colums}>
+              <View style={styles.innerRow}>
+                <MaterialCommunityIcons
+                  name="map-marker-distance"
+                  size={20}
+                  color={Colors.RED}
+                />
+                <Text style={styles.columnsTitle}>{"Travel Distance"}</Text>
+              </View>
+              {/* {distance > 0 ? (
               <Text style={styles.valueTxt}>
                 {parseFloat(sumArray(distance)).toFixed(2) || 0}
                 {distance || 0}
                 {" KM"}
               </Text>
             ) : ( */}
-            <Text style={styles.valueTxt}>
-              {distance?.toFixed(2) || "--"}
-              {" KM"}
-            </Text>
-            {/* )} */}
-          </View>
-          <View style={styles.colums}>
-            <View style={styles.innerRow}>
-              <MaterialCommunityIcons
-                name="clock-time-four-outline"
-                size={20}
-                color={Colors.RED}
-              />
-              <Text style={styles.columnsTitle}>{"Travel Time"}</Text>
-            </View>
-            {coordinates.length > 0 ? (
               <Text style={styles.valueTxt}>
-                {/* {parseFloat(
+                {distance?.toFixed(2) || "--"}
+                {" KM"}
+              </Text>
+              {/* )} */}
+            </View>
+            <View style={styles.colums}>
+              <View style={styles.innerRow}>
+                <MaterialCommunityIcons
+                  name="clock-time-four-outline"
+                  size={20}
+                  color={Colors.RED}
+                />
+                <Text style={styles.columnsTitle}>{"Travel Time"}</Text>
+              </View>
+              {coordinates.length > 0 ? (
+                <Text style={styles.valueTxt}>
+                  {/* {parseFloat(
                   diff_minutes(
                     new Date(data[data.length - 1].updatedtimestamp),
                     new Date(data[0].createdtimestamp)
                   )
                 ).toFixed(2) || 0} */}
-                {Time}
-                {" min"}
-              </Text>
-            ) : (
-              <Text style={styles.valueTxt}>{"-- min"}</Text>
-            )}
+                  {Time}
+                  {" min"}
+                </Text>
+              ) : (
+                <Text style={styles.valueTxt}>{"-- min"}</Text>
+              )}
+            </View>
           </View>
-        </View>
-        <View style={styles.tableRow}>
-          {/* <View style={styles.colums}>
+          <View style={styles.tableRow}>
+            {/* <View style={styles.colums}>
             <View style={styles.innerRow}>
               <MaterialCommunityIcons
                 name="speedometer"
@@ -461,7 +463,7 @@ const GeolocationMapScreen = ({ route }) => {
             </View>
             <Text style={styles.valueTxt}>{"44 km/h"}</Text>
           </View> */}
-          {/* <View style={styles.colums}>
+            {/* <View style={styles.colums}>
             <View style={styles.innerRow}>
               <MaterialCommunityIcons
                 name="chart-bar"
@@ -472,7 +474,9 @@ const GeolocationMapScreen = ({ route }) => {
             </View>
             <Text style={styles.valueTxt}>{"20 km/h"}</Text>
           </View> */}
-        </View>
+          </View>
+          <View style={{height:450}}/>
+        </ScrollView>
       </View>
       <LoaderComponent visible={loading} />
     </SafeAreaView>
@@ -539,6 +543,7 @@ const styles = StyleSheet.create({
     // top: "80%",
     width: "85%",
     alignSelf: "center",
+    paddingBottom:100
   },
 });
 
