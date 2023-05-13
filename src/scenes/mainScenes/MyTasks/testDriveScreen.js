@@ -1145,7 +1145,23 @@ const TestDriveScreen = ({ route, navigation }) => {
       };
     }
 
-   
+    let prefferedTimeV2 = "";
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+    
+      prefferedTimeV2 = date + " " + preffTime;
+     
+    } else {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTimeV2 = date + " " + preffTime;
+    
+    }
     
     let appointmentObjsavetestDrive = {
       address: customerAddress,
@@ -1158,7 +1174,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       source: "ShowroomWalkin",
       startTime: moment.utc(startTime).format(),
       endTime: moment.utc(endTime).format(),
-      testDriveDatetime: prefferedTime,
+      testDriveDatetime: prefferedTimeV2,
       testdriveId: 0,
       // status: "APPROVED",
       status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
@@ -1177,7 +1193,10 @@ const TestDriveScreen = ({ route, navigation }) => {
       fuelType: selectedVehicleDetails.fuelType,
       transmissionType: selectedVehicleDetails.transType,
       driver:selectedDriverDetails.name,
-      employee: selectedDseDetails.name
+      employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
     };
     // todo manthan
 
@@ -1756,7 +1775,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
-        "HH:mm"
+        "HH:mm:ss"
       ).format("HH:mm:ss");
       const startTime = moment(selector.actual_start_time, "HH:mm").format(
         "HH:mm:ss"
@@ -1768,7 +1787,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       actualStartTime = date + " " + startTime;
       actualEndTime = date + " " + endTime;
     } else {
-      prefferedTime = date + " " + selector.customer_preferred_time;
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTime = date + " " + preffTime;
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
     }
@@ -1820,7 +1843,10 @@ const TestDriveScreen = ({ route, navigation }) => {
       fuelType: selectedVehicleDetails.fuelType,
       transmissionType: selectedVehicleDetails.transType,
       driver: selectedDriverDetails.name,
-      employee: selectedDseDetails.name
+      employee: selectedDseDetails.name,
+      customerRemarks: customerRemarks,
+      employeeRemarks: employeeRemarks,
+      reason: selector.reason,
     }
     
 
@@ -1957,7 +1983,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
-        "HH:mm"
+        "HH:mm:ss"
       ).format("HH:mm:ss");
       // const startTime = moment(selector.actual_start_time, "HH:mm").format(
       //   "HH:mm:ss"
@@ -1969,7 +1995,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       // actualStartTime = date + " " + startTime;
       // actualEndTime = date + " " + endTime;
     } else {
-      prefferedTime = date + " " + selector.customer_preferred_time;
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTime = date + " " + preffTime;
       // actualStartTime = date + " " + selector.actual_start_time;
       // actualEndTime = date + " " + selector.actual_end_time;
     }
@@ -2080,7 +2110,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         fuelType: selectedVehicleDetails.fuelType,
         transmissionType: selectedVehicleDetails.transType,
         driver: selectedDriverDetails.name,
-        employee: selectedDseDetails.name
+        employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
       }
 
 
@@ -2129,7 +2162,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         fuelType: selectedVehicleDetails.fuelType,
         transmissionType: selectedVehicleDetails.transType,
         driver: selectedDriverDetails.name,
-        employee: selectedDseDetails.name
+        employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
       }
 
 
@@ -2556,7 +2592,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
-          {renderShowRecheduleModal()}
+        
           <View style={styles.baseVw}>
             {/* // 1.Test Drive */}
             <View
@@ -3219,6 +3255,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </Modal>
+      {renderShowRecheduleModal()}
     </SafeAreaView>
   );
 };
