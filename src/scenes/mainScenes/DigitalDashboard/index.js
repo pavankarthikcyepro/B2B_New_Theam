@@ -1408,7 +1408,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       : Colors.RED,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
-                    padding: 14,
+                    padding: 8,
                   }}
                 >
                   <Text
@@ -1435,7 +1435,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       : Colors.WHITE,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
-                    padding: 14,
+                    padding: 8,
                   }}
                 >
                   <Text
@@ -1451,20 +1451,20 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </View>
             </View>
           )}
-          {selector.isDSE && (
-            <View style={styles.view9}>
-              <View style={styles.view10}>
-                <TouchableOpacity
-                  onPress={() => {
-                    // setIsTeam(true)
-                    dispatch(updateIsTeam(false));
-                  }}
-                  style={styles.touchable2}
-                >
-                  <Text style={styles.txt4}>Dashboard</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+          {selector.isDSE && (null
+            // <View style={styles.view9}>
+            //   <View style={styles.view10}>
+            //     <TouchableOpacity
+            //       onPress={() => {
+            //         // setIsTeam(true)
+            //         dispatch(updateIsTeam(false));
+            //       }}
+            //       style={styles.touchable2}
+            //     >
+            //       <Text style={styles.txt4}>Dashboard</Text>
+            //     </TouchableOpacity>
+            //   </View>
+            // </View>
           )}
         </View>
 
@@ -1780,7 +1780,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.RED,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
-    padding: 15,
+    padding: 8,
   },
 
   txt4: {

@@ -472,6 +472,9 @@ const EventInsights = ({ route, navigation }) => {
     <View style={{ flex: 1 }}>
       <View>
         <View style={styles.sourceModelContainer}>
+          <View style={[styles.titleDashboardContainer,{marginTop:12}]}>
+            <Text style={styles.dashboardText}>Dashboard</Text>
+          </View>
           <View
             style={{
               display: "flex",
@@ -792,4 +795,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   paramsTotalContainer: { width: "92%", minHeight: 40, flexDirection: "row" },
+  titleDashboardContainer: {
+    paddingVertical: 5,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 45,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
+  },
 });

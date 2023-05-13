@@ -835,6 +835,9 @@ function navigateToEMS(params) {
         {!selector.isEventLoading || true ? (
           selector.isTeam ? (
             <View style={styles.container}>
+              <View style={styles.titleDashboardContainer}>
+                <Text style={styles.dashboardText}>Dashboard</Text>
+              </View>
               <View>
                 <View style={styles.view1}>
                   <SegmentedControl
@@ -2598,5 +2601,19 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
     color: Colors.WHITE,
+  },
+  titleDashboardContainer: {
+    paddingVertical: 5,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 45,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
   },
 });
