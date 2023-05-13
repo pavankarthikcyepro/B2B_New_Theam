@@ -248,9 +248,9 @@ const TestDriveScreen = ({ route, navigation }) => {
          // api to get task details 
             // dispatch(getTaskDetailsApi(taskId))
         if (!_.isEmpty(tempData)) {
-          
-          if (tempData.reTestdriveFlag == "ReTestDrive"){
-            
+          setTimeout(() => {
+            if (tempData.reTestdriveFlag == "ReTestDrive") {
+
               // let payloadForWorkFLow = {
               //   entityId: selector.task_details_response?.entityId,
               //   taskName: "Test Drive"
@@ -258,96 +258,98 @@ const TestDriveScreen = ({ route, navigation }) => {
               // // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
               // // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
               // dispatch(getDetailsWrokflowTaskForFormData(payloadForWorkFLow)) //todo need to check and pass entityId
-            
-            setName(tempData.name);
-            setEmail(tempData.email || "");
-            setMobileNumber(mobile || tempData.mobileNumber);
 
-            setSelectedVehicleDetails({
-              model: tempData.model,
-              varient: tempData.variant,
-              fuelType: tempData.fuelType,
-              transType: tempData.transmissionType,
-              vehicleId: 0,
-              varientId: 0,
-            });
+              setName(tempData.name);
+              setEmail(tempData.email || "");
+              setMobileNumber(mobile || tempData.mobileNumber);
+
+              setSelectedVehicleDetails({
+                model: tempData.model,
+                varient: tempData.varient,
+                fuelType: tempData.fuelType,
+                transType: tempData.transmissionType,
+                vehicleId: 0,
+                varientId: 0,
+              });
 
 
 
-            const driverId = tempData.driverId || "";
-            let driverName = "";
+              const driverId = tempData.driverId || "";
+              let driverName = "";
 
-            if (selector.drivers_list.length > 0 && tempData.driverId) {
-              const filterAry = selector.drivers_list.filter(
-                (object) => object.id === tempData.driverId
-              );
-              if (filterAry.length > 0) {
-                driverName = filterAry[0].name;
+              if (selector.drivers_list.length > 0 && tempData.driverId) {
+                const filterAry = selector.drivers_list.filter(
+                  (object) => object.id === tempData.driverId
+                );
+                if (filterAry.length > 0) {
+                  driverName = filterAry[0].name;
+                }
+              }
+              setSelectedDriverDetails({ name: driverName, id: driverId });
+
+              const customerHaveingDl = tempData.isCustomerHaveingDl
+                ? tempData.isCustomerHaveingDl
+                : false;
+              if (customerHaveingDl) {
+                const dataObj = { ...uploadedImagesDataObj };
+                if (tempData.dlFrontUrl) {
+                  dataObj.dlFrontUrl = {
+                    documentPath: tempData.dlFrontUrl,
+                    fileName: "driving license front",
+                  };
+                }
+                if (tempData.dlBackUrl) {
+                  dataObj.dlBackUrl = {
+                    documentPath: tempData.dlBackUrl,
+                    fileName: "driving license back",
+                  };
+                }
+                setUploadedImagesDataObj({ ...dataObj });
+              }
+              setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
+
+
+              const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
+              const testDriveDatetimeAry = testDriveDatetime.split(" ");
+              if (testDriveDatetimeAry.length > 0) {
+                // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
+                dispatch(
+                  updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
+                );
+              }
+              if (testDriveDatetimeAry.length > 1) {
+                // state.customer_preferred_time = testDriveDatetimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
+                );
+              }
+
+              const startTime = tempData.startTime ? tempData.startTime : "";
+
+              const startTimeAry = moment(startTime)
+                .format("DD/MM/YY h:mm a")
+                .split(" ");
+              if (startTimeAry.length > 1) {
+                // state.actual_start_time = startTimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
+                );
+              }
+              // state.driverId = tempData.driverId;
+              const endTime = tempData.endTime ? tempData.endTime : "";
+              const endTimeAry = moment(endTime)
+                .format("DD/MM/YY h:mm a")
+                .split(" ");;
+              if (endTimeAry.length > 1) {
+                // state.actual_end_time = endTimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
+                );
               }
             }
-            setSelectedDriverDetails({ name: driverName, id: driverId });
 
-            const customerHaveingDl = tempData.isCustomerHaveingDl
-              ? tempData.isCustomerHaveingDl
-              : false;
-            if (customerHaveingDl) {
-              const dataObj = { ...uploadedImagesDataObj };
-              if (tempData.dlFrontUrl) {
-                dataObj.dlFrontUrl = {
-                  documentPath: tempData.dlFrontUrl,
-                  fileName: "driving license front",
-                };
-              }
-              if (tempData.dlBackUrl) {
-                dataObj.dlBackUrl = {
-                  documentPath: tempData.dlBackUrl,
-                  fileName: "driving license back",
-                };
-              }
-              setUploadedImagesDataObj({ ...dataObj });
-            }
-            setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
-
-
-            const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
-            const testDriveDatetimeAry = testDriveDatetime.split(" ");
-            if (testDriveDatetimeAry.length > 0) {
-              // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
-              dispatch(
-                updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
-              );
-            }
-            if (testDriveDatetimeAry.length > 1) {
-              // state.customer_preferred_time = testDriveDatetimeAry[1];
-              dispatch(
-                updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
-              );
-            }
-
-            const startTime = tempData.startTime ? tempData.startTime : "";
-            
-            const startTimeAry = moment(startTime)
-              .format("DD/MM/YY h:mm a")
-              .split(" ");
-            if (startTimeAry.length > 1) {
-              // state.actual_start_time = startTimeAry[1];
-              dispatch(
-                updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
-              );
-            }
-            // state.driverId = tempData.driverId;
-            const endTime = tempData.endTime ? tempData.endTime : "";
-            const endTimeAry = moment(endTime)
-              .format("DD/MM/YY h:mm a")
-              .split(" ");;
-            if (endTimeAry.length > 1) {
-              // state.actual_end_time = endTimeAry[1];
-              dispatch(
-                updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
-              );
-            }
-          }
-          
+          }, 2000);
+       
 
 
         }
@@ -770,7 +772,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         getReasonListData("Enquiry Followup")
         dispatch(getTestDriveHistoryCount(universalId))
         if (universalId) {
-          dispatch(getTestDriveHistoryDetails(universalId)) // history listing API 
+          setTimeout(() => {
+            dispatch(getTestDriveHistoryDetails(universalId)) // history listing API    
+          }, 1000);
+         
         }
       }
 

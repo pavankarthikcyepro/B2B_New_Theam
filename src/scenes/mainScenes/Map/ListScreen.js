@@ -17,6 +17,7 @@ import moment from "moment";
 import _ from "lodash";
 import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
 import { AppNavigator } from "../../../navigations";
+import { IconButton } from "react-native-paper";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -34,6 +35,21 @@ const TripListScreen = ({ route, navigation }) => {
       getLocation(route.params);
     }
   }, [route.params]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <IconButton 
+          icon="arrow-left"
+          color={Colors.WHITE}
+          size={30}
+          onPress={()=>{
+            navigation.goBack();
+          }}
+        />
+      ),
+    });
+  }, [navigation]);
 
   const getLocation = async (params) => {
     try {
