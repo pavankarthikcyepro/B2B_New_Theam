@@ -45,18 +45,19 @@ import {
   showToastRedAlert,
 } from "../../utils/toast";
 import BackgroundService from "react-native-background-actions";
-import Geolocation from "react-native-geolocation-service";
+// import Geolocation from "react-native-geolocation-service";
 import crashlytics from "@react-native-firebase/crashlytics";
 import {
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
+  getDistanceBetweenTwoPointsLatLong,
   officeRadius,
   options,
   sendAlertLocalNotification,
   sendLocalNotification,
   sleep,
 } from "../../service";
-import {
+import URL, {
   getDetailsByempIdAndorgId,
   locationUpdate,
   saveLocation,
@@ -69,6 +70,7 @@ import {
   setBranchName,
 } from "../../utils/helperFunctions";
 import moment from "moment";
+import Geolocation from "@react-native-community/geolocation";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
@@ -493,7 +495,7 @@ const LoginScreen = ({ navigation }) => {
             if (speed >= 10) {
               checkTheDate(employeeData, lastPosition);
             }
-            if (speed < 10) {
+            if (speed < 10 && speed > 0) {
               checkTheEndDate(employeeData, lastPosition);
             }
 

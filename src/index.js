@@ -24,7 +24,7 @@ import {
   sleep,
   veryIntensiveTask,
 } from "./service";
-import Geolocation from "react-native-geolocation-service";
+// import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
 import URL, {
   getDetailsByempIdAndorgId,
@@ -40,6 +40,7 @@ import Orientation from "react-native-orientation-locker";
 import { registerCrashListener } from "./CrashListener";
 import TrackPlayer from "react-native-track-player";
 import moment from "moment";
+import Geolocation from "@react-native-community/geolocation";
 
 enableScreens();
 const dateFormat = "YYYY-MM-DD";
@@ -339,7 +340,7 @@ const AppScreen = () => {
             if (speed >= 10) {
               checkTheDate(employeeData, lastPosition);
             }
-            if (speed < 10) {
+            if (speed < 10 && speed > 0) {
               checkTheEndDate(employeeData, lastPosition);
             }
 
