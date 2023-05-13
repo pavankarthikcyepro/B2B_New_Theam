@@ -70,7 +70,8 @@ import {
   setBranchName,
 } from "../../utils/helperFunctions";
 import moment from "moment";
-import Geolocation from "@react-native-community/geolocation";
+// import Geolocation from "@react-native-community/geolocation";
+import GetLocation from "react-native-get-location";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
@@ -270,7 +271,7 @@ const LoginScreen = ({ navigation }) => {
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
   const checkTheDate = async (employeeData, lastPosition) => {
-    const { longitude, latitude, speed } = lastPosition.coords;
+    const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       // const trackingResponse = await client.get(
@@ -394,7 +395,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const checkTheEndDate = async (employeeData, lastPosition) => {
-    const { longitude, latitude, speed } = lastPosition.coords;
+    const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       // const trackingResponse = await client.get(
@@ -470,20 +471,22 @@ const LoginScreen = ({ navigation }) => {
     try {
       if (true) {
         // setInterval(() => {
-        const watchID = Geolocation.getCurrentPosition(
+        const watchID = GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+        }).then(
           async (lastPosition) => {
             let speed =
-              lastPosition?.coords?.speed <= -1
+              lastPosition?.speed <= -1
                 ? 0
-                : lastPosition?.coords?.speed;
+                : lastPosition?.speed;
             const employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
             console.log("SPEDDd", speed);
-            if (speed >= 10) {
+            if (speed >= 2.77778) {
               checkTheDate(employeeData, lastPosition);
             }
-            if (speed < 10 && speed > 0) {
+            if (speed < 2.77778 && speed > 0) {
               checkTheEndDate(employeeData, lastPosition);
             }
 
