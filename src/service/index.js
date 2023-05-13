@@ -16,6 +16,8 @@ var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
 export const distanceFilterValue = 5;
+export const GlobalSpeed = 2.77778; // 10 km/hr in m/s
+
 export const officeRadius = 0.1;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));

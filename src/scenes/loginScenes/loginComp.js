@@ -48,6 +48,7 @@ import BackgroundService from "react-native-background-actions";
 // import Geolocation from "react-native-geolocation-service";
 import crashlytics from "@react-native-firebase/crashlytics";
 import {
+  GlobalSpeed,
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
   getDistanceBetweenTwoPointsLatLong,
@@ -353,7 +354,7 @@ const LoginScreen = ({ navigation }) => {
             latitude,
             longitude
           );
-          if (distance >= 50) {
+          if (true) {
             const payload = {
               id: 0,
               orgId: jsonObj?.orgId,
@@ -437,8 +438,8 @@ const LoginScreen = ({ navigation }) => {
             latitude,
             longitude
           );
-         
-          if (distance >= 50) {
+          console.log("LOGIN distanssssce", distance);
+          if (true) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -467,6 +468,7 @@ const LoginScreen = ({ navigation }) => {
       }
     }
   };
+
   const getCoordinates = async () => {
     try {
       if (true) {
@@ -475,18 +477,15 @@ const LoginScreen = ({ navigation }) => {
           enableHighAccuracy: true,
         }).then(
           async (lastPosition) => {
-            let speed =
-              lastPosition?.speed <= -1
-                ? 0
-                : lastPosition?.speed;
+            let speed = lastPosition?.speed <= -1 ? 0 : lastPosition?.speed;
             const employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
             console.log("SPEDDd", speed);
-            if (speed >= 2.77778) {
+            if (speed >= GlobalSpeed) {
               checkTheDate(employeeData, lastPosition);
             }
-            if (speed < 2.77778 && speed > 0) {
+            if (speed < GlobalSpeed && speed >= 0) {
               checkTheEndDate(employeeData, lastPosition);
             }
 
@@ -599,7 +598,7 @@ const LoginScreen = ({ navigation }) => {
             },
             // useSignificantChanges: true,
           }
-        );
+        ).catch(()=>{});
         setSubscriptionId(watchID);
         // }, 5000);
       }

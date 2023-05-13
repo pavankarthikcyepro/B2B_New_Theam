@@ -16,6 +16,7 @@ import {
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
   getDistanceBetweenTwoPointsLatLong,
+  GlobalSpeed,
   MarkAbsent,
   officeRadius,
   options,
@@ -197,7 +198,7 @@ const AppScreen = () => {
             latitude,
             longitude
           );
-          if (distance >= 50) {
+          if (true) {
             const payload = {
               id: 0,
               orgId: jsonObj?.orgId,
@@ -284,7 +285,7 @@ const AppScreen = () => {
             longitude
           );
           console.log("distanssssce", distance);
-          if (distance >= 50) {
+          if (true) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -324,18 +325,15 @@ const AppScreen = () => {
           enableHighAccuracy: true,
         }).then(
           async (lastPosition) => {
-            let speed =
-              lastPosition?.speed <= -1
-                ? 0
-                : lastPosition?.speed;
+            let speed = lastPosition?.speed <= -1 ? 0 : lastPosition?.speed;
             const employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
-            console.log("SPEDDd", lastPosition.speed);
-            if (speed >= 2.77778) {
+            console.log("SPEDDd", lastPosition);
+            if (speed >= GlobalSpeed) {
               checkTheDate(employeeData, lastPosition);
             }
-            if (speed < 2.77778 && speed > 0) {
+            if (speed < GlobalSpeed && speed >= 0) {
               checkTheEndDate(employeeData, lastPosition);
             }
 
@@ -448,7 +446,7 @@ const AppScreen = () => {
             },
             // useSignificantChanges: true,
           }
-        );
+        ).catch(()=>{});
         setSubscriptionId(watchID);
         // }, 5000);
       }
