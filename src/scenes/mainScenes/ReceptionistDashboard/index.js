@@ -1359,20 +1359,20 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
               </View>
             </View>
           )}
-          {selector.isDSE && (
-            <View style={styles.view9}>
-              <View style={styles.view10}>
-                <TouchableOpacity
-                  onPress={() => {
-                    // setIsTeam(true)
-                    dispatch(updateIsTeam(false));
-                  }}
-                  style={styles.touchable2}
-                >
-                  <Text style={styles.txt4}>Dashboard</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+          {selector.isDSE && (null
+            // <View style={styles.view9}>
+            //   <View style={styles.view10}>
+            //     <TouchableOpacity
+            //       onPress={() => {
+            //         // setIsTeam(true)
+            //         dispatch(updateIsTeam(false));
+            //       }}
+            //       style={styles.touchable2}
+            //     >
+            //       <Text style={styles.txt4}>Dashboard</Text>
+            //     </TouchableOpacity>
+            //   </View>
+            // </View>
           )}
         </View>
 

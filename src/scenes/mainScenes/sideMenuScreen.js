@@ -83,7 +83,6 @@ const commonMenu = [
   "My Stock",
   "Download Report",
   "Complaint Tracker",
-  "Live Leads Receptionist",
 ];
 const salesMenu = [
   ...commonMenu,

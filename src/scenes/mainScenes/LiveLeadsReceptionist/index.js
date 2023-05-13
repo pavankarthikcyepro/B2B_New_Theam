@@ -1043,53 +1043,53 @@ const LiveLeadsScreenReceptionist = ({ route, navigation }) => {
                       </View>
                     </View>
                   )}
-                  {selector.isDSE && (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        marginBottom: 15,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          borderColor: Colors.RED,
-                          borderWidth: 1,
-                          borderRadius: 5,
-                          // height: 28,
-                          justifyContent: "center",
-                          width: "95%",
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => {
-                            // setIsTeam(true)
-                            dispatch(updateIsTeam(false));
-                          }}
-                          style={{
-                            width: "100%",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: Colors.RED,
-                            borderTopLeftRadius: 5,
-                            borderBottomLeftRadius: 5,
-                            padding:8
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              color: Colors.WHITE,
-                              fontWeight: "600",
-                            }}
-                          >
-                            Dashboard
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
+                  {selector.isDSE && (null
+                    // <View
+                    //   style={{
+                    //     flexDirection: "row",
+                    //     marginBottom: 15,
+                    //     justifyContent: "center",
+                    //     alignItems: "center",
+                    //   }}
+                    // >
+                    //   <View
+                    //     style={{
+                    //       flexDirection: "row",
+                    //       borderColor: Colors.RED,
+                    //       borderWidth: 1,
+                    //       borderRadius: 5,
+                    //       // height: 28,
+                    //       justifyContent: "center",
+                    //       width: "95%",
+                    //     }}
+                    //   >
+                    //     <TouchableOpacity
+                    //       onPress={() => {
+                    //         // setIsTeam(true)
+                    //         dispatch(updateIsTeam(false));
+                    //       }}
+                    //       style={{
+                    //         width: "100%",
+                    //         justifyContent: "center",
+                    //         alignItems: "center",
+                    //         backgroundColor: Colors.RED,
+                    //         borderTopLeftRadius: 5,
+                    //         borderBottomLeftRadius: 5,
+                    //         padding:8
+                    //       }}
+                    //     >
+                    //       <Text
+                    //         style={{
+                    //           fontSize: 16,
+                    //           color: Colors.WHITE,
+                    //           fontWeight: "600",
+                    //         }}
+                    //       >
+                    //         Dashboard
+                    //       </Text>
+                    //     </TouchableOpacity>
+                    //   </View>
+                    // </View>
                   )}
                 </>
               );
