@@ -48,6 +48,7 @@ import BackgroundService from "react-native-background-actions";
 // import Geolocation from "react-native-geolocation-service";
 import crashlytics from "@react-native-firebase/crashlytics";
 import {
+  GlobalSpeed,
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
   getDistanceBetweenTwoPointsLatLong,
@@ -70,7 +71,8 @@ import {
   setBranchName,
 } from "../../utils/helperFunctions";
 import moment from "moment";
-import Geolocation from "@react-native-community/geolocation";
+// import Geolocation from "@react-native-community/geolocation";
+import GetLocation from "react-native-get-location";
 
 // import { TextInput } from 'react-native-paper';
 const officeLocation = {
@@ -270,7 +272,7 @@ const LoginScreen = ({ navigation }) => {
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
   const checkTheDate = async (employeeData, lastPosition) => {
-    const { longitude, latitude, speed } = lastPosition.coords;
+    const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       // const trackingResponse = await client.get(
@@ -352,7 +354,7 @@ const LoginScreen = ({ navigation }) => {
             latitude,
             longitude
           );
-          if (distance >= 50) {
+          if (true) {
             const payload = {
               id: 0,
               orgId: jsonObj?.orgId,
@@ -394,7 +396,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const checkTheEndDate = async (employeeData, lastPosition) => {
-    const { longitude, latitude, speed } = lastPosition.coords;
+    const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       // const trackingResponse = await client.get(
@@ -436,8 +438,8 @@ const LoginScreen = ({ navigation }) => {
             latitude,
             longitude
           );
-         
-          if (distance >= 50) {
+          console.log("LOGIN distanssssce", distance);
+          if (true) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -466,24 +468,24 @@ const LoginScreen = ({ navigation }) => {
       }
     }
   };
+
   const getCoordinates = async () => {
     try {
       if (true) {
         // setInterval(() => {
-        const watchID = Geolocation.getCurrentPosition(
+        const watchID = GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+        }).then(
           async (lastPosition) => {
-            let speed =
-              lastPosition?.coords?.speed <= -1
-                ? 0
-                : lastPosition?.coords?.speed;
+            let speed = lastPosition?.speed <= -1 ? 0 : lastPosition?.speed;
             const employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
             console.log("SPEDDd", speed);
-            if (speed >= 10) {
+            if (speed >= GlobalSpeed) {
               checkTheDate(employeeData, lastPosition);
             }
-            if (speed < 10 && speed > 0) {
+            if (speed < GlobalSpeed && speed >= 0) {
               checkTheEndDate(employeeData, lastPosition);
             }
 
@@ -596,7 +598,7 @@ const LoginScreen = ({ navigation }) => {
             },
             // useSignificantChanges: true,
           }
-        );
+        ).catch(()=>{});
         setSubscriptionId(watchID);
         // }, 5000);
       }

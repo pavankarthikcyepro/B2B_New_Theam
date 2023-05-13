@@ -52,7 +52,7 @@ const GeolocationMapScreen = ({ route }) => {
   const [startAddress, setStartAddress] = useState("");
   const [endAddress, setEndAddress] = useState("");
   const [Time, setTime] = useState("");
-  
+
   useLayoutEffect(() => {
     // navigation.setOptions({
     //   headerRight: () => (
