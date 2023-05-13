@@ -25,7 +25,8 @@ import {
   getDetailsWrokflowTaskFormData,
   getDetailsWrokflowTaskReHomeVisitDrive,
   updateListHV,
-  updateSelectedDateFormServerRes
+  updateSelectedDateFormServerRes,
+  savehomevisitForAllbtn
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -787,32 +788,103 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
     // if (!varientId || !vehicleId) return;
     let retestflag = storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ? "ReHomevisit" : "Original";
-    let branchId = await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      return branchId
-    });
-    let payload = {
-      "address": customerAddress,
-      "reason": selector.reason === 'Others' ? otherReason : selector.reason,
-      "location": addressType === 1 ? "showroom" : "customer",
-      "orgId": userData.orgId,
-      "branchId": branchId,
-      "customerRemarks": selector.customer_remarks,
-      "employeeRemarks": selector.employee_remarks,
-      "actualStartTime": convertDateStringToMillisecondsUsingMoment(selector.actual_start_time),
-      "actualEndTime":"",
-      "nextFlowupTime": convertDateStringToMillisecondsUsingMoment(selector.next_follow_up_Time) ,
-      "status": status,
-      "customerId": selector.task_details_response?.universalId,
-      "entityId": selector.task_details_response.entityId,
-      "reHomevisitFlag": retestflag,
-    }
+    // let branchId = await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+    //   return branchId
+    // });
+    const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
+    // let payload = {
+    //   "address": customerAddress,
+    //   "reason": selector.reason === 'Others' ? otherReason : selector.reason,
+    //   "location": addressType === 1 ? "showroom" : "customer",
+    //   "orgId": userData.orgId,
+    //   "branchId": branchId,
+    //   "customerRemarks": selector.customer_remarks,
+    //   "employeeRemarks": selector.employee_remarks,
+    //   "actualStartTime": convertDateStringToMillisecondsUsingMoment(selector.actual_start_time),
+    //   "actualEndTime":"",
+    //   "nextFlowupTime": moment(nextFollowuptime).valueOf() ,
+    //   "status": status,
+    //   "customerId": selector.task_details_response?.universalId,
+    //   "entityId": selector.task_details_response.entityId,
+    //   "reHomevisitFlag": retestflag,
+    // }
 
 
-    let masterPayload = {
-      body: payload,
-      recordid: storeLastupdatedHomeVisitId
+    // let masterPayload = {
+    //   body: payload,
+    //   recordid: storeLastupdatedHomeVisitId
+    // }
+    // dispatch(updateListHV(masterPayload)); // commented for new req as per ranjith
+
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let branchId = await AsyncStorage.getData(AsyncStorage.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+        return branchId
+      });
+      const nextFollowuptime = moment(selector.next_follow_up_Time, "HH:mm");
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+      var defaultDate = moment();
+      let updateTime = moment(defaultDate).format("DD/MM/YYYY HH:mm");
+      if (selector.actual_start_time != "") {
+        updateTime = `${selector.actual_start_time} ${moment().format("HH:mm")}`;
+      }
+      if(status == "CLOSED"){
+        let payload = {
+          "address": customerAddress,
+          "reason": selector.reason === 'Others' ? otherReason : selector.reason,
+          "location": addressType === 1 ? "showroom" : "customer",
+          "orgId": jsonObj.orgId,
+          "branchId": branchId,
+          "customerRemarks": selector.customer_remarks,
+          "employeeRemarks": selector.employee_remarks,
+          "actualStartTime": convertDateStringToMillisecondsUsingMoment(
+            updateTime,
+            "DD/MM/YYYY HH:mm"
+          ),
+          "actualEndTime": convertDateStringToMillisecondsUsingMoment(
+            selector.actual_end_time
+          ),
+          // "status": "Assigned",
+          "status": "CLOSED",
+          "customerId": selector.task_details_response?.universalId,
+          "entityId": selector.task_details_response?.entityId,
+          "reHomevisitFlag": retestflag,
+          "nextFlowupTime": moment(nextFollowuptime).valueOf()
+          // "reHomevisitFlag": "Original"
+          // "reHomevisitFlag": "ReHomevisit"
+        }
+        dispatch(savehomevisitForAllbtn(payload));
+      }else{
+        let payload = {
+          "address": customerAddress,
+          "reason": selector.reason === 'Others' ? otherReason : selector.reason,
+          "location": addressType === 1 ? "showroom" : "customer",
+          "orgId": jsonObj.orgId,
+          "branchId": branchId,
+          "customerRemarks": selector.customer_remarks,
+          "employeeRemarks": selector.employee_remarks,
+          "actualStartTime": convertDateStringToMillisecondsUsingMoment(
+            updateTime,
+            "DD/MM/YYYY HH:mm"
+          ),
+          "actualEndTime": convertDateStringToMillisecondsUsingMoment(
+            selector.actual_end_time
+          ),
+          // "status": "Assigned",
+          "status": compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED",
+          "customerId": selector.task_details_response?.universalId,
+          "entityId": selector.task_details_response?.entityId,
+          "reHomevisitFlag": retestflag,
+          "nextFlowupTime": moment(nextFollowuptime).valueOf()
+          // "reHomevisitFlag": "Original"
+          // "reHomevisitFlag": "ReHomevisit"
+        }
+        dispatch(savehomevisitForAllbtn(payload));
+      }
+      
     }
-    dispatch(updateListHV(masterPayload)); // need to add recordid
 
   }
 
@@ -912,9 +984,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
           maximumDate={selector.maxDate}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
-            if (Platform.OS === "android") {
-              //setDatePickerVisible(false);
-            }
+           
+            // if (Platform.OS === "android") {
+            //   //setDatePickerVisible(false);
+            // }
             let formatDate = "";
             if (selectedDate) {
               if (selector.datePickerKey == "date"){
@@ -929,16 +1002,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
               if (selector.datePickerKeyId == "ACTUAL_START_TIME"){
                 
                 if (compare(convertToDate(selectedDate), selector.actual_start_time)  == 0){
-                  setIsUpdateBtnVisible(true);
+                  setTimeout(() => {
+                    setIsUpdateBtnVisible(true);  
+                  }, 500);
+                  
                 }else{
-                  setIsUpdateBtnVisible(false);
+                  setTimeout(() => {
+                    setIsUpdateBtnVisible(false);    
+                  }, 500);
+                
                 }
               }
               
             }
             dispatch(updateSelectedDate({ key: "", text: formatDate }));
           }}
-          onRequestClose={() => dispatch(setDatePicker())}
+          onRequestClose={() => dispatch(setDatePicker(""))}
         />
       
         

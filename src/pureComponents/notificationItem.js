@@ -2,7 +2,8 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../styles";
-import ReadMore from "react-native-read-more-text";
+// import ReadMore from "react-native-read-more-text";
+import ReadMore from '@fawazahmed/react-native-read-more';
 
 export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) => {
   const conversionIndex = title.includes("Conversion :")
@@ -40,13 +41,19 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
     firstStr = firstStr + (secStrCount <= 5 ? "\n" : "");
   }
 
+
   return (
     <TouchableOpacity style={[styles.itemContainer, style]} onPress={onPress}>
       <View style={styles.subRow}>
         <Image source={icon} style={styles.iconContainer} />
         <View style={{ margin: 5, flex: 1 }}>
           {secStr ? (
-            <ReadMore numberOfLines={6} style={styles.title}>
+            <ReadMore numberOfLines={4} style={styles.title}
+              seeMoreText={"Read more"}
+              seeMoreStyle={{ color: Colors.BLUE, marginTop: 5 }}
+              seeLessText={"Hide"}
+              seeLessStyle={{ color: Colors.BLUE, marginTop: 5 }}
+              >
               {firstStr}
               <Text
                 style={[
@@ -61,7 +68,12 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
               <Text style={styles.title}>{thirdStr}</Text>
             </ReadMore>
           ) : (
-            <ReadMore numberOfLines={6} style={styles.title}>
+              <ReadMore numberOfLines={4} style={styles.title} 
+                seeMoreText={"Read more"}
+                seeMoreStyle={{ color: Colors.BLUE, marginTop: 5 }}
+                seeLessText={"Hide"}
+                seeLessStyle={{ color: Colors.BLUE, marginTop: 5 }}
+                >
               <Text>{title}</Text>
             </ReadMore>
           )}

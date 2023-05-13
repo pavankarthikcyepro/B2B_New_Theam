@@ -15,6 +15,7 @@ import {
   createDateTime,
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
+  getDistanceBetweenTwoPointsLatLong,
   MarkAbsent,
   officeRadius,
   options,
@@ -23,9 +24,9 @@ import {
   sleep,
   veryIntensiveTask,
 } from "./service";
-import Geolocation from "react-native-geolocation-service";
+// import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
-import {
+import URL, {
   getDetailsByempIdAndorgId,
   locationUpdate,
   saveLocation,
@@ -38,9 +39,12 @@ import { showToastRedAlert } from "./utils/toast";
 import Orientation from "react-native-orientation-locker";
 import { registerCrashListener } from "./CrashListener";
 import TrackPlayer from "react-native-track-player";
+import moment from "moment";
+import Geolocation from "@react-native-community/geolocation";
 
 enableScreens();
-
+const dateFormat = "YYYY-MM-DD";
+const currentDateMoment = moment().format(dateFormat);
 const AppScreen = () => {
   
   useEffect(() => {
@@ -110,6 +114,207 @@ const AppScreen = () => {
     Object.keys(o1).length === Object.keys(o2).length &&
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
+  const checkTheDate = async (employeeData, lastPosition) => {
+    const { longitude, latitude, speed } = lastPosition.coords;
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      // const trackingResponse = await client.get(
+      //   getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+      // );
+      const trackingResponse = await client.get(
+        URL.GET_MAP_COORDINATES_BY_ID(
+          jsonObj.empId,
+          jsonObj.orgId,
+          currentDateMoment
+        )
+      );
+      const trackingJson = await trackingResponse.json();
+      const currentDate = new Date();
+      const hasObjectWithCurrentDate1 = trackingJson.filter((obj) => {
+        const selectedDate = new Date(obj.createdtimestamp);
+        return (
+          selectedDate.getDate() === currentDate.getDate() &&
+          selectedDate.getMonth() === currentDate.getMonth() &&
+          selectedDate.getFullYear() === currentDate.getFullYear()
+        );
+      });
+      const hasObjectWithCurrentDate =
+        hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
+      if (hasObjectWithCurrentDate) {
+        
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "false"
+        ) {
+          const tempArray =JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
+          console.log(
+            "TeyhasObjectWithCurrentDatepe",
+             tempArray
+          );
+          const finalArray = tempArray.concat([{ longitude, latitude }]);
+          const distanceCheck = tempArray[tempArray.length - 1];
+          let distance = getDistanceBetweenTwoPointsLatLong(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            latitude,
+            longitude
+          );
+          if (distance >= 10) {
+            const payload = {
+              id: hasObjectWithCurrentDate.id,
+              orgId: jsonObj?.orgId,
+              empId: jsonObj?.empId,
+              branchId: jsonObj?.branchId,
+              currentTimestamp: new Date(
+                hasObjectWithCurrentDate.createdtimestamp
+              ).getTime(),
+              updateTimestamp: new Date().getTime(),
+              purpose: "",
+              location: JSON.stringify(finalArray),
+              kmph: speed.toString(),
+              speed: speed.toString(),
+              isStart: "true",
+              isEnd: "false",
+            };
+            const response = await client.put(
+              locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
+              payload
+            );
+            const json = await response.json();
+          }
+        }
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "true"
+        ) {
+          const tempArray = JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
+          const finalArray = tempArray.concat([{ longitude, latitude }]);
+          const distanceCheck = tempArray[tempArray.length - 1];
+          let distance = getDistanceBetweenTwoPointsLatLong(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            latitude,
+            longitude
+          );
+          if (distance >= 50) {
+            const payload = {
+              id: 0,
+              orgId: jsonObj?.orgId,
+              empId: jsonObj?.empId,
+              branchId: jsonObj?.branchId,
+              currentTimestamp: new Date().getTime(),
+              updateTimestamp: new Date().getTime(),
+              purpose: "",
+              location: JSON.stringify([{ longitude, latitude }]),
+              kmph: speed.toString(),
+              speed: speed.toString(),
+              isStart: "true",
+              isEnd: "false",
+            };
+            const response = await client.post(saveLocation, payload);
+            const json = await response.json();
+          }
+        }
+      } else {
+        console.log(
+          "There is no object with the same date as the current date."
+        );
+        const payload = {
+          id: 0,
+          orgId: jsonObj?.orgId,
+          empId: jsonObj?.empId,
+          branchId: jsonObj?.branchId,
+          currentTimestamp: new Date().getTime(),
+          updateTimestamp: new Date().getTime(),
+          purpose: "",
+          location: JSON.stringify([{ longitude, latitude }]),
+          kmph: speed.toString(),
+          speed: speed.toString(),
+          isStart: "true",
+          isEnd: "false",
+        };
+        const response = await client.post(saveLocation, payload);
+        const json = await response.json();
+      }
+    }
+  };
+
+  const checkTheEndDate = async (employeeData, lastPosition) => {
+    const { longitude, latitude, speed } = lastPosition.coords;
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      // const trackingResponse = await client.get(
+      //   getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+      // );
+      const trackingResponse = await client.get(
+        URL.GET_MAP_COORDINATES_BY_ID(
+          jsonObj.empId,
+          jsonObj.orgId,
+          currentDateMoment
+        )
+      );
+      const trackingJson = await trackingResponse.json();
+      const currentDate = new Date();
+      const hasObjectWithCurrentDate1 = trackingJson.filter((obj) => {
+        const selectedDate = new Date(obj.createdtimestamp);
+        return (
+          selectedDate.getDate() === currentDate.getDate() &&
+          selectedDate.getMonth() === currentDate.getMonth() &&
+          selectedDate.getFullYear() === currentDate.getFullYear()
+        );
+      });
+      const hasObjectWithCurrentDate =
+        hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
+      if (hasObjectWithCurrentDate) {
+        
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "false"
+        ) {
+          const tempArray = JSON.parse(
+            JSON.parse(hasObjectWithCurrentDate.location)
+          );
+          const finalArray = tempArray.concat([{ longitude, latitude }]);
+          const distanceCheck = tempArray[tempArray.length - 1];
+          let distance = getDistanceBetweenTwoPointsLatLong(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            latitude,
+            longitude
+          );
+          console.log("distanssssce", distance);
+          if (distance >= 50) {
+            const payload = {
+              id: hasObjectWithCurrentDate.id,
+              orgId: jsonObj?.orgId,
+              empId: jsonObj?.empId,
+              branchId: jsonObj?.branchId,
+              currentTimestamp: new Date(
+                hasObjectWithCurrentDate.createdtimestamp
+              ).getTime(),
+              updateTimestamp: new Date().getTime(),
+              purpose: "",
+              location: JSON.stringify(finalArray),
+              kmph: speed.toString(),
+              speed: speed.toString(),
+              isStart: "true",
+              isEnd: "true",
+            };
+            const response = await client.put(
+              locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
+              payload
+            );
+            const json = await response.json();
+          }
+        }
+      } else {
+        console.log(
+          "There is no object with the same date as the current End date."
+        );
+      }
+    }
+  };
+  
   const getCoordinates = async () => {
     try {
       if (true) {
@@ -123,6 +328,15 @@ const AppScreen = () => {
             const employeeData = await AsyncStore.getData(
               AsyncStore.Keys.LOGIN_EMPLOYEE
             );
+            console.log("SPEDDd", speed);
+            if (speed >= 10) {
+              checkTheDate(employeeData, lastPosition);
+            }
+            if (speed < 10 && speed > 0) {
+              checkTheEndDate(employeeData, lastPosition);
+            }
+
+            return;
             if (employeeData) {
               const jsonObj = JSON.parse(employeeData);
               const trackingResponse = await client.get(
@@ -240,13 +454,52 @@ const AppScreen = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const watchId = Geolocation.watchPosition(
+  //     async (position) => {
+  //       const { latitude, longitude, speed } = position.coords;
+  //       console.log("speed", speed);
+  //       if (speed >= 10) {
+  //         EventTripStartCheck()
+  //       }
+  //       if (speed < 10) {
+  //       }
+  //     },
+  //     (error) => {
+  //       console.log(error.code, error.message);
+  //     },
+  //     { distanceFilter: 50 }
+  //   );
+
+  //   return () => {
+  //     Geolocation.clearWatch(watchId);
+  //   };
+  // }, []);
+
+  // const EventTripStartCheck = async () => {
+  //   try {
+  //     const employeeData = await AsyncStore.getData(
+  //       AsyncStore.Keys.LOGIN_EMPLOYEE
+  //     );
+  //     if (employeeData) {
+  //       const jsonObj = JSON.parse(employeeData);
+  //       const trackingResponse = await client.get(
+  //         getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+  //       );
+  //       const trackingJson = await trackingResponse.json();
+  //       console.log("trackingResponse", trackingResponse);
+
+  //     }
+  //   } catch (error) {}
+  // };
+
   const veryIntensiveTask = async (taskDataArguments) => {
     // Example of an infinite loop task
     const { delay } = taskDataArguments;
     await new Promise(async (resolve) => {
       for (let i = 0; BackgroundService.isRunning(); i++) {
         try {
-                      getCoordinates();
+          getCoordinates();
 
           // let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
           // if (todaysDate) {

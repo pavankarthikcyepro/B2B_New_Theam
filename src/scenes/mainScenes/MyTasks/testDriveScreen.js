@@ -45,6 +45,7 @@ import {
   postDetailsWorkFlowTask,
   getDetailsWrokflowTaskForFormData,
   getDetailsWrokflowTaskReTestDrive,
+  postReOpenTestDriveV2,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -1945,7 +1946,36 @@ const TestDriveScreen = ({ route, navigation }) => {
   }
 
   const reTestDrivePutCallupdateList = (status) => {
-    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
+      "DD-MM-YYYY"
+    );
+    let prefferedTime = "";
+    // let actualStartTime = "";
+    // let actualEndTime = "";
+
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+      // const startTime = moment(selector.actual_start_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      // const endTime = moment(selector.actual_end_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      prefferedTime = date + " " + preffTime;
+      // actualStartTime = date + " " + startTime;
+      // actualEndTime = date + " " + endTime;
+    } else {
+      prefferedTime = date + " " + selector.customer_preferred_time;
+      // actualStartTime = date + " " + selector.actual_start_time;
+      // actualEndTime = date + " " + selector.actual_end_time;
+    }
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+    // const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
     const location = addressType === 1 ? "showroom" : "customer";
@@ -1980,7 +2010,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       "source": "ShowroomWalkin",
       "startTime": moment(startTime).valueOf(),
       "status": status,
-      "testDriveDatetime": moment(preferredTime).valueOf(),
+      "testDriveDatetime": prefferedTime,
       "varientId": varientId,
       "vehicleId": vehicleId,
       "driverId": selectedDriverDetails.id.toString(),
@@ -2003,7 +2033,110 @@ const TestDriveScreen = ({ route, navigation }) => {
       body: payload,
       recordid:storeLastupdatedTestDriveId
     }
-    dispatch(PutUpdateListTestDriveHistory(masterPayload)); // need to add recordid
+    // dispatch(PutUpdateListTestDriveHistory(masterPayload)); // commented as last moment changes asked by ranjith
+    // todo manthan 
+
+    if (status == "CLOSED"){
+      let reopenSubmitObj = {
+        id: taskId,
+        address: customerAddress,
+        allotmentId: 0,
+        branchId: selectedBranchId,
+        canceledBy: "",
+        customerDropDatetime: "",
+        customerId: universalId,
+        customerPickupDatetime: "",
+        customerQuery: "",
+        datetime: "",
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        dseId: "",
+        startTime: moment.utc(startTime).format(),
+        endTime: moment.utc(endTime).format(),
+        latitude: "",
+        longitude: "",
+        location: location,
+        managerApprovedDatetime: "",
+        managerId: "",
+        orgId: userData.orgId,
+        securityInId: "",
+        securityOutId: "",
+        source: taskData.sourceType,
+        status: "CLOSED",
+        // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        testDriveDatetime: prefferedTime,
+        // testDriveDatetime: prefferedTime,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        testdriveId: 0,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        reTestdriveFlag: retestflag,
+        mobileNumber: mobileNumber,
+        name: name,
+        emailId: email,
+        model: selectedVehicleDetails.model,
+        variant: selectedVehicleDetails.varient,
+        fuelType: selectedVehicleDetails.fuelType,
+        transmissionType: selectedVehicleDetails.transType,
+        driver: selectedDriverDetails.name,
+        employee: selectedDseDetails.name
+      }
+
+
+      dispatch(postReOpenTestDriveV2(reopenSubmitObj));
+    }else{
+      let reopenSubmitObj = {
+        id: taskId,
+        address: customerAddress,
+        allotmentId: 0,
+        branchId: selectedBranchId,
+        canceledBy: "",
+        customerDropDatetime: "",
+        customerId: universalId,
+        customerPickupDatetime: "",
+        customerQuery: "",
+        datetime: "",
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        dseId: "",
+        startTime: moment.utc(startTime).format(),
+        endTime: moment.utc(endTime).format(),
+        latitude: "",
+        longitude: "",
+        location: location,
+        managerApprovedDatetime: "",
+        managerId: "",
+        orgId: userData.orgId,
+        securityInId: "",
+        securityOutId: "",
+        source: taskData.sourceType,
+        status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        testDriveDatetime: prefferedTime,
+        // testDriveDatetime: prefferedTime,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        testdriveId: 0,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        reTestdriveFlag: retestflag,
+        mobileNumber: mobileNumber,
+        name: name,
+        emailId: email,
+        model: selectedVehicleDetails.model,
+        variant: selectedVehicleDetails.varient,
+        fuelType: selectedVehicleDetails.fuelType,
+        transmissionType: selectedVehicleDetails.transType,
+        driver: selectedDriverDetails.name,
+        employee: selectedDseDetails.name
+      }
+
+
+      dispatch(postReOpenTestDriveV2(reopenSubmitObj));
+    }
+
+    
 
   }
 

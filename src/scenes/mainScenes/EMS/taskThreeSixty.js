@@ -139,7 +139,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     const taskStatus = item.taskStatus;
     const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit") {
+    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit" && taskName !== "Re Test Drive" && taskName !== "Re Home Visit") {
       const name = checkForTaskNames(taskName);
       
       showToast(name + " task has been closed");
@@ -153,6 +153,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     let taskNameNew = "";
     switch (finalTaskName) {
       case "testdrive":
+        navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+        taskNameNew = "Test Drive";
+        break;
+      case "retestdrive":
         navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
         taskNameNew = "Test Drive";
         break;
@@ -173,6 +177,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         taskNameNew = "";
         break;
       case "homevisit":
+        navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
+        taskNameNew = "Home Visit";
+        break;
+      case "rehomevisit":
         navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
         taskNameNew = "Home Visit";
         break;

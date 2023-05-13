@@ -17,6 +17,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@fawazahmed/react-native-read-more": "^3.0.3",
     "@klarna/react-native-vector-drawable": "^0.3.0",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/art": "^1.2.0",
@@ -36,6 +37,7 @@
     "@react-navigation/native": "^5.9.8",
     "@react-navigation/stack": "^5.14.9",
     "@reduxjs/toolkit": "^1.6.0",
+    "haversine": "^1.1.1",
     "link": "^1.4.0",
     "lodash": "^4.17.21",
     "lottie-ios": "3.2.3",
@@ -45,7 +47,7 @@
     "prop-types": "^15.7.2",
     "react": "17.0.1",
     "react-native": "^0.64.2",
-    "react-native-background-actions": "^2.6.7",
+    "react-native-background-actions": "^3.0.0",
     "react-native-calendars": "^1.1291.1",
     "react-native-call-detection": "^1.9.0",
     "react-native-chart-kit": "^6.11.0",
