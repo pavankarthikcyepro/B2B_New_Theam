@@ -476,11 +476,11 @@ const HomeVisitScreen = ({ route, navigation }) => {
     homeVisitPutCallupdateList("CLOSED");
     if (userData.isOtp === "Y"){
       generateOtpToCloseTask();
+      setIsCloseSelected(true);
     }else{
       changeStatusForTask("CLOSE_TASK");
     }
     
-    setIsCloseSelected(true)
   };
 
   const rescheduleTask = () => {
