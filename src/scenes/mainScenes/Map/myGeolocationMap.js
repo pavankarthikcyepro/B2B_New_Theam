@@ -475,7 +475,7 @@ const GeolocationMapScreen = ({ route }) => {
             <Text style={styles.valueTxt}>{"20 km/h"}</Text>
           </View> */}
           </View>
-          <View style={{ height: 450 }} />
+          <View style={{height:450}}/>
         </ScrollView>
       </View>
       <LoaderComponent visible={loading} />
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     // top: "80%",
     width: "85%",
     alignSelf: "center",
-    paddingBottom: 100,
+    paddingBottom:100
   },
 });
 
