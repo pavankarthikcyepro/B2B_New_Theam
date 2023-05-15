@@ -62,13 +62,13 @@ const data = [
     title: "Event Dashboard",
     icon: EVENT_DASHBOARD,
     screen: 119,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/EventDashboardIcon.png"),
   },
   {
     title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/AttendanceIcon.png"),
   },
   {
     title: "My Stock",
@@ -86,7 +86,7 @@ const data = [
     title: "Geolocation",
     icon: GEOLOCATION,
     screen: 117,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/GeoLocationIcon.png"),
   },
   // {
   //   title: "Drop/Lost/Cancel",
@@ -170,7 +170,7 @@ const data = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
     pngIcon: require("../assets/images/Signout-01.png"),
-  }
+  },
 ];
 
 const dataForManager = [
@@ -194,7 +194,7 @@ const dataForManager = [
     title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/AttendanceIcon.png"),
   },
   // {
   //   title: "Task Management",
@@ -253,7 +253,6 @@ const dataForManager = [
     // pngIcon: require("../assets/images/review.png"),
   },
   { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
-
 ];
 
 // {
