@@ -71,7 +71,7 @@ import {
   setBranchName,
 } from "../../utils/helperFunctions";
 import moment from "moment";
-// import Geolocation from "@react-native-community/geolocation";
+import Geolocation from "@react-native-community/geolocation";
 import GetLocation from "react-native-get-location";
 
 // import { TextInput } from 'react-native-paper';

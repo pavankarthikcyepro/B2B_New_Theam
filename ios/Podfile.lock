@@ -387,7 +387,7 @@ PODS:
     - React-jsi (= 0.64.4)
     - React-perflogger (= 0.64.4)
   - React-jsinspector (0.64.4)
-  - react-native-background-actions (2.6.9):
+  - react-native-background-actions (3.0.0):
     - React-Core
   - react-native-flipper (0.146.1):
     - React-Core
@@ -491,6 +491,8 @@ PODS:
     - React-perflogger (= 0.64.4)
   - ReactNativeART (1.2.0):
     - React
+  - ReactNativeGetLocation (3.0.1):
+    - React-Core
   - RealmJS (10.24.0):
     - GCDWebServer
     - React
@@ -613,6 +615,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "ReactNativeART (from `../node_modules/@react-native-community/art`)"
+  - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
@@ -762,6 +765,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeART:
     :path: "../node_modules/@react-native-community/art"
+  ReactNativeGetLocation:
+    :path: "../node_modules/react-native-get-location"
   RealmJS:
     :path: "../node_modules/realm"
   rn-fetch-blob:
@@ -843,7 +848,7 @@ SPEC CHECKSUMS:
   React-jsi: 64f80675a66899bf0f4a58b8e3908966fa516234
   React-jsiexecutor: 8c077bef1c64430b6034f27df1000d194551e2eb
   React-jsinspector: d4f6973dd474357dbaaf6f52f31ffc713bf3e766
-  react-native-background-actions: bfb2b818ae96e752b42fb335b3427ab6b050d0f6
+  react-native-background-actions: 30c71460dd98a2aaae31f6f5c87546dd243b8921
   react-native-flipper: 4bfe0a324e663f1ae2f76ad0da75673de6895efe
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
@@ -874,6 +879,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 5b441857030bb6c3abaa7517f333cb01875ae499
   ReactCommon: b4a65d2d6e9eeffd4b32dde1245962b3f43907d0
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
+  ReactNativeGetLocation: d8e41c5d499fd26f308502405cadb1f59e6179d6
   RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCAsyncStorage: b90b71f45b8b97be43bc4284e71a6af48ac9f547
