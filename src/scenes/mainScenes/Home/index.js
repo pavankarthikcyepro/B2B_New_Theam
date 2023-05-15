@@ -155,6 +155,12 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (isFocused || (isFocused && isDrawerOpen)) {
       Orientation.unlockAllOrientations();
+      dispatch(updatefilter_drop_down_designations({}))
+      dispatch(updateFilterLeadership_selectedDesignationName(""))
+      // dispatch(updatefilter_drop_down_designations({}))
+      // dispatch(updateFilterLeadership_selectedDesignationName(""))
+      dispatch(updateFilterLeadership_selectedDesignation(""))
+      dispatch(updateLeaderShipFilter([]))
     }
   }, [isFocused, isDrawerOpen]);
 

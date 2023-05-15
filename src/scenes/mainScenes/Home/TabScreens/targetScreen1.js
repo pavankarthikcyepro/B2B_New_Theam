@@ -1191,6 +1191,8 @@ const TargetScreen = ({ route }) => {
                          headerTitle: item.empName,
                          type: "TEAM",
                          moduleType: "home",
+                         isOpenner: item.isOpenInner,// added to manage source/model issue
+                         isFromHome: true// added to manage source/model issue
                        }
                      );
                    }}
@@ -3190,17 +3192,34 @@ const TargetScreen = ({ route }) => {
 
                       <SourceModelView
                         onClick={() => {
-                          navigation.navigate(
-                            AppNavigator.HomeStackIdentifiers.sourceModel,
-                            {
-                              empId: selector.login_employee_details.empId,
-                              headerTitle: "Source/Model",
-                              loggedInEmpId:
-                                selector.login_employee_details.empId,
-                              type: selector.isDSE ? "SELF" : "INSIGHTS",
-                              moduleType: "home",
+                          // added condition to manage source/model issue 
+                            if (selector.filterIds?.empSelected?.length){ 
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: selector.filterIds.empSelected[0],
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId:
+                                    selector.filterIds.empSelected[0],
+                                  type: selector.isDSE ? "SELF" : "INSIGHTS",
+                                  moduleType: "home",
+                                  isFromHome: true
+                                }
+                              );
+                            }else{
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: selector.login_employee_details.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId:
+                                    selector.login_employee_details.empId,
+                                  type: selector.isDSE ? "SELF" : "INSIGHTS",
+                                  moduleType: "home",
+                                }
+                              );
                             }
-                          );
+                         
                         }}
                       />
                     </View>

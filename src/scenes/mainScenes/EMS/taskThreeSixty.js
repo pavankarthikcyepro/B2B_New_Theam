@@ -97,12 +97,15 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
               selector.enquiry_leadDto_response.leadStage ===
                 element.taskCategory.taskCategory) ||
             (element.taskCategory.taskCategory === "APPROVAL" &&
-              element.taskStatus === "ASSIGNED") ||
+              element.taskStatus === "ASSIGNED")  || 
             (element.taskStatus &&
               element.taskStatus !== "APPROVAL" &&
               (element.taskName === "Home Visit" ||
-                element.taskName === "Test Drive"))
+                element.taskName === "Test Drive")) 
+                // || (selector.enquiry_leadDto_response.leadStage === "PREBOOKING") && element.taskCategory.taskCategory ==="ENQUIRY"
           ) {
+            plannedData.push(element);
+          } else if (element.taskStatus !== "CLOSED" && element.taskName === "Evaluation" || element.taskName === "Finance"){
             plannedData.push(element);
           }
         });

@@ -495,8 +495,6 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
     AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
     AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-    await BackgroundService.stop();
-
     navigation.closeDrawer();
     //realm.close();
     setBranchId("");
@@ -538,8 +536,8 @@ const SideMenuScreen = ({ navigation }) => {
       })
     );
     dispatch(updateEmpDropDown_Local({}))
-
     signOut();
+    await BackgroundService.stop();
   };
 
   const selectImage = () => {

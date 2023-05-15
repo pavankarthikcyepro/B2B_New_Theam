@@ -583,7 +583,7 @@ export const getLeaderBoardList = createAsyncThunk(
   "HOME/getLeaderBoardList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_LEADERBOARD_DATA_branch(payload.orgId, payload.branchId),
+      URL.GET_LEADERBOARD_DATA_Branch_new(payload.orgId, payload.branchId),
       payload
     );
     const json = await response.json();
@@ -1040,6 +1040,7 @@ export const homeSlice = createSlice({
     employee_list: [],
     reporting_manager_list: [],
     isLoading: false,
+    isDealerLoading:false,
     isEventLoading: false,
     leaderboard_list: [],
     branchrank_list: [],
@@ -1303,6 +1304,7 @@ export const homeSlice = createSlice({
       state.employee_list = [];
       state.reporting_manager_list = [];
       state.isLoading = false;
+      state.isDealerLoading=false;
       state.isEventLoading = false;
       state.leaderboard_list = [];
       state.branchrank_list = [];
@@ -1824,55 +1826,55 @@ export const homeSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(getLeaderBoardList.pending, (state) => {
-        state.isLoading = true;
+        state.isDealerLoading = true;
       })
       .addCase(getLeaderBoardList.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.leaderboard_list = dataObj ? dataObj : [];
         if (!dataObj || dataObj.length === 0) showToast("No data available");
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
       .addCase(getLeaderBoardList.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
 
       .addCase(getLeaderBoardListWithoutFilter.pending, (state) => {
-        state.isLoading = true;
+        state.isDealerLoading = true;
       })
       .addCase(getLeaderBoardListWithoutFilter.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.leaderboard_list = dataObj ? dataObj : [];
         if (!dataObj || dataObj.length === 0) showToast("No data available");
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
       .addCase(getLeaderBoardListWithoutFilter.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
 
       .addCase(getBranchRanksList.pending, (state) => {
-        state.isLoading = true;
+        state.isDealerLoading = true;
       })
       .addCase(getBranchRanksList.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.branchrank_list = dataObj ? dataObj : [];
         if (!dataObj || dataObj.length === 0) showToast("No data available");
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
       .addCase(getBranchRanksList.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
 
       .addCase(getBranchRanksListWithoutFilter.pending, (state) => {
-        state.isLoading = true;
+        state.isDealerLoading = true;
       })
       .addCase(getBranchRanksListWithoutFilter.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.branchrank_list = dataObj ? dataObj : [];
         if (!dataObj || dataObj.length === 0) showToast("No data available");
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
       .addCase(getBranchRanksListWithoutFilter.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isDealerLoading = false;
       })
       .addCase(getSourceModelDataForSelf.pending, (state, action) => {
         state.isLoading = true;
