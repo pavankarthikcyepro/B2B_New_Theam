@@ -23,7 +23,7 @@ import { useIsFocused } from "@react-navigation/native";
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType, isOpenner = false, isFromHome = false } =
     route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -102,11 +102,40 @@ const SourceModel = ({ route, navigation }) => {
 
     // if (type != "TEAM") {
     if (selector.filterIds?.empSelected?.length) {
-      payload["empSelected"] = selector.filterIds.empSelected;
+      // added conditions to manage source/model issue sales 
+      if (isFromHome) {
+     
+        if (isOpenner) {
+         
+          // payload["empSelected"] = selector.filterIds.empSelected;
+          payload["empSelected"] = [empId];
+        } else {
+          
+          payload["empSelected"] = null;
+        }
+      } else {
+        
+        payload["empSelected"] = selector.filterIds.empSelected;
+      }
+      
     } else {
-      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
-        ? selector.filterIds.levelSelected
-        : null;
+      if (isFromHome) {
+       
+        if (isOpenner) {
+         
+          // payload["empSelected"] = selector.filterIds.empSelected;
+          payload["empSelected"] = [empId];
+        } else {
+         
+          payload["empSelected"] = null;
+        }
+      } else {
+        
+        payload["empSelected"] = selector.filterIds.empSelected;
+      }
+      // payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+      //   ? selector.filterIds.levelSelected
+      //   : null;
     }
     // }
 

@@ -11,6 +11,7 @@ import { DropDownSelectionItemV3 } from '../../../pureComponents';
 import { IconButton, Searchbar } from "react-native-paper";
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import _ from 'lodash';
+import { useIsFocused } from '@react-navigation/native';
 
 const dropdownDataV2 = [
   { name: 'Top 5', id: 1 },
@@ -30,7 +31,7 @@ export default function branchRankingScreen(props) {
   const [top5RankList, setTop5RankList] = useState([]);
   const [topRankList, setTopRankList] = useState([]);
   const [bottom5RankList, setBottom5RankList] = useState([]);
-
+  const isFocused = useIsFocused();
   const [showTop5View, setShowTop5View] = useState(false);
   const [showBottom5View, setShowBottom5View] = useState(false);
   const [reversebottomRankList, setReverseBottomRankList] = useState([]);
@@ -77,7 +78,7 @@ export default function branchRankingScreen(props) {
 
   useEffect(() => {
     getUserData();
-  }, [])
+  }, [isFocused])
   
   const getUserData = async () => {
     try {
@@ -165,8 +166,8 @@ export default function branchRankingScreen(props) {
 
 
   const MyTaskFilter = ({ navigation }) => {
-    const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-    if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+    // const screen = useSelector((state) => state.mytaskReducer.currentScreen);
+    // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
     return (
       <IconButton
         icon="filter-outline"
