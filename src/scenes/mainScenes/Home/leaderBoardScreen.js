@@ -710,7 +710,6 @@ export default function leaderBoardScreen(props) {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.rankBox}>
-
         <DropDownComponant
           visible={showDropDownModel}
           multiple={false}
@@ -721,15 +720,13 @@ export default function leaderBoardScreen(props) {
             let newdata = { name: item.name, id: item.id };
             switch (dropDownKey) {
               case "TOP_DATA":
-              
-                setselectedRankTop(newdata)
-                setDataOnSelection("TOP", newdata)
+                setselectedRankTop(newdata);
+                setDataOnSelection("TOP", newdata);
                 // setselectedRank(newdata);
                 break;
               case "LOW_DATA":
-             
-                setselectedRankLow(newdata)
-                setDataOnSelection("LOW", newdata)
+                setselectedRankLow(newdata);
+                setDataOnSelection("LOW", newdata);
                 // setselectedRank(newdata);
                 break;
 
@@ -819,10 +816,10 @@ export default function leaderBoardScreen(props) {
                     </View>
                 </View>
             */}
-        {!selector.isLoading ? null : (
+        {!selector.isDealerLoading ? null : (
           <LoaderComponent
-            visible={selector.isLoading}
-            onRequestClose={() => { }}
+            visible={selector.isDealerLoading}
+            onRequestClose={() => {}}
           />
         )}
         {/* top 5 view */}
@@ -841,12 +838,7 @@ export default function leaderBoardScreen(props) {
                 // disabled={!isInputsEditable()}
                 // label={"Top 5 Ranks"}
                 value={selectedRankTop.name}
-                onPress={() =>
-                  showDropDownModelMethod(
-                    "TOP_DATA",
-                    ""
-                  )
-                }
+                onPress={() => showDropDownModelMethod("TOP_DATA", "")}
               />
             </View>
           </View>
@@ -880,11 +872,7 @@ export default function leaderBoardScreen(props) {
               ]}
             >
               <View style={styles.topIconView}>
-                <ArrowIcon
-                  name="long-arrow-down"
-                  color={"#E40603"}
-                  size={20}
-                />
+                <ArrowIcon name="long-arrow-down" color={"#E40603"} size={20} />
               </View>
             </View>
             {/* <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: "400" }}>
@@ -895,12 +883,7 @@ export default function leaderBoardScreen(props) {
                 // disabled={!isInputsEditable()}
                 // label={"Top 5 Ranks"}
                 value={selectedRankLow.name}
-                onPress={() =>
-                  showDropDownModelMethod(
-                    "LOW_DATA",
-                    ""
-                  )
-                }
+                onPress={() => showDropDownModelMethod("LOW_DATA", "")}
               />
             </View>
           </View>

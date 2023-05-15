@@ -74,11 +74,17 @@ const GeolocationMapScreen = ({ route }) => {
       setLongitude(response[response.length - 1].longitude);
       setCoordinates(response);
       setLoading(false);
-      const timestamp1 = new Date(route.params.item.createdtimestamp).getTime(); // replace with your timestamp
-      const timestamp2 = new Date(route.params.item.updatedtimestamp).getTime(); // replace with your timestamp
+      const timestamp1 = new Date(route.params.item.createdtimestamp).getTime();
+      const timestamp2 = new Date(route.params.item.updatedtimestamp).getTime();
       const diffInMs = Math.abs(timestamp2 - timestamp1);
-      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-      setTime(diffInMinutes);
+      const diffInSeconds = Math.floor(diffInMs / 1000);
+
+      // Calculate hours, minutes, and seconds
+      const hours = Math.floor(diffInSeconds / 3600);
+      const minutes = Math.floor((diffInSeconds % 3600) / 60);
+      const seconds = diffInSeconds % 60;
+
+      setTime(`${hours}hr ${minutes}min ${seconds}sec`);
       getTotalDistance(response);
       getAddress(response);
     }
@@ -444,7 +450,7 @@ const GeolocationMapScreen = ({ route }) => {
                   )
                 ).toFixed(2) || 0} */}
                   {Time}
-                  {" min"}
+                  {""}
                 </Text>
               ) : (
                 <Text style={styles.valueTxt}>{"-- min"}</Text>
@@ -475,7 +481,7 @@ const GeolocationMapScreen = ({ route }) => {
             <Text style={styles.valueTxt}>{"20 km/h"}</Text>
           </View> */}
           </View>
-          <View style={{height:450}}/>
+          <View style={{ height: 450 }} />
         </ScrollView>
       </View>
       <LoaderComponent visible={loading} />
@@ -543,7 +549,7 @@ const styles = StyleSheet.create({
     // top: "80%",
     width: "85%",
     alignSelf: "center",
-    paddingBottom:100
+    paddingBottom: 100,
   },
 });
 
