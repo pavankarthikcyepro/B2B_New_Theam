@@ -159,17 +159,6 @@ const AppScreen = () => {
             latitude,
             longitude
           );
-          console.log(
-            "SPEDDDSss",
-            calculateSpeed(
-              distanceCheck.latitude,
-              distanceCheck.longitude,
-              new Date(hasObjectWithCurrentDate.createdtimestamp),
-              latitude,
-              longitude,
-              new Date()
-            )
-          );
           const currentSpeed = calculateSpeed(
             distanceCheck.latitude,
             distanceCheck.longitude,
@@ -201,28 +190,30 @@ const AppScreen = () => {
               payload
             );
             const json = await response.json();
-          }else{
-            const payload = {
-              id: hasObjectWithCurrentDate.id,
-              orgId: jsonObj?.orgId,
-              empId: jsonObj?.empId,
-              branchId: jsonObj?.branchId,
-              currentTimestamp: new Date(
-                hasObjectWithCurrentDate.createdtimestamp
-              ).getTime(),
-              updateTimestamp: new Date().getTime(),
-              purpose: "",
-              location: JSON.stringify(finalArray),
-              kmph: speed.toString(),
-              speed: speed.toString(),
-              isStart: "true",
-              isEnd: "true",
-            };
-            const response = await client.put(
-              locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
-              payload
-            );
-            const json = await response.json();
+          } else {
+            if (distance >= 10) {
+              const payload = {
+                id: hasObjectWithCurrentDate.id,
+                orgId: jsonObj?.orgId,
+                empId: jsonObj?.empId,
+                branchId: jsonObj?.branchId,
+                currentTimestamp: new Date(
+                  hasObjectWithCurrentDate.createdtimestamp
+                ).getTime(),
+                updateTimestamp: new Date().getTime(),
+                purpose: "",
+                location: JSON.stringify(finalArray),
+                kmph: speed.toString(),
+                speed: speed.toString(),
+                isStart: "true",
+                isEnd: "true",
+              };
+              const response = await client.put(
+                locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
+                payload
+              );
+              const json = await response.json();
+            }
           }
         }
         if (
