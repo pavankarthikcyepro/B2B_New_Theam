@@ -583,7 +583,7 @@ export const getLeaderBoardList = createAsyncThunk(
   "HOME/getLeaderBoardList",
   async (payload: any, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_LEADERBOARD_DATA_branch(payload.orgId, payload.branchId),
+      URL.GET_LEADERBOARD_DATA_Branch_new(payload.orgId, payload.branchId),
       payload
     );
     const json = await response.json();
