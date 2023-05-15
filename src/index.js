@@ -25,7 +25,7 @@ import {
   sleep,
   veryIntensiveTask,
 } from "./service";
-// import Geolocation from "react-native-geolocation-service";
+import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
 import URL, {
   getDetailsByempIdAndorgId,
@@ -41,14 +41,14 @@ import Orientation from "react-native-orientation-locker";
 import { registerCrashListener } from "./CrashListener";
 import TrackPlayer from "react-native-track-player";
 import moment from "moment";
-import Geolocation from "@react-native-community/geolocation";
+// import Geolocation from "@react-native-community/geolocation";
 import GetLocation from "react-native-get-location";
+import haversine from "haversine";
 
 enableScreens();
 const dateFormat = "YYYY-MM-DD";
 const currentDateMoment = moment().format(dateFormat);
 const AppScreen = () => {
-  
   useEffect(() => {
     registerCrashListener();
   }, []);
@@ -143,16 +143,14 @@ const AppScreen = () => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
-        
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
         ) {
-          const tempArray =JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
-          console.log(
-            "TeyhasObjectWithCurrentDatepe",
-             tempArray
+          const tempArray = JSON.parse(
+            JSON.parse(hasObjectWithCurrentDate.location)
           );
+          console.log("TeyhasObjectWithCurrentDatepe", tempArray);
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
@@ -161,7 +159,16 @@ const AppScreen = () => {
             latitude,
             longitude
           );
-          if (distance >= 10) {
+          const currentSpeed = calculateSpeed(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            new Date(hasObjectWithCurrentDate.createdtimestamp),
+            latitude,
+            longitude,
+            new Date()
+          );
+
+          if (distance >= 10 && currentSpeed >= GlobalSpeed) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -183,13 +190,39 @@ const AppScreen = () => {
               payload
             );
             const json = await response.json();
+          } else {
+            if (distance >= 10) {
+              const payload = {
+                id: hasObjectWithCurrentDate.id,
+                orgId: jsonObj?.orgId,
+                empId: jsonObj?.empId,
+                branchId: jsonObj?.branchId,
+                currentTimestamp: new Date(
+                  hasObjectWithCurrentDate.createdtimestamp
+                ).getTime(),
+                updateTimestamp: new Date().getTime(),
+                purpose: "",
+                location: JSON.stringify(finalArray),
+                kmph: speed.toString(),
+                speed: speed.toString(),
+                isStart: "true",
+                isEnd: "true",
+              };
+              const response = await client.put(
+                locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
+                payload
+              );
+              const json = await response.json();
+            }
           }
         }
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "true"
         ) {
-          const tempArray = JSON.parse(JSON.parse(hasObjectWithCurrentDate.location));
+          const tempArray = JSON.parse(
+            JSON.parse(hasObjectWithCurrentDate.location)
+          );
           const finalArray = tempArray.concat([{ longitude, latitude }]);
           const distanceCheck = tempArray[tempArray.length - 1];
           let distance = getDistanceBetweenTwoPointsLatLong(
@@ -268,7 +301,6 @@ const AppScreen = () => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
-        
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
@@ -316,102 +348,101 @@ const AppScreen = () => {
       }
     }
   };
-  
+
+  const calculateSpeed = (
+    prevLat,
+    prevLong,
+    prevTime,
+    curLat,
+    curLong,
+    curTime
+  ) => {
+    const distance = haversine(
+      { latitude: prevLat, longitude: prevLong },
+      { latitude: curLat, longitude: curLong },
+      { unit: "meter" }
+    );
+
+    const timeElapsed = (curTime - prevTime) / 1000; // convert milliseconds to seconds
+
+    const speed = distance / timeElapsed;
+
+    return speed;
+  };
   const getCoordinates = async () => {
     try {
       if (true) {
         // setInterval(() => {
-        const watchID = GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
-        }).then(
-          async (lastPosition) => {
-            let speed = lastPosition?.speed <= -1 ? 0 : lastPosition?.speed;
-            const employeeData = await AsyncStore.getData(
-              AsyncStore.Keys.LOGIN_EMPLOYEE
+        const watchID = Geolocation.getCurrentPosition(async (lastPosition) => {
+          let speed =
+            lastPosition?.speed <= -1 ? 0 : lastPosition?.coords.speed;
+          const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+          );
+          console.log("SPEDDd", lastPosition?.coords);
+          if (speed >= 0) {
+            checkTheDate(employeeData, lastPosition?.coords);
+          }
+          // if (speed < GlobalSpeed && speed >= 0) {
+          //   checkTheEndDate(employeeData, lastPosition?.coords);
+          // }
+
+          return;
+          if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const trackingResponse = await client.get(
+              getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
             );
-            console.log("SPEDDd", lastPosition);
-            if (speed >= GlobalSpeed) {
-              checkTheDate(employeeData, lastPosition);
-            }
-            if (speed < GlobalSpeed && speed >= 0) {
-              checkTheEndDate(employeeData, lastPosition);
-            }
+            const trackingJson = await trackingResponse.json();
 
-            return;
-            if (employeeData) {
-              const jsonObj = JSON.parse(employeeData);
-              const trackingResponse = await client.get(
-                getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
+            var newLatLng = {
+              latitude: lastPosition.coords.latitude,
+              longitude: lastPosition.coords.longitude,
+            };
+            if (trackingJson.length > 0) {
+              let parsedValue =
+                trackingJson.length > 0
+                  ? JSON.parse(trackingJson[trackingJson.length - 1].location)
+                  : [];
+
+              let x = trackingJson;
+              let y = x[x.length - 1].location;
+              let z = JSON.parse(y);
+              let lastlocation = z[z.length - 1];
+
+              let dist = getDistanceBetweenTwoPoints(
+                lastlocation.latitude,
+                lastlocation.longitude,
+                lastPosition?.coords?.latitude,
+                lastPosition?.coords?.longitude
               );
-              const trackingJson = await trackingResponse.json();
-
-              var newLatLng = {
-                latitude: lastPosition.coords.latitude,
-                longitude: lastPosition.coords.longitude,
-              };
-              if (trackingJson.length > 0) {
-                let parsedValue =
-                  trackingJson.length > 0
-                    ? JSON.parse(trackingJson[trackingJson.length - 1].location)
-                    : [];
-
-                let x = trackingJson;
-                let y = x[x.length - 1].location;
-                let z = JSON.parse(y);
-                let lastlocation = z[z.length - 1];
-
-                let dist = getDistanceBetweenTwoPoints(
-                  lastlocation.latitude,
-                  lastlocation.longitude,
-                  lastPosition?.coords?.latitude,
-                  lastPosition?.coords?.longitude
-                );
-                let distance = dist * 1000;
-                let newArray = [...parsedValue, ...[newLatLng]];
-                let date = new Date(
-                  trackingJson[trackingJson.length - 1]?.createdtimestamp
-                );
-                let condition =
-                  new Date(date).getDate() == new Date().getDate();
-                if (trackingJson.length > 0 && condition) {
-                  let tempPayload = {
-                    id: trackingJson[trackingJson.length - 1]?.id,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp:
-                      trackingJson[trackingJson.length - 1]?.createdtimestamp,
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify(newArray),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-                  if (speed <= 10 && distance > distanceFilterValue) {
-                    const response = await client.put(
-                      locationUpdate +
-                        `/${trackingJson[trackingJson.length - 1].id}`,
-                      tempPayload
-                    );
-                    const json = await response.json();
-                  }
-                } else {
-                  let payload = {
-                    id: 0,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp: new Date().getTime(),
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify([newLatLng]),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-                  if (speed <= 10) {
-                    const response = await client.post(saveLocation, payload);
-                    const json = await response.json();
-                  }
+              let distance = dist * 1000;
+              let newArray = [...parsedValue, ...[newLatLng]];
+              let date = new Date(
+                trackingJson[trackingJson.length - 1]?.createdtimestamp
+              );
+              let condition = new Date(date).getDate() == new Date().getDate();
+              if (trackingJson.length > 0 && condition) {
+                let tempPayload = {
+                  id: trackingJson[trackingJson.length - 1]?.id,
+                  orgId: jsonObj?.orgId,
+                  empId: jsonObj?.empId,
+                  branchId: jsonObj?.branchId,
+                  currentTimestamp:
+                    trackingJson[trackingJson.length - 1]?.createdtimestamp,
+                  updateTimestamp: new Date().getTime(),
+                  purpose: "",
+                  location: JSON.stringify(newArray),
+                  kmph: speed.toString(),
+                  speed: speed.toString(),
+                };
+                if (speed <= 10 && distance > distanceFilterValue) {
+                  const response = await client.put(
+                    locationUpdate +
+                      `/${trackingJson[trackingJson.length - 1].id}`,
+                    tempPayload
+                  );
+                  const json = await response.json();
                 }
               } else {
                 let payload = {
@@ -431,22 +462,26 @@ const AppScreen = () => {
                   const json = await response.json();
                 }
               }
+            } else {
+              let payload = {
+                id: 0,
+                orgId: jsonObj?.orgId,
+                empId: jsonObj?.empId,
+                branchId: jsonObj?.branchId,
+                currentTimestamp: new Date().getTime(),
+                updateTimestamp: new Date().getTime(),
+                purpose: "",
+                location: JSON.stringify([newLatLng]),
+                kmph: speed.toString(),
+                speed: speed.toString(),
+              };
+              if (speed <= 10) {
+                const response = await client.post(saveLocation, payload);
+                const json = await response.json();
+              }
             }
-          },
-          (error) => {},
-          {
-            enableHighAccuracy: true,
-            //  distanceFilter: distanceFilterValue,
-            //  timeout: 2000,
-            //  maximumAge: 0,
-            //  interval: 5000,
-            //  fastestInterval: 2000,
-            accuracy: {
-              android: "high",
-            },
-            // useSignificantChanges: true,
           }
-        ).catch(()=>{});
+        }).catch(() => {});
         setSubscriptionId(watchID);
         // }, 5000);
       }
@@ -515,6 +550,7 @@ const AppScreen = () => {
   };
 
   const startTracking = async () => {
+    await BackgroundService.stop();
     if (Platform.OS === "ios") {
       Geolocation.requestAuthorization("always");
     }

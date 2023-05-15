@@ -702,7 +702,6 @@ export default function branchRankingScreen(props) {
 
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
-
         <DropDownComponant
           visible={showDropDownModel}
           multiple={false}
@@ -713,15 +712,13 @@ export default function branchRankingScreen(props) {
             let newdata = { name: item.name, id: item.id };
             switch (dropDownKey) {
               case "TOP_DATA":
-               
-                setselectedRankTop(newdata)
-                setDataOnSelection("TOP",newdata)
+                setselectedRankTop(newdata);
+                setDataOnSelection("TOP", newdata);
                 // setselectedRank(newdata);
                 break;
               case "LOW_DATA":
-              
-                setselectedRankLow(newdata)
-                setDataOnSelection("LOW",newdata)
+                setselectedRankLow(newdata);
+                setDataOnSelection("LOW", newdata);
                 // setselectedRank(newdata);
                 break;
 
@@ -733,13 +730,12 @@ export default function branchRankingScreen(props) {
         />
 
         <View style={styles.rankBox}>
-          
-          {!selector.isLoading ? null : (
-                <LoaderComponent
-                  visible={selector.isLoading}
-                  onRequestClose={() => {}}
-                />
-              )}
+          {!selector.isDealerLoading ? null : (
+            <LoaderComponent
+              visible={selector.isDealerLoading}
+              onRequestClose={() => {}}
+            />
+          )}
 
           <View>
             <View style={styles.titleContainer}>
@@ -756,12 +752,7 @@ export default function branchRankingScreen(props) {
                   // disabled={!isInputsEditable()}
                   // label={"Top 5 Ranks"}
                   value={selectedRankTop.name}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "TOP_DATA",
-                      ""
-                    )
-                  }
+                  onPress={() => showDropDownModelMethod("TOP_DATA", "")}
                 />
               </View>
             </View>
@@ -785,7 +776,7 @@ export default function branchRankingScreen(props) {
             </View>
           </View>
 
-              {/* {renderTableTopRow()}
+          {/* {renderTableTopRow()}
               <FlatList
                 data={branchList}
                 nestedScrollEnabled={true}
@@ -822,12 +813,7 @@ export default function branchRankingScreen(props) {
                   // disabled={!isInputsEditable()}
                   // label={"Top 5 Ranks"}
                   value={selectedRankLow.name}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "LOW_DATA",
-                      ""
-                    )
-                  }
+                  onPress={() => showDropDownModelMethod("LOW_DATA", "")}
                 />
               </View>
             </View>
@@ -850,7 +836,6 @@ export default function branchRankingScreen(props) {
               {renderViewAll("bottom")}
             </View>
           </View>
-           
         </View>
       </ScrollView>
     );
