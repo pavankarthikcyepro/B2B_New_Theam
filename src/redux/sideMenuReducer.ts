@@ -50,13 +50,13 @@ const data = [
     title: "Digital Dashboard",
     icon: DIGITAL_DASHBOARD,
     screen: 118,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/analysis.png"),
   },
   {
     title: "Receptionist Dashboard",
     icon: DIGITAL_DASHBOARD,
     screen: 171,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/analytic.png"),
   },
   {
     title: "Event Dashboard",
@@ -74,7 +74,7 @@ const data = [
     title: "My Stock",
     icon: MY_STOCK,
     screen: 120,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/ready-stock.png"),
   },
   // {
   //   title: "Download Report",
