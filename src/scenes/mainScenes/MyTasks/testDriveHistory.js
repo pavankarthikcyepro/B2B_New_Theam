@@ -223,7 +223,7 @@ const TestDriveHistory = ({ route, navigation }) => {
                                     </Text>
 
                                 </View>  
-                                {item.reason && <View style={styles.view6}>
+                                {item.reason !== null && item.reason !== "" && <View style={styles.view6}>
                                     <Text
                                         style={styles.txt5}
                                     >
@@ -236,8 +236,8 @@ const TestDriveHistory = ({ route, navigation }) => {
                                         {(item.reason)}
                                     </Text>
 
-                                </View>} 
-                                {item.customerRemarks && <View style={styles.view6}>
+                                </View>}
+                                {item.customerRemarks !== null && item.customerRemarks !== "" && <View style={styles.view6}>
                                     <Text
                                         style={styles.txt5}
                                     >
@@ -250,8 +250,8 @@ const TestDriveHistory = ({ route, navigation }) => {
                                         {(item.customerRemarks)}
                                     </Text>
 
-                                </View>} 
-                                {item.employeeRemarks && <View style={styles.view6}>
+                                </View>}
+                                {item.employeeRemarks !== null && item.employeeRemarks !== "" && <View style={styles.view6}>
                                     <Text
                                         style={styles.txt5}
                                     >
