@@ -206,8 +206,8 @@ const ListComponent = ({ route, navigation }) => {
   // }, [navigation]);
 
   useEffect(() => {
-    setMyTasksData([...defaultData]);
-    setMyTeamsData([...defaultData]);
+    // setMyTasksData([...defaultData]);
+    // setMyTeamsData([...defaultData]);
     initialTask(selectedFilter);
   }, [index]);
 
@@ -217,8 +217,8 @@ const ListComponent = ({ route, navigation }) => {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
-      setMyTasksData([...defaultData]);
-      setMyTeamsData([...defaultData]);
+      // setMyTasksData([...defaultData]);
+      // setMyTeamsData([...defaultData]);
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         setEmployeeData(jsonObj);
@@ -295,10 +295,9 @@ const ListComponent = ({ route, navigation }) => {
                     }
                   }
                 }
-                // else{
-                //     // setMyTasksData([])
-                //     setMyTasksData([...defaultData]);
-                // }
+                else{
+                    setMyTasksData([...defaultData]);
+                }
               }
             );
           } else if (index === 1) {
@@ -350,6 +349,8 @@ const ListComponent = ({ route, navigation }) => {
                       setMyTeamsData(tempData);
                     }
                   }
+                } else {
+                  setMyTeamsData([...defaultData]);
                 }
               }
             );
@@ -403,6 +404,8 @@ const ListComponent = ({ route, navigation }) => {
                       setMyTasksData(tempData);
                     }
                   }
+                } else {
+                  setMyTeamsData([...defaultData]);
                 }
               }
             );
@@ -492,26 +495,30 @@ const ListComponent = ({ route, navigation }) => {
             Promise.all([dispatch(getPendingMyTasksListApi(payload))]).then(
               (res) => {
                 const todaysData = res[0].payload;
-                let tempData = [...defaultData];
-                const filteredData = todaysData.filter((element) => {
-                  const trimName = element.taskName.toLowerCase().trim();
-                  const finalTaskName = trimName.replace(/ /g, "");
-                  return taskNames.includes(finalTaskName);
-                });
-                if (filteredData?.length > 0) {
-                  for (let i = 0; i < filteredData.length; i++) {
-                    let index = -1;
-                    index = tempData.findIndex(
-                      (item) => item.taskName === filteredData[i].taskName
-                    );
-                    if (index !== -1) {
-                      tempData[index].taskCnt = filteredData[i].taskCount;
-                      tempData[index].myTaskList = filteredData[i].myTaskList;
-                    }
-                    if (i === filteredData.length - 1) {
-                      setMyTasksData(tempData);
+                if (todaysData?.length > 0) {
+                  let tempData = [...defaultData];
+                  const filteredData = todaysData.filter((element) => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                  });
+                  if (filteredData?.length > 0) {
+                    for (let i = 0; i < filteredData.length; i++) {
+                      let index = -1;
+                      index = tempData.findIndex(
+                        (item) => item.taskName === filteredData[i].taskName
+                      );
+                      if (index !== -1) {
+                        tempData[index].taskCnt = filteredData[i].taskCount;
+                        tempData[index].myTaskList = filteredData[i].myTaskList;
+                      }
+                      if (i === filteredData.length - 1) {
+                        setMyTasksData(tempData);
+                      }
                     }
                   }
+                } else {
+                  setMyTasksData([...defaultData]);
                 }
               }
             );
@@ -621,6 +628,8 @@ const ListComponent = ({ route, navigation }) => {
                       setMyTasksData(tempData);
                     }
                   }
+                } else {
+                  setMyTasksData([...defaultData]);
                 }
               }
             );
@@ -769,6 +778,8 @@ const ListComponent = ({ route, navigation }) => {
                       setMyTasksData(tempData);
                     }
                   }
+                } else {
+                  setMyTasksData([...defaultData]);
                 }
               }
             );
@@ -2052,18 +2063,19 @@ const ListComponent = ({ route, navigation }) => {
 
       {index === 0 && myTasksData.length == 0 && (
         // <NoDataFound />
-        <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
+        <EmptyListView title={"No Data Found"} />
       )}
       {index === 1 && myTeamsData.length == 0 && (
         <EmptyListView
           title={"No Data Found"}
-          isLoading={selector.isTeamsTaskLoading}
         />
       )}
       {/* Filter Modal Starts */}
       <RenderModal />
       {/* Filter Modal Ends */}
-      <LoaderComponent visible={selector.isLoading} />
+      <LoaderComponent
+        visible={selector.isLoading || selector.isTeamsTaskLoading}
+      />
     </View>
   );
 };
