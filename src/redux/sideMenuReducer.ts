@@ -157,7 +157,7 @@ const data = [
     title: "Drop Analysis",
     icon: DROP_ANALYSIS,
     screen: 113,
-    pngIcon: require("../assets/images/Settings-01.png"),
+    pngIcon: require("../assets/images/dropanalysis.png"),
   },
   {
     title: "Complaint Tracker",
