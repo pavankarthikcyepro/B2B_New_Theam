@@ -1086,6 +1086,17 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
+    receptionistDataV3: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
     receptionistDataDigitalFilter: {
       RetailCount: 0,
       bookingsCount: 0,
@@ -1347,6 +1358,17 @@ export const homeSlice = createSlice({
       state.receptionistFilterIds = [];
       state.crm_employees_drop_down_data = {}
       state.receptionistDataV2 = {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {}
+      };
+      state.receptionistDataV3 = {
         RetailCount: 0,
         bookingsCount: 0,
         consultantList: [],
@@ -1960,7 +1982,7 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistDataV2.pending, (state) => { })
       .addCase(getReceptionistDataV2.fulfilled, (state, action) => {
         const dataObj = action.payload;
-        state.receptionistData = {
+        state.receptionistDataV3 = {
           RetailCount: dataObj.RetailCount,
           bookingsCount: dataObj.bookingsCount,
           consultantList: dataObj.consultantList,
@@ -1970,7 +1992,7 @@ export const homeSlice = createSlice({
           enquirysCount: dataObj.enquirysCount,
           totalLostCount: dataObj.totalLostCount,
           fullResponse: dataObj
-        };
+        }
       })
       .addCase(getReceptionistDataV2.rejected, (state, action) => { })
       .addCase(getReceptionistDataForRecepDashboard.pending, (state) => { state.isLoading = true; })

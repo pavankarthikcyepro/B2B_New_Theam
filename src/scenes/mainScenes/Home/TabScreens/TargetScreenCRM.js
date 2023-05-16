@@ -153,7 +153,7 @@ const TargetScreenCRM = ({ route }) => {
   const [storeSecondLevelLocal, setstoreSecondLevelLocal] = useState([]);
   const [storeFirstLevelLocal, setStoreFirstLevelLocal] = useState([]);
   const [filterExapand, setfilterExapand] = useState(false);
-
+  const [tempLevel2, setTempLevel2] = useState([]);
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
@@ -730,6 +730,53 @@ const TargetScreenCRM = ({ route }) => {
       setTotalofTeam(total);
     }
   }, [selector.receptionistData]);
+
+  useEffect(() => {
+    // console.log("manthan ", selector.receptionistDataV3);
+    // if (selector.receptionistDataV3.fullResponse)
+    findDataFromObject(selector.receptionistDataV3.fullResponse);
+  }, [selector.receptionistDataV3])
+  
+  const findDataFromObject = (test)=>{
+    const { self=[] } = test;
+
+    const arrFromSelf = [];
+    const nameWithLevelInit = [];
+    const ValueWithLevelInit = [];
+
+    Object.keys(self).forEach((key,index) => {
+      // console.log("manthan ss ", index);
+      if (key?.includes('level')) {
+        // console.log("manthan ss ", key.at(index));
+        nameWithLevelInit.push(key)
+      }
+    })
+    Object.entries(self).forEach((key)=>{
+      if (key[0].includes("level")){
+        // console.log("manthan dd: ", key[1]);
+        // ValueWithLevelInit.push(key[1]);
+        
+        // setTempLevel2()
+      }
+      
+    })
+
+    Object.values(self).forEach((key, item) => {
+     
+      // if (nameWithLevelInit.includes)
+      // ValueWithLevelInit.push(key);
+      // Array.prototype.push.apply(ValueWithLevelInit, [key]);
+      // if (key?.includes('level')) {
+      //   nameWithLevelInit.push(key)
+      // }
+    })
+
+    // console.log("manthan ", JSON.stringify(nameWithLevelInit))
+    console.log("manthan ", JSON.stringify(ValueWithLevelInit))
+    nameWithLevelInit.map((name) => arrFromSelf.push({ [name]: self[name] }))
+
+    // console.log("manthan ", JSON.stringify(arrFromSelf))
+  }
 
   // const handleModalDropdownDataForShuffle = (user) => {
   //     if (delegateButtonClick) {
@@ -2482,16 +2529,18 @@ const TargetScreenCRM = ({ route }) => {
 
   const renderCRMTreeNewTree = () => {
     // todo manthan
+    
     return (
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {selector.receptionistData.consultantList?.length > 0 &&
-          selector.receptionistData.consultantList?.map((item, index) => {
-            if (item.emp_id === userData.empId) {
+        {selector.receptionistDataV3.fullResponse?.self?.selfUser &&
+          [selector.receptionistDataV3.fullResponse?.self.selfUser].map((item, index) => {
+           
+            if (item.empId === userData.empId) {
               return (
                 <View
-                  key={`${item.emp_name} ${index}`}
+                  key={`${item.empName} ${index}`}
                   style={{
                     borderColor: isViewExpanded ? "#C62159" : "",
                     borderWidth: isViewExpanded ? 2 : 0,
@@ -2517,7 +2566,7 @@ const TargetScreenCRM = ({ route }) => {
                           textTransform: "capitalize",
                         }}
                       >
-                        {item.emp_name}
+                        {item.empName}
                         {"  "}
                         {"-   " + item?.roleName}
                       </Text>
@@ -2565,8 +2614,8 @@ const TargetScreenCRM = ({ route }) => {
                             // handleSourceModalNavigation()
                             handleSourceModalNavigation(
                               item,
-                              item?.emp_id,
-                              [item.emp_id],
+                              item?.empId,
+                              [item.empId],
                               "CRM_INd"
                             );
                           } else {
@@ -6700,7 +6749,7 @@ export const RenderLevel1NameViewCRM = ({
               color: "#fff",
             }}
           >
-            {item?.emp_name?.charAt(0)}
+            {item?.empName?.charAt(0)}
           </Text>
         </TouchableOpacity>
         {/* {level === 0 && !!branchName && ( */}
@@ -6752,6 +6801,104 @@ export const RenderLevel1NameViewCRM = ({
     </View>
   );
 };
+
+// vol 1 backup
+// export const RenderLevel1NameViewCRM = ({
+//   level,
+//   item,
+//   branchName = "",
+//   color,
+//   titleClick,
+//   navigation,
+//   disable = false,
+//   receptionManager = false,
+//   stopLocation = false,
+// }) => {
+//   return (
+//     <View
+//       style={{
+//         width: 100,
+//         justifyContent: "center",
+//         textAlign: "center",
+//         display: "flex",
+//         flexDirection: "row",
+//       }}
+//     >
+//       <View
+//         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
+//       >
+//         <TouchableOpacity
+//           disabled={disable}
+//           style={{
+//             width: 30,
+//             height: 30,
+//             justifyContent: "center",
+//             alignItems: "center",
+//             backgroundColor: color,
+//             borderRadius: 20,
+//             marginTop: 5,
+//             marginBottom: 5,
+//           }}
+//           onPress={titleClick}
+//         >
+//           <Text
+//             style={{
+//               fontSize: 14,
+//               color: "#fff",
+//             }}
+//           >
+//             {item?.emp_name?.charAt(0)}
+//           </Text>
+//         </TouchableOpacity>
+//         {/* {level === 0 && !!branchName && ( */}
+//         {branchName ? (
+//           <TouchableOpacity
+//             disabled={stopLocation}
+//             onPress={() => {
+//               if (item.roleName !== "MD" && item.roleName !== "CEO") {
+//                 navigation.navigate(
+//                   AppNavigator.HomeStackIdentifiers.location,
+//                   {
+//                     empId: item.empId,
+//                     orgId: item.orgId,
+//                   }
+//                 );
+//               }
+//             }}
+//             style={{ flexDirection: "row", alignItems: "center" }}
+//           >
+//             <IconButton
+//               icon="map-marker"
+//               style={{ padding: 0, margin: 0 }}
+//               color={Colors.RED}
+//               size={8}
+//             />
+//             <Text style={{ fontSize: 8 }} numberOfLines={2}>
+//               {branchName}
+//             </Text>
+//           </TouchableOpacity>
+//         ) : null}
+//         {/* )} */}
+//       </View>
+//       <View
+//         style={{
+//           width: "25%",
+//           justifyContent: "space-around",
+//           textAlign: "center",
+//           alignItems: "center",
+//           flex: 1,
+//         }}
+//       >
+//         <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+//           {receptionManager ? "" : "ACH"}
+//         </Text>
+//         <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+//           {receptionManager ? "" : "TGT"}
+//         </Text>
+//       </View>
+//     </View>
+//   );
+// };
 
 const styles = StyleSheet.create({
   container: {
