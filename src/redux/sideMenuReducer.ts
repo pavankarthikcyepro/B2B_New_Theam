@@ -16,6 +16,7 @@ export const DROP_LOST_CANCEL = "DROP_LOST_CANCEL";
 export const GEOLOCATION = "GEOLOCATION";
 export const DIGITAL_DASHBOARD = "DIGITAL_DASHBOARD";
 export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
+export const MY_STOCK = "MY_STOCK";
 export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
 export const COMPLAINT_TRACKER = "REPORT_DOWNLOAD";
 
@@ -49,25 +50,31 @@ const data = [
     title: "Digital Dashboard",
     icon: DIGITAL_DASHBOARD,
     screen: 118,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/analysis.png"),
   },
   {
     title: "Receptionist Dashboard",
     icon: DIGITAL_DASHBOARD,
     screen: 171,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/analytic.png"),
   },
   {
     title: "Event Dashboard",
     icon: EVENT_DASHBOARD,
     screen: 119,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/EventDashboardIcon.png"),
   },
   {
     title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/AttendanceIcon.png"),
+  },
+  {
+    title: "My Stock",
+    icon: MY_STOCK,
+    screen: 120,
+    pngIcon: require("../assets/images/ready-stock.png"),
   },
   // {
   //   title: "Download Report",
@@ -79,7 +86,7 @@ const data = [
     title: "Geolocation",
     icon: GEOLOCATION,
     screen: 117,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/GeoLocationIcon.png"),
   },
   // {
   //   title: "Drop/Lost/Cancel",
@@ -163,7 +170,7 @@ const data = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
     pngIcon: require("../assets/images/Signout-01.png"),
-  }
+  },
 ];
 
 const dataForManager = [
@@ -187,7 +194,7 @@ const dataForManager = [
     title: "My Attendance",
     icon: ATTENDANCE,
     screen: 116,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/AttendanceIcon.png"),
   },
   // {
   //   title: "Task Management",
@@ -246,7 +253,6 @@ const dataForManager = [
     // pngIcon: require("../assets/images/review.png"),
   },
   { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
-
 ];
 
 // {

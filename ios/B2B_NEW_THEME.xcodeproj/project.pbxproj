@@ -12,7 +12,7 @@
 		0F8C7DFC29C2F8D200393A1E /* libreact-native-maps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F8C7DFB29C2F8D200393A1E /* libreact-native-maps.a */; };
 		0F8C7E0A29C31B5A00393A1E /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8C7E0829C31B5A00393A1E /* icon.png */; };
 		0FD76F5B29E6C3BE0060C720 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0FD76F5A29E6C3BE0060C720 /* GoogleService-Info.plist */; };
-		11576CD99EA4FD2B34863751 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		11576CD99EA4FD2B34863751 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		12F93DCD831FE91A48FBF803 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6144485E80DD531E2857F8E2 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -89,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11576CD99EA4FD2B34863751 /* BuildFile in Frameworks */,
+				11576CD99EA4FD2B34863751 /* (null) in Frameworks */,
 				12F93DCD831FE91A48FBF803 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,7 +243,7 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				BEBEB3577A99882F728A48B7 /* [CP] Embed Pods Frameworks */,
-				880581B62BDD16709C13DF23 /* [CP] Embed Pods Frameworks */,
+				880581B62BDD16709C13DF23 /* [CP] Copy Pods Resources */,
 				3B15CA0E34265D8EADE68CE1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -266,10 +266,11 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				593F43DDDD47524BECF5F7B6 /* [CP] Embed Pods Frameworks */,
+				593F43DDDD47524BECF5F7B6 /* [CP] Check Pods Manifest.lock */,
 				0F8CA7A02D24AFCC3F96D013 /* [CP] Copy Pods Resources */,
 				B2898691AC5897438600A791 /* [CP-User] [RNFB] Core Configuration */,
 				959F4884D082FCE5F2D37C42 /* [CP-User] [RNFB] Crashlytics Configuration */,
+				1C516D21D60DED15A328C208 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -388,6 +389,23 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		1C516D21D60DED15A328C208 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3B15CA0E34265D8EADE68CE1 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -407,10 +425,30 @@
 		};
 		3D97063B0970BC13522C466E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-B2B_NEW_THEME-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		593F43DDDD47524BECF5F7B6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
@@ -427,38 +465,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		593F43DDDD47524BECF5F7B6 /* [CP] Embed Pods Frameworks */ = {
+		880581B62BDD16709C13DF23 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		880581B62BDD16709C13DF23 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		959F4884D082FCE5F2D37C42 /* [CP-User] [RNFB] Crashlytics Configuration */ = {
@@ -519,6 +540,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME/Pods-B2B_NEW_THEME-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-checkManifestLockResult.txt",

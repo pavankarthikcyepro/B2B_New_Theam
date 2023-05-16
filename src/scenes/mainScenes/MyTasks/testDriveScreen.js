@@ -45,6 +45,7 @@ import {
   postDetailsWorkFlowTask,
   getDetailsWrokflowTaskForFormData,
   getDetailsWrokflowTaskReTestDrive,
+  postReOpenTestDriveV2,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -247,9 +248,9 @@ const TestDriveScreen = ({ route, navigation }) => {
          // api to get task details 
             // dispatch(getTaskDetailsApi(taskId))
         if (!_.isEmpty(tempData)) {
-          
-          if (tempData.reTestdriveFlag == "ReTestDrive"){
-            
+          setTimeout(() => {
+            if (tempData.reTestdriveFlag == "ReTestDrive") {
+
               // let payloadForWorkFLow = {
               //   entityId: selector.task_details_response?.entityId,
               //   taskName: "Test Drive"
@@ -257,96 +258,98 @@ const TestDriveScreen = ({ route, navigation }) => {
               // // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
               // // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
               // dispatch(getDetailsWrokflowTaskForFormData(payloadForWorkFLow)) //todo need to check and pass entityId
-            
-            setName(tempData.name);
-            setEmail(tempData.email || "");
-            setMobileNumber(mobile || tempData.mobileNumber);
 
-            setSelectedVehicleDetails({
-              model: tempData.model,
-              varient: tempData.variant,
-              fuelType: tempData.fuelType,
-              transType: tempData.transmissionType,
-              vehicleId: 0,
-              varientId: 0,
-            });
+              setName(tempData.name);
+              setEmail(tempData.email || "");
+              setMobileNumber(mobile || tempData.mobileNumber);
+
+              setSelectedVehicleDetails({
+                model: tempData.model,
+                varient: tempData.varient,
+                fuelType: tempData.fuelType,
+                transType: tempData.transmissionType,
+                vehicleId: 0,
+                varientId: 0,
+              });
 
 
 
-            const driverId = tempData.driverId || "";
-            let driverName = "";
+              const driverId = tempData.driverId || "";
+              let driverName = "";
 
-            if (selector.drivers_list.length > 0 && tempData.driverId) {
-              const filterAry = selector.drivers_list.filter(
-                (object) => object.id === tempData.driverId
-              );
-              if (filterAry.length > 0) {
-                driverName = filterAry[0].name;
+              if (selector.drivers_list.length > 0 && tempData.driverId) {
+                const filterAry = selector.drivers_list.filter(
+                  (object) => object.id === tempData.driverId
+                );
+                if (filterAry.length > 0) {
+                  driverName = filterAry[0].name;
+                }
+              }
+              setSelectedDriverDetails({ name: driverName, id: driverId });
+
+              const customerHaveingDl = tempData.isCustomerHaveingDl
+                ? tempData.isCustomerHaveingDl
+                : false;
+              if (customerHaveingDl) {
+                const dataObj = { ...uploadedImagesDataObj };
+                if (tempData.dlFrontUrl) {
+                  dataObj.dlFrontUrl = {
+                    documentPath: tempData.dlFrontUrl,
+                    fileName: "driving license front",
+                  };
+                }
+                if (tempData.dlBackUrl) {
+                  dataObj.dlBackUrl = {
+                    documentPath: tempData.dlBackUrl,
+                    fileName: "driving license back",
+                  };
+                }
+                setUploadedImagesDataObj({ ...dataObj });
+              }
+              setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
+
+
+              const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
+              const testDriveDatetimeAry = testDriveDatetime.split(" ");
+              if (testDriveDatetimeAry.length > 0) {
+                // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
+                dispatch(
+                  updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
+                );
+              }
+              if (testDriveDatetimeAry.length > 1) {
+                // state.customer_preferred_time = testDriveDatetimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
+                );
+              }
+
+              const startTime = tempData.startTime ? tempData.startTime : "";
+
+              const startTimeAry = moment(startTime)
+                .format("DD/MM/YY h:mm a")
+                .split(" ");
+              if (startTimeAry.length > 1) {
+                // state.actual_start_time = startTimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
+                );
+              }
+              // state.driverId = tempData.driverId;
+              const endTime = tempData.endTime ? tempData.endTime : "";
+              const endTimeAry = moment(endTime)
+                .format("DD/MM/YY h:mm a")
+                .split(" ");;
+              if (endTimeAry.length > 1) {
+                // state.actual_end_time = endTimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
+                );
               }
             }
-            setSelectedDriverDetails({ name: driverName, id: driverId });
 
-            const customerHaveingDl = tempData.isCustomerHaveingDl
-              ? tempData.isCustomerHaveingDl
-              : false;
-            if (customerHaveingDl) {
-              const dataObj = { ...uploadedImagesDataObj };
-              if (tempData.dlFrontUrl) {
-                dataObj.dlFrontUrl = {
-                  documentPath: tempData.dlFrontUrl,
-                  fileName: "driving license front",
-                };
-              }
-              if (tempData.dlBackUrl) {
-                dataObj.dlBackUrl = {
-                  documentPath: tempData.dlBackUrl,
-                  fileName: "driving license back",
-                };
-              }
-              setUploadedImagesDataObj({ ...dataObj });
-            }
-            setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
-
-
-            const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
-            const testDriveDatetimeAry = testDriveDatetime.split(" ");
-            if (testDriveDatetimeAry.length > 0) {
-              // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
-              dispatch(
-                updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
-              );
-            }
-            if (testDriveDatetimeAry.length > 1) {
-              // state.customer_preferred_time = testDriveDatetimeAry[1];
-              dispatch(
-                updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
-              );
-            }
-
-            const startTime = tempData.startTime ? tempData.startTime : "";
-            
-            const startTimeAry = moment(startTime)
-              .format("DD/MM/YY h:mm a")
-              .split(" ");
-            if (startTimeAry.length > 1) {
-              // state.actual_start_time = startTimeAry[1];
-              dispatch(
-                updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
-              );
-            }
-            // state.driverId = tempData.driverId;
-            const endTime = tempData.endTime ? tempData.endTime : "";
-            const endTimeAry = moment(endTime)
-              .format("DD/MM/YY h:mm a")
-              .split(" ");;
-            if (endTimeAry.length > 1) {
-              // state.actual_end_time = endTimeAry[1];
-              dispatch(
-                updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
-              );
-            }
-          }
-          
+          }, 2000);
+       
 
 
         }
@@ -769,7 +772,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         getReasonListData("Enquiry Followup")
         dispatch(getTestDriveHistoryCount(universalId))
         if (universalId) {
-          dispatch(getTestDriveHistoryDetails(universalId)) // history listing API 
+          setTimeout(() => {
+            dispatch(getTestDriveHistoryDetails(universalId)) // history listing API    
+          }, 1000);
+         
         }
       }
 
@@ -1144,7 +1150,23 @@ const TestDriveScreen = ({ route, navigation }) => {
       };
     }
 
-   
+    let prefferedTimeV2 = "";
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+    
+      prefferedTimeV2 = date + " " + preffTime;
+     
+    } else {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTimeV2 = date + " " + preffTime;
+    
+    }
     
     let appointmentObjsavetestDrive = {
       address: customerAddress,
@@ -1157,7 +1179,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       source: "ShowroomWalkin",
       startTime: moment.utc(startTime).format(),
       endTime: moment.utc(endTime).format(),
-      testDriveDatetime: prefferedTime,
+      testDriveDatetime: prefferedTimeV2,
       testdriveId: 0,
       // status: "APPROVED",
       status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
@@ -1176,7 +1198,10 @@ const TestDriveScreen = ({ route, navigation }) => {
       fuelType: selectedVehicleDetails.fuelType,
       transmissionType: selectedVehicleDetails.transType,
       driver:selectedDriverDetails.name,
-      employee: selectedDseDetails.name
+      employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
     };
     // todo manthan
 
@@ -1755,7 +1780,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
-        "HH:mm"
+        "HH:mm:ss"
       ).format("HH:mm:ss");
       const startTime = moment(selector.actual_start_time, "HH:mm").format(
         "HH:mm:ss"
@@ -1767,7 +1792,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       actualStartTime = date + " " + startTime;
       actualEndTime = date + " " + endTime;
     } else {
-      prefferedTime = date + " " + selector.customer_preferred_time;
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTime = date + " " + preffTime;
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
     }
@@ -1819,7 +1848,10 @@ const TestDriveScreen = ({ route, navigation }) => {
       fuelType: selectedVehicleDetails.fuelType,
       transmissionType: selectedVehicleDetails.transType,
       driver: selectedDriverDetails.name,
-      employee: selectedDseDetails.name
+      employee: selectedDseDetails.name,
+      customerRemarks: customerRemarks,
+      employeeRemarks: employeeRemarks,
+      reason: selector.reason,
     }
     
 
@@ -1945,7 +1977,40 @@ const TestDriveScreen = ({ route, navigation }) => {
   }
 
   const reTestDrivePutCallupdateList = (status) => {
-    const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
+      "DD-MM-YYYY"
+    );
+    let prefferedTime = "";
+    // let actualStartTime = "";
+    // let actualEndTime = "";
+
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      // const startTime = moment(selector.actual_start_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      // const endTime = moment(selector.actual_end_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      prefferedTime = date + " " + preffTime;
+      // actualStartTime = date + " " + startTime;
+      // actualEndTime = date + " " + endTime;
+    } else {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTime = date + " " + preffTime;
+      // actualStartTime = date + " " + selector.actual_start_time;
+      // actualEndTime = date + " " + selector.actual_end_time;
+    }
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+    // const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
     const location = addressType === 1 ? "showroom" : "customer";
@@ -1980,7 +2045,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       "source": "ShowroomWalkin",
       "startTime": moment(startTime).valueOf(),
       "status": status,
-      "testDriveDatetime": moment(preferredTime).valueOf(),
+      "testDriveDatetime": prefferedTime,
       "varientId": varientId,
       "vehicleId": vehicleId,
       "driverId": selectedDriverDetails.id.toString(),
@@ -2003,7 +2068,116 @@ const TestDriveScreen = ({ route, navigation }) => {
       body: payload,
       recordid:storeLastupdatedTestDriveId
     }
-    dispatch(PutUpdateListTestDriveHistory(masterPayload)); // need to add recordid
+    // dispatch(PutUpdateListTestDriveHistory(masterPayload)); // commented as last moment changes asked by ranjith
+    // todo manthan 
+
+    if (status == "CLOSED"){
+      let reopenSubmitObj = {
+        id: taskId,
+        address: customerAddress,
+        allotmentId: 0,
+        branchId: selectedBranchId,
+        canceledBy: "",
+        customerDropDatetime: "",
+        customerId: universalId,
+        customerPickupDatetime: "",
+        customerQuery: "",
+        datetime: "",
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        dseId: "",
+        startTime: moment.utc(startTime).format(),
+        endTime: moment.utc(endTime).format(),
+        latitude: "",
+        longitude: "",
+        location: location,
+        managerApprovedDatetime: "",
+        managerId: "",
+        orgId: userData.orgId,
+        securityInId: "",
+        securityOutId: "",
+        source: taskData.sourceType,
+        status: "CLOSED",
+        // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        testDriveDatetime: prefferedTime,
+        // testDriveDatetime: prefferedTime,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        testdriveId: 0,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        reTestdriveFlag: retestflag,
+        mobileNumber: mobileNumber,
+        name: name,
+        emailId: email,
+        model: selectedVehicleDetails.model,
+        variant: selectedVehicleDetails.varient,
+        fuelType: selectedVehicleDetails.fuelType,
+        transmissionType: selectedVehicleDetails.transType,
+        driver: selectedDriverDetails.name,
+        employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
+      }
+
+
+      dispatch(postReOpenTestDriveV2(reopenSubmitObj));
+    }else{
+      let reopenSubmitObj = {
+        id: taskId,
+        address: customerAddress,
+        allotmentId: 0,
+        branchId: selectedBranchId,
+        canceledBy: "",
+        customerDropDatetime: "",
+        customerId: universalId,
+        customerPickupDatetime: "",
+        customerQuery: "",
+        datetime: "",
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        dseId: "",
+        startTime: moment.utc(startTime).format(),
+        endTime: moment.utc(endTime).format(),
+        latitude: "",
+        longitude: "",
+        location: location,
+        managerApprovedDatetime: "",
+        managerId: "",
+        orgId: userData.orgId,
+        securityInId: "",
+        securityOutId: "",
+        source: taskData.sourceType,
+        status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        testDriveDatetime: prefferedTime,
+        // testDriveDatetime: prefferedTime,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        testdriveId: 0,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        reTestdriveFlag: retestflag,
+        mobileNumber: mobileNumber,
+        name: name,
+        emailId: email,
+        model: selectedVehicleDetails.model,
+        variant: selectedVehicleDetails.varient,
+        fuelType: selectedVehicleDetails.fuelType,
+        transmissionType: selectedVehicleDetails.transType,
+        driver: selectedDriverDetails.name,
+        employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
+      }
+
+
+      dispatch(postReOpenTestDriveV2(reopenSubmitObj));
+    }
+
+    
 
   }
 
@@ -2423,7 +2597,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
-          {renderShowRecheduleModal()}
+        
           <View style={styles.baseVw}>
             {/* // 1.Test Drive */}
             <View
@@ -3086,6 +3260,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </Modal>
+      {renderShowRecheduleModal()}
     </SafeAreaView>
   );
 };

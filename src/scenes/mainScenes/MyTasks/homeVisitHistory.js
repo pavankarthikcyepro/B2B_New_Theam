@@ -50,7 +50,8 @@ const HomeVisitHistory = ({ route, navigation }) => {
 
     const renderItem = ({ item, index }) => {
        
-        const date = moment(item.testDriveDatetime).format("DD/MM/YY h:mm a").split(" ");
+        const date = moment(item.actualStartTime).format("DD/MM/YY h:mm a").split(" ");
+        const date2 = moment(item.nextFlowupTime).format("DD/MM/YY h:mm a").split(" ");
         let topBcgColor = Colors.LIGHT_GRAY;
         let bottomBcgColor = Colors.LIGHT_GRAY;
         if (historyList[index - 1] !== undefined) {
@@ -102,8 +103,8 @@ const HomeVisitHistory = ({ route, navigation }) => {
                         <Text
                             style={styles.txt2}
                         >
-                            {date[1] + " " + date[2]}
-
+                            {date2[1] + " " + date2[2]}
+                            {/* {date2[1]} */}
                         </Text>
                     </View>
                 </View>
