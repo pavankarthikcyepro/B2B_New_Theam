@@ -731,7 +731,7 @@ export const getSourceModelDataForTeam = createAsyncThunk(
 export const getReceptionistDataV2 = createAsyncThunk(
   "HOME/getReceptionistDataV2",
   async (payload, { rejectWithValue }) => {
-    const response = await client.post(URL.getReceptionistDataV2(), payload);
+    const response = await client.post(URL.RECEPTIONIST_DASHBOARDV2(), payload);
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
@@ -1960,7 +1960,17 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistDataV2.pending, (state) => { })
       .addCase(getReceptionistDataV2.fulfilled, (state, action) => {
         const dataObj = action.payload;
-        // state.receptionistData = {}
+        state.receptionistData = {
+          RetailCount: dataObj.RetailCount,
+          bookingsCount: dataObj.bookingsCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.contactsCount,
+          enquirysCount: dataObj.enquirysCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
       })
       .addCase(getReceptionistDataV2.rejected, (state, action) => { })
       .addCase(getReceptionistDataForRecepDashboard.pending, (state) => { state.isLoading = true; })
