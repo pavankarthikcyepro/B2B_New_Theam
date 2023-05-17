@@ -5,6 +5,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 // #import <GoogleMaps/GoogleMaps.h>
+#import <Firebase.h>
+#import <FirebaseCrashlytics.h>
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
 #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
@@ -14,8 +16,6 @@
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
-#import <Firebase/Firebase.h>
-#import <FirebaseCrashlytics.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
