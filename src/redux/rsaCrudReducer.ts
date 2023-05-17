@@ -63,9 +63,8 @@ const rsaCrudReducer = createSlice({
   reducers: {
     clearStateData: () => JSON.parse(JSON.stringify(initialState)),
     setExistingData: (state, action) => {
-      const { technician, date, reason, remarks, rsaAddress, amount } = action.payload;
+      const { date, reason, remarks, rsaAddress, amount } = action.payload;
       const { address, area, landmark, pin } = rsaAddress;
-      state.technician = technician;
       state.reason = reason;
       state.remarks = remarks;
       state.address = address;

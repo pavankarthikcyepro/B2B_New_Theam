@@ -67,6 +67,27 @@ const CreateRsa = ({ navigation, route }) => {
     }
   }, [selector.createRsaResponseStatus]);
 
+  useEffect(() => {
+    if (
+      fromType == "editRsa" &&
+      existingRsaData &&
+      selector.technicianList.length > 0
+    ) {
+      setExistingTechnician();
+    }
+  }, [selector.technicianList]);
+
+  const setExistingTechnician = () => {
+    const { technician } = existingRsaData;
+    for (let i = 0; i < selector.technicianList.length; i++) {
+      const element = selector.technicianList[i];
+      if (technician == element.id) {
+        dispatch(setDropDownData({ key: "TECHNICIAN", value: element.name }));
+        break;
+      }
+    }
+  };
+
   const showDatePickerModelMethod = (key) => {
     Keyboard.dismiss();
     dispatch(setDatePicker(key));
@@ -107,37 +128,37 @@ const CreateRsa = ({ navigation, route }) => {
       showToast("Please Enter Remarks");
       return;
     }
-    
+
     if (!selector.amount) {
       showToast("Please Enter Amount");
       return;
     }
-    
+
     if (!selector.rsaDate) {
       showToast("Please Select Date");
       return;
     }
-    
+
     if (!selector.technician) {
       showToast("Please Select Technician");
       return;
     }
-    
+
     if (!selector.address) {
       showToast("Please Enter Address");
       return;
     }
-    
+
     if (!selector.area) {
       showToast("Please Enter Area");
       return;
     }
-    
+
     if (!selector.landmark) {
       showToast("Please Enter Landmark");
       return;
     }
-    
+
     if (!selector.pincode) {
       showToast("Please Enter Pincode");
       return;
@@ -382,7 +403,7 @@ const CreateRsa = ({ navigation, route }) => {
             </View>
           )}
 
-            {fromType == "editRsa" && existingRsaData?.status == "OPEN" && (
+          {fromType == "editRsa" && existingRsaData?.status == "OPEN" && (
             <View style={styles.buttonListRow}>
               <TouchableOpacity
                 style={styles.btnContainer}
