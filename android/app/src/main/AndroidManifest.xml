@@ -70,6 +70,8 @@
         </intent-filter>
       </activity>
        <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" />
+       <service android:name="com.supersami.foregroundservice.ForegroundService" android:foregroundServiceType="location"></service>
+       <service android:name="com.supersami.foregroundservice.ForegroundServiceTask" android:foregroundServiceType="location"></service>
         <meta-data
      android:name="com.google.android.geo.API_KEY"
      android:value="AIzaSyD1p1YFpi2w3yBrYl1aUpudMqe9IzMQt2Y"/>

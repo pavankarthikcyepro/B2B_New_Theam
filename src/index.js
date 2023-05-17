@@ -88,6 +88,7 @@ const AppScreen = () => {
     }
   );
   const [subscriptionId, setSubscriptionId] = useState(null);
+  const [location, setLocation] = useState({ latitude: 0, longitude: 0 });
 
   useEffect(() => {
     return () => {
@@ -168,7 +169,7 @@ const AppScreen = () => {
             new Date()
           );
 
-          if (distance >= 10 && currentSpeed >= GlobalSpeed) {
+          if (distance >= 50 && currentSpeed >= GlobalSpeed) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -191,7 +192,7 @@ const AppScreen = () => {
             );
             const json = await response.json();
           } else {
-            if (distance >= 10) {
+            if (distance >= 50) {
               const payload = {
                 id: hasObjectWithCurrentDate.id,
                 orgId: jsonObj?.orgId,
@@ -213,6 +214,12 @@ const AppScreen = () => {
                 payload
               );
               const json = await response.json();
+              if (response.status === 200) {
+                setLocation({
+                  longitude: 0,
+                  latitude: 0,
+                });
+              }
             }
           }
         }
@@ -220,18 +227,65 @@ const AppScreen = () => {
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "true"
         ) {
-          const tempArray = JSON.parse(
-            JSON.parse(hasObjectWithCurrentDate.location)
-          );
-          const finalArray = tempArray.concat([{ longitude, latitude }]);
-          const distanceCheck = tempArray[tempArray.length - 1];
+          if (location.latitude === 0 || location.longitude === 0) {
+            setLocation({ longitude, latitude, time: new Date() });
+          } else {
+            let distance = getDistanceBetweenTwoPointsLatLong(
+              location.latitude,
+              location.longitude,
+              latitude,
+              longitude
+            );
+            const currentSpeed = calculateSpeed(
+              location.latitude,
+              location.longitude,
+              new Date(location.time),
+              latitude,
+              longitude,
+              new Date()
+            );
+            if (distance >= 50 && currentSpeed >= GlobalSpeed) {
+              const payload = {
+                id: 0,
+                orgId: jsonObj?.orgId,
+                empId: jsonObj?.empId,
+                branchId: jsonObj?.branchId,
+                currentTimestamp: new Date().getTime(),
+                updateTimestamp: new Date().getTime(),
+                purpose: "",
+                location: JSON.stringify([{ longitude, latitude }]),
+                kmph: speed.toString(),
+                speed: speed.toString(),
+                isStart: "true",
+                isEnd: "false",
+              };
+              const response = await client.post(saveLocation, payload);
+              const json = await response.json();
+            }
+          }
+        }
+      } else {
+        console.log(
+          "There is no object with the same date as the current date."
+        );
+        if (location.latitude === 0 || location.longitude === 0) {
+          setLocation({ longitude, latitude, time: new Date() });
+        } else {
           let distance = getDistanceBetweenTwoPointsLatLong(
-            distanceCheck.latitude,
-            distanceCheck.longitude,
+            location.latitude,
+            location.longitude,
             latitude,
             longitude
           );
-          if (true) {
+          const currentSpeed = calculateSpeed(
+            location.latitude,
+            location.longitude,
+            new Date(location.time),
+            latitude,
+            longitude,
+            new Date()
+          );
+          if (distance >= 50 && currentSpeed >= GlobalSpeed) {
             const payload = {
               id: 0,
               orgId: jsonObj?.orgId,
@@ -250,26 +304,6 @@ const AppScreen = () => {
             const json = await response.json();
           }
         }
-      } else {
-        console.log(
-          "There is no object with the same date as the current date."
-        );
-        const payload = {
-          id: 0,
-          orgId: jsonObj?.orgId,
-          empId: jsonObj?.empId,
-          branchId: jsonObj?.branchId,
-          currentTimestamp: new Date().getTime(),
-          updateTimestamp: new Date().getTime(),
-          purpose: "",
-          location: JSON.stringify([{ longitude, latitude }]),
-          kmph: speed.toString(),
-          speed: speed.toString(),
-          isStart: "true",
-          isEnd: "false",
-        };
-        const response = await client.post(saveLocation, payload);
-        const json = await response.json();
       }
     }
   };
