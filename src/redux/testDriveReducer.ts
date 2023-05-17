@@ -207,6 +207,18 @@ export const postReOpenTestDrive = createAsyncThunk("TEST_DRIVE_SLICE/postReOpen
 })
 
 
+// for calling on all btns 
+export const postReOpenTestDriveV2 = createAsyncThunk("TEST_DRIVE_SLICE/postReOpenTestDriveV2", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.SAVETESTDRIVE(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
 export const PutUpdateListTestDriveHistory = createAsyncThunk("TEST_DRIVE_SLICE/PutUpdateListTestDriveHistory", async (payload,{ rejectWithValue }) => {
 
   const response = await client.put(URL.UPDATELIST_TESTDRIVE_HISTORY(payload["recordid"]), payload["body"]);
@@ -593,6 +605,28 @@ const testDriveSlice = createSlice({
       state.reopen_test_drive_res_status = "failed";
     })
 
+    // for calling on all btn test drive
+    builder.addCase(postReOpenTestDriveV2.pending, (state, action) => {
+      state.isLoading = true;
+      // state.reopen_test_drive_res_status = "pending";
+    })
+    builder.addCase(postReOpenTestDriveV2.fulfilled, (state, action) => {
+      if (action.payload) {
+        // state.reopen_test_drive_res_status = "successs";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(postReOpenTestDriveV2.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      // state.reopen_test_drive_res_status = "failed";
+    })
 
     // reopen test drive history count 
     builder.addCase(getTestDriveHistoryCount.pending, (state, action) => {

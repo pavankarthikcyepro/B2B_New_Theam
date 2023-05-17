@@ -114,6 +114,7 @@ import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
 import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
+import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
 import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
@@ -151,6 +152,8 @@ import RsaList from "../scenes/mainScenes/Home/ServiceCustomer/RsaList";
 import CreateRsa from "../scenes/mainScenes/Home/ServiceCustomer/CreateRsa";
 import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
 import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
+import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
+import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -415,6 +418,7 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  myStock: "MY_STOCK",
   reportDownload:"REPORT_DOWNLOAD",
   complaintTracker:"COMPLAINT_TRACKER",
   receptionistDashboard: "RECEPTIONIST_DASHBOARD",
@@ -437,6 +441,7 @@ export const HomeStackIdentifiers = {
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
   location: "MAP_TRACKER",
+  map: "MAP",
   receptionistFilter: "REECEPTION_FILTER",
   searchCustomer: "SEARCH_CUSTOMER",
   addCustomerInfo: "ADD_CUSTOMER_INFO",
@@ -649,7 +654,14 @@ const HomeStackNavigator = ({ navigation }) => {
       />
       <MainDrawerNavigator.Screen
         name={HomeStackIdentifiers.location}
-        component={MapScreen}
+        component={TripListScreen}
+        options={{
+          title: "Trip List",
+        }}
+      />
+      <MainDrawerNavigator.Screen
+        name={HomeStackIdentifiers.map}
+        component={GeolocationMapScreen}
         options={{
           title: "Map",
         }}
@@ -841,7 +853,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.mytasks}
         component={MyTasksScreen}
         options={{
-          title: "My Tasks",
+          title: "Task Dashboard",
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -1674,6 +1686,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         }
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.myStock}
+        component={MyStockMainTopTabNavigator}
+      />
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.geolocation}
         component={MyGeolocationTopTabNavigatorOne}
       />
@@ -1821,13 +1837,7 @@ const EventDashboardNavigator = ({ navigation }) => {
     </EventDashboardStack.Navigator>
   );
 };
-// const MainStackNavigator = createStackNavigator();
 
-// const MainStackNavigator = ({ navigation }) => {
-//     return (
-
-//     )
-// }
 const MainStack = createStackNavigator();
 
 const MainStackNavigator = ({ navigation }) => {

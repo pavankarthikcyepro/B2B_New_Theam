@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  SectionList,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Linking,
-} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getWorkFlow,
-  getEnquiryDetails,
-  getLeadAge,
-  getFollowUPCount,
-  getTestDriveHistoryCount,
-  clearListData,
-} from "../../../redux/taskThreeSixtyReducer";
-import { Colors, GlobalStyle } from "../../../styles";
+import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount, getTestDriveHistoryCount, clearListData } from "../../../redux/taskThreeSixtyReducer";
+import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
@@ -70,14 +52,14 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    return () => {
+     return () => {
       setPlannedTasks([]);
       dispatch(clearListData());
     };
   }, []);
-
+  
   useEffect(() => {
-    navigation.addListener("focus", () => {
+    navigation.addListener('focus', () => {
       dispatch(getLeadAge(universalId));
       dispatch(getFollowUPCount(universalId));
       dispatch(getTestDriveHistoryCount(universalId));
@@ -108,21 +90,27 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
       const data = [];
       if (selector.wrokflow_response.length > 0) {
         selector.wrokflow_response.forEach((element) => {
-          if (element.taskStatus === "CLOSED") {
-            closedData.push(element);
-          } else if (
-            (element.taskStatus !== "CLOSED" &&
-              selector.enquiry_leadDto_response.leadStage ===
-                element.taskCategory.taskCategory) ||
-            (element.taskCategory.taskCategory === "APPROVAL" &&
-              element.taskStatus === "ASSIGNED") ||
-            (element.taskStatus &&
-              element.taskStatus !== "APPROVAL" &&
-              (element.taskName === "Home Visit" ||
-                element.taskName === "Test Drive"))
-          ) {
-            plannedData.push(element);
-          }
+            if (element.taskStatus === "CLOSED") {
+              closedData.push(element);
+            } else if (
+              (element.taskStatus !== "CLOSED" &&
+                selector.enquiry_leadDto_response.leadStage ===
+                  element.taskCategory.taskCategory) ||
+              (element.taskCategory.taskCategory === "APPROVAL" &&
+                element.taskStatus === "ASSIGNED")  || 
+              (element.taskStatus &&
+                element.taskStatus !== "APPROVAL" &&
+                (element.taskName === "Home Visit" ||
+                  element.taskName === "Test Drive")) 
+                  // || (selector.enquiry_leadDto_response.leadStage === "PREBOOKING") && element.taskCategory.taskCategory ==="ENQUIRY"
+            ) {
+              plannedData.push(element);
+            } else if (element.taskStatus !== "CLOSED"  && element.taskName === "Evaluation" || element.taskName === "Finance"){
+              if (selector.enquiry_leadDto_response.leadStage !== "PREENQUIRY"){ // added to manage not display in contacts 
+                plannedData.push(element);
+              }
+            
+            }
         });
       }
 
@@ -157,7 +145,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     const taskStatus = item.taskStatus;
     const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit") {
+    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit" && taskName !== "Re Test Drive" && taskName !== "Re Home Visit") {
       const name = checkForTaskNames(taskName);
       
       showToast(name + " task has been closed");
@@ -171,6 +159,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     let taskNameNew = "";
     switch (finalTaskName) {
       case "testdrive":
+        navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+        taskNameNew = "Test Drive";
+        break;
+      case "retestdrive":
         navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
         taskNameNew = "Test Drive";
         break;
@@ -191,6 +183,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         taskNameNew = "";
         break;
       case "homevisit":
+        navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
+        taskNameNew = "Home Visit";
+        break;
+      case "rehomevisit":
         navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
         taskNameNew = "Home Visit";
         break;

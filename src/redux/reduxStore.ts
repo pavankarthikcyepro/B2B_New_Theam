@@ -33,6 +33,7 @@ import taskTransferReducer from "./taskTransferReducer";
 import leaddropReducer from "./leaddropReducer";
 import liveLeadsReducer from "./liveLeadsReducer";
 import settingReducer from "./settingReducer";
+import myStockReducer from "./myStockReducer";
 import complaintTrackerReducer from "./complaintTrackerReducer";
 import digitalPaymentReducer from "./digitalPaymentReducer";
 import customerInfoReducer from "./customerInfoReducer";
@@ -82,6 +83,7 @@ const reducer = combineReducers({
   taskTransferReducer,
   liveLeadsReducer,
   settingReducer,
+  myStockReducer,
   complaintTrackerReducer,
   digitalPaymentReducer,
   customerInfoReducer,

@@ -287,8 +287,8 @@ export const mytaskSlice = createSlice({
     myTeamstasksListResponse: {},
     myTeamsTasksListResponseStatus: "",
     role: "",
-    isLoading: true,
-    isTeamsTaskLoading: true,
+    isLoading: false,
+    isTeamsTaskLoading: false,
     myTodayData: [],
     myUpcomingData: [],
     myPendingData: [],
@@ -452,68 +452,68 @@ export const mytaskSlice = createSlice({
     });
 
     builder.addCase(getTodayMyTasksListApi.pending, (state) => {
-      state.myTodayData = [];
       state.isLoading = true;
+      state.myTodayData = [];
     });
     builder.addCase(getTodayMyTasksListApi.fulfilled, (state, action) => {
-      state.myTodayData = action.payload.todaysData;
       state.isLoading = false;
+      state.myTodayData = action.payload.todaysData;
     });
     builder.addCase(getTodayMyTasksListApi.rejected, (state, action) => {
-      state.myTodayData = [];
       state.isLoading = false;
+      state.myTodayData = [];
     });
 
     builder.addCase(getUpcomingMyTasksListApi.pending, (state) => {
-      state.myUpcomingData = [];
       state.isLoading = true;
+      state.myUpcomingData = [];
     });
     builder.addCase(getUpcomingMyTasksListApi.fulfilled, (state, action) => {
-      state.myUpcomingData = action.payload.upcomingData;
       state.isLoading = false;
+      state.myUpcomingData = action.payload.upcomingData;
     });
     builder.addCase(getUpcomingMyTasksListApi.rejected, (state, action) => {
-      state.myUpcomingData = [];
       state.isLoading = false;
+      state.myUpcomingData = [];
     });
 
     builder.addCase(getPendingMyTasksListApi.pending, (state) => {
-      state.myPendingData = [];
       state.isLoading = true;
+      state.myPendingData = [];
     });
     builder.addCase(getPendingMyTasksListApi.fulfilled, (state, action) => {
-      state.myPendingData = action.payload.pendingData;
       state.isLoading = false;
+      state.myPendingData = action.payload.pendingData;
     });
     builder.addCase(getPendingMyTasksListApi.rejected, (state, action) => {
-      state.myPendingData = [];
       state.isLoading = false;
+      state.myPendingData = [];
     });
 
     builder.addCase(getRescheduleMyTasksListApi.pending, (state) => {
-      state.myReData = [];
       state.isLoading = true;
+      state.myReData = [];
     });
     builder.addCase(getRescheduleMyTasksListApi.fulfilled, (state, action) => {
-      state.myReData = action.payload.rescheduledData;
       state.isLoading = false;
+      state.myReData = action.payload.rescheduledData;
     });
     builder.addCase(getRescheduleMyTasksListApi.rejected, (state, action) => {
-      state.myReData = [];
       state.isLoading = false;
+      state.myReData = [];
     });
 
     builder.addCase(getCompletedMyTasksListApi.pending, (state) => {
-      state.myReData = [];
       state.isLoading = true;
+      state.myReData = [];
     });
     builder.addCase(getCompletedMyTasksListApi.fulfilled, (state, action) => {
-      state.myReData = action.payload.completedData;
       state.isLoading = false;
+      state.myReData = action.payload.completedData;
     });
     builder.addCase(getCompletedMyTasksListApi.rejected, (state, action) => {
-      state.myReData = [];
       state.isLoading = false;
+      state.myReData = [];
     });
 
     builder.addCase(getTodayTeamTasksListApi.pending, (state) => {

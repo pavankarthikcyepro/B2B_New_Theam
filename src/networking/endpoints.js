@@ -116,8 +116,6 @@ export const salesGap = baseUrl + "dfd/sales-gap";
 export const getBranch = baseUrl + "dfd/oh";
 export const tasktransfer = baseUrl + "dfd/sales-gap/target-dropdown";
 
-
-
 export const getLeaderBoardData =
   baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking";
 export const getBranchRankingData =
@@ -211,6 +209,15 @@ const URL = {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
   MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+  GET_ROLES_LIST: () => {
+    return roleManagement_url + `/dms/getRoles`;
+  },
+  GET_DESIGNATION_LIST: () => {
+    return roleManagement_url + `/dms/getDesignation`;
+  },
+  SAVE_EMPLOYEE: () => {
+    return roleManagement_url + `/dms/save-employee`;
+  },
   MY_TASKS_RESCHEDULED_HISTORY: (empId) =>
     sales_url + `/task-history/resheduled-update-today?empId=${empId}`,
   CONTACT_DETAILS: (universalId) => {
@@ -269,6 +276,10 @@ const URL = {
   GET_INSURANCE_COMPANY: (orgId) =>
     sales_url + `/master-data/insurencecompanies/${orgId}`,
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
+  
+  POST_FINANCE: () => sales_url + "/dms/finance",
+  POST_EVALUTION: () => sales_url + "/dms/evaluation",
+
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",
   GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
@@ -1028,6 +1039,24 @@ const URL = {
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
+  },
+  GET_INVENTORY: () => {
+    return baseUrl + "dfdr/vehicle-inventory/getInventory";
+  },
+  GET_INVENTORY_BY_LOCATION: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-locationBasedVehicles`;
+  },
+  GET_INVENTORY_BY_VEHICLE: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-branchBasedVehicles`;
+  },
+  GET_INVENTORY_BY_VEHICLE_MODEL: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-modelBasedVehicles`;
+  },
+  GET_INVENTORY_BY_VEHICLE_COLOR: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-varientBasedVehicles`;
+  },
+  GET_INVENTORY_BY_STOCK_YARD_BRANCHES: (orgId) => {
+    return baseUrl + `dfdr/vehicle-inventory/get-stockyardbranches/${orgId}`;
   },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;

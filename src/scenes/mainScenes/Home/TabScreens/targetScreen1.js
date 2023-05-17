@@ -43,7 +43,6 @@ import TextTicker from "react-native-text-ticker";
 import AnimLoaderComp from "../../../../components/AnimLoaderComp";
 import Lottie from "lottie-react-native";
 import _ from "lodash";
-
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 const color = [
@@ -325,7 +324,7 @@ const TargetScreen = ({ route }) => {
             Promise.allSettled([
               dispatch(getNewTargetParametersAllData(payload2)),
               dispatch(getTotalTargetParametersData(payload2)),
-            ]).then(() => {});
+            ]).then(() => { });
           }
         }
       );
@@ -341,7 +340,7 @@ const TargetScreen = ({ route }) => {
       .format(dateFormat);
     setDateDiff(
       (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
 
     const isInsights = selector.isTeamPresent && !selector.isDSE;
@@ -464,7 +463,7 @@ const TargetScreen = ({ route }) => {
         .format(dateFormat);
       setDateDiff(
         (new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
       );
     });
 
@@ -567,6 +566,7 @@ const TargetScreen = ({ route }) => {
       ...allParameters[0],
       targetAchievements: selector.totalParameters,
     };
+
     setAllParameters(allParameters);
   }, [selector.totalParameters]);
 
@@ -710,7 +710,7 @@ const TargetScreen = ({ route }) => {
         let total = [totalKey1, totalKey2, totalKey3, totalKey4];
         setTotalofTeam(total);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
@@ -915,7 +915,7 @@ const TargetScreen = ({ route }) => {
     }
   };
 
-  const onEmployeeNameClick = async (item, index, lastParameter) => {
+ const onEmployeeNameClick = async (item, index, lastParameter) => {
     setTeamMember(item?.empName);
     let localData = [...allParameters];
     let current = lastParameter[index].isOpenInner;
@@ -998,7 +998,7 @@ const TargetScreen = ({ route }) => {
   };
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = []) {
-   navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
       screen: "EMS",
       params: {
         screen: "LEADS",
@@ -1037,10 +1037,10 @@ const TargetScreen = ({ route }) => {
             index === 0
               ? Colors.PURPLE
               : index === 2
-              ? Colors.RED
-              : index === 3
-              ? Colors.YELLOW
-              : Colors.BLUE_V2,
+                ? Colors.RED
+                : index === 3
+                  ? Colors.YELLOW
+                  : Colors.BLUE_V2,
           borderWidth: 1,
           borderRadius: 10,
           justifyContent: "center",
@@ -1066,15 +1066,15 @@ const TargetScreen = ({ route }) => {
               {
                 item.id === 0
                   ? selector.receptionistData.enquirysCount > 0 &&
-                    navigateToEMS("ENQUIRY", "", [userData.empId])
+                  navigateToEMS("ENQUIRY", "", [userData.empId])
                   : item.id === 1
-                  ? navigateToEMS("BOOKING", "", [userData.empId])
-                  : item.id === 2
-                  ? selector.receptionistData.RetailCount > 0 &&
-                    navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
-                  : item.id === 3
-                  ? navigateToDropLostCancel([userData.empId])
-                  : null;
+                    ? navigateToEMS("BOOKING", "", [userData.empId])
+                    : item.id === 2
+                      ? selector.receptionistData.RetailCount > 0 &&
+                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId])
+                      : item.id === 3
+                        ? navigateToDropLostCancel([userData.empId])
+                        : null;
               }
             }}
           >
@@ -1106,6 +1106,143 @@ const TargetScreen = ({ route }) => {
       </View>
     );
   };
+
+   const RenderEmployee = (item, index, allData, levelColors, newLevel) => {
+     const hierarchyLevel = newLevel;
+     const borderColor = levelColors[hierarchyLevel % levelColors.length];
+     return (
+       <View
+         key={item}
+         style={[
+           {
+             width: "100%",
+             minHeight: 40,
+             flexDirection: "column",
+             overflow: "hidden",
+           },
+           item.isOpenInner && {
+             borderRadius: 10,
+             borderWidth: 2,
+             borderColor: borderColor,
+             backgroundColor: "#FFFFFF",
+           },
+         ]}
+       >
+         <View style={[styles.view8]}>
+           <View
+             style={{
+               width: Dimensions.get("screen").width - 40,
+             }}
+           >
+             <View style={styles.view9}>
+               <View style={styles.view10}>
+                 <Text
+                   style={{
+                     fontSize: 10,
+                     fontWeight: "500",
+                   }}
+                 >
+                   {item.empName}
+                 </Text>
+               </View>
+               <View
+                 style={{
+                   flexDirection: "row",
+                 }}
+               >
+                 {item?.childCount > 0 && (
+                   <Animated.View
+                     style={{
+                       transform: [
+                         {
+                           translateX: translation,
+                         },
+                       ],
+                     }}
+                   >
+                     <View
+                       style={{
+                         backgroundColor: "lightgrey",
+                         flexDirection: "row",
+                         paddingHorizontal: 7,
+                         borderRadius: 10,
+                         alignItems: "center",
+                         justifyContent: "space-between",
+                         marginBottom: 5,
+                         alignSelf: "flex-start",
+                         marginLeft: 7,
+                       }}
+                     >
+                       <MaterialIcons
+                         name="person"
+                         size={15}
+                         color={Colors.BLACK}
+                       />
+                       <Text>{item?.childCount}</Text>
+                     </View>
+                   </Animated.View>
+                 )}
+                 <SourceModelView
+                   onClick={() => {
+                     navigation.navigate(
+                       AppNavigator.HomeStackIdentifiers.sourceModel,
+                       {
+                         empId: item.empId,
+                         headerTitle: item.empName,
+                         type: "TEAM",
+                         moduleType: "home",
+                         isOpenner: item.isOpenInner,// added to manage source/model issue
+                         isFromHome: true// added to manage source/model issue
+                       }
+                     );
+                   }}
+                   style={{
+                     transform: [
+                       {
+                         translateX: translation,
+                       },
+                     ],
+                   }}
+                 />
+               </View>
+             </View>
+             {/*Source/Model View END */}
+             <View
+               style={{
+                 flexDirection: "row",
+               }}
+             >
+               <RenderLevel1NameView
+                 // level={1}
+                 item={item}
+                 color={borderColor}
+                 navigation={navigation}
+                 branchName={getBranchName(item.branchId)}
+                 teamLoader={teamLoader}
+                 teamMember={teamMember}
+                 titleClick={async () => {
+                   await onEmployeeNameClick(item, index, allData);
+                 }}
+               />
+               {renderData(item, borderColor)}
+             </View>
+           </View>
+           {item.isOpenInner &&
+             item.employeeTargetAchievements.length > 0 &&
+             item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
+               return RenderEmployee(
+                 innerItem1,
+                 innerIndex1,
+                 item.employeeTargetAchievements,
+                 levelColors,
+                 hierarchyLevel + 1
+               );
+             })}
+         </View>
+       </View>
+     );
+   };
+
 
   return (
     <React.Fragment>
@@ -1484,6 +1621,9 @@ const TargetScreen = ({ route }) => {
           </View>} */}
           {selector.isTeam && !receptionistRole.includes(userData.hrmsRole) ? (
             <View>
+              <View style={styles.titleDashboardContainer}>
+                <Text style={styles.dashboardText}>Dashboard</Text>
+              </View>
               <View style={styles.view1}>
                 <SegmentedControl
                   style={{
@@ -1600,13 +1740,24 @@ const TargetScreen = ({ route }) => {
                     </View>
                     {/* Employee params section */}
                     <View
-                      style={{ height: Dimensions.get("screen").height / 2.7 }}
+                      style={{ height: Dimensions.get("screen").height / 3 }}
                     >
                       <ScrollView
                       // style={{ height: selector.isMD ? "81%" : "80%" }}
                       >
                         {allParameters.length > 0 &&
                           allParameters.map((item, index) => {
+                            return RenderEmployee(
+                              item,
+                              index,
+                              allParameters,
+                              color,
+                              0
+                            );
+                          })}
+                        {allParameters.length > 0 &&
+                          allParameters.map((item, index) => {
+                            return;
                             return (
                               <View key={`${item.empId} ${index}`}>
                                 <View
@@ -1669,9 +1820,11 @@ const TargetScreen = ({ route }) => {
                                           AppNavigator.HomeStackIdentifiers
                                             .sourceModel,
                                           {
-                                            empId:  item.empId,
+                                            empId: item.empId,
                                             headerTitle: item.empName,
-                                            loggedInEmpId: selector.login_employee_details.empId,
+                                            loggedInEmpId:
+                                              selector.login_employee_details
+                                                .empId,
                                             orgId:
                                               selector.login_employee_details
                                                 .orgId,
@@ -3020,6 +3173,9 @@ const TargetScreen = ({ route }) => {
             !selector.isLoading &&
             selfInsightsData.length > 0 && (
               <>
+                <View style={styles.titleDashboardContainer}>
+                  <Text style={styles.dashboardText}>Dashboard</Text>
+                </View>
                 {!receptionistRole.includes(userData.hrmsRole) && (
                   <View style={{ flexDirection: "row", marginVertical: 8 }}>
                     <View style={styles.view13}>
@@ -3036,17 +3192,34 @@ const TargetScreen = ({ route }) => {
 
                       <SourceModelView
                         onClick={() => {
-                          navigation.navigate(
-                            AppNavigator.HomeStackIdentifiers.sourceModel,
-                            {
-                              empId: selector.login_employee_details.empId,
-                              headerTitle: "Source/Model",
-                              loggedInEmpId:
-                                selector.login_employee_details.empId,
-                              type: selector.isDSE ? "SELF" : "INSIGHTS",
-                              moduleType: "home",
+                          // added condition to manage source/model issue 
+                            if (selector.filterIds?.empSelected?.length){ 
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: selector.filterIds.empSelected[0],
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId:
+                                    selector.filterIds.empSelected[0],
+                                  type: selector.isDSE ? "SELF" : "INSIGHTS",
+                                  moduleType: "home",
+                                  isFromHome: true
+                                }
+                              );
+                            }else{
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: selector.login_employee_details.empId,
+                                  headerTitle: "Source/Model",
+                                  loggedInEmpId:
+                                    selector.login_employee_details.empId,
+                                  type: selector.isDSE ? "SELF" : "INSIGHTS",
+                                  moduleType: "home",
+                                }
+                              );
                             }
-                          );
+                         
                         }}
                       />
                     </View>
@@ -3088,14 +3261,24 @@ const TargetScreen = ({ route }) => {
                             />
                           </View>
                           {/* todo */}
-                          <FlatList
-                            data={data}
-                            bounces={false}
-                            renderItem={({ item, index }) =>
-                              renderItem(item, index)
-                            }
-                            contentContainerStyle={{ width: "100%" }}
-                          />
+                              <FlatList
+                                data={data}
+                                bounces={false}
+                                renderItem={({ item, index }) =>
+                                  renderItem(item, index)
+                                }
+                                contentContainerStyle={{ width: "100%" }}
+                                ListFooterComponent={() => {
+                                  return (<View style={{
+                                    width: 300,
+                                    height: 100,
+                                    padding: 10,
+                                    justifyContent: "center",
+                                    marginVertical: 10,
+                                    // marginStart:'8%'
+                                  }}></View>)
+                                }}
+                              />
                         </View>
                       )}
 
@@ -4052,10 +4235,13 @@ const TargetScreen = ({ route }) => {
           )}
         </View>
       ) : (
-        <LoaderComponent
-          visible={selector.isLoading}
-          onRequestClose={() => {}}
-        />
+        <View style={{ flex: 1 }}>
+          <AnimLoaderComp visible={selector.isLoading} />
+        </View>
+        // <LoaderComponent
+        //   visible={selector.isLoading}
+        //   onRequestClose={() => { }}
+        // />
       )}
     </React.Fragment>
   );
@@ -4164,6 +4350,7 @@ export const RenderLevel1NameView = ({
                   {
                     empId: item.empId,
                     orgId: item.orgId,
+                    from: "HOME"
                   }
                 );
               }
@@ -4398,6 +4585,21 @@ const styles = StyleSheet.create({
     height: 15,
     flexDirection: "row",
     paddingRight: 16,
+  },
+  titleDashboardContainer: {
+    paddingVertical: 5,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 45,
+    borderRadius: 50,
+    alignSelf: "center",
+    
+  },
+  dashboardText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
   },
   txt3: { fontSize: 14, fontWeight: "600" },
   view14: {
