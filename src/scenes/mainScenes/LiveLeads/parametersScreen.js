@@ -3453,6 +3453,17 @@ const ParametersScreen = ({ route }) => {
           </Text>
           <Pressable
             onPress={() => {
+              // navigation.navigate(
+              //   AppNavigator.HomeStackIdentifiers.sourceModel,
+              //   {
+              //     empId: item.empId,
+              //     headerTitle: item.empName,
+              //     loggedInEmpId: selector.login_employee_details.empId,
+              //     orgId: selector.login_employee_details.orgId,
+              //     type: "TEAM",
+              //     moduleType: "live-leads",
+              //   }
+              // );
               navigation.navigate(
                 AppNavigator.HomeStackIdentifiers.sourceModel,
                 {
@@ -3462,6 +3473,8 @@ const ParametersScreen = ({ route }) => {
                   orgId: selector.login_employee_details.orgId,
                   type: "TEAM",
                   moduleType: "live-leads",
+                  isOpenner: item.isOpenInner,// added to manage source/model issue
+                  isFromHome: true// added to manage source/model issue
                 }
               );
             }}
@@ -6641,6 +6654,7 @@ const ParametersScreen = ({ route }) => {
                           type: selector.isDSE ? "SELF" : "INSIGHTS",
                           moduleType: "live-leads",
                           orgId: selector.login_employee_details.orgId,
+                          isOpenner : false
                         }
                       );
                     }}
