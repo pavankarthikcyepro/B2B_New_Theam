@@ -249,7 +249,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             // dispatch(getTaskDetailsApi(taskId))
         if (!_.isEmpty(tempData)) {
           setTimeout(() => {
-            if (tempData.reTestdriveFlag == "ReTestDrive") {
+            // if (tempData.reTestdriveFlag == "ReTestDrive") {
 
               // let payloadForWorkFLow = {
               //   entityId: selector.task_details_response?.entityId,
@@ -263,14 +263,16 @@ const TestDriveScreen = ({ route, navigation }) => {
               setEmail(tempData.email || "");
               setMobileNumber(mobile || tempData.mobileNumber);
 
-              setSelectedVehicleDetails({
-                model: tempData.model,
-                varient: tempData.varient,
-                fuelType: tempData.fuelType,
-                transType: tempData.transmissionType,
-                vehicleId: 0,
-                varientId: 0,
-              });
+
+            setSelectedVehicleDetails({
+              model: tempData.model,
+              varient: tempData.varient,
+              fuelType: tempData.fuelType,
+              transType: tempData.transmissionType,
+              vehicleId: tempData.vehicleId,
+              varientId: tempData.varientId,
+            });
+
 
 
 
@@ -346,7 +348,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
                 );
               }
-            }
+            // }
 
           }, 2000);
        
@@ -1036,11 +1038,41 @@ const TestDriveScreen = ({ route, navigation }) => {
    
     let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
    
-    if (0 > preferredTimeDiffwithCurrent) {
-      showToast("Customer preffered Time should be greater than Current Time.");
-      return;
-    }
+    // if (0 > preferredTimeDiffwithCurrent) {
+    //   showToast("Customer preffered Time should be greater than Current Time.");
+    //   return;
+    // }
   
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+    if (compare(selector.customer_preferred_date, currentDate) == 0) {
+     
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+
+      let currentTime = new Date();
+      
+      if (selector.customer_preferred_time.length > 0) {
+        const selectedTime = new Date(); // Current date
+        const timeParts = selector.customer_preferred_time.split(":");
+
+        const hours = parseInt(timeParts[0], 10);
+        const minutes = parseInt(timeParts[1], 10);
+        const seconds = parseInt(timeParts[2], 10);
+
+        selectedTime.setHours(hours);
+        selectedTime.setMinutes(minutes);
+        selectedTime.setSeconds(seconds);
+       
+        
+        if (isTimeGreaterThanCurrent(selectedTime) == false) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+      }
+    }
 
 
     if (
@@ -1101,8 +1133,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
     let appointmentObj;
-    const dateFormat = "DD/MM/YYYY";
-    const currentDate = moment().add(0, "day").format(dateFormat)
+    // const dateFormat = "DD/MM/YYYY";
+    // const currentDate = moment().add(0, "day").format(dateFormat)
     if (status == "APPROVED" || status == "RESCHEDULED" ){
       
        appointmentObj = {
@@ -1227,7 +1259,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     }
     if (status === "RESCHEDULED"){
-      
+      reTestDrivePutCallupdateList("RESCHEDULED");
       setIsClosedClicked(false);
       submitRescheduleRemarks()
 
@@ -1245,6 +1277,23 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // navigation.goBack()
   };
+
+  function isTimeGreaterThanCurrent(selectedTime) {
+    const currentTime = new Date();
+    const selectedHour = selectedTime?.getHours();
+    const selectedMinutes = selectedTime?.getMinutes();
+
+    const currentHour = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+
+    if (selectedHour > currentHour) {
+      return true;
+    } else if (selectedHour === currentHour && selectedMinutes > currentMinutes) {
+      return true;
+    }
+
+    return false;
+  }
 
   const closeTask = (from) => {
     setIsClosedClicked(true);
@@ -2486,7 +2535,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     // if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
                       // setIsClosedClicked(false);
                       // submitClicked("RESCHEDULED", "Test Drive")
-                  reTestDrivePutCallupdateList("RESCHEDULED");
+                  // reTestDrivePutCallupdateList("RESCHEDULED"); // commented to aviod calling if any validations fails
                     // }
                   
                     // submitRescheduleRemarks()
