@@ -13,7 +13,7 @@ import { Colors } from '../../../../styles';
 import { DatePickerComponent, DropDownComponant, LoaderComponent } from '../../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextInputServices } from '../../../../components/textInputServices';
-import { clearStateData, createRsa, getTechnician, setDatePicker, setDropDownData, setExistingData, setInputInfo, updateRsa, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
+import { clearStateData, closeRsa, createRsa, getTechnician, setDatePicker, setDropDownData, setExistingData, setInputInfo, updateRsa, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
 import { convertTimeStampToDateString } from '../../../../utils/helperFunctions';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 import { DropDownServices } from '../../../../pureComponents/dropDownServices';
@@ -59,23 +59,29 @@ const CreateRsa = ({ navigation, route }) => {
 
   useEffect(() => {
     if (selector.createRsaResponseStatus == "success") {
-      showToastRedAlert("RSA Created Successfully");
-      isRefreshList();
-      setTimeout(() => {
-        navigation.goBack();
-      }, 500);
+      afterSuccess("RSA Created Successfully");
     }
   }, [selector.createRsaResponseStatus]);
   
   useEffect(() => {
     if (selector.updateRsaResponseStatus == "success") {
-      showToastRedAlert("RSA Updated Successfully");
-      isRefreshList();
-      setTimeout(() => {
-        navigation.goBack();
-      }, 500);
+      afterSuccess("RSA Updated Successfully");
     }
   }, [selector.updateRsaResponseStatus]);
+  
+  useEffect(() => {
+    if (selector.closeRsaResponseStatus == "success") {
+      afterSuccess("RSA Closed Successfully");
+    }
+  }, [selector.closeRsaResponseStatus]);
+
+  const afterSuccess = (text) => {
+    showToastRedAlert(text);
+    isRefreshList();
+    setTimeout(() => {
+      navigation.goBack();
+    }, 500);
+  };
 
   useEffect(() => {
     if (
@@ -216,6 +222,12 @@ const CreateRsa = ({ navigation, route }) => {
         id: existingRsaData.id,
       };
       dispatch(updateRsa(data));
+    } else if (type == "close") {
+      let data = {
+        payload: { ...payload, status: "CLOSED" },
+        id: existingRsaData.id,
+      };
+      dispatch(closeRsa(data));
     }
   };
 
@@ -423,7 +435,7 @@ const CreateRsa = ({ navigation, route }) => {
             <View style={styles.buttonListRow}>
               <TouchableOpacity
                 style={styles.btnContainer}
-                // onPress={() => submit("close")}
+                onPress={() => submit("close")}
               >
                 <Text style={styles.btnText}>Close RSA</Text>
               </TouchableOpacity>
