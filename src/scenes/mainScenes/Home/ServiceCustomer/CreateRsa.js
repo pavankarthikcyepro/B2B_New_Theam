@@ -13,7 +13,7 @@ import { Colors } from '../../../../styles';
 import { DatePickerComponent, DropDownComponant, LoaderComponent } from '../../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextInputServices } from '../../../../components/textInputServices';
-import { clearStateData, createRsa, getTechnician, setDatePicker, setDropDownData, setExistingData, setInputInfo, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
+import { clearStateData, createRsa, getTechnician, setDatePicker, setDropDownData, setExistingData, setInputInfo, updateRsa, updateSelectedDate } from '../../../../redux/rsaCrudReducer';
 import { convertTimeStampToDateString } from '../../../../utils/helperFunctions';
 import { DateSelectServices } from '../../../../pureComponents/dateSelectServices';
 import { DropDownServices } from '../../../../pureComponents/dropDownServices';
@@ -66,6 +66,16 @@ const CreateRsa = ({ navigation, route }) => {
       }, 500);
     }
   }, [selector.createRsaResponseStatus]);
+  
+  useEffect(() => {
+    if (selector.updateRsaResponseStatus == "success") {
+      showToastRedAlert("RSA Updated Successfully");
+      isRefreshList();
+      setTimeout(() => {
+        navigation.goBack();
+      }, 500);
+    }
+  }, [selector.updateRsaResponseStatus]);
 
   useEffect(() => {
     if (
@@ -199,8 +209,14 @@ const CreateRsa = ({ navigation, route }) => {
     if (type == "create") {
       payload.createdDate = new Date().toISOString();
       payload.createdBy = currentUserData.id;
+      dispatch(createRsa(payload));
+    } else if (type == "update") {
+      let data = {
+        payload: payload,
+        id: existingRsaData.id,
+      };
+      dispatch(updateRsa(data));
     }
-    dispatch(createRsa(payload));
   };
 
   return (
@@ -413,7 +429,7 @@ const CreateRsa = ({ navigation, route }) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.btnContainer}
-                // onPress={() => submit("update")}
+                onPress={() => submit("update")}
               >
                 <Text style={styles.btnText}>Update</Text>
               </TouchableOpacity>

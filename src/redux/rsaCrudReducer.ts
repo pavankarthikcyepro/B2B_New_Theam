@@ -40,6 +40,19 @@ export const createRsa = createAsyncThunk(
   }
 );
 
+export const updateRsa = createAsyncThunk(
+  "SERVICE_RSA_CRUD_SLICE/updateRsa",
+  async (data, { rejectWithValue }) => {
+    const { id, payload } = data;
+    const response = await client.put(URL.UPDATE_RSA(id), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const initialState = {
   isLoading: false,
   showDatepicker: false,
@@ -55,6 +68,7 @@ const initialState = {
   landmark: "",
   pincode: "",
   createRsaResponseStatus: "",
+  updateRsaResponseStatus: "",
 };
 
 const rsaCrudReducer = createSlice({
@@ -150,6 +164,27 @@ const rsaCrudReducer = createSlice({
       .addCase(createRsa.rejected, (state, action) => {
         state.isLoading = false;
         state.createRsaResponseStatus = "failed";
+        if (action.payload.message) {
+          showToast(`${action.payload.message}`);
+        } else {
+          showToast(`Something went wrong`);
+        }
+      });
+    
+    builder
+      .addCase(updateRsa.pending, (state, action) => {
+        state.isLoading = true;
+        state.updateRsaResponseStatus = "pending";
+      })
+      .addCase(updateRsa.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.updateRsaResponseStatus = "success";
+        }
+      })
+      .addCase(updateRsa.rejected, (state, action) => {
+        state.isLoading = false;
+        state.updateRsaResponseStatus = "failed";
         if (action.payload.message) {
           showToast(`${action.payload.message}`);
         } else {

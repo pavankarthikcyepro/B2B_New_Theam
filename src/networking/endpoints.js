@@ -1086,6 +1086,9 @@ const URL = {
   CREATE_RSA: () => {
     return baseUrl + `vehicle-services/rsa`;
   },
+  UPDATE_RSA: (id) => {
+    return baseUrl + `vehicle-services/rsa/id/${id}`;
+  },
   GET_TECHNICIAN_LIST: () => {
     return baseUrl + `vehicle-services/rsa/api/technicianList`;
   },
