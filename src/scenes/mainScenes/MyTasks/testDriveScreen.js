@@ -261,7 +261,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
               setName(tempData.name);
               setEmail(tempData.email || "");
-              setMobileNumber(mobile || tempData.mobileNumber);
+              setMobileNumber(tempData.mobileNumber);
 
 
             setSelectedVehicleDetails({
@@ -1058,19 +1058,31 @@ const TestDriveScreen = ({ route, navigation }) => {
         const selectedTime = new Date(); // Current date
         const timeParts = selector.customer_preferred_time.split(":");
 
-        const hours = parseInt(timeParts[0], 10);
-        const minutes = parseInt(timeParts[1], 10);
-        const seconds = parseInt(timeParts[2], 10);
+        // const hours = parseInt(timeParts[0], 10);
+        // const minutes = parseInt(timeParts[1], 10);
+        // const seconds =.parseInt(timeParts[2], 10);
 
-        selectedTime.setHours(hours);
-        selectedTime.setMinutes(minutes);
-        selectedTime.setSeconds(seconds);
-       
+        // selectedTime.setHours(hours);
+        // selectedTime.setMinutes(minutes);
+        // selectedTime.setSeconds(seconds);
         
-        if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        if (preferredTimeDiffwithCurrent < 0 ) {
           showToast("Customer preffered Time should be greater than Current Time.");
           return;
         }
+        const selectedTime2 = moment(selector.customer_preferred_time, 'HH:mm');
+        if (selectedTime2.isSame(currentTime, 'minute')) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        // if (0 > preferredTimeDiffwithCurrent) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+        // if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
       }
     }
 
@@ -1755,7 +1767,9 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
-   
+    // const dateFormat = "DD/MM/YYYY";
+    // const currentDate = moment().add(0, "day").format(dateFormat)
+    
 
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
@@ -1784,9 +1798,49 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
 
-    if (0 > preferredTimeDiffwithCurrent) {
-      showToast("Customer preffered Time should be greater than Current Time.");
-      return;
+    // if (0 > preferredTimeDiffwithCurrent) {
+    //   showToast("Customer preffered Time should be greater than Current Time.");
+    //   return;
+    // }
+    if (compare(selector.customer_preferred_date, currentDate) == 0) {
+
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+
+      let currentTime = new Date();
+
+      if (selector.customer_preferred_time.length > 0) {
+        const selectedTime = new Date(); // Current date
+        const timeParts = selector.customer_preferred_time.split(":");
+
+        // const hours = parseInt(timeParts[0], 10);
+        // const minutes = parseInt(timeParts[1], 10);
+        // const seconds = parseInt(timeParts[2], 10);
+
+        // selectedTime.setHours(hours);
+        // selectedTime.setMinutes(minutes);
+        // selectedTime.setSeconds(seconds);
+
+        if (preferredTimeDiffwithCurrent < 0) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        const selectedTime2 = moment(selector.customer_preferred_time, 'HH:mm');
+        if (selectedTime2.isSame(currentTime, 'minute')) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        // if (0 > preferredTimeDiffwithCurrent) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+        // if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+      }
     }
    
 

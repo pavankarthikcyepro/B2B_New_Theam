@@ -79,6 +79,7 @@ export const RenderEmployeeParameters = (parameter) => {
             param: param === "INVOICE" ? "Retail" : param,
             employeeDetail: employeeDetail,
             moduleType: "live-leads",
+            self: item.isOpenInner
           });
         }, 1000);
       }
@@ -90,7 +91,8 @@ export const RenderEmployeeParameters = (parameter) => {
           // param: param === "INVOICE" ? "Retail" : param,
           employeeDetail: employeeDetail,
           moduleType: "live-leads",
-          selectedEmpId: ""
+          selectedEmpId: "",
+          self: item.isOpenInner
         });
       }, 1000);
       // navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
