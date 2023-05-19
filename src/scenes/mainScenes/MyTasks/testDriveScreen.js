@@ -198,7 +198,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [isClosedClicked, setIsClosedClicked] =useState(false);
   let date = new Date();
   date.setDate(date.getDate() + 9);
-
+  const Task360selector = useSelector((state) => state.taskThreeSixtyReducer);
   useEffect(() => {
     //updateBasicDetails(taskData);
     // getAsyncstoreData();
@@ -604,7 +604,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       // temp.taskStatus =  "APPROVED";
       temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
-      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_time);
+      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(
+        `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+        "DD/MM/YYYY HH:mm"
+      );
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
       const value = selector.get_workFlow_task_details[0].taskId;
@@ -613,6 +617,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       temp["assigneeId"] = valueassignee;
       temp["processId"] = valueProcessId;
       temp["taskIdRef"] =value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence + 1
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
@@ -648,7 +653,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       // temp.taskStatus =  "APPROVED";
       temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
-      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(
+        `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+        "DD/MM/YYYY HH:mm"
+      );
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
       const value = selector.get_workFlow_task_details_reTestDrive[0].taskId;
@@ -657,6 +666,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       temp["assigneeId"] = valueassignee;
       temp["processId"] = valueProcessId;
       temp["taskIdRef"] = value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence+1;
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
