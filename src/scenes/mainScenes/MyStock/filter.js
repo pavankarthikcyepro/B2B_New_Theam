@@ -95,7 +95,7 @@ const MyStockFilter = ({ route, navigation }) => {
     employeeId: "",
     employeeName: "",
     primaryDesignation: "",
-    hrmsRole:"",
+    hrmsRole: "",
   });
   const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
   const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState(
@@ -192,7 +192,7 @@ const MyStockFilter = ({ route, navigation }) => {
   function Added() {
     if (!_.isEmpty(totalDataObj) && nameKeyList) {
       if (!_.isEmpty(stockSelector.dealerCode)) {
-        updateSelectedItems(stockSelector.dealerCode, 4);
+        updateSelectedItems(stockSelector.dealerCode, nameKeyList.length - 1);
         setFromDate(stockSelector.agingFrom);
         setToDate(stockSelector.agingTo);
       }
@@ -319,6 +319,11 @@ const MyStockFilter = ({ route, navigation }) => {
         let unselectedNewParentIds = [];
 
         let key = nameKeyList[localIndex];
+        console.log(
+          "totalDataObjLocal[key].sublevels",
+          nameKeyList,
+          localIndex
+        );
         const dataArray = totalDataObjLocal[key].sublevels;
 
         if (dataArray.length > 0) {
@@ -773,6 +778,7 @@ const MyStockFilter = ({ route, navigation }) => {
                           placeholderStyle={{
                             color: Colors.GRAY,
                           }}
+                          selectedTextStyle={styles.selectedTextStyle}
                         />
                         <Dropdown
                           label={"Stock Yard"}
@@ -795,6 +801,7 @@ const MyStockFilter = ({ route, navigation }) => {
                           placeholderStyle={{
                             color: Colors.GRAY,
                           }}
+                          selectedTextStyle={styles.selectedTextStyle}
                         />
                       </>
                     ) : (
@@ -999,5 +1006,10 @@ const styles = StyleSheet.create({
     color: Colors.BLACK,
     borderBottomColor: Colors.BLACK,
     borderBottomWidth: 1,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "#000",
+    fontWeight: "400",
   },
 });
