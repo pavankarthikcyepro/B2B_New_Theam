@@ -15,8 +15,8 @@ var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
-export const distanceFilterValue = 5;
-export const GlobalSpeed = 2.77778; // 10 km/hr in m/s
+export const distanceFilterValue = 25;
+export const GlobalSpeed = 1.25; // 10 km/hr in m/s
 
 export const officeRadius = 0.1;
 export const sleep = (time) =>
@@ -50,7 +50,7 @@ export const MarkAbsent = async (absentRequest = false) => {
             )
           );
           const json = await response.json();
-         
+
           let latestDate = new Date(
             json[json?.length - 1]?.createdtimestamp
           )?.getDate();
@@ -75,7 +75,6 @@ const saveData = async (payload, absentRequest = false) => {
   try {
     const saveData = await client.post(URL.SAVE_EMPLOYEE_ATTENDANCE(), payload);
     const savedJson = await saveData.json();
-   
   } catch (error) {
     console.error("savedJsonERROR", error);
   }
@@ -90,11 +89,9 @@ export const veryIntensiveTask = async (taskDataArguments) => {
   const { delay } = taskDataArguments;
   await new Promise(async (resolve) => {
     for (let i = 0; BackgroundService.isRunning(); i++) {
-      
       try {
         await Geolocation.watchPosition(
           (lastPosition) => {
-           
             var newLatLng = {
               latitude: lastPosition.coords.latitude,
               longitude: lastPosition.coords.longitude,
@@ -103,9 +100,7 @@ export const veryIntensiveTask = async (taskDataArguments) => {
           (error) => alert(JSON.stringify(error)),
           { enableHighAccuracy: true, distanceFilter: 100 }
         );
-        Geolocation.watchPosition((data) => {
-         
-        });
+        Geolocation.watchPosition((data) => {});
       } catch (error) {}
 
       await BackgroundService.updateNotification({
