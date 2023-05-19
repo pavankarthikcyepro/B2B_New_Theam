@@ -33,7 +33,7 @@ import {
 import { RenderGrandTotal } from "./components/RenderGrandTotal";
 import { RenderEmployeeParameters } from "./components/RenderEmployeeParameters";
 import { RenderSelfInsights } from "./components/RenderSelfInsights";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { AppNavigator } from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
@@ -154,6 +154,10 @@ const TargetScreenCRM = ({ route }) => {
   const [storeFirstLevelLocal, setStoreFirstLevelLocal] = useState([]);
   const [filterExapand, setfilterExapand] = useState(false);
   const [tempLevel2, setTempLevel2] = useState([]);
+  const [receptionistVol2AlluserData, setReceptionistVol2AlluserData] = useState([])
+  const [receptionistVol2Level0, setReceptionistVol2Level0] = useState([])
+  const [receptionistVol2Level1, setReceptionistVol2Level1] = useState([])
+
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
@@ -643,17 +647,21 @@ const TargetScreenCRM = ({ route }) => {
   useEffect(() => {
     setTogglePercentage(0);
     setIsTeam(selector.isTeam);
-    if (selector.isTeam || receptionistRole.includes(userData.hrmsRole)) {
+    // if (selector.isTeam) {
       setToggleParamsIndex(0);
       // let data =
       //   userData.hrmsRole == "CRM" ? [...crmMetaData] : [...paramsMetadata];
       
-       let data =
-         receptionistRole.includes(userData.hrmsRole) ? [...crmMetaData] : [...paramsMetadata];
+      //  let data =
+      //    receptionistRole.includes(userData.hrmsRole) ? [...crmMetaData] : [...paramsMetadata];
+    let data = [...crmMetaData];
       data = data.filter((x) => x.toggleIndex === 0);
       setToggleParamsMetaData([...data]);
-    }
+    // }
   }, [selector.isTeam]);
+
+
+  
 
   useEffect(() => {
     if (
@@ -732,9 +740,21 @@ const TargetScreenCRM = ({ route }) => {
   }, [selector.receptionistData]);
 
   useEffect(() => {
-    // console.log("manthan ", selector.receptionistDataV3);
-    // if (selector.receptionistDataV3.fullResponse)
-    findDataFromObject(selector.receptionistDataV3.fullResponse);
+
+    // findDataFromObject(selector.receptionistDataV3.fullResponse);
+    if (!_.isEmpty(selector.receptionistDataV3.fullResponse)){
+      let modified = selector.receptionistDataV3.fullResponse.self.allTreeData.map(v => ({ ...v, isOpenInner: false }))
+      setReceptionistVol2AlluserData(modified);
+      let tempFilterIds = selector.receptionistDataV3.fullResponse.self.level1.map((item) => item.empId)
+      // console.log("manthan tempFilterIds ", modified);
+      let tempArr = modified.filter((item) => tempFilterIds.includes(item.empId))
+
+      console.log("manthan 33 ", JSON.stringify(tempArr));
+      setReceptionistVol2Level1(tempArr);
+      setReceptionistVol2Level0([selector.receptionistDataV3.fullResponse.self.selfUser]);
+    }
+    
+    // todo tushar 
   }, [selector.receptionistDataV3])
   
   const findDataFromObject = (test)=>{
@@ -913,6 +933,39 @@ const TargetScreenCRM = ({ route }) => {
       CRMFilterApplied();
     }
   }, [selector.saveCRMfilterObj]);
+
+  // useEffect(() => {
+  //   let modified = ReceptionistDataLocal.self.allTreeData.map(v => ({ ...v, isOpenInner: false }))
+  //   setReceptionistVol2AlluserData(modified);
+  //   let tempFilterIds = ReceptionistDataLocal.self.level1.map((item)=> item.empId)
+  //   // console.log("manthan tempFilterIds ", modified);
+  //   let tempArr = modified.filter((item) => tempFilterIds.includes(item.empId))
+  
+  //   console.log("manthan 33 ", JSON.stringify(tempArr));
+  //   setReceptionistVol2Level1(tempArr);
+  //   setReceptionistVol2Level0([ReceptionistDataLocal.self.selfUser]);
+  // }, [ReceptionistDataLocal])
+  
+  const oncllickOfEmployee = (item = [],index,)=>{
+
+    let modifeidArray = [...receptionistVol2AlluserData];
+    let storeTemp = [...receptionistVol2Level1];
+
+    let temp = modifeidArray.map((itemLocal,indexLocal)=>
+      index == indexLocal?
+      { ...itemLocal, isOpenInner: true } : { ...itemLocal, isOpenInner: false}
+    )
+    let tempNewArray = temp.filter(i => i.managerId != i.empId && i.managerId == item.empId)
+    // console.log("manthan ddd temp ", temp);
+    console.log("manthan ddd tempNewArray ", tempNewArray);
+    // let test = temp.push(tempNewArray)
+    Array.prototype.push.apply(storeTemp, tempNewArray)
+    console.log("manthan ddd test ", storeTemp);
+
+    setReceptionistVol2Level1(storeTemp);
+    
+
+  }
 
   const CRMFilterApplied = () => {
     if (userData.orgId > 0) {
@@ -2527,17 +2580,17 @@ const TargetScreenCRM = ({ route }) => {
     setStoreFirstLevelSelectedRecData(findSelectedRecData);
   };
 
-  const renderCRMTreeNewTree = () => {
+  const renderReceptionistNewTree = () => {
     // todo manthan
     
     return (
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {selector.receptionistDataV3.fullResponse?.self?.selfUser &&
-          [selector.receptionistDataV3.fullResponse?.self.selfUser].map((item, index) => {
+        {receptionistVol2Level0.length > 0 &&
+          receptionistVol2Level0.map((item, index) => {
            
-            if (item.empId === userData.empId) {
+            // if (item.empId === userData.empId) {
               return (
                 <View
                   key={`${item.empName} ${index}`}
@@ -2826,15 +2879,357 @@ const TargetScreenCRM = ({ route }) => {
                       {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                     </View>
                   </View>
-                  {isViewExpanded && renderCRMTreeChild()}
+                  {isViewExpanded && renderReceptionistNewTreeLevel1()}
                 </View>
               );
-            }
+            // }
           })}
         {renderCREFirstLevel()}
       </View>
     );
   };
+
+  const renderReceptionistNewTreeLevel1 = () => {
+    // todo manthan
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {receptionistVol2Level1.length > 0 &&
+          receptionistVol2Level1.map((item, index) => {
+            return renderDynamicTree(item, index, receptionistVol2Level1,
+              color,
+              0)
+          
+          })}
+        {/* {renderCREFirstLevel()} */}
+      </View>
+    );
+  };
+  const renderDynamicTree = (item, index,allData, levelColors, newLevel)=>{
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+    console.log("manthan item.ineropen ", item.isOpenInner);
+    console.log("manthan item.empName ", item.empName);
+    return (
+      <View
+        key={`${item.empName} ${index}`}
+        style={[
+          {
+            // borderColor: item.isOpenInner ? borderColor : "",
+            // borderWidth: item.isOpenInner ? 2 : 0,
+            // borderRadius: 10,
+            // margin: item.isOpenInner ? 10 : 0,
+          },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: borderColor,
+            backgroundColor: "#FFFFFF",
+          },
+        ]}
+        // style={{
+        //   borderColor: item.isOpenInner ? borderColor : "",
+        //   borderWidth: item.isOpenInner ? 2 : 0,
+        //   borderRadius: 10,
+        //   margin: item.isOpenInner ? 10 : 0,
+        // }}
+      >
+        <View
+          style={{
+            paddingHorizontal: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 12,
+            width: Dimensions.get("screen").width - 28,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "capitalize",
+              }}
+            >
+              {item.empName}
+              {"  "}
+              {"-   " + item?.roleName}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}></View>
+          <View style={{ flexDirection: "row" }}>
+            {selector.receptionistData?.fullResponse?.childUserCount >
+              0 && (
+                <Animated.View
+                  style={{
+                    transform: [{ translateX: translation }],
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: "lightgrey",
+                      flexDirection: "row",
+                      paddingHorizontal: 7,
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 5,
+                      alignSelf: "flex-start",
+                      marginLeft: 7,
+                      // transform: [{ translateX: translation }],
+                    }}
+                  >
+                    <MaterialIcons
+                      name="person"
+                      size={15}
+                      color={Colors.BLACK}
+                    />
+                    <Text>
+                      {
+                        selector.receptionistData?.fullResponse
+                          ?.childUserCount
+                      }
+                    </Text>
+                  </View>
+                </Animated.View>
+              )}
+            <SourceModelView
+              onClick={() => {
+                if (isViewExpanded) {
+                  // handleSourceModalNavigation()
+                  handleSourceModalNavigation(
+                    item,
+                    item?.empId,
+                    [item.empId],
+                    "CRM_INd"
+                  );
+                } else {
+                  handleSourceModalNavigation(
+                    item,
+                    "",
+                    [],
+                    "CRM",
+                    true
+                  );
+                }
+
+                // navigation.navigate(
+                //   "RECEP_SOURCE_MODEL",
+                //   {
+                //     empId: item?.emp_id,
+                //     headerTitle: item?.emp_name,
+                //     loggedInEmpId: item.emp_id,
+                //     type: "TEAM",
+                //     moduleType: "home",
+                //     headerTitle: "Source/Model",
+                //     orgId: userData.orgId,
+                //     role: userData.hrmsRole,
+                //     branchList: userData.branchs.map(
+                //       (a) => a.branchId
+                //     ),
+                //   }
+                // );
+              }}
+              style={{
+                transform: [{ translateX: translation }],
+              }}
+            />
+          </View>
+        </View>
+
+        {/*Source/Model View END */}
+        <View
+          style={[
+            { flexDirection: "row" },
+            item.isOpenInner && {
+              borderRadius: 10,
+              borderWidth: 2,
+              borderColor: "#C62159",
+              marginHorizontal: 6,
+              overflow: "hidden",
+            },
+          ]}
+        >
+          {/*RIGHT SIDE VIEW*/}
+          <View style={[styles.view6]}>
+            <View style={styles.view7}>
+              <RenderLevel1NameViewCRM
+                level={0}
+                item={item}
+                branchName={item.branch}
+                color={"#C62159"}
+                receptionManager={true}
+                navigation={navigation}
+                titleClick={async (e) => {
+                  // setIsViewExpanded(!isViewExpanded);
+                  oncllickOfEmployee(item, index,allData);
+                }}
+                roleName={item.roleName}
+                stopLocation={true}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "rgba(223,228,231,0.67)",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                {/* {[
+                          isViewExpanded ? item.enquiryCount :  selector.receptionistData.enquirysCount || 0,
+                          isViewExpanded ? item.bookingCount :  selector.receptionistData.bookingsCount || 0,
+                          isViewExpanded ? item.retailCount  :  selector.receptionistData.RetailCount || 0,
+                          isViewExpanded ? item.droppedCount :  selector.receptionistData.totalLostCount || 0,
+                        ] */}
+
+                {[
+                  isViewExpanded && storeFirstLevelSelectedRecData
+                    ? storeFirstLevelSelectedRecData[0].enquiryCount
+                    : selector.receptionistData?.fullResponse
+                      ?.managerEnquiryCount || 0,
+                  isViewExpanded && storeFirstLevelSelectedRecData
+                    ? storeFirstLevelSelectedRecData[0].bookingCount
+                    : selector.receptionistData?.fullResponse
+                      ?.managerBookingCount || 0,
+                  isViewExpanded && storeFirstLevelSelectedRecData
+                    ? storeFirstLevelSelectedRecData[0].retailCount
+                    : selector.receptionistData?.fullResponse
+                      ?.managerRetailCount || 0,
+                  isViewExpanded && storeFirstLevelSelectedRecData
+                    ? storeFirstLevelSelectedRecData[0].droppedCount
+                    : selector.receptionistData?.fullResponse
+                      ?.managerLostCount || 0,
+                ].map((e, indexss) => {
+                  return (
+                    <Pressable
+                      onPress={() => {
+                        // todo redirections logic  first level
+                        // if (e > 0) {
+
+                        if (!isViewExpanded) {
+                          if (indexss === 0) {
+                            navigateToEMS(
+                              "ENQUIRY",
+                              "",
+                              [item.emp_id],
+                              true,
+                              userData.empId,
+                              true,
+                              true
+                            );
+                          } else if (indexss === 1) {
+                            navigateToEMS(
+                              "BOOKING",
+                              "",
+                              [item.emp_id],
+                              true,
+                              userData.empId,
+                              true,
+                              true
+                            );
+                          } else if (indexss === 2) {
+                            navigateToEMS(
+                              "INVOICECOMPLETED",
+                              "",
+                              [item.emp_id],
+                              true,
+                              userData.empId,
+                              true,
+                              true
+                            );
+                          } else if (indexss === 3) {
+                            navigateToDropAnalysis(
+                              item.emp_id,
+                              false,
+                              "",
+                              true
+                            );
+                          }
+                        } else {
+                          if (indexss === 0) {
+                            navigateToEMS(
+                              "ENQUIRY",
+                              "",
+                              [item.emp_id],
+                              true,
+                              storeFirstLevelLocal.emp_id
+                            );
+                          } else if (indexss === 1) {
+                            navigateToEMS(
+                              "BOOKING",
+                              "",
+                              [item.emp_id],
+                              true,
+                              storeFirstLevelLocal.emp_id
+                            );
+                          } else if (indexss === 2) {
+                            navigateToEMS(
+                              "INVOICECOMPLETED",
+                              "",
+                              [item.emp_id],
+                              true,
+                              storeFirstLevelLocal.emp_id
+                            );
+                          } else if (indexss === 3) {
+                            // todo navigate to lost
+
+                            navigateToDropAnalysis(
+                              item.emp_id,
+                              true,
+                              item.emp_id
+                            );
+                          }
+                        }
+                        // }
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 55,
+                          height: 30,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            textDecorationLine:
+                              e > 0 ? "underline" : "none",
+                            // marginLeft: 50,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+            {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+          </View>
+        </View>
+        {/* {item.isOpenInner && renderCRMTreeChild()} */}
+        {console.log("manthan final ", JSON.stringify(receptionistVol2Level1) )}
+        {item.isOpenInner &&
+          receptionistVol2Level1.length > 0 &&
+          receptionistVol2Level1.map((innerItem1, innerIndex1) => {
+            return renderDynamicTree(
+              innerItem1,
+              innerIndex1,
+              receptionistVol2Level1,
+              levelColors,
+              hierarchyLevel + 1
+            );
+          })}
+      </View>
+    );
+  }
 
 
   const renderCRMTree = () => {
@@ -3855,7 +4250,7 @@ const TargetScreenCRM = ({ route }) => {
                       > */}
 
                         {/* vol 2 tree code start */}
-                        {renderCRMTreeNewTree()}
+                        {renderReceptionistNewTree()}
                         {/* vol 2 tree code end */}
 
                         {/* vol 1 tree code start */}
