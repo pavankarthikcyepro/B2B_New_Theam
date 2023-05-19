@@ -81,6 +81,7 @@ import { getReasonList } from "../../../redux/enquiryFollowUpReducer";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AsyncStorage from "../../../asyncStore";
 import _ from "lodash";
+import { getWorkFlow } from "../../../redux/taskThreeSixtyReducer";
 const LocalButtonComp = ({
   title,
   onPress,
@@ -222,6 +223,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       });
       getAsyncstoreData();
       getUserToken();
+      dispatch(getWorkFlow(universalId));
 
     });
     navigation.addListener("blur", () => {
@@ -605,7 +607,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
       // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_time);
-      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(
+      temp.taskUpdatedTime =  convertDateStringToMillisecondsUsingMoment(
         `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
         "DD/MM/YYYY HH:mm"
       );
@@ -654,7 +656,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
       // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
-      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(
+      temp.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
         `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
         "DD/MM/YYYY HH:mm"
       );
