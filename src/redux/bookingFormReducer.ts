@@ -1944,8 +1944,8 @@ const bookingFormSlice = createSlice({
       if (action.payload) {
         state.cancel_lead_drop_details = action.payload;
         let res = action.payload;
-        state.cancel_reason_dropdown_value = res[0].lostReason;
-        state.cancel_reason_remarks = res[0].additionalRemarks;
+        state.cancel_reason_dropdown_value = res[res.length - 1].lostReason;
+        state.cancel_reason_remarks = res[res.length - 1].additionalRemarks;
       }
     });
     builder.addCase(getLeadDropDetailsFOrBooking.rejected, (state, action) => {
