@@ -91,6 +91,7 @@ const LoginScreen = ({ navigation }) => {
   const [text, setText] = React.useState("");
   const [number, onChangeNumber] = React.useState(null);
   const [subscriptionId, setSubscriptionId] = useState(null);
+
   useEffect(() => {
     return () => {
       clearWatch();
@@ -182,7 +183,7 @@ const LoginScreen = ({ navigation }) => {
             const condition =
               res[0].payload.dmsEntity.loginEmployee.isGeolocation === "Y";
             if (condition) {
-              startTracking();
+              // startTracking();
             }
           })
           .catch(() => {});
@@ -272,7 +273,7 @@ const LoginScreen = ({ navigation }) => {
     Object.keys(o1).length === Object.keys(o2).length &&
     Object.keys(o1).every((p) => o1[p] === o2[p]);
 
-  const checkTheDate = async (employeeData, lastPosition) => {
+  const checkTheDate = async (employeeData, lastPosition, prevCoordinates) => {
     const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
@@ -299,6 +300,7 @@ const LoginScreen = ({ navigation }) => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
+        console.log("hasObjectWithCurrentDate", hasObjectWithCurrentDate);
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "false"
@@ -324,7 +326,7 @@ const LoginScreen = ({ navigation }) => {
             new Date()
           );
 
-          if (distance >= 10 && currentSpeed >= GlobalSpeed) {
+          if (distance >= 50 && currentSpeed >= GlobalSpeed) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -347,7 +349,7 @@ const LoginScreen = ({ navigation }) => {
             );
             const json = await response.json();
           } else {
-            if (distance >= 10) {
+            if (distance >= 50) {
               const payload = {
                 id: hasObjectWithCurrentDate.id,
                 orgId: jsonObj?.orgId,
@@ -376,18 +378,64 @@ const LoginScreen = ({ navigation }) => {
           hasObjectWithCurrentDate.isStart === "true" &&
           hasObjectWithCurrentDate.isEnd === "true"
         ) {
-          const tempArray = JSON.parse(
-            JSON.parse(hasObjectWithCurrentDate.location)
-          );
-          const finalArray = tempArray.concat([{ longitude, latitude }]);
-          const distanceCheck = tempArray[tempArray.length - 1];
+          if (
+            prevCoordinates.latitude !== 0 ||
+            prevCoordinates.longitude !== 0
+          ) {
+            let distance = getDistanceBetweenTwoPointsLatLong(
+              prevCoordinates.latitude,
+              prevCoordinates.longitude,
+              latitude,
+              longitude
+            );
+            const currentSpeed = calculateSpeed(
+              prevCoordinates.latitude,
+              prevCoordinates.longitude,
+              new Date(prevCoordinates.time),
+              latitude,
+              longitude,
+              new Date()
+            );
+            if (distance >= 50 && currentSpeed >= GlobalSpeed) {
+              const payload = {
+                id: 0,
+                orgId: jsonObj?.orgId,
+                empId: jsonObj?.empId,
+                branchId: jsonObj?.branchId,
+                currentTimestamp: new Date().getTime(),
+                updateTimestamp: new Date().getTime(),
+                purpose: "",
+                location: JSON.stringify([{ longitude, latitude }]),
+                kmph: speed.toString(),
+                speed: speed.toString(),
+                isStart: "true",
+                isEnd: "false",
+              };
+              const response = await client.post(saveLocation, payload);
+              const json = await response.json();
+            }
+          }
+        }
+      } else {
+        console.log(
+          "There is no object with the same date as the current date."
+        );
+        if (prevCoordinates.latitude !== 0 || prevCoordinates.longitude !== 0) {
           let distance = getDistanceBetweenTwoPointsLatLong(
-            distanceCheck.latitude,
-            distanceCheck.longitude,
+            prevCoordinates.latitude,
+            prevCoordinates.longitude,
             latitude,
             longitude
           );
-          if (true) {
+          const currentSpeed = calculateSpeed(
+            prevCoordinates.latitude,
+            prevCoordinates.longitude,
+            new Date(prevCoordinates.time),
+            latitude,
+            longitude,
+            new Date()
+          );
+          if (distance >= 50 && currentSpeed >= GlobalSpeed) {
             const payload = {
               id: 0,
               orgId: jsonObj?.orgId,
@@ -406,26 +454,6 @@ const LoginScreen = ({ navigation }) => {
             const json = await response.json();
           }
         }
-      } else {
-        console.log(
-          "There is no object with the same date as the current date."
-        );
-        const payload = {
-          id: 0,
-          orgId: jsonObj?.orgId,
-          empId: jsonObj?.empId,
-          branchId: jsonObj?.branchId,
-          currentTimestamp: new Date().getTime(),
-          updateTimestamp: new Date().getTime(),
-          purpose: "",
-          location: JSON.stringify([{ longitude, latitude }]),
-          kmph: speed.toString(),
-          speed: speed.toString(),
-          isStart: "true",
-          isEnd: "false",
-        };
-        const response = await client.post(saveLocation, payload);
-        const json = await response.json();
       }
     }
   };
@@ -450,6 +478,7 @@ const LoginScreen = ({ navigation }) => {
 
     return speed;
   };
+
   const checkTheEndDate = async (employeeData, lastPosition) => {
     const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
@@ -532,9 +561,26 @@ const LoginScreen = ({ navigation }) => {
           const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
           );
-          console.log("SPEDDd", speed, lastPosition.coords);
+          const coordinates = await AsyncStore.getData(
+            AsyncStore.Keys.COORDINATES
+          );
+          const prevCoordinates = JSON.parse(coordinates);
+         
+          console.log(
+            "lastPosition.coords, prevCoordinates",
+            lastPosition.coords,
+            prevCoordinates
+          );
           if (speed >= 0) {
-            checkTheDate(employeeData, lastPosition.coords);
+            checkTheDate(employeeData, lastPosition.coords, prevCoordinates);
+             await AsyncStore.storeJsonData(
+               AsyncStore.Keys.COORDINATES,
+               JSON.stringify({
+                 longitude: lastPosition.coords.latitude,
+                 latitude: lastPosition.coords.longitude,
+                 time: new Date(),
+               })
+             );
           }
           // if (speed < GlobalSpeed && speed >= 0) {
           //   checkTheEndDate(employeeData, lastPosition);

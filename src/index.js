@@ -25,7 +25,7 @@ import {
   sleep,
   veryIntensiveTask,
 } from "./service";
-import Geolocation from "react-native-geolocation-service";
+// import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
 import URL, {
   getDetailsByempIdAndorgId,
@@ -33,7 +33,7 @@ import URL, {
   saveLocation,
 } from "./networking/endpoints";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { Platform, AppState } from "react-native";
+import { Platform, AppState, PermissionsAndroid } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
@@ -41,9 +41,11 @@ import Orientation from "react-native-orientation-locker";
 import { registerCrashListener } from "./CrashListener";
 import TrackPlayer from "react-native-track-player";
 import moment from "moment";
-// import Geolocation from "@react-native-community/geolocation";
+import Geolocation from "@react-native-community/geolocation";
 import GetLocation from "react-native-get-location";
 import haversine from "haversine";
+import BackgroundActions from "react-native-background-actions";
+import { Colors } from "./styles";
 
 enableScreens();
 const dateFormat = "YYYY-MM-DD";
@@ -88,6 +90,7 @@ const AppScreen = () => {
     }
   );
   const [subscriptionId, setSubscriptionId] = useState(null);
+  const [location, setLocation] = useState({ latitude: 0, longitude: 0 });
 
   useEffect(() => {
     return () => {
@@ -143,9 +146,10 @@ const AppScreen = () => {
       const hasObjectWithCurrentDate =
         hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
       if (hasObjectWithCurrentDate) {
+        // Have Today's Data
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
-          hasObjectWithCurrentDate.isEnd === "false"
+          hasObjectWithCurrentDate.isEnd === "false" // Trip Not yet Ended
         ) {
           const tempArray = JSON.parse(
             JSON.parse(hasObjectWithCurrentDate.location)
@@ -159,16 +163,8 @@ const AppScreen = () => {
             latitude,
             longitude
           );
-          const currentSpeed = calculateSpeed(
-            distanceCheck.latitude,
-            distanceCheck.longitude,
-            new Date(hasObjectWithCurrentDate.createdtimestamp),
-            latitude,
-            longitude,
-            new Date()
-          );
-
-          if (distance >= 10 && currentSpeed >= GlobalSpeed) {
+          console.log("distance isEnd:false", distance);
+          if (distance >= distanceFilterValue) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -190,65 +186,28 @@ const AppScreen = () => {
               payload
             );
             const json = await response.json();
-          } else {
-            if (distance >= 10) {
-              const payload = {
-                id: hasObjectWithCurrentDate.id,
-                orgId: jsonObj?.orgId,
-                empId: jsonObj?.empId,
-                branchId: jsonObj?.branchId,
-                currentTimestamp: new Date(
-                  hasObjectWithCurrentDate.createdtimestamp
-                ).getTime(),
-                updateTimestamp: new Date().getTime(),
-                purpose: "",
-                location: JSON.stringify(finalArray),
-                kmph: speed.toString(),
-                speed: speed.toString(),
-                isStart: "true",
-                isEnd: "true",
-              };
-              const response = await client.put(
-                locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
-                payload
-              );
-              const json = await response.json();
-            }
           }
         }
         if (
           hasObjectWithCurrentDate.isStart === "true" &&
-          hasObjectWithCurrentDate.isEnd === "true"
+          hasObjectWithCurrentDate.isEnd === "true" // Trip Ended
         ) {
-          const tempArray = JSON.parse(
-            JSON.parse(hasObjectWithCurrentDate.location)
-          );
-          const finalArray = tempArray.concat([{ longitude, latitude }]);
-          const distanceCheck = tempArray[tempArray.length - 1];
-          let distance = getDistanceBetweenTwoPointsLatLong(
-            distanceCheck.latitude,
-            distanceCheck.longitude,
-            latitude,
-            longitude
-          );
-          if (true) {
-            const payload = {
-              id: 0,
-              orgId: jsonObj?.orgId,
-              empId: jsonObj?.empId,
-              branchId: jsonObj?.branchId,
-              currentTimestamp: new Date().getTime(),
-              updateTimestamp: new Date().getTime(),
-              purpose: "",
-              location: JSON.stringify([{ longitude, latitude }]),
-              kmph: speed.toString(),
-              speed: speed.toString(),
-              isStart: "true",
-              isEnd: "false",
-            };
-            const response = await client.post(saveLocation, payload);
-            const json = await response.json();
-          }
+          const payload = {
+            id: 0,
+            orgId: jsonObj?.orgId,
+            empId: jsonObj?.empId,
+            branchId: jsonObj?.branchId,
+            currentTimestamp: new Date().getTime(),
+            updateTimestamp: new Date().getTime(),
+            purpose: "",
+            location: JSON.stringify([{ longitude, latitude }]),
+            kmph: speed.toString(),
+            speed: speed.toString(),
+            isStart: "true",
+            isEnd: "false",
+          };
+          const response = await client.post(saveLocation, payload);
+          const json = await response.json();
         }
       } else {
         console.log(
@@ -308,15 +267,8 @@ const AppScreen = () => {
           const tempArray = JSON.parse(
             JSON.parse(hasObjectWithCurrentDate.location)
           );
+          console.log("TeyhasObjectWithCurrentDatepe", tempArray);
           const finalArray = tempArray.concat([{ longitude, latitude }]);
-          const distanceCheck = tempArray[tempArray.length - 1];
-          let distance = getDistanceBetweenTwoPointsLatLong(
-            distanceCheck.latitude,
-            distanceCheck.longitude,
-            latitude,
-            longitude
-          );
-          console.log("distanssssce", distance);
           if (true) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
@@ -369,6 +321,7 @@ const AppScreen = () => {
 
     return speed;
   };
+
   const getCoordinates = async () => {
     try {
       if (true) {
@@ -379,12 +332,23 @@ const AppScreen = () => {
           const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
           );
-          console.log("SPEDDd", lastPosition?.coords);
+          const coordinates = await AsyncStore.getData(
+            AsyncStore.Keys.COORDINATES
+          );
+          const prevCoordinates = JSON.parse(coordinates);
+          await AsyncStore.storeJsonData(
+            AsyncStore.Keys.COORDINATES,
+            JSON.stringify({
+              longitude: lastPosition.coords.latitude,
+              latitude: lastPosition.coords.longitude,
+              time: new Date(),
+            })
+          );
           if (speed >= 0) {
-            checkTheDate(employeeData, lastPosition?.coords);
+            checkTheDate(employeeData, lastPosition.coords, prevCoordinates);
           }
           // if (speed < GlobalSpeed && speed >= 0) {
-          //   checkTheEndDate(employeeData, lastPosition?.coords);
+          //   checkTheEndDate(employeeData, lastPosition);
           // }
 
           return;
@@ -563,6 +527,11 @@ const AppScreen = () => {
   };
 
   useEffect(async () => {
+    let todaysDate = await AsyncStore.getData(AsyncStore.Keys.COORDINATES);
+    if (todaysDate) {
+    } else {
+      await AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, "");
+    }
     if (Platform.OS === "ios") {
       PushNotificationIOS.checkPermissions((item) => {
         if (!item.alert) {
@@ -571,7 +540,7 @@ const AppScreen = () => {
       });
     }
     const checkUserToken = async () => {
-      await BackgroundService.stop();
+      // await BackgroundService.stop();
       let userToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
       const employeeData = await AsyncStore.getData(
@@ -584,9 +553,8 @@ const AppScreen = () => {
             BackgroundService.stop();
           } else {
             if (userToken) {
-              startTracking();
             } else {
-              await BackgroundService.stop();
+              // await BackgroundService.stop();
             }
           }
         }
@@ -612,6 +580,111 @@ const AppScreen = () => {
     }),
     []
   );
+
+  useEffect(() => {
+    if (state.userToken) {
+      BackgroundService.stop();
+      const taskRandomLocation = (taskDataArguments) => {
+        const { delay, period } = taskDataArguments;
+
+        const trackLocation = async () => {
+          Geolocation.watchPosition(
+            async (position) => {
+              const { latitude, longitude, speed } = position.coords;
+              console.log("Latitude:", latitude);
+              console.log("Longitude:", longitude);
+              console.log("Speed:", speed);
+              const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+              );
+              if (speed >= GlobalSpeed) {
+                checkTheDate(employeeData, position.coords);
+              }
+              if (speed < GlobalSpeed) {
+                checkTheEndDate(employeeData, position.coords);
+              }
+            },
+            (error) => {
+              console.warn(error.message);
+            },
+            {
+              enableHighAccuracy: true,
+              distanceFilter: distanceFilterValue, // Minimum distance (in meters) to trigger an update
+              interval: 10000, // Minimum time (in milliseconds) between updates
+              fastestInterval: 5000, // Fastest acceptable update interval
+            }
+          );
+        };
+
+        const intervalId = setInterval(() => {
+          trackLocation();
+        }, period);
+
+        return () => {
+          clearInterval(intervalId);
+        };
+      };
+
+      const requestLocationPermission = async () => {
+        if (Platform.OS === "android") {
+          try {
+            const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              console.log("Location permission granted");
+              startBackgroundTracking();
+            } else {
+              console.log("Location permission denied");
+            }
+          } catch (err) {
+            console.warn(err);
+          }
+        } else {
+          startBackgroundTracking();
+        }
+      };
+
+      const startBackgroundTracking = async () => {
+        const employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const jsonObj = JSON.parse(employeeData);
+        if (
+          jsonObj.isGeolocation === "N" ||
+          jsonObj.hrmsRole == "MD" ||
+          jsonObj.hrmsRole == "CEO"
+        ) {
+          return;
+        }
+        try {
+          await BackgroundService.start(taskRandomLocation, {
+            taskName: "Cyepro",
+            taskTitle: "Cyepro",
+            taskDesc: "Cyepro is Tracking",
+            taskIcon: {
+              name: "@mipmap/cy",
+              type: "mipmap",
+            },
+            color: Colors.PINK,
+            parameters: {
+              delay: 1000,
+              period: 15000,
+            },
+          });
+        } catch (err) {
+          console.warn(err);
+        }
+      };
+
+      requestLocationPermission();
+
+      return () => {
+        console.log("STOP");
+        BackgroundService.stop();
+      };
+    }
+  }, [state.userToken]);
 
   return (
     <AuthContext.Provider value={authContext}>
