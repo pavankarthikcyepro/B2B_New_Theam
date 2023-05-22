@@ -743,7 +743,7 @@ const TargetScreenCRM = ({ route }) => {
 
     // findDataFromObject(selector.receptionistDataV3.fullResponse);
     if (!_.isEmpty(selector.receptionistDataV3.fullResponse)){
-      let modified = selector.receptionistDataV3.fullResponse.self.allTreeData.map(v => ({ ...v, isOpenInner: false }))
+      let modified = selector.receptionistDataV3.fullResponse.self.allTreeData.map(v => ({ ...v, isOpenInner: false,innerData:[] }))
       setReceptionistVol2AlluserData(modified);
       let tempFilterIds = selector.receptionistDataV3.fullResponse.self.level1.map((item) => item.empId)
       // console.log("manthan tempFilterIds ", modified);
@@ -946,21 +946,65 @@ const TargetScreenCRM = ({ route }) => {
   //   setReceptionistVol2Level0([ReceptionistDataLocal.self.selfUser]);
   // }, [ReceptionistDataLocal])
   
-  const oncllickOfEmployee = (item = [],index,)=>{
+  const oncllickOfEmployee = (item = [],index,allData,herirarchyLevel)=>{
 
     let modifeidArray = [...receptionistVol2AlluserData];
     let storeTemp = [...receptionistVol2Level1];
+    console.log("manthan herirarchyLevel ", herirarchyLevel);
+    
+    if (herirarchyLevel == 0){
+      console.log("manthan level 0", JSON.stringify(storeTemp));
+      let temp = modifeidArray.map((itemLocal, indexLocal) =>
+        index == indexLocal ?
+          { ...itemLocal, isOpenInner: true } : { ...itemLocal, isOpenInner: false }
+      )
+      let tempNewArray = temp.filter(i => i.managerId != i.empId && i.managerId == item.empId)
+      // console.log("manthan ddd temp ", JSON.stringify(temp));
+      // console.log("manthan ddd tempNewArray ", tempNewArray);
+      // let test = temp.push(tempNewArray)
 
-    let temp = modifeidArray.map((itemLocal,indexLocal)=>
-      index == indexLocal?
-      { ...itemLocal, isOpenInner: true } : { ...itemLocal, isOpenInner: false}
-    )
-    let tempNewArray = temp.filter(i => i.managerId != i.empId && i.managerId == item.empId)
-    // console.log("manthan ddd temp ", temp);
-    console.log("manthan ddd tempNewArray ", tempNewArray);
-    // let test = temp.push(tempNewArray)
-    Array.prototype.push.apply(storeTemp, tempNewArray)
-    console.log("manthan ddd test ", storeTemp);
+      if (storeTemp.length > 0) {
+        storeTemp.forEach((itemIn, indexIn) => {
+          // console.log("manthan jd 11 ", item.empId);
+          // console.log("manthan jd 22 ", itemIn.empId);
+          // if (itemIn.empId == item.empId){
+          // console.log("manthan jd 22");
+          itemIn.isOpenInner = true;
+          item.innerData.push(...tempNewArray)
+          // }  
+        })
+      }
+    }else{
+      console.log("manthan level 1", JSON.stringify(storeTemp));
+
+      let temp = modifeidArray.map((itemLocal, indexLocal) =>
+        itemLocal.empId == item.empId ?
+          { ...itemLocal, isOpenInner: true } : { ...itemLocal, isOpenInner: false }
+      )
+      // console.log("manthan level 1 temp ", JSON.stringify(temp));
+
+      let tempNewArray = temp.filter(i => i.managerId != i.empId && i.managerId == item.empId)
+      // console.log("manthan ddd temp ", JSON.stringify(temp));
+      console.log("manthan ddd tempNewArray ", storeTemp[index]);
+      // let test = temp.push(tempNewArray)
+
+      // let findIndex = storeTemp.
+
+      // if (storeTemp[index].innerData.length > 0) {
+      //   storeTemp[index].innerData.forEach((itemIn, indexIn) => {
+          // console.log("manthan jd 11 ", item.empId);
+          // console.log("manthan jd 22 ", itemIn.empId);
+          // if (itemIn.empId == item.empId){
+          // console.log("manthan jd 22");
+          item.isOpenInner = true;
+          item.innerData.push(...tempNewArray)
+          // }  
+        // })
+      // }
+    }
+   
+    // Array.prototype.push.apply(storeTemp, tempNewArray)
+    console.log("manthan ddd test ", JSON.stringify(storeTemp));
 
     setReceptionistVol2Level1(storeTemp);
     
@@ -3044,13 +3088,13 @@ const TargetScreenCRM = ({ route }) => {
         <View
           style={[
             { flexDirection: "row" },
-            item.isOpenInner && {
-              borderRadius: 10,
-              borderWidth: 2,
-              borderColor: "#C62159",
-              marginHorizontal: 6,
-              overflow: "hidden",
-            },
+            // item.isOpenInner && {
+            //   borderRadius: 10,
+            //   borderWidth: 2,
+            //   borderColor: "#C62159",
+            //   marginHorizontal: 6,
+            //   overflow: "hidden",
+            // },
           ]}
         >
           {/*RIGHT SIDE VIEW*/}
@@ -3065,7 +3109,7 @@ const TargetScreenCRM = ({ route }) => {
                 navigation={navigation}
                 titleClick={async (e) => {
                   // setIsViewExpanded(!isViewExpanded);
-                  oncllickOfEmployee(item, index,allData);
+                  oncllickOfEmployee(item, index, allData, newLevel);
                 }}
                 roleName={item.roleName}
                 stopLocation={true}
@@ -3215,14 +3259,14 @@ const TargetScreenCRM = ({ route }) => {
           </View>
         </View>
         {/* {item.isOpenInner && renderCRMTreeChild()} */}
-        {console.log("manthan final ", JSON.stringify(receptionistVol2Level1) )}
+        {console.log("manthan final ", JSON.stringify(item) )}
         {item.isOpenInner &&
-          receptionistVol2Level1.length > 0 &&
-          receptionistVol2Level1.map((innerItem1, innerIndex1) => {
+          item.innerData.length > 0 &&
+          item.innerData.map((innerItem1, innerIndex1) => {
             return renderDynamicTree(
-              innerItem1,
+              item.innerData[innerIndex1],
               innerIndex1,
-              receptionistVol2Level1,
+              item.innerData,
               levelColors,
               hierarchyLevel + 1
             );
