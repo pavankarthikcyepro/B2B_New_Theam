@@ -47,26 +47,14 @@ const OverviewScreen = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
       dispatch(updateCurrentScreen("OVERVIEW"));
-      if (selector.dealerCode) {
-        getInventory(selector.dealerCode);
-      } else {
+      // if (selector.dealerCode) {
+      //   getInventory(selector.dealerCode);
+      // } else {
         getInventory();
-      }
+      // }
     });
   }, [navigation, selector.dealerCode]);
 
-  // useEffect(() => {
-  //   console.log(selector.dealerCode);
-  //   if (selector.dealerCode) {
-  //     getInventory(selector.dealerCode);
-  //   } else {
-  //     getInventory();
-  //   }
-  // }, [selector.dealerCode]);
-
-  // useEffect(() => {
-  //   getInventory();
-  // }, []);
 
   const getInventory = async () => {
     try {

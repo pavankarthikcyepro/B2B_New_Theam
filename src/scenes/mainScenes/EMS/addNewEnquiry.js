@@ -336,8 +336,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
-  const [isVip, setIsVip] = useState(null);
-  const [isHni, setIsHni] = useState(null);
+  const [isVip, setIsVip] = useState(false);
+  const [isHni, setIsHni] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({

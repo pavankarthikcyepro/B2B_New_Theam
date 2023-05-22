@@ -465,7 +465,7 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
         break;
       case 120:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock);
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock,{refresh:true});
         break;
       case 121:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
