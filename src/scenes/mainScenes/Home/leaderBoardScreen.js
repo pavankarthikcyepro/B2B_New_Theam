@@ -13,6 +13,7 @@ import { DropDownSelectionItem, DropDownSelectionItemV3 } from '../../../pureCom
 import { IconButton, Searchbar } from "react-native-paper";
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import _ from 'lodash';
+import { useIsFocused } from '@react-navigation/native';
 
 const dropdownData = [
   { label: 'Item 1', value: '1' },
@@ -38,6 +39,7 @@ const dropdownDataV2 = [
 export default function leaderBoardScreen(props) {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   const [showTop5View, setShowTop5View] = useState(false);
   const [showBottom5View, setShowBottom5View] = useState(false);
   const [groupDealerRank, setGroupDealerRank] = useState(null);
@@ -73,7 +75,7 @@ export default function leaderBoardScreen(props) {
    
 
       getUserData();
-  }, [])
+  }, [isFocused])
 
   useEffect(() => {
     // props.navigation.addListener("focus", () => {
@@ -181,8 +183,8 @@ export default function leaderBoardScreen(props) {
 
 
   const MyTaskFilter = ({ navigation }) => {
-    const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-    if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+    // const screen = useSelector((state) => state.mytaskReducer.currentScreen);
+    // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
     return (
       <IconButton
         icon="filter-outline"

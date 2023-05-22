@@ -281,6 +281,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         useState(false);
     const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
     const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+    const [cancelLetter, setCancelLetter] = useState("");
+    const [cancelReceipt, setCancelReceipt] = useState("");
   const [uploadedAttachementsObj, setuploadedAttachementsObj] = useState([]);
     const [isRejectSelected, setIsRejectSelected] = useState(false);
     const [userToken, setUserToken] = useState("");
@@ -452,29 +454,48 @@ const BookingFormScreen = ({ route, navigation }) => {
     }, [navigation]);
 
     useEffect(() => {
-      
-    
-      if (selector.cancel_Receipt_details_status == "success"){
-       
-        // let newArr = Object.assign([], addAttachmentInput);
-        
-        let storeDataLocal =[];
-        let iterator = selector.cancel_Receipt_details.map((item,index) =>{
-         
-          storeDataLocal.push({
-            "url": item.path,
-            "fileType": item.path,
-            "fileName": item.path,
-            "desc": null
-          })
-    
-        })
-        
-        
+      if (selector.cancel_Receipt_details_status == "success") {
+        let storeDataLocal = [];
+        let iterator = selector.cancel_Receipt_details.map((item, index) => {
+          if (item?.type?.includes("other")) {
+            storeDataLocal.push({
+              url: item.path,
+              fileType: item.path,
+              fileName: item.path,
+              desc: null,
+            });
+          }
+        });
+        if (
+          selector.cancel_Receipt_details &&
+          selector.cancel_Receipt_details.length > 0
+        ) {
+          let cancelLetterIndex = selector.cancel_Receipt_details.findIndex(
+            (item) => item.type == "attachments-0"
+          );
+          let cancelReceiptIndex = selector.cancel_Receipt_details.findIndex(
+            (item) => item.type == "receipt-0"
+          );
+          if (cancelLetterIndex >= 0) {
+            setCancelLetter({
+              documentPath:
+                selector.cancel_Receipt_details[cancelLetterIndex].path,
+              fileName: selector.cancel_Receipt_details[cancelLetterIndex].path,
+            });
+          }
+          if (cancelReceiptIndex >= 0) {
+            setCancelReceipt({
+              documentPath:
+                selector.cancel_Receipt_details[cancelReceiptIndex].path,
+              fileName:
+                selector.cancel_Receipt_details[cancelReceiptIndex].path,
+            });
+          }
+        }
         setuploadedAttachementsObj(storeDataLocal);
         setAddAttachmentInput(Object.assign([], storeDataLocal));
       }
-    }, [selector.cancel_Receipt_details])
+    }, [selector.cancel_Receipt_details]);
     
     
 
@@ -1673,10 +1694,17 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     };
 
-    const proceedToCancelBooking = async ()=>{
-
+    const proceedToCancelBooking = async () => {
       if (!selector.cancel_reason_dropdown_value) {
         showToast("Please Select Cancel Reasons");
+        return;
+      }
+      if (!cancelLetter) {
+        showToast("Please Upload Booking Cancel Letter");
+        return;
+      }
+      if (!cancelReceipt) {
+        showToast("Please Upload Receipt ");
         return;
       }
       let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
@@ -1684,26 +1712,42 @@ const BookingFormScreen = ({ route, navigation }) => {
         showToast("lead id not found");
         return;
       }
-      //1. save the uploaded attachments sections 
+      let tempArr = [];
+      tempArr.push({
+        id: 0,
+        leadId: leadId,
+        orgId: userData.orgId,
+        crmuniversalId: universalId,
+        path: cancelLetter.documentPath,
+        type: `attachments-0`,
+      });
+      tempArr.push({
+        id: 0,
+        leadId: leadId,
+        orgId: userData.orgId,
+        crmuniversalId: universalId,
+        path: cancelReceipt.documentPath,
+        type: `receipt-0`,
+      });
+
+      //1. save the uploaded attachments sections
       if (uploadedAttachementsObj.length > 0) {
-        let tempArr = [];
-        let objPayload = uploadedAttachementsObj.map(item => {
+        uploadedAttachementsObj.map((item, index) => {
           tempArr.push({
-            "id": 0,
-            "leadId": leadId,
-            "orgId": userData.orgId,
-            "crmuniversalId": universalId,
-            "path": item.url,
-            "type": "ReceiptDocument"
-          })
-        })
-        if (tempArr.length > 0) {
-          dispatch(saveReceiptdocApiCall(tempArr))
-        }
+            id: 0,
+            leadId: leadId,
+            orgId: userData.orgId,
+            crmuniversalId: universalId,
+            path: item.url,
+            type: `other-${index}`,
+          });
+        });
       }
+
+      dispatch(saveReceiptdocApiCall(tempArr));
       //1. save the uploaded attachments sections end
 
-      //2. lead-drop API call sections 
+      //2. lead-drop API call sections
       const payload = {
         dmsLeadDropInfo: {
           additionalRemarks: selector.cancel_reason_remarks,
@@ -1723,10 +1767,9 @@ const BookingFormScreen = ({ route, navigation }) => {
           status: "BOOKING",
         },
       };
-      
-      dispatch(updateSingleApproval(payload))
-      //2. lead-drop API call sections end
 
+      dispatch(updateSingleApproval(payload));
+      //2. lead-drop API call sections end
 
       //3. enquiry/lead
       let enquiryDetailsObj = { ...selector.pre_booking_details_response };
@@ -1736,17 +1779,15 @@ const BookingFormScreen = ({ route, navigation }) => {
       dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
       //3. enquiry/lead end
 
-
       //4. lead-customer-reference/update
 
       let payloadForupdate = {
-        "refNo": selector.pre_booking_details_response.dmsLeadDto.referencenumber,
-        "orgId": userData.orgId,
-        "stageCompleted": "DROPPED"
-      }
+        refNo: selector.pre_booking_details_response.dmsLeadDto.referencenumber,
+        orgId: userData.orgId,
+        stageCompleted: "DROPPED",
+      };
       dispatch(updateRef(payloadForupdate));
-      
-    }
+    };
 
 
     const proceedToCancelPreBooking = async () => {
@@ -2182,6 +2223,9 @@ const BookingFormScreen = ({ route, navigation }) => {
             case "UPLOAD_ADDRESS_PROOF":
                 formData.append("documentType", "address");
                 break;
+            case "UPLOAD_CANCEL_LETTER":
+                formData.append("documentType", "attachments-0");
+                break;
             default:
                 formData.append("documentType", "default");
                 break;
@@ -2199,9 +2243,15 @@ const BookingFormScreen = ({ route, navigation }) => {
             .then((response) => response.json())
             .then((response) => {
                 if (response) {
-                    const dataObj = { ...uploadedImagesDataObj };
-                    dataObj[response.documentType] = response;
-                    setUploadedImagesDataObj({ ...dataObj });
+                    if (keyId == "UPLOAD_CANCEL_LETTER") {
+                      setCancelLetter(response);
+                    } else if (keyId == "UPLOAD_CANCEL_RECEIPT") {
+                      setCancelReceipt(response);
+                    } else {
+                      const dataObj = { ...uploadedImagesDataObj };
+                      dataObj[response.documentType] = response;
+                      setUploadedImagesDataObj({ ...dataObj });
+                    }
                 }
             })
             .catch((error) => {
@@ -2253,17 +2303,23 @@ const BookingFormScreen = ({ route, navigation }) => {
             default:
                 break;
         }
-        setUploadedImagesDataObj({ ...imagesDataObj });
+        if (from == "UPLOAD_CANCEL_LETTER") {
+          setCancelLetter("");
+        } else if (from == "UPLOAD_CANCEL_RECEIPT") {
+          setCancelReceipt("");
+        } else {
+          setUploadedImagesDataObj({ ...imagesDataObj });
+        }
     };
 
-    const DisplaySelectedImage = ({ fileName, from }) => {
+    const DisplaySelectedImage = ({ fileName, from, disabled = true }) => {
         return (
             <View style={styles.selectedImageBckVw}>
                 <Text style={styles.selectedImageTextStyle} disabled={true} numberOfLines={1}>
                     {fileName}
                 </Text>
                 <IconButton
-                    disabled={true}
+                    disabled={disabled}
                     icon="close-circle-outline"
                     color={Colors.RED}
                     style={{ padding: 0, margin: 0 }}
@@ -2590,14 +2646,11 @@ const BookingFormScreen = ({ route, navigation }) => {
           keyId={selector.imagePickerKeyId}
           onDismiss={() => dispatch(setImagePicker(""))}
           selectedImage={(data, keyId) => {
-            if (keyId == "UPLOAD_ATTACHMENTS"){
-            
+            if (keyId == "UPLOAD_ATTACHMENTS") {
               uploadSelectedImageAttachment(data, keyId);
-            }else{
+            } else {
               uploadSelectedImage(data, keyId);
             }
-            
-            
           }}
           // onDismiss={() => dispatch(setImagePicker(""))}
         />
@@ -5019,211 +5072,352 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
                 <View style={styles.space}></View>
                 {/* 13 cancalation reasons  */}
-                
-                {isCancleClicked ||  fromScreen != undefined && fromScreen == "DROP_ANALYSIS" ? <List.Accordion
-                  id={"13"}
-                  title={"Booking Cancel Section"}
-                  titleStyle={{
-                    color: openAccordian === "13" ? Colors.BLACK : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
-                  }}
-                  style={[
-                    {
-                      backgroundColor:
-                        openAccordian === "13" ? Colors.RED : Colors.WHITE,
-                    },
-                    styles.accordianBorder,
-                  ]}
-                >
-                  <DropDownSelectionItem
-                    label={"Cancel Reasons*"}
-                    value={selector.cancel_reason_dropdown_value}
-                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "BOOKING_CANCEL_REASONS",
-                        "Cancel Reasons"
-                      )
-                    }
-                  />
 
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.cancel_reason_remarks}
-                    label={"Remarks"}
-                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                    onChangeText={(text) =>
-                      
-                      dispatch(
-                        setDropDownData({
-                          key: "CANCEL_REMARKS",
-                          value: text,
-                          id:""
-                        })
-                      )
-                      
-                    }
-                  />
-                  <View style={{}}>
-                    <View style={styles.otherPriceTitleRow}>
-                      <Text style={styles.otherPriceTextStyle}>
-                        Attachments
-                      </Text>
-                      <TouchableOpacity
-                        style={styles.addIcon}
-                        disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                        onPress={() => addHandlerAttachments()}
-                      >
-                        <Text
-                          style={{
-                            color: Colors.WHITE,
-                            fontSize: 13,
-                          }}
-                        >
-                          +
-                        </Text>
-                      </TouchableOpacity>
+                {isCancleClicked ||
+                (fromScreen != undefined && fromScreen == "DROP_ANALYSIS") ? (
+                  <List.Accordion
+                    id={"13"}
+                    title={"Booking Cancel Section"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "13" ? Colors.BLACK : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "13" ? Colors.RED : Colors.WHITE,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <DropDownSelectionItem
+                      label={"Cancel Reasons*"}
+                      value={selector.cancel_reason_dropdown_value}
+                      disabled={
+                        fromScreen != undefined &&
+                        fromScreen !== "DROP_ANALYSIS"
+                          ? false
+                          : true
+                      }
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "BOOKING_CANCEL_REASONS",
+                          "Cancel Reasons"
+                        )
+                      }
+                    />
+
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.cancel_reason_remarks}
+                      label={"Remarks"}
+                      disabled={
+                        fromScreen != undefined &&
+                        fromScreen !== "DROP_ANALYSIS"
+                          ? false
+                          : true
+                      }
+                      onChangeText={(text) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "CANCEL_REMARKS",
+                            value: text,
+                            id: "",
+                          })
+                        )
+                      }
+                    />
+
+                    <View>
+                      <View style={styles.attachmentRow}>
+                        <ImageSelectItem
+                          name={"Booking Cancel Letter*"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_CANCEL_LETTER"))
+                          }
+                          disabled={
+                            fromScreen != undefined &&
+                            fromScreen !== "DROP_ANALYSIS"
+                              ? false
+                              : true
+                          }
+                        />
+                        {cancelLetter?.documentPath ? (
+                          <TouchableOpacity
+                            style={styles.previewBtn}
+                            onPress={() => {
+                              setImagePath(cancelLetter.documentPath);
+                            }}
+                          >
+                            <Text style={styles.previetxt}>Preview</Text>
+                          </TouchableOpacity>
+                        ) : null}
+                      </View>
+
+                      {cancelLetter?.fileName ? (
+                        <DisplaySelectedImage
+                          fileName={cancelLetter.fileName}
+                          from={"UPLOAD_CANCEL_LETTER"}
+                          disabled={
+                            fromScreen != undefined &&
+                            fromScreen !== "DROP_ANALYSIS"
+                              ? false
+                              : true
+                          }
+                        />
+                      ) : null}
+                      <Text style={GlobalStyle.underline}></Text>
                     </View>
 
-                    <View
-                      style={{
-                        backgroundColor: Colors.WHITE,
-                        paddingTop: 5,
-                      }}
-                    >
-                      
-                      <FlatList
-                        data={addAttachmentInput}
-                        extraData={[
-                          addAttachmentInput,
-                          addAttachmentErrorAmountIndexInput,
-                          addAttachmentErrorNameIndex,
-                          uploadedAttachementsObj
-                        ]}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item, index }) => {
-                          return (
-                            <View
-                              key={index}
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                paddingHorizontal: 10,
-                              }}
-                            >
-                              <View>
-                                <View style={{
-                                  minHeight: 50,
-                                  paddingLeft: 12,
-                                  backgroundColor: Colors.WHITE,
-                                  flexDirection:"row",
-                                  alignContent:"center",
-                                  alignItems:"center"
-                                }}>
-                                  <ImageSelectItem
-                                    name={"Attachment"}
-                                    disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                                    // disabled={false}
-                                    onPress={() =>{
-                                      if (fromScreen != undefined && fromScreen !== "DROP_ANALYSIS"){
-                                        dispatch(setImagePicker("UPLOAD_ATTACHMENTS"))
-                                      }else{
-                                        // downloadInLocal(uploadedAttachementsObj[index]?.fileName)
-                                        setImagePath(uploadedAttachementsObj[index]?.fileName)
+                    <View>
+                      <View style={styles.attachmentRow}>
+                        <ImageSelectItem
+                          name={"Receipt*"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_CANCEL_RECEIPT"))
+                          }
+                          disabled={
+                            fromScreen != undefined &&
+                            fromScreen !== "DROP_ANALYSIS"
+                              ? false
+                              : true
+                          }
+                        />
+                        {cancelReceipt?.documentPath ? (
+                          <TouchableOpacity
+                            style={styles.previewBtn}
+                            onPress={() => {
+                              setImagePath(cancelReceipt.documentPath);
+                            }}
+                          >
+                            <Text style={styles.previetxt}>Preview</Text>
+                          </TouchableOpacity>
+                        ) : null}
+                      </View>
+
+                      {cancelReceipt?.fileName ? (
+                        <DisplaySelectedImage
+                          fileName={cancelReceipt.fileName}
+                          from={"UPLOAD_CANCEL_RECEIPT"}
+                          disabled={
+                            fromScreen != undefined &&
+                            fromScreen !== "DROP_ANALYSIS"
+                              ? false
+                              : true
+                          }
+                        />
+                      ) : null}
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+
+                    <View style={{}}>
+                      <View style={styles.otherAttachmentTitleRow}>
+                        <TouchableOpacity
+                          style={styles.addIcon}
+                          disabled={
+                            fromScreen != undefined &&
+                            fromScreen !== "DROP_ANALYSIS"
+                              ? false
+                              : true
+                          }
+                          onPress={() => addHandlerAttachments()}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 13,
+                            }}
+                          >
+                            +
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View
+                        style={{
+                          backgroundColor: Colors.WHITE,
+                          paddingTop: 5,
+                        }}
+                      >
+                        <FlatList
+                          data={addAttachmentInput}
+                          extraData={[
+                            addAttachmentInput,
+                            addAttachmentErrorAmountIndexInput,
+                            addAttachmentErrorNameIndex,
+                            uploadedAttachementsObj,
+                          ]}
+                          showsVerticalScrollIndicator={false}
+                          renderItem={({ item, index }) => {
+                            return (
+                              <View
+                                key={index}
+                                style={{
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  paddingRight: 10,
+                                }}
+                              >
+                                <View>
+                                  <View
+                                    style={{
+                                      minHeight: 50,
+                                      paddingLeft: 12,
+                                      backgroundColor: Colors.WHITE,
+                                      flexDirection: "row",
+                                      alignContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <ImageSelectItem
+                                      name={"Other"}
+                                      disabled={
+                                        fromScreen != undefined &&
+                                        fromScreen !== "DROP_ANALYSIS"
+                                          ? false
+                                          : true
                                       }
-                                  
-                                    }
-                                     
+                                      // disabled={false}
+                                      onPress={() => {
+                                        if (
+                                          fromScreen != undefined &&
+                                          fromScreen !== "DROP_ANALYSIS"
+                                        ) {
+                                          dispatch(
+                                            setImagePicker("UPLOAD_ATTACHMENTS")
+                                          );
+                                        } else {
+                                          // downloadInLocal(uploadedAttachementsObj[index]?.fileName)
+                                          setImagePath(
+                                            uploadedAttachementsObj[index]
+                                              ?.fileName
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    {uploadedAttachementsObj[index]?.url ? (
+                                      <TouchableOpacity
+                                        style={styles.previewBtn}
+                                        onPress={() => {
+                                          if (
+                                            uploadedAttachementsObj[index]?.url
+                                          ) {
+                                            setImagePath(
+                                              uploadedAttachementsObj[index]
+                                                ?.url
+                                            );
+                                          }
+                                        }}
+                                      >
+                                        <Text style={styles.previetxt}>
+                                          Preview
+                                        </Text>
+                                      </TouchableOpacity>
+                                    ) : null}
+                                  </View>
+
+                                  {uploadedAttachementsObj.length > 0 &&
+                                  uploadedAttachementsObj[index]?.fileName !==
+                                    undefined ? (
+                                    <View style={styles.selectedImageBckVw}>
+                                      <Text
+                                        style={styles.selectedImageTextStyle}
+                                        disabled={true}
+                                        numberOfLines={1}
+                                      >
+                                        {
+                                          uploadedAttachementsObj[index]
+                                            .fileName
+                                        }
+                                      </Text>
+                                    </View>
+                                  ) : null}
+                                  <Text style={GlobalStyle.underline}></Text>
+                                </View>
+                                <TouchableOpacity
+                                  onPress={() => deleteHandlerAttachemnt(index)}
+                                  style={{ marginLeft: 10 }}
+                                  disabled={
+                                    fromScreen != undefined &&
+                                    fromScreen !== "DROP_ANALYSIS"
+                                      ? false
+                                      : true
+                                  }
+                                >
+                                  <IconButton
+                                    icon="trash-can-outline"
+                                    color={Colors.PINK}
+                                    size={25}
+                                    disabled={
+                                      fromScreen != undefined &&
+                                      fromScreen !== "DROP_ANALYSIS"
+                                        ? false
+                                        : true
                                     }
                                   />
-                                  {uploadedAttachementsObj[index]?.url ?
-                                    <TouchableOpacity
-                                      style={styles.previewBtn}
-                                      onPress={() => {
-
-                                        if (uploadedAttachementsObj[index]?.url) {
-                                          setImagePath(uploadedAttachementsObj[index]?.url)
-                                        }
-
-                                      }}
-                                    >
-                                      <Text style={styles.previetxt}>Preview</Text>
-                                    </TouchableOpacity> : null}
-                                 
-                                    
-                                </View>
-                           
-                                {uploadedAttachementsObj.length > 0 && uploadedAttachementsObj[index]?.fileName !== undefined ? (
-                                  <View style={styles.selectedImageBckVw}>
-                              
-                                    <Text style={styles.selectedImageTextStyle} disabled={true} numberOfLines={1}>
-                                      { uploadedAttachementsObj[index].fileName }
-                                    </Text>
-                                    
-                                  </View>
-                                ) : null}
-                                <Text style={GlobalStyle.underline}></Text>
+                                </TouchableOpacity>
                               </View>
-                              <TouchableOpacity
-                                onPress={() => deleteHandlerAttachemnt(index)}
-                                style={{ marginLeft: 10 }}
-                                disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                              >
-                                <IconButton
-                                  icon="trash-can-outline"
-                                  color={Colors.PINK}
-                                  size={25}
-                                  disabled={fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? false : true}
-                                />
-                              </TouchableOpacity>
-                            </View>
-                          );
-                        }}
-                      />
+                            );
+                          }}
+                        />
+                      </View>
                     </View>
-                  </View>
-                  
 
-                  <Text style={GlobalStyle.underline}></Text>
-                </List.Accordion> : null }
-               
-
+                    <Text style={GlobalStyle.underline}></Text>
+                  </List.Accordion>
+                ) : null}
               </List.AccordionGroup>
-              
-              {userData.hrmsRole.includes("DSE") || userData.hrmsRole.includes("Sales Consultant")   ?
-              <>
-                  {fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ?
-                    <View style={{ justifyContent: "center", width: '100%', alignItems: "center", marginVertical: 10 }}>
 
-                      {isCancleClicked ? <Button
-                        mode="contained"
-                        // style={{ flex: 1, marginRight: 10 }}
-                        style={{ flex: 1, marginRight: 10, }}
-                        color={Colors.GRAY}
-                        labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                        onPress={() => proceedToCancelBooking()}
-                      >
-                        Proceed To Cancellation
-                      </Button> : <Button
-                        mode="contained"
-                        // style={{ flex: 1, marginRight: 10 }}
-                        style={{ width: '30%', marginRight: 10, }}
-                        color={Colors.GRAY}
-                        labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                        onPress={() => {
-                          setIsCancelClicked(true)
-                        }}
-                      >
-                        Cancel
-                      </Button>}
-
-                    </View> :null}
-                
-                </>          
-             :null }
-              
+              {userData.hrmsRole.includes("DSE") ||
+              userData.hrmsRole.includes("Sales Consultant") ? (
+                <>
+                  {fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? (
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        width: "100%",
+                        alignItems: "center",
+                        marginVertical: 10,
+                      }}
+                    >
+                      {isCancleClicked ? (
+                        <Button
+                          mode="contained"
+                          // style={{ flex: 1, marginRight: 10 }}
+                          style={{ flex: 1, marginRight: 10 }}
+                          color={Colors.GRAY}
+                          labelStyle={{
+                            textTransform: "none",
+                            color: Colors.WHITE,
+                          }}
+                          onPress={() => proceedToCancelBooking()}
+                        >
+                          Proceed To Cancellation
+                        </Button>
+                      ) : (
+                        <Button
+                          mode="contained"
+                          // style={{ flex: 1, marginRight: 10 }}
+                          style={{ width: "30%", marginRight: 10 }}
+                          color={Colors.GRAY}
+                          labelStyle={{
+                            textTransform: "none",
+                            color: Colors.WHITE,
+                          }}
+                          onPress={() => {
+                            setIsCancelClicked(true);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </View>
+                  ) : null}
+                </>
+              ) : null}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -5334,6 +5528,13 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     backgroundColor: Colors.WHITE,
   },
+  attachmentRow: {
+    minHeight: 50,
+    paddingLeft: 12,
+    backgroundColor: Colors.WHITE,
+    flexDirection: "row",
+    alignItems: "center"
+  },
   textAndAmountView: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -5416,6 +5617,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: Colors.WHITE,
+    paddingTop: 7,
+  },
+  otherAttachmentTitleRow: {
+    alignItems: "flex-end",
     backgroundColor: Colors.WHITE,
     paddingTop: 7,
   },

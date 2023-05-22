@@ -81,6 +81,7 @@ import { getReasonList } from "../../../redux/enquiryFollowUpReducer";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AsyncStorage from "../../../asyncStore";
 import _ from "lodash";
+import { getWorkFlow } from "../../../redux/taskThreeSixtyReducer";
 const LocalButtonComp = ({
   title,
   onPress,
@@ -198,7 +199,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [isClosedClicked, setIsClosedClicked] =useState(false);
   let date = new Date();
   date.setDate(date.getDate() + 9);
-
+  const Task360selector = useSelector((state) => state.taskThreeSixtyReducer);
   useEffect(() => {
     //updateBasicDetails(taskData);
     // getAsyncstoreData();
@@ -222,6 +223,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       });
       getAsyncstoreData();
       getUserToken();
+      dispatch(getWorkFlow(universalId));
 
     });
     navigation.addListener("blur", () => {
@@ -249,7 +251,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             // dispatch(getTaskDetailsApi(taskId))
         if (!_.isEmpty(tempData)) {
           setTimeout(() => {
-            if (tempData.reTestdriveFlag == "ReTestDrive") {
+            // if (tempData.reTestdriveFlag == "ReTestDrive") {
 
               // let payloadForWorkFLow = {
               //   entityId: selector.task_details_response?.entityId,
@@ -261,16 +263,18 @@ const TestDriveScreen = ({ route, navigation }) => {
 
               setName(tempData.name);
               setEmail(tempData.email || "");
-              setMobileNumber(mobile || tempData.mobileNumber);
+              setMobileNumber(tempData.mobileNumber);
 
-              setSelectedVehicleDetails({
-                model: tempData.model,
-                varient: tempData.varient,
-                fuelType: tempData.fuelType,
-                transType: tempData.transmissionType,
-                vehicleId: 0,
-                varientId: 0,
-              });
+
+            setSelectedVehicleDetails({
+              model: tempData.model,
+              varient: tempData.varient,
+              fuelType: tempData.fuelType,
+              transType: tempData.transmissionType,
+              vehicleId: tempData.vehicleId,
+              varientId: tempData.varientId,
+            });
+
 
 
 
@@ -346,7 +350,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                   updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
                 );
               }
-            }
+            // }
 
           }, 2000);
        
@@ -602,7 +606,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       // temp.taskStatus =  "APPROVED";
       temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
-      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_time);
+      temp.taskUpdatedTime =  convertDateStringToMillisecondsUsingMoment(
+        `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+        "DD/MM/YYYY HH:mm"
+      );
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
       const value = selector.get_workFlow_task_details[0].taskId;
@@ -611,6 +619,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       temp["assigneeId"] = valueassignee;
       temp["processId"] = valueProcessId;
       temp["taskIdRef"] =value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence + 1
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
@@ -646,7 +655,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       // temp.taskStatus =  "APPROVED";
       temp.taskName = "Re Test Drive";
       temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
-      temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      temp.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
+        `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+        "DD/MM/YYYY HH:mm"
+      );
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
       const value = selector.get_workFlow_task_details_reTestDrive[0].taskId;
@@ -655,6 +668,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       temp["assigneeId"] = valueassignee;
       temp["processId"] = valueProcessId;
       temp["taskIdRef"] = value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence+1;
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
@@ -1036,11 +1050,53 @@ const TestDriveScreen = ({ route, navigation }) => {
    
     let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
    
-    if (0 > preferredTimeDiffwithCurrent) {
-      showToast("Customer preffered Time should be greater than Current Time.");
-      return;
-    }
+    // if (0 > preferredTimeDiffwithCurrent) {
+    //   showToast("Customer preffered Time should be greater than Current Time.");
+    //   return;
+    // }
   
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+    if (compare(selector.customer_preferred_date, currentDate) == 0) {
+     
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+
+      let currentTime = new Date();
+      
+      if (selector.customer_preferred_time.length > 0) {
+        const selectedTime = new Date(); // Current date
+        const timeParts = selector.customer_preferred_time.split(":");
+
+        // const hours = parseInt(timeParts[0], 10);
+        // const minutes = parseInt(timeParts[1], 10);
+        // const seconds =.parseInt(timeParts[2], 10);
+
+        // selectedTime.setHours(hours);
+        // selectedTime.setMinutes(minutes);
+        // selectedTime.setSeconds(seconds);
+        
+        if (preferredTimeDiffwithCurrent < 0 ) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        const selectedTime2 = moment(selector.customer_preferred_time, 'HH:mm');
+        if (selectedTime2.isSame(currentTime, 'minute')) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        // if (0 > preferredTimeDiffwithCurrent) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+        // if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+      }
+    }
 
 
     if (
@@ -1101,8 +1157,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
     let appointmentObj;
-    const dateFormat = "DD/MM/YYYY";
-    const currentDate = moment().add(0, "day").format(dateFormat)
+    // const dateFormat = "DD/MM/YYYY";
+    // const currentDate = moment().add(0, "day").format(dateFormat)
     if (status == "APPROVED" || status == "RESCHEDULED" ){
       
        appointmentObj = {
@@ -1227,7 +1283,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
     }
     if (status === "RESCHEDULED"){
-      
+      reTestDrivePutCallupdateList("RESCHEDULED");
       setIsClosedClicked(false);
       submitRescheduleRemarks()
 
@@ -1245,6 +1301,23 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // navigation.goBack()
   };
+
+  function isTimeGreaterThanCurrent(selectedTime) {
+    const currentTime = new Date();
+    const selectedHour = selectedTime?.getHours();
+    const selectedMinutes = selectedTime?.getMinutes();
+
+    const currentHour = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+
+    if (selectedHour > currentHour) {
+      return true;
+    } else if (selectedHour === currentHour && selectedMinutes > currentMinutes) {
+      return true;
+    }
+
+    return false;
+  }
 
   const closeTask = (from) => {
     setIsClosedClicked(true);
@@ -1706,7 +1779,9 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
-   
+    // const dateFormat = "DD/MM/YYYY";
+    // const currentDate = moment().add(0, "day").format(dateFormat)
+    
 
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
@@ -1735,9 +1810,49 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
 
-    if (0 > preferredTimeDiffwithCurrent) {
-      showToast("Customer preffered Time should be greater than Current Time.");
-      return;
+    // if (0 > preferredTimeDiffwithCurrent) {
+    //   showToast("Customer preffered Time should be greater than Current Time.");
+    //   return;
+    // }
+    if (compare(selector.customer_preferred_date, currentDate) == 0) {
+
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+
+      let currentTime = new Date();
+
+      if (selector.customer_preferred_time.length > 0) {
+        const selectedTime = new Date(); // Current date
+        const timeParts = selector.customer_preferred_time.split(":");
+
+        // const hours = parseInt(timeParts[0], 10);
+        // const minutes = parseInt(timeParts[1], 10);
+        // const seconds = parseInt(timeParts[2], 10);
+
+        // selectedTime.setHours(hours);
+        // selectedTime.setMinutes(minutes);
+        // selectedTime.setSeconds(seconds);
+
+        if (preferredTimeDiffwithCurrent < 0) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        const selectedTime2 = moment(selector.customer_preferred_time, 'HH:mm');
+        if (selectedTime2.isSame(currentTime, 'minute')) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        // if (0 > preferredTimeDiffwithCurrent) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+        // if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+      }
     }
    
 
@@ -2486,7 +2601,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     // if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
                       // setIsClosedClicked(false);
                       // submitClicked("RESCHEDULED", "Test Drive")
-                  reTestDrivePutCallupdateList("RESCHEDULED");
+                  // reTestDrivePutCallupdateList("RESCHEDULED"); // commented to aviod calling if any validations fails
                     // }
                   
                     // submitRescheduleRemarks()

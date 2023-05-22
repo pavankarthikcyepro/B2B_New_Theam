@@ -5237,6 +5237,16 @@ const TargetScreenCRM = ({ route }) => {
                               renderItem(item, index)
                             }
                             contentContainerStyle={{ width: "100%" }}
+                                ListFooterComponent={() => {
+                                  return (<View style={{
+                                    width: 300,
+                                    height: 100,
+                                    padding: 10,
+                                    justifyContent: "center",
+                                    marginVertical: 10,
+                                    // marginStart:'8%'
+                                  }}></View>)
+                                }}
                           />
                         </View>
                       )}
