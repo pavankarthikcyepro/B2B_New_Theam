@@ -450,7 +450,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "status": "PREENQUIRY",
             "offset": offSet,
           "limit": route?.params?.moduleType === "live-leads"? 50000 : 50,
-          "dashboardType": dashboardType
+          "dashboardType": dashboardType,
+          "isSelf": route?.params?.moduleType === "live-leads" ? route?.params?.self ? route?.params?.self : false : false
         }
         return payload;
     }
