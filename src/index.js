@@ -587,10 +587,10 @@ const AppScreen = () => {
       const taskRandomLocation = (taskDataArguments) => {
         const { delay, period } = taskDataArguments;
 
-        const trackLocation = async() => {
-          Geolocation.getCurrentPosition(
+        const trackLocation = async () => {
+          Geolocation.watchPosition(
             async (position) => {
-              const { latitude, longitude, speed} = position.coords;
+              const { latitude, longitude, speed } = position.coords;
               console.log("Latitude:", latitude);
               console.log("Longitude:", longitude);
               console.log("Speed:", speed);
@@ -610,8 +610,8 @@ const AppScreen = () => {
             {
               enableHighAccuracy: true,
               // distanceFilter: distanceFilterValue, // Minimum distance (in meters) to trigger an update
-              // interval: 10000, // Minimum time (in milliseconds) between updates
-              // fastestInterval: 5000, // Fastest acceptable update interval
+              interval: 10000, // Minimum time (in milliseconds) between updates
+              fastestInterval: 5000, // Fastest acceptable update interval
             }
           );
         };
@@ -646,15 +646,17 @@ const AppScreen = () => {
       };
 
       const startBackgroundTracking = async () => {
-      const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      const jsonObj = JSON.parse(employeeData);
-      if (
-        jsonObj.isGeolocation === "N" ||
-        jsonObj.hrmsRole == "MD" ||
-        jsonObj.hrmsRole == "CEO"
-      ) {
-        return
-      }
+        const employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const jsonObj = JSON.parse(employeeData);
+        if (
+          jsonObj.isGeolocation === "N" ||
+          jsonObj.hrmsRole == "MD" ||
+          jsonObj.hrmsRole == "CEO"
+        ) {
+          return;
+        }
         try {
           await BackgroundService.start(taskRandomLocation, {
             taskName: "Cyepro",
