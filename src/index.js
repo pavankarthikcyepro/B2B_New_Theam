@@ -33,7 +33,7 @@ import URL, {
   saveLocation,
 } from "./networking/endpoints";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { Platform, AppState, PermissionsAndroid } from "react-native";
+import { Platform, AppState, PermissionsAndroid, Alert } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
@@ -46,6 +46,10 @@ import GetLocation from "react-native-get-location";
 import haversine from "haversine";
 import BackgroundActions from "react-native-background-actions";
 import { Colors } from "./styles";
+import RNLocation from "react-native-location";
+import BackgroundServices from "./backgroundServices";
+
+let locationSubscription = null;
 
 enableScreens();
 const dateFormat = "YYYY-MM-DD";
@@ -581,107 +585,148 @@ const AppScreen = () => {
     []
   );
 
+  // useEffect(() => {
+  //   if (state.userToken) {
+  //     BackgroundService.stop();
+  //     const taskRandomLocation = (taskDataArguments) => {
+  //       const { delay, period } = taskDataArguments;
+
+  //       const trackLocation = async () => {
+  //         Geolocation.watchPosition(
+  //           async (position) => {
+  //             const { latitude, longitude, speed } = position.coords;
+  //             console.log("Latitude:", latitude);
+  //             console.log("Longitude:", longitude);
+  //             console.log("Speed:", speed);
+  //             const employeeData = await AsyncStore.getData(
+  //               AsyncStore.Keys.LOGIN_EMPLOYEE
+  //             );
+  //             if (speed >= GlobalSpeed) {
+  //               checkTheDate(employeeData, position.coords);
+  //             }
+  //             if (speed < GlobalSpeed) {
+  //               checkTheEndDate(employeeData, position.coords);
+  //             }
+  //           },
+  //           (error) => {
+  //             console.warn(error.message);
+  //           },
+  //           {
+  //             enableHighAccuracy: true,
+  //             distanceFilter: distanceFilterValue, // Minimum distance (in meters) to trigger an update
+  //             interval: 10000, // Minimum time (in milliseconds) between updates
+  //             fastestInterval: 5000, // Fastest acceptable update interval
+  //           }
+  //         );
+  //       };
+
+  //       const intervalId = setInterval(() => {
+  //         trackLocation();
+  //       }, period);
+
+  //       return () => {
+  //         clearInterval(intervalId);
+  //       };
+  //     };
+
+  //     const requestLocationPermission = async () => {
+  //       if (Platform.OS === "android") {
+  //         try {
+  //           const granted = await PermissionsAndroid.request(
+  //             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+  //           );
+  //           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //             console.log("Location permission granted");
+  //             startBackgroundTracking();
+  //           } else {
+  //             console.log("Location permission denied");
+  //           }
+  //         } catch (err) {
+  //           console.warn(err);
+  //         }
+  //       } else {
+  //         startBackgroundTracking();
+  //       }
+  //     };
+
+  //     const startBackgroundTracking = async () => {
+  //       const employeeData = await AsyncStore.getData(
+  //         AsyncStore.Keys.LOGIN_EMPLOYEE
+  //       );
+  //       const jsonObj = JSON.parse(employeeData);
+  //       if (
+  //         jsonObj.isGeolocation === "N" ||
+  //         jsonObj.hrmsRole == "MD" ||
+  //         jsonObj.hrmsRole == "CEO"
+  //       ) {
+  //         return;
+  //       }
+  //       try {
+  //         await BackgroundService.start(taskRandomLocation, {
+  //           taskName: "Cyepro",
+  //           taskTitle: "Cyepro",
+  //           taskDesc: "Cyepro is Tracking",
+  //           taskIcon: {
+  //             name: "@mipmap/cy",
+  //             type: "mipmap",
+  //           },
+  //           color: Colors.PINK,
+  //           parameters: {
+  //             delay: 1000,
+  //             period: 15000,
+  //           },
+  //         });
+  //       } catch (err) {
+  //         console.warn(err);
+  //       }
+  //     };
+
+  //     requestLocationPermission();
+
+  //     return () => {
+  //       console.log("STOP");
+  //       BackgroundService.stop();
+  //     };
+  //   }
+  // }, [state.userToken]);
+
   useEffect(() => {
     if (state.userToken) {
-      BackgroundService.stop();
-      const taskRandomLocation = (taskDataArguments) => {
-        const { delay, period } = taskDataArguments;
+      BackgroundServices.start();
 
-        const trackLocation = async () => {
-          Geolocation.watchPosition(
-            async (position) => {
-              const { latitude, longitude, speed } = position.coords;
-              console.log("Latitude:", latitude);
-              console.log("Longitude:", longitude);
-              console.log("Speed:", speed);
+      RNLocation.requestPermission({
+        ios: "whenInUse",
+        android: {
+          detail: "fine",
+        },
+      }).then((granted) => {
+        if (granted) {
+          locationSubscription = RNLocation.subscribeToLocationUpdates(
+            async (locations) => {
+              console.log("LOCations", AppState.currentState, locations);
               const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
               );
-              if (speed >= GlobalSpeed) {
-                checkTheDate(employeeData, position.coords);
+              if (locations[0].speed >= GlobalSpeed) {
+                checkTheDate(employeeData, locations[0]);
               }
-              if (speed < GlobalSpeed) {
-                checkTheEndDate(employeeData, position.coords);
+              if (locations[0].speed < GlobalSpeed) {
+                checkTheEndDate(employeeData, locations[0]);
               }
-            },
-            (error) => {
-              console.warn(error.message);
-            },
-            {
-              enableHighAccuracy: true,
-              distanceFilter: distanceFilterValue, // Minimum distance (in meters) to trigger an update
-              interval: 10000, // Minimum time (in milliseconds) between updates
-              fastestInterval: 5000, // Fastest acceptable update interval
+              // if (AppState.currentState === "background") {
+              //   Alert.alert("BACKGROUND", JSON.stringify(locations[0]));
+              // }
+              // if (AppState.currentState === "active") {
+              //   // Alert.alert("FOREGROUND", JSON.stringify(locations[0]));
+              // }
             }
           );
-        };
-
-        const intervalId = setInterval(() => {
-          trackLocation();
-        }, period);
-
-        return () => {
-          clearInterval(intervalId);
-        };
-      };
-
-      const requestLocationPermission = async () => {
-        if (Platform.OS === "android") {
-          try {
-            const granted = await PermissionsAndroid.request(
-              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-              console.log("Location permission granted");
-              startBackgroundTracking();
-            } else {
-              console.log("Location permission denied");
-            }
-          } catch (err) {
-            console.warn(err);
-          }
-        } else {
-          startBackgroundTracking();
         }
-      };
-
-      const startBackgroundTracking = async () => {
-        const employeeData = await AsyncStore.getData(
-          AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        const jsonObj = JSON.parse(employeeData);
-        if (
-          jsonObj.isGeolocation === "N" ||
-          jsonObj.hrmsRole == "MD" ||
-          jsonObj.hrmsRole == "CEO"
-        ) {
-          return;
-        }
-        try {
-          await BackgroundService.start(taskRandomLocation, {
-            taskName: "Cyepro",
-            taskTitle: "Cyepro",
-            taskDesc: "Cyepro is Tracking",
-            taskIcon: {
-              name: "@mipmap/cy",
-              type: "mipmap",
-            },
-            color: Colors.PINK,
-            parameters: {
-              delay: 1000,
-              period: 15000,
-            },
-          });
-        } catch (err) {
-          console.warn(err);
-        }
-      };
-
-      requestLocationPermission();
+      });
 
       return () => {
-        console.log("STOP");
-        BackgroundService.stop();
+        locationSubscription && locationSubscription();
+        BackgroundServices.stop();
       };
     }
   }, [state.userToken]);

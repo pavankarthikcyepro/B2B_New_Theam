@@ -21,6 +21,8 @@ target 'B2B_NEW_THEME' do
   )
   $RNFirebaseAsStaticFramework = true
 
+  pod 'react-native-location', :path => '../node_modules/react-native-location'
+
   target 'B2B_NEW_THEMETests' do
     inherit! :complete
     # Pods for testing

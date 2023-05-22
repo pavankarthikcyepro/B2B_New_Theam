@@ -15,7 +15,7 @@ var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
-export const distanceFilterValue = 25;
+export const distanceFilterValue = 50;
 export const GlobalSpeed = 1.25; // 10 km/hr in m/s
 
 export const officeRadius = 0.1;
