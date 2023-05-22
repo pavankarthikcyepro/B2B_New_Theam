@@ -1285,7 +1285,7 @@ const ParametersScreen = ({ route }) => {
             // dealerCodes: "",
             // fromScreen: ""
           });
-        }, 1000);
+        }, 2000);
       } else if (isContact) {
         navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
         setTimeout(() => {
@@ -1294,7 +1294,7 @@ const ParametersScreen = ({ route }) => {
             employeeDetail: employeeDetail,
             selectedEmpId: empIdLocal,
           });
-        }, 1000);
+        }, 2000);
       }
     }
   }

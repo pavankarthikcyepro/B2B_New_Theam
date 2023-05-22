@@ -54,6 +54,7 @@ import {
 import moment from "moment";
 import { ScrollView } from "react-native-gesture-handler";
 import _ from "lodash"
+import { getWorkFlow } from "../../../redux/taskThreeSixtyReducer";
 const otpStyles = StyleSheet.create({
   root: { flex: 1, padding: 20 },
   title: { textAlign: 'center', fontSize: 30, fontWeight: "400" },
@@ -128,6 +129,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     isOtp: "",
     isTracker: "",
   });
+  const Task360selector = useSelector((state) => state.taskThreeSixtyReducer);
   useEffect(() => {
     // getAsyncStorageData();
     // dispatch(getTaskDetailsApi(taskId));
@@ -267,7 +269,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       const universalID = selector.task_details_response?.universalId;
       if(universalID){
        
-       
+        dispatch(getWorkFlow(universalID));
         if (selector.task_details_response.taskStatus !== "ASSIGNED") {
           dispatch(getHomeVisitCounts(universalID))
           dispatch(getHomeVisitAuditDetails(universalID))
@@ -361,7 +363,11 @@ const HomeVisitScreen = ({ route, navigation }) => {
       // let newArr = modifiedObj
       temp.taskName = "Re Home Visit";
       temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED";
-      temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
+      // temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
+      temp.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
+        `${selector.actual_start_time} ${selector.next_follow_up_Time}`,
+        "DD/MM/YYYY HH:mm"
+      );
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
       const value = selector.get_workFlow_task_details[0].taskId;
@@ -370,6 +376,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       temp["assigneeId"] = valueassignee;
       temp["processId"] = valueProcessId;
       temp["taskIdRef"] = value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence + 1;
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;
@@ -408,7 +415,11 @@ const HomeVisitScreen = ({ route, navigation }) => {
       // let newArr = modifiedObj
       temp.taskName = "Re Home Visit";
       temp.taskStatus = compare(selector.actual_start_time, currentDate) == 0 ? "IN_PROGRESS" : "RESCHEDULED";
-      temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
+      // temp.taskUpdatedTime = compare(selector.actual_start_time, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
+      temp.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
+        `${selector.actual_start_time} ${selector.next_follow_up_Time}`,
+        "DD/MM/YYYY HH:mm"
+      );
       temp.taskCreatedTime = moment().valueOf();
       // const value = temp.taskId;
       const value = selector.get_workFlow_task_details_Re_home_visit[0].taskId;
@@ -417,6 +428,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       temp["assigneeId"] = valueassignee;
       temp["processId"] = valueProcessId;
       temp["taskIdRef"] = value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence + 1;
       delete temp.taskId;
       delete temp.assignee;
       delete temp.dmsProcess;

@@ -666,6 +666,7 @@ const LeadsScreen = ({ route, navigation }) => {
       limit: route?.params?.moduleType === "live-leads" ? 50000 : 50,
       leadStage: defualtLeadStage,
       leadStatus: defualtLeadStatus,
+      isSelf: route?.params?.moduleType === "live-leads" ? route?.params?.self ? route?.params?.self : false  : false
     };
   };
 
@@ -1173,6 +1174,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : leadStatus.length === 0
             ? defualtLeadStatus
             : leadStatus,
+        isSelf: route?.params?.moduleType === "live-leads" ? route?.params?.self ? route?.params?.self : false : false
       };
       let data = {
         newPayload,
@@ -1358,6 +1360,7 @@ const LeadsScreen = ({ route, navigation }) => {
           : leadStatus.length === 0
             ? defualtLeadStatus
             : leadStatus,
+        isSelf: route?.params?.moduleType === "live-leads" ? route?.params?.self ? route?.params?.self : false : false
       };
       let data = {
         newPayload,
