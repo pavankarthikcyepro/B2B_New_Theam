@@ -622,11 +622,11 @@ const HomeVisitScreen = ({ route, navigation }) => {
     if (actionType === "RESCHEDULE") {
       var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
       var momentB = moment(); // current date
-      if (momentA < momentB) {
-        setIsDateError(true)
-        showToast("Start date should not be less than current date");
-        return;
-      }
+      // if (momentA < momentB) {
+      //   setIsDateError(true)
+      //   showToast("Start date should not be less than current date");
+      //   return;
+      // }
       newTaskObj.taskStatus = "RESCHEDULED";
 
       if (storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit") {
