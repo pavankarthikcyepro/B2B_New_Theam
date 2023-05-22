@@ -609,7 +609,7 @@ const AppScreen = () => {
             },
             {
               enableHighAccuracy: true,
-              // distanceFilter: distanceFilterValue, // Minimum distance (in meters) to trigger an update
+              distanceFilter: distanceFilterValue, // Minimum distance (in meters) to trigger an update
               interval: 10000, // Minimum time (in milliseconds) between updates
               fastestInterval: 5000, // Fastest acceptable update interval
             }
