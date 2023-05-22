@@ -30,6 +30,21 @@
       android:usesCleartextTraffic="true" 
       android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
+  <meta-data
+    android:name="com.supersami.foregroundservice.notification_channel_name"
+    android:value="Sticky Title"
+  />
+  <meta-data
+    android:name="com.supersami.foregroundservice.notification_channel_description"
+    android:value="Sticky Description."
+  />
+  <meta-data
+    android:name="com.supersami.foregroundservice.notification_color"
+    android:resource="@color/blue"
+  />
+  <service android:name="com.supersami.foregroundservice.ForegroundService"></service>
+  <service android:name="com.supersami.foregroundservice.ForegroundServiceTask"></service>
+
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"
                     android:value="false"/>
         <!-- Change the resource name to your App's accent color - or any other color you want -->
@@ -71,8 +86,6 @@
         </intent-filter>
       </activity>
        <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" />
-       <service android:name="com.supersami.foregroundservice.ForegroundService" android:foregroundServiceType="location"></service>
-       <service android:name="com.supersami.foregroundservice.ForegroundServiceTask" android:foregroundServiceType="location"></service>
         <meta-data
      android:name="com.google.android.geo.API_KEY"
      android:value="AIzaSyD1p1YFpi2w3yBrYl1aUpudMqe9IzMQt2Y"/>

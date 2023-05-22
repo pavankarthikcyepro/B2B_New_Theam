@@ -10,6 +10,7 @@ import { name as appName } from "./app.json";
 import crashlytics from "@react-native-firebase/crashlytics";
 import messaging from "@react-native-firebase/messaging";
 import TrackPlayer from "react-native-track-player";
+import LocationTracker from "./src/geotracker";
 
 if (__DEV__) {
   import("./config/ReactotronConfig").then(() => {});
