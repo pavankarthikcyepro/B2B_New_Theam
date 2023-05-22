@@ -70,6 +70,7 @@ import moment from "moment";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import { client } from "../../../networking/client";
+import DuplicateMobileModel from "../../../components/DuplicateMobileModel";
 
 const screenWidth = Dimensions.get("window").width;
 let EventListData = [
@@ -171,19 +172,21 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [eventConfigRes, setEventConfigRes] = useState([]);
+  
+  const [duplicateMobileErrorData, setDuplicateMobileErrorData] = useState("");
+  const [duplicateMobileModelVisible, setDuplicateMobileModelVisible] =
+    useState(false);
 
-  useEffect(async () => {
-     getAsyncstoreData();
+  useEffect(() => {
+    getAsyncstoreData();
     getBranchId();
     getAuthToken();
-    // getCustomerTypeListFromDB();
-    const UnSubscribe = navigation.addListener("focus", () => {
+
+    return () => {
       if (route.params?.fromEdit === false) {
         dispatch(clearState());
       }
-    });
-
-    return UnSubscribe;
+    };
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -825,9 +828,33 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       ) {
         confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
       } else {
-        showToast(
-          selector.create_enquiry_response_obj.message || "something went wrong"
-        );
+        const { message } = selector.create_enquiry_response_obj;
+        if (message.includes("Account already exists")) {
+          const msgArr = message.split("[");
+          const msgArr2 = msgArr[1].split("]").join("");
+          const msgArr3 = msgArr2.split(":");
+          const msgArr4 = msgArr3[1].split(",");
+          const createdDate = msgArr3[2].trim();
+          const createdBy = msgArr4[0].trim();
+          
+          const msgEnq = msgArr[2].split("]").join("");
+          const msgEnq2 = msgEnq.split(":");
+          const enqNumber = msgEnq2[1].trim();
+
+          let newObj = {
+            createdBy: createdBy,
+            createdDate: createdDate,
+            enqNumber: enqNumber,
+            mobileNumber: selector.mobile
+          };
+          setDuplicateMobileErrorData(Object.assign({}, newObj));
+          setDuplicateMobileModelVisible(true);
+        } else {
+          showToast(
+            selector.create_enquiry_response_obj.message ||
+              "something went wrong"
+          );
+        }
       }
     }
   }, [selector.createEnquiryStatus, selector.create_enquiry_response_obj]);
@@ -1301,6 +1328,15 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <DuplicateMobileModel
+        duplicateMobileModelVisible={duplicateMobileModelVisible}
+        onRequestClose={() => {
+          setDuplicateMobileModelVisible(false);
+          setDuplicateMobileErrorData("");
+        }}
+        duplicateMobileErrorData={duplicateMobileErrorData}
+      />
+
       {/* // select modal */}
       <DropDownComponant
         visible={showDropDownModel}
