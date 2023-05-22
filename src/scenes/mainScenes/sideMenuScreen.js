@@ -61,6 +61,8 @@ import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
 import {
+  updateAgingFrom,
+  updateAgingTo,
   updateLocation,
   updateSelectedDealerCode,
 } from "../../redux/myStockReducer";
@@ -465,6 +467,10 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
         break;
       case 120:
+         dispatch(updateLocation({}));
+         dispatch(updateSelectedDealerCode({}));
+         dispatch(updateAgingFrom(null));
+         dispatch(updateAgingTo(null));
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock,{refresh:true});
         break;
       case 121:
@@ -513,6 +519,8 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateDealerFilterData({}));
     dispatch(updateLocation({}));
     dispatch(updateSelectedDealerCode({}));
+    dispatch(updateAgingFrom(null));
+    dispatch(updateAgingTo(null));
     dispatch(updatereceptionistDataObjectData({}))
     dispatch(updateDealerFilterData_Recep({}))
     dispatch(updateFilterLevelSelectedDataReceptionist({}))
