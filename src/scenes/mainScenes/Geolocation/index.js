@@ -188,7 +188,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
     let selectedDate = day.dateString;
     // if (currentDate === selectedDate) {
       //   setAttendance(true);
-      navigation.navigate(GeolocationTopTabNavigatorIdentifiers.map, {
+      navigation.navigate(GeolocationTopTabNavigatorIdentifiers.tripList, {
         empId: userData.empId,
         orgId: userData.orgId,
         date: selectedDate,

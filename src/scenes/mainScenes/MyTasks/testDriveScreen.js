@@ -34,8 +34,18 @@ import {
   getTestDriveAppointmentDetailsApi,
   validateTestDriveApi,
   generateOtpApi,
-  validateOtpApi,postReOpenTestDrive,getTestDriveHistoryCount,
+  validateOtpApi, postReOpenTestDrive, getTestDriveHistoryCount,
   clearOTP,
+  PutUpdateListTestDriveHistory,
+  updateSelectedScheduledata,
+  getTestDriveHistoryDetails,
+  saveReScheduleRemark,
+  getDetailsWrokflowTask,
+  putWorkFlowHistory,
+  postDetailsWorkFlowTask,
+  getDetailsWrokflowTaskForFormData,
+  getDetailsWrokflowTaskReTestDrive,
+  postReOpenTestDriveV2,
 } from "../../../redux/testDriveReducer";
 import {
   DateSelectItem,
@@ -43,7 +53,7 @@ import {
   ImageSelectItem,
   DropDownSelectionItem,
 } from "../../../pureComponents";
-import { Dropdown } from "sharingan-rn-modal-dropdown";
+import { Dropdown } from 'react-native-element-dropdown';
 import { Button, IconButton, RadioButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import {
@@ -67,7 +77,11 @@ import {
 import { client } from "../../../networking/client";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import { convertDateStringToMillisecondsUsingMoment } from "./../../../utils/helperFunctions";
-
+import { getReasonList } from "../../../redux/enquiryFollowUpReducer";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as AsyncStorage from "../../../asyncStore";
+import _ from "lodash";
+import { getWorkFlow } from "../../../redux/taskThreeSixtyReducer";
 const LocalButtonComp = ({
   title,
   onPress,
@@ -143,6 +157,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     varientId: 0,
   });
   const [mobileNumber, setMobileNumber] = useState("");
+  const [customerRemarks, setCustomerRemarks] = useState("");
+  const [employeeRemarks, setEmployeeRemarks] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [selectedDseDetails, setSelectedDseDetails] = useState({
@@ -169,13 +185,21 @@ const TestDriveScreen = ({ route, navigation }) => {
     setValue: setOtpValue,
   });
   const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isSubmitPressRescheduleModal, setIsSubmitPressRescheduleModal] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState({});
   const [isValuesEditable, setIsValuesEditable] = useState(true);
   const [isReopenSubmitVisible, setIsisReopenSubmitVisible] = useState(false);
   const [ischangeScreen, setIschangeScreen] = useState(false);
+  const [isRechduleModalVisible, setIsRescheduleModalVisible] = useState(false);
+  const [reasonList, setReasonList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
+  const [storeLastupdatedTestDriveId, setStoreLastupdatedTestDriveId] = useState("");
+  const [storeLastupdatedTestDriveDetails, setStoreLastupdatedTestDriveDetails] = useState([]);
+  const [isClosedClicked, setIsClosedClicked] =useState(false);
   let date = new Date();
   date.setDate(date.getDate() + 9);
-
+  const Task360selector = useSelector((state) => state.taskThreeSixtyReducer);
   useEffect(() => {
     //updateBasicDetails(taskData);
     // getAsyncstoreData();
@@ -186,6 +210,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (route?.params?.taskStatus === "CLOSED") {
       dispatch(getTestDriveHistoryCount(universalId))
     }
+   
   }, []);
 
   useEffect(() => {
@@ -198,6 +223,8 @@ const TestDriveScreen = ({ route, navigation }) => {
       });
       getAsyncstoreData();
       getUserToken();
+      dispatch(getWorkFlow(universalId));
+
     });
     navigation.addListener("blur", () => {
       dispatch(clearState());
@@ -206,7 +233,199 @@ const TestDriveScreen = ({ route, navigation }) => {
         id: "",
       });
     });
+
   }, [navigation]);
+
+  useEffect(() => {
+    if (selector.test_drive_history_details_statu === "successs") {
+      let response = selector.test_drive_history_details;
+      let tempData;
+      if(response.length >0){
+       tempData= response[response.length - 1]
+        setStoreLastupdatedTestDriveDetails(tempData);
+        setStoreLastupdatedTestDriveId(tempData?.id);
+        // todo set last updated test drive data 
+        
+       
+         // api to get task details 
+            // dispatch(getTaskDetailsApi(taskId))
+        if (!_.isEmpty(tempData)) {
+          setTimeout(() => {
+            // if (tempData.reTestdriveFlag == "ReTestDrive") {
+
+              // let payloadForWorkFLow = {
+              //   entityId: selector.task_details_response?.entityId,
+              //   taskName: "Test Drive"
+              // }
+              // // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+              // // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+              // dispatch(getDetailsWrokflowTaskForFormData(payloadForWorkFLow)) //todo need to check and pass entityId
+
+              setName(tempData.name);
+              setEmail(tempData.email || "");
+              setMobileNumber(tempData.mobileNumber);
+
+
+            setSelectedVehicleDetails({
+              model: tempData.model,
+              varient: tempData.varient,
+              fuelType: tempData.fuelType,
+              transType: tempData.transmissionType,
+              vehicleId: tempData.vehicleId,
+              varientId: tempData.varientId,
+            });
+
+
+
+
+              const driverId = tempData.driverId || "";
+              let driverName = "";
+
+              if (selector.drivers_list.length > 0 && tempData.driverId) {
+                const filterAry = selector.drivers_list.filter(
+                  (object) => object.id === tempData.driverId
+                );
+                if (filterAry.length > 0) {
+                  driverName = filterAry[0].name;
+                }
+              }
+              setSelectedDriverDetails({ name: driverName, id: driverId });
+
+              const customerHaveingDl = tempData.isCustomerHaveingDl
+                ? tempData.isCustomerHaveingDl
+                : false;
+              if (customerHaveingDl) {
+                const dataObj = { ...uploadedImagesDataObj };
+                if (tempData.dlFrontUrl) {
+                  dataObj.dlFrontUrl = {
+                    documentPath: tempData.dlFrontUrl,
+                    fileName: "driving license front",
+                  };
+                }
+                if (tempData.dlBackUrl) {
+                  dataObj.dlBackUrl = {
+                    documentPath: tempData.dlBackUrl,
+                    fileName: "driving license back",
+                  };
+                }
+                setUploadedImagesDataObj({ ...dataObj });
+              }
+              setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
+
+
+              const testDriveDatetime = tempData.testDriveDatetime ? tempData.testDriveDatetime : "";
+              const testDriveDatetimeAry = testDriveDatetime.split(" ");
+              if (testDriveDatetimeAry.length > 0) {
+                // state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
+                dispatch(
+                  updateSelectedDate({ key: "PREFERRED_DATE", text: moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY") })
+                );
+              }
+              if (testDriveDatetimeAry.length > 1) {
+                // state.customer_preferred_time = testDriveDatetimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "CUSTOMER_PREFERRED_TIME", text: testDriveDatetimeAry[1] })
+                );
+              }
+
+              const startTime = tempData.startTime ? tempData.startTime : "";
+
+              const startTimeAry = moment(startTime)
+                .format("DD/MM/YY h:mm a")
+                .split(" ");
+              if (startTimeAry.length > 1) {
+                // state.actual_start_time = startTimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "ACTUAL_START_TIME", text: startTimeAry[1] })
+                );
+              }
+              // state.driverId = tempData.driverId;
+              const endTime = tempData.endTime ? tempData.endTime : "";
+              const endTimeAry = moment(endTime)
+                .format("DD/MM/YY h:mm a")
+                .split(" ");;
+              if (endTimeAry.length > 1) {
+                // state.actual_end_time = endTimeAry[1];
+                dispatch(
+                  updateSelectedDate({ key: "ACTUAL_END_TIME", text: endTimeAry[1] })
+                );
+              }
+            // }
+
+          }, 2000);
+       
+
+
+        }
+      }
+     
+    }
+
+
+  }, [selector.test_drive_history_details_statu])
+
+  useEffect(() => {
+    if (selector.isReasonUpdate && reasonList.length > 0) {
+
+      let reason = selector.reason;
+      let findIndex = reasonList.findIndex((item) => {
+        return item.value === selector.reason
+      })
+      
+      if (findIndex !== -1) {
+        setDefaultReasonIndex(reasonList[findIndex].value)
+      }
+      else if (reason) {
+        dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: "Other" }));
+        setDefaultReasonIndex("Other");
+        setOtherReason(reason);
+      }
+    }
+  }, [selector.isReasonUpdate, reasonList]);
+
+
+  const getReasonListData = async (taskName) => {
+
+    setLoading(true)
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let payload = {
+        orgId: jsonObj.orgId,
+        taskName:
+          taskName == "Booking approval task"
+            ? "PreBooking FollowUp"
+            : taskName,
+      };
+      Promise.all([
+        dispatch(getReasonList(payload))
+      ]).then((res) => {
+        let tempReasonList = [];
+        let allReasons = res[0].payload;
+        if (allReasons.length > 0) {
+          for (let i = 0; i < allReasons.length; i++) {
+            allReasons[i].label = allReasons[i].reason;
+            allReasons[i].value = allReasons[i].reason;
+            if (i === allReasons.length - 1) {
+              setTimeout(() => {
+                setReasonList([
+                  ...allReasons,
+                  { label: "Other", value: "Other" },
+                ]);
+              }, 100);
+
+              setLoading(false)
+            }
+          }
+        }
+        else {
+          setLoading(false)
+        }
+      }).catch(() => {
+        setLoading(false)
+      })
+    }
+  };
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -238,11 +457,11 @@ const TestDriveScreen = ({ route, navigation }) => {
             };
 
             Promise.all([
-              dispatch(getTaskDetailsApi(taskId)),
+              dispatch(getTaskDetailsApi(taskId)),// commented to manage re test drive btn not clickable case
               dispatch(getTestDriveVehicleListApi(payload)),
               dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
               dispatch(getDriversListApi(jsonObj.orgId)),
-            ]).then(() => {});
+            ]).then(() => { });
           }
         );
       } else {
@@ -356,7 +575,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           ) {
             const varientsData =
               selector.test_drive_varients_obj_for_drop_down[
-                findModel[0].model
+              findModel[0].model
               ];
             setVarientListForDropDown(varientsData);
           }
@@ -376,6 +595,103 @@ const TestDriveScreen = ({ route, navigation }) => {
       getTestDriveAppointmentDetailsFromServer();
     }
   }, [selector.task_details_response, taskStatusAndName]);
+
+  useEffect(() => {
+    
+    if (!_.isEmpty(selector.get_workFlow_task_details)){
+      let modifiedObj = selector.get_workFlow_task_details[selector.get_workFlow_task_details.length -1];
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+      const temp ={...modifiedObj};
+      // temp.taskStatus =  "APPROVED";
+      temp.taskName = "Re Test Drive";
+      temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
+      // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_time);
+      temp.taskUpdatedTime =  convertDateStringToMillisecondsUsingMoment(
+        `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+        "DD/MM/YYYY HH:mm"
+      );
+      temp.taskCreatedTime = moment().valueOf();
+      // const value = temp.taskId;
+      const value = selector.get_workFlow_task_details[0].taskId;
+      const valueassignee = temp.assignee;
+      const valueProcessId = temp.dmsProcess;
+      temp["assigneeId"] = valueassignee;
+      temp["processId"] = valueProcessId;
+      temp["taskIdRef"] =value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence + 1
+      delete temp.taskId;
+      delete temp.assignee;
+      delete temp.dmsProcess;
+      delete temp.taskUpdatedBy;
+
+
+      if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+   
+         temp.taskStatus = isClosedClicked ? "CLOSED" :"RESCHEDULED";
+       
+        
+        reTestDrivePutCallWorkFlowHistory(temp, modifiedObj.taskId);
+      }else{
+        postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+      }
+    
+      // let newArr = modifiedObj
+      // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      
+      setIschangeScreen(true);
+    }
+  
+    
+  }, [selector.get_workFlow_task_details])
+  
+  useEffect(() => {
+
+    if (!_.isEmpty(selector.get_workFlow_task_details_reTestDrive)) {
+      let modifiedObj = selector.get_workFlow_task_details_reTestDrive[selector.get_workFlow_task_details_reTestDrive.length - 1];
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+      const temp = { ...modifiedObj };
+      // temp.taskStatus =  "APPROVED";
+      temp.taskName = "Re Test Drive";
+      temp.taskStatus = compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED";
+      // temp.taskUpdatedTime = compare(selector.customer_preferred_date, currentDate) == 0 ? moment().valueOf() : convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+      temp.taskUpdatedTime = convertDateStringToMillisecondsUsingMoment(
+        `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+        "DD/MM/YYYY HH:mm"
+      );
+      temp.taskCreatedTime = moment().valueOf();
+      // const value = temp.taskId;
+      const value = selector.get_workFlow_task_details_reTestDrive[0].taskId;
+      const valueassignee = temp.assignee;
+      const valueProcessId = temp.dmsProcess;
+      temp["assigneeId"] = valueassignee;
+      temp["processId"] = valueProcessId;
+      temp["taskIdRef"] = value;
+      temp.taskSequence = Task360selector.wrokflow_response[Task360selector.wrokflow_response.length - 1].taskSequence+1;
+      delete temp.taskId;
+      delete temp.assignee;
+      delete temp.dmsProcess;
+      delete temp.taskUpdatedBy;
+
+
+      // if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+
+      //   temp.taskStatus = isClosedClicked ? "CLOSED" : "RESCHEDULED";
+
+      
+      //   reTestDrivePutCallWorkFlowHistory(temp, modifiedObj.taskId);
+      // } else {
+        postWorkFlowTaskHistory(temp)// need to call after we get response for getDetailsWrokflowTask
+      // }
+
+     
+      setIschangeScreen(true);
+    }
+
+
+  }, [selector.get_workFlow_task_details_reTestDrive])
+  
 
   const getTestDriveAppointmentDetailsFromServer = async () => {
     if (selector.task_details_response.entityModuleId) {
@@ -441,23 +757,41 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (selector.task_details_response) {
       const taskStatus = selector.task_details_response.taskStatus;
       const taskName = selector.task_details_response.taskName;
-      if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
+      
+      if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive" || taskName === "Re Test Drive") {
         setHandleActionButtons(4);
       } else if (
         taskStatus === "ASSIGNED" &&
         taskName === "Test Drive Approval"
       ) {
         setHandleActionButtons(3);
-      } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
+      } else if (taskStatus === "APPROVED" && taskName === "Test Drive" || taskName === "Re Test Drive") {
         setHandleActionButtons(4); //
+        // todo manthan
+      
+        
       } else if (taskStatus === "CANCELLED") {
         //
         setHandleActionButtons(5);
-      } else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
+      } else if (taskStatus === "ASSIGNED" && taskName === "Test Drive" || taskName === "Re Test Drive") {
         setHandleActionButtons(1);
-      } if (taskStatus === "RESCHEDULED" && taskName === "Test Drive") {
+      } 
+      
+      if (taskStatus === "RESCHEDULED" && taskName === "Test Drive" || taskName === "Re Test Drive") {
         setHandleActionButtons(4);
       } 
+      
+      if (taskStatus !== "ASSIGNED" && taskName === "Test Drive" || taskName === "Re Test Drive") {
+        // call history counts and reasons API
+        getReasonListData("Enquiry Followup")
+        dispatch(getTestDriveHistoryCount(universalId))
+        if (universalId) {
+          setTimeout(() => {
+            dispatch(getTestDriveHistoryDetails(universalId)) // history listing API    
+          }, 1000);
+         
+        }
+      }
 
       setSelectedDseDetails({
         name: selector.task_details_response.assignee?.empName,
@@ -711,6 +1045,60 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
+    const currentTime = new Date();
+    const curettime = moment(currentTime, "HH:mm");
+   
+    let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
+   
+    // if (0 > preferredTimeDiffwithCurrent) {
+    //   showToast("Customer preffered Time should be greater than Current Time.");
+    //   return;
+    // }
+  
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+    if (compare(selector.customer_preferred_date, currentDate) == 0) {
+     
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+
+      let currentTime = new Date();
+      
+      if (selector.customer_preferred_time.length > 0) {
+        const selectedTime = new Date(); // Current date
+        const timeParts = selector.customer_preferred_time.split(":");
+
+        // const hours = parseInt(timeParts[0], 10);
+        // const minutes = parseInt(timeParts[1], 10);
+        // const seconds =.parseInt(timeParts[2], 10);
+
+        // selectedTime.setHours(hours);
+        // selectedTime.setMinutes(minutes);
+        // selectedTime.setSeconds(seconds);
+        
+        if (preferredTimeDiffwithCurrent < 0 ) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        const selectedTime2 = moment(selector.customer_preferred_time, 'HH:mm');
+        if (selectedTime2.isSame(currentTime, 'minute')) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        // if (0 > preferredTimeDiffwithCurrent) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+        // if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+      }
+    }
+
+
     if (
       selectedVehicleDetails.vehicleId === 0 ||
       selectedVehicleDetails.varientId === 0
@@ -768,8 +1156,75 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
+    let appointmentObj;
+    // const dateFormat = "DD/MM/YYYY";
+    // const currentDate = moment().add(0, "day").format(dateFormat)
+    if (status == "APPROVED" || status == "RESCHEDULED" ){
+      
+       appointmentObj = {
+        address: customerAddress,
+        branchId: selectedBranchId,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        customerId: universalId,
+        dseId: selectedDseDetails.id,
+        location: location,
+        orgId: userData.orgId,
+        source: "ShowroomWalkin",
+        startTime: actualStartTime,
+        endTime: actualEndTime,
+        testDriveDatetime: prefferedTime,
+        testdriveId: 0,
+         status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        vehicleInfo: vehicleDetails,
+      };
+    }else{
+      appointmentObj = {
+        address: customerAddress,
+        branchId: selectedBranchId,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        customerId: universalId,
+        dseId: selectedDseDetails.id,
+        location: location,
+        orgId: userData.orgId,
+        source: "ShowroomWalkin",
+        startTime: actualStartTime,
+        endTime: actualEndTime,
+        testDriveDatetime: prefferedTime,
+        testdriveId: 0,
+        status: status,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        vehicleInfo: vehicleDetails,
+      };
+    }
 
-    let appointmentObj = {
+    let prefferedTimeV2 = "";
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+    
+      prefferedTimeV2 = date + " " + preffTime;
+     
+    } else {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTimeV2 = date + " " + preffTime;
+    
+    }
+    
+    let appointmentObjsavetestDrive = {
       address: customerAddress,
       branchId: selectedBranchId,
       customerHaveingDl: customerHavingDrivingLicense === 1,
@@ -778,32 +1233,94 @@ const TestDriveScreen = ({ route, navigation }) => {
       location: location,
       orgId: userData.orgId,
       source: "ShowroomWalkin",
-      startTime: actualStartTime,
-      endTime: actualEndTime,
-      testDriveDatetime: prefferedTime,
+      startTime: moment.utc(startTime).format(),
+      endTime: moment.utc(endTime).format(),
+      testDriveDatetime: prefferedTimeV2,
       testdriveId: 0,
-      status: status,
+      // status: "APPROVED",
+      status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
       varientId: varientId,
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
       dlBackUrl: "",
       dlFrontUrl: "",
       vehicleInfo: vehicleDetails,
+      reTestdriveFlag: "Original",
+      mobileNumber:mobileNumber,
+      name: name,
+      emailId: email,
+      model: selectedVehicleDetails.model,
+      variant: selectedVehicleDetails.varient,
+      fuelType: selectedVehicleDetails.fuelType,
+      transmissionType: selectedVehicleDetails.transType,
+      driver:selectedDriverDetails.name,
+      employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
     };
+    // todo manthan
 
     if (customerHavingDrivingLicense === 1) {
       appointmentObj.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
       appointmentObj.dlFrontUrl = uploadedImagesDataObj.dlFrontUrl.documentPath;
+
+      appointmentObjsavetestDrive.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
+      appointmentObjsavetestDrive.dlFrontUrl = uploadedImagesDataObj.dlFrontUrl.documentPath;
     }
 
     const payload = {
       appointment: appointmentObj,
     };
-    dispatch(bookTestDriveAppointmentApi(payload));
+    // const payloadForsubmitApi = {
+    //   appointment: appointmentObj,
+    // };
+    if (storeLastupdatedTestDriveDetails?.reTestdriveFlag !== "ReTestDrive"){
+      dispatch(bookTestDriveAppointmentApi(payload));
+    }
+   
+    if (status === "APPROVED") {
+      dispatch(postReOpenTestDrive(appointmentObjsavetestDrive));
+    }
+    if (status === "RESCHEDULED"){
+      reTestDrivePutCallupdateList("RESCHEDULED");
+      setIsClosedClicked(false);
+      submitRescheduleRemarks()
+
+      if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Re Test Drive"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+      }
+    }
+   
+
     // navigation.goBack()
   };
 
+  function isTimeGreaterThanCurrent(selectedTime) {
+    const currentTime = new Date();
+    const selectedHour = selectedTime?.getHours();
+    const selectedMinutes = selectedTime?.getMinutes();
+
+    const currentHour = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+
+    if (selectedHour > currentHour) {
+      return true;
+    } else if (selectedHour === currentHour && selectedMinutes > currentMinutes) {
+      return true;
+    }
+
+    return false;
+  }
+
   const closeTask = (from) => {
+    setIsClosedClicked(true);
     setIsSubmitPress(true);
     setIsisReopenSubmitVisible(false)
     if (selectedVehicleDetails.model.length === 0) {
@@ -869,32 +1386,44 @@ const TestDriveScreen = ({ route, navigation }) => {
         return;
       }
     }
-    
+
     if (userData.isOtp === "Y") {
       generateOtpToCloseTask();
       if (from === "reopen") {
         setIschangeScreen(false)
         reSubmitClick("ASSIGNED", "Test Drive Approval")
-      }else{
+      } else {
         setIschangeScreen(true)
       }
     } else {
-    
-      if(from==="reopen"){
-      
+
+      if (from === "reopen") {
+
         setIschangeScreen(true)
-       
+
         reSubmitClick("ASSIGNED", "Test Drive Approval")
         setIsCloseSelected(false);
         isViewMode2("reopen")
         setIsisReopenSubmitVisible(true)
         return;
-      }else{
-      
+      } else {
+
         submitClicked("CLOSED", "Test Drive");
+
+        // need to check in org with no otp configure 
+        if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+          let payloadForWorkFLow = {
+            entityId: selector.task_details_response.entityId,
+            taskName: "Re Test Drive"
+          }
+          // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+          // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+          dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+        }
       }
-    
+
     }
+    reTestDrivePutCallupdateList("CLOSED");
     setIsCloseSelected(true);
   };
 
@@ -911,27 +1440,54 @@ const TestDriveScreen = ({ route, navigation }) => {
         "DD-MM-YYYY HH:mm:ss"
       ).toISOString();
 
-      const payload = {
-        universalId: universalId,
-        taskId: null,
-        remarks: "Success",
-        universalModuleId:
-          selector.book_test_drive_appointment_response.confirmationId,
-        status: taskStatusAndName.status,
-        taskName: taskStatusAndName.name,
-        expectedStarttime: startTime,
-        expectedEndTime: endTime,
-        taskUpdatedTime: convertDateStringToMillisecondsUsingMoment(
-          `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
-          "DD/MM/YYYY HH:mm"
-        ),
-        updatedDateTime: convertDateStringToMillisecondsUsingMoment(
-          `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
-          "DD/MM/YYYY HH:mm"
-        ),
-      };
+      const dateFormat = "DD/MM/YYYY";
+      const currentDate = moment().add(0, "day").format(dateFormat)
+      if(taskStatusAndName.status == "APPROVED" || taskStatusAndName.status == "RESCHEDULED"){
+        const payload = {
+          universalId: universalId,
+          taskId: null,
+          remarks: "Success",
+          universalModuleId:
+            selector.book_test_drive_appointment_response.confirmationId,
+          status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+          taskName: taskStatusAndName.name,
+          expectedStarttime: startTime,
+          expectedEndTime: endTime,
+          taskUpdatedTime: convertDateStringToMillisecondsUsingMoment(
+            `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+            "DD/MM/YYYY HH:mm"
+          ),
+          updatedDateTime: convertDateStringToMillisecondsUsingMoment(
+            `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+            "DD/MM/YYYY HH:mm"
+          ),
+        };
 
-      dispatch(updateTestDriveTaskApi(payload));
+        dispatch(updateTestDriveTaskApi(payload));
+      }else{
+        const payload = {
+          universalId: universalId,
+          taskId: null,
+          remarks: "Success",
+          universalModuleId:
+            selector.book_test_drive_appointment_response.confirmationId,
+          status: taskStatusAndName.status,
+          taskName: taskStatusAndName.name,
+          expectedStarttime: startTime,
+          expectedEndTime: endTime,
+          taskUpdatedTime: convertDateStringToMillisecondsUsingMoment(
+            `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+            "DD/MM/YYYY HH:mm"
+          ),
+          updatedDateTime: convertDateStringToMillisecondsUsingMoment(
+            `${selector.customer_preferred_date} ${selector.customer_preferred_time}`,
+            "DD/MM/YYYY HH:mm"
+          ),
+        };
+
+        dispatch(updateTestDriveTaskApi(payload));
+      }
+      
     }
   }, [selector.book_test_drive_appointment_response]);
 
@@ -973,6 +1529,40 @@ const TestDriveScreen = ({ route, navigation }) => {
   const displayStatusSuccessMessage = () => {
     Alert.alert(
       selector.test_drive_update_task_response,
+      taskStatusAndName.status,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            dispatch(clearState());
+            if (fromScreen == "taskThreeSixty") {
+              navigation.navigate(EmsTopTabNavigatorIdentifiers.leads, {
+                fromScreen: "testDrive",
+              });
+            } else {
+              navigation.popToTop();
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
+  useEffect(() => {
+    
+    if (selector.put_workflow_task_history == "success"){
+      displayStatusSuccessMessageRetestDrive();
+    }
+  
+   
+  }, [selector.put_workflow_task_history])
+  
+
+  const displayStatusSuccessMessageRetestDrive = () => {
+    Alert.alert(
+      "success",
       taskStatusAndName.status,
       [
         {
@@ -1117,7 +1707,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const resendClicked = () => {
     generateOtpToCloseTask();
   };
-  
+
   function compare(dateTimeA, dateTimeB) {
     var momentA = moment(dateTimeA, "DD/MM/YYYY");
     var momentB = moment(dateTimeB, "DD/MM/YYYY");
@@ -1125,16 +1715,16 @@ const TestDriveScreen = ({ route, navigation }) => {
     else if (momentA < momentB) return -1;
     else return 0;
   }
-  const reSubmitClick = (status,taskName)=>{
+  const reSubmitClick = (status, taskName) => {
     // call API here 
-  
+
     setIsisReopenSubmitVisible(false)
     setIsSubmitPress(true);
     if (!mobileNumber || mobileNumber.length === 0) {
       showToast("Please enter mobile number");
       return;
     }
-    
+
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -1161,11 +1751,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select customer preferred date");
       return;
     }
-      const dateFormat = "DD/MM/YYYY";
-      const currentDate = moment().add(0, "day").format(dateFormat)
-    
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+
     // conditon to show error for date older then today 
-    if (compare(selector.customer_preferred_date, currentDate) === -1){
+    if (compare(selector.customer_preferred_date, currentDate) === -1) {
       showToast("Please select customer preferred date greater than today's date");
       return;
     }
@@ -1188,7 +1778,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Please select time");
       return;
     }
-   
+
+    // const dateFormat = "DD/MM/YYYY";
+    // const currentDate = moment().add(0, "day").format(dateFormat)
+    
+
     const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
     const startTime = moment(selector.actual_start_time, "HH:mm");
     const endTime = moment(selector.actual_end_time, "HH:mm");
@@ -1211,7 +1805,57 @@ const TestDriveScreen = ({ route, navigation }) => {
       showToast("Actual End Time Should not be less than Actual Start Time");
       return;
     }
+    const currentTime = new Date();
+    const curettime = moment(currentTime, "HH:mm");
+
+    let preferredTimeDiffwithCurrent = moment(preferredTime).diff(curettime, "m");
+
+    // if (0 > preferredTimeDiffwithCurrent) {
+    //   showToast("Customer preffered Time should be greater than Current Time.");
+    //   return;
+    // }
+    if (compare(selector.customer_preferred_date, currentDate) == 0) {
+
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+
+      let currentTime = new Date();
+
+      if (selector.customer_preferred_time.length > 0) {
+        const selectedTime = new Date(); // Current date
+        const timeParts = selector.customer_preferred_time.split(":");
+
+        // const hours = parseInt(timeParts[0], 10);
+        // const minutes = parseInt(timeParts[1], 10);
+        // const seconds = parseInt(timeParts[2], 10);
+
+        // selectedTime.setHours(hours);
+        // selectedTime.setMinutes(minutes);
+        // selectedTime.setSeconds(seconds);
+
+        if (preferredTimeDiffwithCurrent < 0) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        const selectedTime2 = moment(selector.customer_preferred_time, 'HH:mm');
+        if (selectedTime2.isSame(currentTime, 'minute')) {
+          showToast("Customer preffered Time should be greater than Current Time.");
+          return;
+        }
+        // if (0 > preferredTimeDiffwithCurrent) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+        // if (isTimeGreaterThanCurrent(selectedTime) == false) {
+        //   showToast("Customer preffered Time should be greater than Current Time.");
+        //   return;
+        // }
+      }
+    }
    
+
     if (
       selectedVehicleDetails.vehicleId === 0 ||
       selectedVehicleDetails.varientId === 0
@@ -1244,14 +1888,14 @@ const TestDriveScreen = ({ route, navigation }) => {
     const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
       "DD-MM-YYYY"
     );
-    let prefferedTime ;
-    let actualStartTime ;
-    let actualEndTime ;
-    
+    let prefferedTime;
+    let actualStartTime;
+    let actualEndTime;
+
     if (Platform.OS === "ios") {
       const preffTime = moment(
         selector.customer_preferred_time,
-        "HH:mm"
+        "HH:mm:ss"
       ).format("HH:mm:ss");
       const startTime = moment(selector.actual_start_time, "HH:mm").format(
         "HH:mm:ss"
@@ -1263,7 +1907,11 @@ const TestDriveScreen = ({ route, navigation }) => {
       actualStartTime = date + " " + startTime;
       actualEndTime = date + " " + endTime;
     } else {
-      prefferedTime = date + " " + selector.customer_preferred_time;
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTime = date + " " + preffTime;
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
     }
@@ -1271,7 +1919,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     setExpectedStartAndEndTime({ start: actualStartTime, end: actualEndTime });
     setTaskStatusAndName({ status: status, name: taskName });
 
-    
+
     let reopenSubmitObj = {
       id: taskId,
       address: customerAddress,
@@ -1297,68 +1945,386 @@ const TestDriveScreen = ({ route, navigation }) => {
       securityInId: "",
       securityOutId: "",
       source: taskData.sourceType,
-      status: status,
-      testDriveDatetime: moment.utc(preferredTime).format(),
+      status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+      // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+      testDriveDatetime: prefferedTime,
+      // testDriveDatetime: prefferedTime,
       varientId: varientId,
       vehicleId: vehicleId,
       driverId: selectedDriverDetails.id.toString(),
       testdriveId: 0,
-      customerHaveingDl: customerHavingDrivingLicense === 1
+      customerHaveingDl: customerHavingDrivingLicense === 1,
+      reTestdriveFlag: "ReTestDrive",
+      mobileNumber: mobileNumber,
+      name: name,
+      emailId: email,
+      model: selectedVehicleDetails.model,
+      variant: selectedVehicleDetails.varient,
+      fuelType: selectedVehicleDetails.fuelType,
+      transmissionType: selectedVehicleDetails.transType,
+      driver: selectedDriverDetails.name,
+      employee: selectedDseDetails.name,
+      customerRemarks: customerRemarks,
+      employeeRemarks: employeeRemarks,
+      reason: selector.reason,
     }
-  
-    dispatch(postReOpenTestDrive(reopenSubmitObj));
     
-  }
-  useEffect(() => {
+
+    dispatch(postReOpenTestDrive(reopenSubmitObj));
+
+    if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive"){
+      let payloadForWorkFLow = {
+        entityId: selector.task_details_response.entityId,
+        taskName: "Re Test Drive"
+      }
+      // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+      dispatch(getDetailsWrokflowTaskReTestDrive(payloadForWorkFLow)) //todo need to check and pass entityId
+    // setIschangeScreen(true)
+
+    }else{
+      let payloadForWorkFLow = {
+        entityId: selector.task_details_response.entityId,
+        taskName: "Test Drive"
+      }
+      // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+      // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+      dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+    // setIschangeScreen(true)
+
+    }
+    
    
-    if (selector.reopen_test_drive_res_status ==="successs"){
-      if(ischangeScreen){
+  }
+  
+  const postWorkFlowTaskHistory = (payload)=>{
+    // let payload = {
+
+    //   "customerRemarks": null,
+    //   "employeeRemarks": null,
+    //   "errorDetail": null,
+    //   "executionJob": "NULL",
+    //   "isError": null,
+    //   "isLastTask": false,
+    //   "isMandatoryTask": false,
+    //   "entityStatus": null,
+    //   "reason": null,
+    //   "repeatTask": null,
+    //   "taskActualEndTime": null,
+    //   "taskActualStartTime": 1682766855000,
+    //   "taskCreatedTime": "", // send the time at that moment
+    //   "taskExpectedEndTime": 1682939646000,
+    //   "taskExpectedStartTime": 1682939646000,
+    //   "taskName": "Test Drive",
+    //   "entityName": "Werewr Er",
+    //   "taskSequence": 4,
+    //   "taskStatus": "",   //By Submit = "Approved",Reschedule ="Reschedule" update the status on customerpreeferdate
+    //   "taskType": "Manual",
+    //   "taskUpdatedTime": "", // send the time at that moment
+    //   "triggerType": "NULL",
+    //   "universalId": "18-287-057c88d6-73bd-4adb-9bf6-f99b0e7f32d2",
+    //   "isParallelTask": true,
+    //   "dmsProcess": 453914,
+    //   "assignee": 935,
+    //   "dmsTaskDef": 310,
+    //   "entityId": 56946,
+    //   "taskStageStatus": null,
+    //   "dmsTaskCategory": 82,
+    //   "entityModuleId": "9555",
+    //   "reTask": "Y",
+    //   "taskUpdatedBy": null,
+    //   "lat": null,
+    //   "lon": null,
+    //   "taskIdRef": 1617945,
+    // }
+    dispatch(postDetailsWorkFlowTask(payload))
+  }
+
+  useEffect(() => {
+
+    if (selector.reopen_test_drive_res_status === "successs" || selector.post_workFlow_task_details == "success") {
+      if (ischangeScreen) {
         navigation.pop(2);
       }
     }
-  
-  }, [selector.reopen_test_drive_res_status])
-  
+
+  }, [selector.reopen_test_drive_res_status, selector.post_workFlow_task_details == "success"])
+
   useEffect(() => {
-    if (route?.params?.taskStatus === "CLOSED"){
-     
-      if (selector.test_drive_history_count_statu === "successs"){
-       
-        navigation.setOptions({
-          headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
-        })
-      }
-     
-    
+    // if (route?.params?.taskStatus === "CLOSED"){
+
+    if (selector.test_drive_history_count_statu === "successs") {
+
+      navigation.setOptions({
+        headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+      })
     }
-  
+
+
+    // }
+
   }, [selector.test_drive_history_count_statu])
-   const TestDriveHistoryIcon = ({ navigation }) => {
+
+
+  // useEffect(() => {
+  //   if (route?.params?.taskStatus === "CLOSED" &&
+  //     !isReopenSubmitVisible &&
+  //     !isCloseSelected) {
+  //         if (universalId) {
+  //           dispatch(getTestDriveHistoryDetails(universalId))
+  //         }
+  //       // todo manthan
+  //     }
+  
+  // }, [isCloseSelected, isReopenSubmitVisible, route?.params?.taskStatus])
+  
+  const reTestDrivePutCallWorkFlowHistory = (payload,id)=>{
+
+
+
+    let masterPayload = {
+      body: payload,
+      recordid: id
+    }
+    
+    dispatch(putWorkFlowHistory(masterPayload)); // need to add recordid
+
+  }
+
+  const reTestDrivePutCallupdateList = (status) => {
+
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
+      "DD-MM-YYYY"
+    );
+    let prefferedTime = "";
+    // let actualStartTime = "";
+    // let actualEndTime = "";
+
+    if (Platform.OS === "ios") {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      // const startTime = moment(selector.actual_start_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      // const endTime = moment(selector.actual_end_time, "HH:mm").format(
+      //   "HH:mm:ss"
+      // );
+      prefferedTime = date + " " + preffTime;
+      // actualStartTime = date + " " + startTime;
+      // actualEndTime = date + " " + endTime;
+    } else {
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm:ss"
+      ).format("HH:mm:ss");
+      prefferedTime = date + " " + preffTime;
+      // actualStartTime = date + " " + selector.actual_start_time;
+      // actualEndTime = date + " " + selector.actual_end_time;
+    }
+    const dateFormat = "DD/MM/YYYY";
+    const currentDate = moment().add(0, "day").format(dateFormat)
+    // const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+    const startTime = moment(selector.actual_start_time, "HH:mm");
+    const endTime = moment(selector.actual_end_time, "HH:mm");
+    const location = addressType === 1 ? "showroom" : "customer";
+    let varientId = selectedVehicleDetails.varientId;
+    let vehicleId = selectedVehicleDetails.vehicleId;
+    
+    if (!varientId || !vehicleId) return;
+    let retestflag = storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" ? "ReTestDrive" : "Original";
+
+    let payload = {
+      "address": customerAddress,
+      "allotmentId": 0,
+      "branchId": selectedBranchId,
+      "canceledBy": null,
+      "customerDropDatetime": null,
+      "customerId": universalId,
+      "customerPickupDatetime": null,
+      "customerQuery": null,
+      "datetime": null,
+      "dlBackUrl": "",
+      "dlFrontUrl": "",
+      "dseId": selectedDseDetails.id,
+      "endTime": moment(endTime).valueOf(),
+      "latitude": null,
+      "location": location,
+      "longitude": null,
+      "managerApprovedDatetime": null,
+      "managerId": null,
+      "orgId": userData.orgId,
+      "securityInId": null,
+      "securityOutId": null,
+      "source": "ShowroomWalkin",
+      "startTime": moment(startTime).valueOf(),
+      "status": status,
+      "testDriveDatetime": prefferedTime,
+      "varientId": varientId,
+      "vehicleId": vehicleId,
+      "driverId": selectedDriverDetails.id.toString(),
+      "testdriveId": 0,
+      "reTestdriveFlag": retestflag,
+      "customerHaveingDl": customerHavingDrivingLicense === 1,
+      "mobileNumber": mobileNumber,
+      "name": name,
+      "emailId": email,
+      "model": selectedVehicleDetails.model,
+      "variant": selectedVehicleDetails.varient,
+      "fuelType": selectedVehicleDetails.fuelType,
+      "transmissionType": selectedVehicleDetails.transType,
+      "driver": selectedDriverDetails.name,
+      "employee": selectedDseDetails.name
+    }
+    
+
+    let masterPayload ={
+      body: payload,
+      recordid:storeLastupdatedTestDriveId
+    }
+    // dispatch(PutUpdateListTestDriveHistory(masterPayload)); // commented as last moment changes asked by ranjith
+    // todo manthan 
+
+    if (status == "CLOSED"){
+      let reopenSubmitObj = {
+        id: taskId,
+        address: customerAddress,
+        allotmentId: 0,
+        branchId: selectedBranchId,
+        canceledBy: "",
+        customerDropDatetime: "",
+        customerId: universalId,
+        customerPickupDatetime: "",
+        customerQuery: "",
+        datetime: "",
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        dseId: "",
+        startTime: moment.utc(startTime).format(),
+        endTime: moment.utc(endTime).format(),
+        latitude: "",
+        longitude: "",
+        location: location,
+        managerApprovedDatetime: "",
+        managerId: "",
+        orgId: userData.orgId,
+        securityInId: "",
+        securityOutId: "",
+        source: taskData.sourceType,
+        status: "CLOSED",
+        // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        testDriveDatetime: prefferedTime,
+        // testDriveDatetime: prefferedTime,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        testdriveId: 0,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        reTestdriveFlag: retestflag,
+        mobileNumber: mobileNumber,
+        name: name,
+        emailId: email,
+        model: selectedVehicleDetails.model,
+        variant: selectedVehicleDetails.varient,
+        fuelType: selectedVehicleDetails.fuelType,
+        transmissionType: selectedVehicleDetails.transType,
+        driver: selectedDriverDetails.name,
+        employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
+      }
+
+
+      dispatch(postReOpenTestDriveV2(reopenSubmitObj));
+    }else{
+      let reopenSubmitObj = {
+        id: taskId,
+        address: customerAddress,
+        allotmentId: 0,
+        branchId: selectedBranchId,
+        canceledBy: "",
+        customerDropDatetime: "",
+        customerId: universalId,
+        customerPickupDatetime: "",
+        customerQuery: "",
+        datetime: "",
+        dlBackUrl: "",
+        dlFrontUrl: "",
+        dseId: "",
+        startTime: moment.utc(startTime).format(),
+        endTime: moment.utc(endTime).format(),
+        latitude: "",
+        longitude: "",
+        location: location,
+        managerApprovedDatetime: "",
+        managerId: "",
+        orgId: userData.orgId,
+        securityInId: "",
+        securityOutId: "",
+        source: taskData.sourceType,
+        status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        // status: compare(selector.customer_preferred_date, currentDate) == 0 ? "APPROVED" : "RESCHEDULED",
+        testDriveDatetime: prefferedTime,
+        // testDriveDatetime: prefferedTime,
+        varientId: varientId,
+        vehicleId: vehicleId,
+        driverId: selectedDriverDetails.id.toString(),
+        testdriveId: 0,
+        customerHaveingDl: customerHavingDrivingLicense === 1,
+        reTestdriveFlag: retestflag,
+        mobileNumber: mobileNumber,
+        name: name,
+        emailId: email,
+        model: selectedVehicleDetails.model,
+        variant: selectedVehicleDetails.varient,
+        fuelType: selectedVehicleDetails.fuelType,
+        transmissionType: selectedVehicleDetails.transType,
+        driver: selectedDriverDetails.name,
+        employee: selectedDseDetails.name,
+        customerRemarks: customerRemarks,
+        employeeRemarks: employeeRemarks,
+        reason: selector.reason,
+      }
+
+
+      dispatch(postReOpenTestDriveV2(reopenSubmitObj));
+    }
+
+    
+
+  }
+
+
+
+  const TestDriveHistoryIcon = ({ navigation }) => {
     return (
 
-     
-      <View style={{flexDirection:'row',alignItems:"center"}}>
-       
-          <IconButton
-          style={{marginEnd:15}}
-            icon="history"
-            color={Colors.WHITE}
-            size={30}
-            onPress={() =>
-              navigation.navigate("TEST_HISTORY", {
-                universalId: universalId,
 
-              })
+      <View style={{ flexDirection: 'row', alignItems: "center" }}>
 
-            }
-          />
-       
-        
+        <IconButton
+          style={{ marginEnd: 15 }}
+          icon="history"
+          color={Colors.WHITE}
+          size={30}
+          onPress={() =>
+            navigation.navigate("TEST_HISTORY", {
+              universalId: universalId,
+
+            })
+
+          }
+        />
+
+
         <Text style={{ fontSize: 16, color: Colors.PINK, fontWeight: "bold", position: "absolute", top: 9, right: 10, }}>{selector.test_drive_history_count}</Text>
       </View>
-      
+
     );
   };
+
 
   const verifyClicked = async () => {
     if (otpValue.length != 4) {
@@ -1382,7 +2348,21 @@ const TestDriveScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.validate_otp_response_status === "successs") {
       dispatch(clearOTP());
-      submitClicked("CLOSED", "Test Drive");
+      if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive"){
+     
+        let payloadForWorkFLow = {
+          entityId: selector.task_details_response.entityId,
+          taskName: "Re Test Drive"
+        }
+        // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
+        // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
+        dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+      
+
+      }else{
+        submitClicked("CLOSED", "Test Drive");  
+      }
+      
     }
   }, [selector.validate_otp_response_status]);
 
@@ -1399,20 +2379,20 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   const isViewMode2 = (from) => {
     // todo 
-   
-    if(from ==="reopen"){
-      setIsValuesEditable(false)
-      
-      
-    }else{
-      if (route?.params?.taskStatus === "CLOSED") {
-        setIsValuesEditable(true)
-        // return true;
-      } else {
-        setIsValuesEditable(false)
-      }
-    }
-    
+    setIsValuesEditable(false)
+    // if(from ==="reopen"){
+    //   setIsValuesEditable(false)
+
+
+    // }else{
+    //   if (route?.params?.taskStatus === "CLOSED") {
+    //     setIsValuesEditable(true)
+    //     // return true;
+    //   } else {
+    //     setIsValuesEditable(false)
+    //   }
+    // }
+
   };
 
   const onDropDownClear = (key) => {
@@ -1420,6 +2400,233 @@ const TestDriveScreen = ({ route, navigation }) => {
       setSelectedDriverDetails({ name: "", id: "" });
     }
   };
+
+  const submitRescheduleRemarks = () =>{
+
+    if (employeeRemarks === "" || selector.reason === "" || customerRemarks === "") {
+      setIsSubmitPressRescheduleModal(true)
+      return
+    }
+
+    let payload = {
+      "orgId": userData.orgId,
+      "customerId":universalId,
+      "customerRemarks": customerRemarks,
+      "employeeRemarks": employeeRemarks,
+      "reason": selector.reason,
+      "createdBy": userData.employeeId
+    }
+    
+    dispatch(saveReScheduleRemark(payload))
+  }
+
+  const renderShowRecheduleModal = () => {
+
+    return (<>
+      <Modal
+        animationType="fade"
+        visible={isRechduleModalVisible}
+        onRequestClose={() => {
+          setImagePath("");
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={{
+            width: "90%",
+            backgroundColor: Colors.LIGHT_GRAY,
+            padding: 10,
+            borderWidth: 2,
+            borderColor: Colors.BLACK,
+            flexDirection: "column",
+            // height: 300
+          }}>
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 10,
+                    zIndex: 99,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: Colors.GRAY,
+                    }}
+                  >
+                    Reason*
+                  </Text>
+                </View>
+              )}
+              <Dropdown
+                disable={isViewMode()}
+                style={[styles.dropdownContainer]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={reasonList}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={"Reason*"}
+                searchPlaceholder="Search..."
+                value={defaultReasonIndex}
+                // onFocus={() => setIsFocus(true)}
+                // onBlur={() => setIsFocus(false)}
+                onChange={(val) => {
+                  dispatch(updateSelectedScheduledata({
+                    key: "REASON",
+                    text: val.value,
+                  }))
+                  // dispatch(
+                  //   setEnquiryFollowUpDetails({
+                  //     key: "REASON",
+                  //     text: val.value,
+                  //   })
+                  // );
+                }}
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPressRescheduleModal && selector.reason === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+            </View>
+            <TextinputComp
+              style={styles.textInputStyle}
+              value={customerRemarks}
+              label={"Customer Remarks*"}
+              // maxLength={10}
+              keyboardType={"default"}
+              disabled={isValuesEditable}
+              onChangeText={(text) => setCustomerRemarks(text)}
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPressRescheduleModal && customerRemarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            <TextinputComp
+              style={styles.textInputStyle}
+              value={employeeRemarks}
+              label={"Employee Remarks*"}
+              // maxLength={10}
+              keyboardType={"default"}
+              disabled={isValuesEditable}
+              onChangeText={(text) => setEmployeeRemarks(text)}
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPressRescheduleModal && employeeRemarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+            <View style={{ flexDirection: "row", height: 40, justifyContent: "space-between", marginTop: 10 }}>
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  height: 40,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // position: "absolute",
+                  // left: "37%",
+                  // bottom: "15%",
+                  borderRadius: 5,
+                  backgroundColor: Colors.BLACK,
+                }}
+                onPress={() => {
+                  setIsRescheduleModalVisible(false)
+                  setCustomerRemarks("")
+                  setEmployeeRemarks("")
+                  setDefaultReasonIndex(null)
+                  dispatch(updateSelectedScheduledata({
+                    key: "REASON",
+                    text: "",
+                  }))
+                }}
+              >
+                <Text
+                  style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+                >
+                  Close
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  height: 40,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // position: "absolute",
+                  // left: "37%",
+                  // bottom: "15%",
+                  borderRadius: 5,
+                  backgroundColor: Colors.RED,
+                }}
+                onPress={() => {
+                  // if (selector.task_details_response.taskStatus === "APPROVED" || selector.task_details_response.taskStatus === "ASSIGNED"){
+                    // todo manthan
+                    submitClicked("RESCHEDULED", "Test Drive") // API for reschdule existing flow
+
+                  // }else{
+                    // if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+                      // setIsClosedClicked(false);
+                      // submitClicked("RESCHEDULED", "Test Drive")
+                  // reTestDrivePutCallupdateList("RESCHEDULED"); // commented to aviod calling if any validations fails
+                    // }
+                  
+                    // submitRescheduleRemarks()
+                  // }
+                  
+                  setIsRescheduleModalVisible(false)
+                }
+                }
+              >
+                <Text
+                  style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+                >
+                  Submit
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+
+        </View>
+      </Modal>
+
+
+    </>)
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -1505,6 +2712,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
+        
           <View style={styles.baseVw}>
             {/* // 1.Test Drive */}
             <View
@@ -1621,8 +2829,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   userData.isSelfManager == "Y"
                     ? "Battery Type"
                     : userData.isTracker == "Y"
-                    ? "Clutch Type"
-                    : "Transmission Type"
+                      ? "Clutch Type"
+                      : "Transmission Type"
                 }
                 value={selectedVehicleDetails.transType}
                 editable={false}
@@ -1910,7 +3118,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           {handleActionButtons === 1 && !isViewMode() && (
             <View style={styles.view1}>
               <LocalButtonComp
-                title={"Close"}
+                title={"Back"}
                 // disabled={selector.isLoading}
                 onPress={() => navigation.goBack()}
               />
@@ -1963,7 +3171,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 title={"Reschedule"}
                 // disabled={selector.isLoading}
                 bgColor={Colors.GREEN}
-                onPress={() => submitClicked("RESCHEDULED", "Test Drive")}
+                onPress={() => setIsRescheduleModalVisible(true)}
+              // onPress={() => submitClicked("RESCHEDULED", "Test Drive")} // todo uncomment manthan
               />
             </View>
           )}
@@ -2050,16 +3259,36 @@ const TestDriveScreen = ({ route, navigation }) => {
           ) : null}
 
           {route?.params?.taskStatus === "CLOSED" &&
-          !isReopenSubmitVisible &&
-          !isCloseSelected ? (
+            !isReopenSubmitVisible &&
+            !isCloseSelected 
+            && storeLastupdatedTestDriveDetails?.status == "CLOSED" 
+            // && storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" || storeLastupdatedTestDriveDetails?.reTestdriveFlag == "Original" 
+           
+             ? (
             <View style={[styles.view1, { marginTop: 30 }]}>
+                <Button
+                  mode="contained"
+                  style={{ width: "45%" }}
+                  color={Colors.GRAY}
+                  // disabled={selector.is_loading_for_task_update}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                >
+                  Back
+                </Button>
               <Button
                 mode="contained"
                 style={{ width: "45%" }}
                 color={Colors.RED}
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
-                onPress={reOpenTask}
+                // onPress={reOpenTask}
+                  onPress={()=>{
+                    reSubmitClick("ASSIGNED", "Test Drive Approval")
+                  }}
+                  // todo manthan 
               >
                 {/* todo */}
                 Re Testdrive
@@ -2088,8 +3317,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
                 onPress={() => {
+                  submitClicked("SENT_FOR_APPROVAL", "Test Drive")
+                  setIsisReopenSubmitVisible(false)
                   // reSubmitClick("ASSIGNED","Test Drive Approval")
-                  closeTask("reopen");
+                  // closeTask("reopen");
                 }}
               >
                 Submit
@@ -2144,6 +3375,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </Modal>
+      {renderShowRecheduleModal()}
     </SafeAreaView>
   );
 };
@@ -2226,6 +3458,40 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
   },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: Colors.GRAY
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 8,
+    // borderWidth: 1,
+    width: '100%',
+    height: 60,
+    // borderRadius: 5
+  },
 });
 
 const otpStyles = StyleSheet.create({
@@ -2248,7 +3514,7 @@ const otpStyles = StyleSheet.create({
   titleText: {
     fontSize: 12,
     fontWeight: "600",
-    color:Colors.PINK
+    color: Colors.PINK
   },
   badgeContainer: {
     marginLeft: 3,

@@ -440,6 +440,33 @@ export const getOtherPricesDropDown = createAsyncThunk(
 );
 
 
+export const postFinanaceApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postFinanaceApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_FINANCE(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const postEvalutionApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postEvalutionApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_EVALUTION(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 interface PersonalIntroModel {
   key: string;
   text: string;

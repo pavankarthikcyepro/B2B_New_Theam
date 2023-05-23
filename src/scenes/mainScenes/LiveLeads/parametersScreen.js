@@ -36,6 +36,7 @@ import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import _ from "lodash";
+import Lottie from "lottie-react-native";
 
 const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const crmRole = ["CRM"];
@@ -68,7 +69,8 @@ const ParametersScreen = ({ route }) => {
 
   const [isFilterViewExapanded, setisFilterViewExapanded] = useState(false);
   const [CRM_filterParameters, setCRM_filterParameters] = useState([]);
-  const [CRM_filterParametersSecondLevel, setCRM_filterParametersSecondLevel] = useState([]);
+  const [CRM_filterParametersSecondLevel, setCRM_filterParametersSecondLevel] =
+    useState([]);
   const [crmFirstLevelData, setCrmFirstLevelData] = useState([]);
   const [crmFirstLevelTotalData, setCrmFirstLevelTotalData] = useState([]);
   const [creFirstLevelData, setCreFirstLevelData] = useState([]);
@@ -78,7 +80,9 @@ const ParametersScreen = ({ route }) => {
   const [crmSecondLevelData, setcrmSecondLevelData] = useState([]);
   const [crmThirdLevelData, setCrmThirdLevelData] = useState([]);
   const [storeSecondLevelLocal, setstoreSecondLevelLocal] = useState([]);
-  const [crmSecondLevelSelectedData, setCrmSecondLevelSelectedData] = useState([]);
+  const [crmSecondLevelSelectedData, setCrmSecondLevelSelectedData] = useState(
+    []
+  );
   const [isViewExpanded, setIsViewExpanded] = useState(false);
   const [isViewCREExpanded, setIsViewCreExpanded] = useState(false);
   const [isSecondLevelExpanded, setIsSecondLevelExpanded] = useState(false);
@@ -101,7 +105,8 @@ const ParametersScreen = ({ route }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [teamLoader, setTeamLoader] = useState(false);
+  const [teamMember, setTeamMember] = useState("");
   const color = [
     "#9f31bf",
     "#00b1ff",
@@ -154,42 +159,42 @@ const ParametersScreen = ({ route }) => {
 
   const LocalDataForReceptionist = [
     {
-      "target": "0",
-      "paramName": "PreEnquiry",
-      "shortfall": "0",
-      "achievment": "0",
-      "shortFallPerc": "0%",
-      "achivementPerc": "0%",
-      "paramShortName": "Con"
+      target: "0",
+      paramName: "PreEnquiry",
+      shortfall: "0",
+      achievment: "0",
+      shortFallPerc: "0%",
+      achivementPerc: "0%",
+      paramShortName: "Con",
     },
     {
-      "target": "0",
-      "paramName": "Enquiry",
-      "shortfall": "0",
-      "achievment": "0",
-      "shortFallPerc": "0%",
-      "achivementPerc": "0%",
-      "paramShortName": "Enq"
+      target: "0",
+      paramName: "Enquiry",
+      shortfall: "0",
+      achievment: "0",
+      shortFallPerc: "0%",
+      achivementPerc: "0%",
+      paramShortName: "Enq",
     },
     {
-      "target": "0",
-      "paramName": "Booking",
-      "shortfall": "0",
-      "achievment": "0",
-      "shortFallPerc": "0%",
-      "achivementPerc": "0%",
-      "paramShortName": "Bkg"
+      target: "0",
+      paramName: "Booking",
+      shortfall: "0",
+      achievment: "0",
+      shortFallPerc: "0%",
+      achivementPerc: "0%",
+      paramShortName: "Bkg",
     },
     {
-      "target": "0",
-      "paramName": "INVOICE",
-      "shortfall": "0",
-      "achievment": "0",
-      "shortFallPerc": "0%",
-      "achivementPerc": "0%",
-      "paramShortName": "Ret"
-    }
-  ]
+      target: "0",
+      paramName: "INVOICE",
+      shortfall: "0",
+      achievment: "0",
+      shortFallPerc: "0%",
+      achivementPerc: "0%",
+      paramShortName: "Ret",
+    },
+  ];
   const getEmployeeListFromServer = async (user) => {
     const payload = {
       empId: user.empId,
@@ -216,13 +221,15 @@ const ParametersScreen = ({ route }) => {
   useEffect(() => {
     navigation.addListener("focus", async () => {
       // setSelfInsightsData([]);
-    
+
       setisFilterViewExapanded(false);
       setIsViewCreExpanded(false);
       setIsViewExpanded(false);
       setIsSecondLevelExpanded(false);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      if(employeeData){
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         setUserData({
           empId: jsonObj.empId,
@@ -230,29 +237,27 @@ const ParametersScreen = ({ route }) => {
           hrmsRole: jsonObj.hrmsRole,
           orgId: jsonObj.orgId,
           branchs: jsonObj.branchs,
-        })
-        
-        if (crmRole.includes(jsonObj.hrmsRole) && _.isEmpty(selector.saveLiveleadObjectCRM)) {
-         
-          let tempPayload = {
-            "orgId": jsonObj.orgId,
-            "loggedInEmpId": jsonObj.empId,
-          }
-          dispatch(getCRM_ManagerLiveLeads(tempPayload))
-        }
-         
-      
-       
-      }
+        });
 
+        if (
+          crmRole.includes(jsonObj.hrmsRole) &&
+          _.isEmpty(selector.saveLiveleadObjectCRM)
+        ) {
+          let tempPayload = {
+            orgId: jsonObj.orgId,
+            loggedInEmpId: jsonObj.empId,
+          };
+          dispatch(getCRM_ManagerLiveLeads(tempPayload));
+        }
+      }
     });
   }, [navigation]);
 
   useEffect(() => {
-    
-    if (!_.isEmpty(selector.crm_response_data) && _.isEmpty(selector.saveLiveleadObjectCRM)){
-     
-
+    if (
+      !_.isEmpty(selector.crm_response_data) &&
+      _.isEmpty(selector.saveLiveleadObjectCRM)
+    ) {
       let totalKey1 = selector.crm_response_data?.totalPreInquiryCount;
       let totalKey2 = selector.crm_response_data?.totalEnquiryCount;
       let totalKey3 = selector.crm_response_data?.totalBookingCount;
@@ -260,59 +265,59 @@ const ParametersScreen = ({ route }) => {
 
       let total = [totalKey1, totalKey2, totalKey3, totalKey4];
       setTotalofTeam(total);
-      let firstLevelData = selector.crm_response_data.CRM.map(item =>{
-      
-        setCrmFirstLevelTotalData(item.data)
+      let firstLevelData = selector.crm_response_data.CRM.map((item) => {
+        setCrmFirstLevelTotalData(item.data);
 
-        let firstLevel = item.data.manager.filter(item2 => item2.emp_id === userData.empId)
-        setCrmFirstLevelData(firstLevel)
-       
-        
+        let firstLevel = item.data.manager.filter(
+          (item2) => item2.emp_id === userData.empId
+        );
+        setCrmFirstLevelData(firstLevel);
 
-        let consultantForCRM = item.data.manager.filter(item2 => item2.emp_id !== userData.empId)
+        let consultantForCRM = item.data.manager.filter(
+          (item2) => item2.emp_id !== userData.empId
+        );
         if (firstLevel.length > 0) {
           firstLevel.map((itemfrist) => {
-            itemfrist.salesconsultant.forEach(element => {
+            itemfrist.salesconsultant.forEach((element) => {
               if (element.emp_id !== userData.empId) {
-                consultantForCRM.unshift(element)
+                consultantForCRM.unshift(element);
               }
-
             });
-          })
+          });
         }
-      
-        setcrmSecondLevelData([...consultantForCRM])
-      })
+
+        setcrmSecondLevelData([...consultantForCRM]);
+      });
 
       let tempArr = [];
-      let tempArrSelf = selector.crm_response_data.CRE?.map((item => item.data))
+      let tempArrSelf = selector.crm_response_data.CRE?.map(
+        (item) => item.data
+      );
 
-      let firstLevelDataLevel2 = selector.crm_response_data.CRE?.map((item, index) => {
+      let firstLevelDataLevel2 = selector.crm_response_data.CRE?.map(
+        (item, index) => {
+          let firstLevel = item.data.consultantList?.filter(
+            (item2) => item2.emp_id === item.emp_id
+          );
 
-        let firstLevel = item.data.consultantList?.filter(item2 => item2.emp_id === item.emp_id)
-
-
-
-        // if(salesPeopleUnderCre.length > 0){
-        //   Array.prototype.push.apply(tempArrSelf, salesPeopleUnderCre); 
-        // }
-        if (firstLevel.length > 0) {
-        
-          Array.prototype.push.apply(tempArr, firstLevel);
-
+          // if(salesPeopleUnderCre.length > 0){
+          //   Array.prototype.push.apply(tempArrSelf, salesPeopleUnderCre);
+          // }
+          if (firstLevel.length > 0) {
+            Array.prototype.push.apply(tempArr, firstLevel);
+          }
         }
-      })
-     
-      setCreFirstLevelData(tempArr)
+      );
+
+      setCreFirstLevelData(tempArr);
       setCreFirstLevelSelfData(tempArrSelf);
 
-
       // let firstLevelDataLevel2 = selector.crm_response_data.CRE.map(item => {
-        
+
       //   setCreFirstLevelSelfData(item.data);
       //   let firstLevel = item.data.consultantList.filter(item2 => item2.emp_id === item.emp_id)
       //   let salesPeopleUnderCre = item.data.consultantList.filter(item2 => item2.emp_id !== item.emp_id)
-      
+
       //   // let consultantForCRM = item.data.filter(item2 => item2.emp_id !== userData.empId)
       //   if(salesPeopleUnderCre.length > 0){
       //     setCreSecondLevelData(salesPeopleUnderCre)
@@ -322,9 +327,8 @@ const ParametersScreen = ({ route }) => {
       //   }
       // })
 
-
-      // set crm insights data 
-      let updateReceptinistData = LocalDataForReceptionist.map(item => {
+      // set crm insights data
+      let updateReceptinistData = LocalDataForReceptionist.map((item) => {
         if (item.paramName === "PreEnquiry") {
           item.achievment = selector.crm_response_data.totalPreInquiryCount;
         } else if (item.paramName === "Enquiry") {
@@ -334,107 +338,102 @@ const ParametersScreen = ({ route }) => {
         } else if (item.paramName === "INVOICE") {
           item.achievment = selector.crm_response_data.totalRetailCount;
         }
-      })
-      
-      setSelfInsightsData([...LocalDataForReceptionist])
+      });
+
+      setSelfInsightsData([...LocalDataForReceptionist]);
     }
-  
-    
-  }, [selector.crm_response_data])
-  
-  
-  
+  }, [selector.crm_response_data]);
 
-  useEffect(async() => {
+  useEffect(async () => {
     // navigation.addListener("focus", async () => {
-     
-      if (selector.saveLiveleadObject?.levelSelected) {
-        
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-          const jsonObj = JSON.parse(employeeData);
 
-          if (receptionistRole.includes(jsonObj.hrmsRole)) {
-            let payload = { "orgId": jsonObj.orgId, "loggedInEmpId": jsonObj.empId, "branchList": selector.saveLiveleadObject?.levelSelected }
-            dispatch(getTargetReceptionistData(payload));
-          }
+    if (selector.saveLiveleadObject?.levelSelected) {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
 
-        }
-      } else {
-        
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-          const jsonObj = JSON.parse(employeeData);
-
-          if (receptionistRole.includes(jsonObj.hrmsRole)) {
-            let payload = { "orgId": jsonObj.orgId, "loggedInEmpId": jsonObj.empId }
-            dispatch(getTargetReceptionistData(payload));
-          }
-
+        if (receptionistRole.includes(jsonObj.hrmsRole)) {
+          let payload = {
+            orgId: jsonObj.orgId,
+            loggedInEmpId: jsonObj.empId,
+            branchList: selector.saveLiveleadObject?.levelSelected,
+          };
+          dispatch(getTargetReceptionistData(payload));
         }
       }
+    } else {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+
+        if (receptionistRole.includes(jsonObj.hrmsRole)) {
+          let payload = { orgId: jsonObj.orgId, loggedInEmpId: jsonObj.empId };
+          dispatch(getTargetReceptionistData(payload));
+        }
+      }
+    }
 
     // })
-   
-    
-    
-  }, [selector.saveLiveleadObject])
-  
+  }, [selector.saveLiveleadObject]);
 
   useEffect(() => {
-    if (!_.isEmpty(selector.receptionist_self_data)){
-      
-
-      let updateReceptinistData = LocalDataForReceptionist.map(item => {
-        if (item.paramName === "PreEnquiry"){
+    if (!_.isEmpty(selector.receptionist_self_data)) {
+      let updateReceptinistData = LocalDataForReceptionist.map((item) => {
+        if (item.paramName === "PreEnquiry") {
           item.achievment = selector.receptionist_self_data.contactsCount;
-        } else if (item.paramName === "Enquiry"){
+        } else if (item.paramName === "Enquiry") {
           item.achievment = selector.receptionist_self_data.enquirysCount;
         } else if (item.paramName === "Booking") {
           item.achievment = selector.receptionist_self_data.bookingsCount;
         } else if (item.paramName === "INVOICE") {
           item.achievment = selector.receptionist_self_data.RetailCount;
         }
-      })
-      
-      setSelfInsightsData([...LocalDataForReceptionist])
+      });
 
-      if (!_.isEmpty(selector.saveLiveleadObjectCRM)){
-        let filterSelectedUSerdata = selector.receptionist_self_data.consultantList.filter(item => item.emp_id === selector.saveLiveleadObjectCRM?.selectedempId[0])
-        let filterOtherData = selector.receptionist_self_data.consultantList.filter(item => item.emp_id !== selector.saveLiveleadObjectCRM?.selectedempId[0])
+      setSelfInsightsData([...LocalDataForReceptionist]);
+
+      if (!_.isEmpty(selector.saveLiveleadObjectCRM)) {
+        let filterSelectedUSerdata =
+          selector.receptionist_self_data.consultantList.filter(
+            (item) =>
+              item.emp_id === selector.saveLiveleadObjectCRM?.selectedempId[0]
+          );
+        let filterOtherData =
+          selector.receptionist_self_data.consultantList.filter(
+            (item) =>
+              item.emp_id !== selector.saveLiveleadObjectCRM?.selectedempId[0]
+          );
         setCRM_filterParametersSecondLevel(filterOtherData);
         setCRM_filterParameters(filterSelectedUSerdata);
 
         let totalKey1 = selector.receptionist_self_data.contactsCount;
         let totalKey2 = selector.receptionist_self_data.enquirysCount;
-        let totalKey3 = selector.receptionist_self_data.bookingsCount
+        let totalKey3 = selector.receptionist_self_data.bookingsCount;
         let totalKey4 = selector.receptionist_self_data.RetailCount;
 
         let total = [totalKey1, totalKey2, totalKey3, totalKey4];
         settotalOfTeamAfterFilter(total);
-        
       }
-      
-    }  
-    
-  }, [selector.receptionist_self_data])
-  
-  useEffect(() => {
-    
-    
-    if (!_.isEmpty(selector.saveLiveleadObjectCRM)){
-      
-        let payload = { "orgId": userData.orgId, "loggedInEmpId": selector.saveLiveleadObjectCRM?.selectedempId[0], "branchList": selector.saveLiveleadObjectCRM?.levelSelected }
-        dispatch(getTargetReceptionistData(payload));
-      
-    }else{
-      setCRM_filterParameters([]);
-      settotalOfTeamAfterFilter([])
     }
-    
-  }, [selector.saveLiveleadObjectCRM])
-  
+  }, [selector.receptionist_self_data]);
 
+  useEffect(() => {
+    if (!_.isEmpty(selector.saveLiveleadObjectCRM)) {
+      let payload = {
+        orgId: userData.orgId,
+        loggedInEmpId: selector.saveLiveleadObjectCRM?.selectedempId[0],
+        branchList: selector.saveLiveleadObjectCRM?.levelSelected,
+      };
+      dispatch(getTargetReceptionistData(payload));
+    } else {
+      setCRM_filterParameters([]);
+      settotalOfTeamAfterFilter([]);
+    }
+  }, [selector.saveLiveleadObjectCRM]);
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -494,8 +493,7 @@ const ParametersScreen = ({ route }) => {
         tempCon[0] = params;
         setContactData(tempCon[0]);
       }
-      
-      
+
       setSelfInsightsData([
         tempCon[0],
         tempEnq[0],
@@ -570,16 +568,12 @@ const ParametersScreen = ({ route }) => {
   }, [selector.isTeam]);
 
   useEffect(() => {
-   
-    
-      allParameters[0] = {
-        ...allParameters[0],
-        targetAchievements: selector.totalParameters,
-      };
-      
-      setAllParameters(allParameters);
-   
-    
+    allParameters[0] = {
+      ...allParameters[0],
+      targetAchievements: selector.totalParameters,
+    };
+
+    setAllParameters(allParameters);
   }, [selector.totalParameters]);
 
   useEffect(async () => {
@@ -594,7 +588,8 @@ const ParametersScreen = ({ route }) => {
           if (!_.isEmpty(selector.saveLiveleadObject?.selectedempId)) {
             myParams = [
               ...selector.all_emp_parameters_data.filter(
-                (item) => item.empId == selector.saveLiveleadObject?.selectedempId[0]
+                (item) =>
+                  item.empId == selector.saveLiveleadObject?.selectedempId[0]
               ),
             ];
             myParams[0] = {
@@ -606,7 +601,7 @@ const ParametersScreen = ({ route }) => {
             };
 
             setAllParameters(myParams);
-          }else{
+          } else {
             let myParams = [
               ...selector.all_emp_parameters_data.filter(
                 (item) => item.empId === jsonObj.empId
@@ -619,16 +614,12 @@ const ParametersScreen = ({ route }) => {
               targetAchievements: selector.totalParameters,
               tempTargetAchievements: myParams[0]?.targetAchievements,
             };
-            
+
             setAllParameters(myParams);
           }
 
-
-
-
-        
           if (!selector.saveLiveleadObject?.selectedempId) {
-            setFilterParameters([])
+            setFilterParameters([]);
             setfilterParametersApplied(false);
           }
           // setMyParameters(myParams);
@@ -679,13 +670,12 @@ const ParametersScreen = ({ route }) => {
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
       if (employeeData) {
-        if (selector.saveLiveleadObject?.selectedempId){
+        if (selector.saveLiveleadObject?.selectedempId) {
           // getDataAfterFilter();
-        }else{
-          setFilterParameters([])
-          setfilterParametersApplied(false)
+        } else {
+          setFilterParameters([]);
+          setfilterParametersApplied(false);
         }
-       
       }
       setIsLoading(false);
     } catch (error) {
@@ -693,15 +683,8 @@ const ParametersScreen = ({ route }) => {
     }
   }, [selector.saveLiveleadObject]);
 
-
-  
-  
-
-  const getDataAfterFilter = async()=>{
-    
-    let employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
+  const getDataAfterFilter = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       const dateFormat = "YYYY-MM-DD";
@@ -740,27 +723,27 @@ const ParametersScreen = ({ route }) => {
                   branchName: getBranchName(tempRawData[i].branchId),
                   employeeTargetAchievements: [],
                   tempTargetAchievements: tempRawData[i]?.targetAchievements,
-                targetAchievements: tempRawData[i]?.targetAchievements
+                  targetAchievements: tempRawData[i]?.targetAchievements,
                 });
               // if (i === tempRawData.length - 1) {
-                // localData[index].employeeTargetAchievements = tempRawData;
-                // let newIds = tempRawData.map((emp) => emp.empId);
-                // if (newIds.length >= 2 || true) {
-                //   for (let i = 0; i < newIds.length; i++) {
-                //     const element = newIds[i].toString();
-                //     let tempPayload = getTotalPayload(employeeData, element);
-                //     const response = await client.post(
-                //       URL.GET_LIVE_LEADS_INSIGHTS(),
-                //       tempPayload
-                //     );
-                //     const json = await response.json();
-                //     if (Array.isArray(json)) {
-                //       localData[index].employeeTargetAchievements[
-                //         i
-                //       ].targetAchievements = json;
-                //     }
-                //   }
-                // }
+              // localData[index].employeeTargetAchievements = tempRawData;
+              // let newIds = tempRawData.map((emp) => emp.empId);
+              // if (newIds.length >= 2 || true) {
+              //   for (let i = 0; i < newIds.length; i++) {
+              //     const element = newIds[i].toString();
+              //     let tempPayload = getTotalPayload(employeeData, element);
+              //     const response = await client.post(
+              //       URL.GET_LIVE_LEADS_INSIGHTS(),
+              //       tempPayload
+              //     );
+              //     const json = await response.json();
+              //     if (Array.isArray(json)) {
+              //       localData[index].employeeTargetAchievements[
+              //         i
+              //       ].targetAchievements = json;
+              //     }
+              //   }
+              // }
               // }
             }
           }
@@ -777,7 +760,7 @@ const ParametersScreen = ({ route }) => {
       //   }
       // }
     }
-  }
+  };
 
   const getColor = (ach, tar) => {
     if (ach > 0 && tar === 0) {
@@ -882,7 +865,6 @@ const ParametersScreen = ({ route }) => {
 
   // Main Dashboard params Data
   const renderData = (item, color) => {
-   
     return (
       <View
         style={{ flexDirection: "row", backgroundColor: Colors.BORDER_COLOR }}
@@ -1012,7 +994,7 @@ const ParametersScreen = ({ route }) => {
               }
             }
             // alert(JSON.stringify(localData))
-           
+
             setAllParameters([...localData]);
           }
         );
@@ -1024,8 +1006,110 @@ const ParametersScreen = ({ route }) => {
         // }
       }
     } else {
-      
       setAllParameters([...localData]);
+    }
+  };
+
+  const onEmployeeNameClick2 = async (item, index, lastParameter) => {
+    try {
+      setTeamMember(item.empName);
+      let localData = [...allParameters];
+      let current = lastParameter[index].isOpenInner;
+      setSelectedName(item.empName);
+      setTimeout(() => {
+        setSelectedName("");
+      }, 900);
+      for (let i = 0; i < lastParameter.length; i++) {
+        lastParameter[i].isOpenInner = false;
+        if (i === lastParameter.length - 1) {
+          lastParameter[index].isOpenInner = !current;
+        }
+      }
+      if (!current) {
+        setTeamLoader(true);
+        let employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          const dateFormat = "YYYY-MM-DD";
+          const currentDate = moment().format(dateFormat);
+          const monthFirstDate = moment(currentDate, dateFormat)
+            .subtract(0, "months")
+            .startOf("month")
+            .format(dateFormat);
+          const monthLastDate = moment(currentDate, dateFormat)
+            .subtract(0, "months")
+            .endOf("month")
+            .format(dateFormat);
+          let payload = {
+            orgId: jsonObj.orgId,
+            selectedEmpId: item.empId,
+            endDate: monthLastDate,
+            loggedInEmpId: item.empId,
+            empId: item.empId,
+            startDate: monthFirstDate,
+            levelSelected: null,
+            pageNo: 0,
+            size: 100,
+          };
+          Promise.all([dispatch(getUserWiseTargetParameters(payload))]).then(
+            async (res) => {
+              let tempRawData = [];
+              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter(
+                (emp) => emp.empId !== item.empId
+              );
+              if (tempRawData.length > 0) {
+                for (let i = 0; i < tempRawData.length; i++) {
+                  tempRawData[i] = {
+                    ...tempRawData[i],
+                    isOpenInner: false,
+                    employeeTargetAchievements: [],
+                    tempTargetAchievements: tempRawData[i]?.targetAchievements,
+                  };
+                  if (i === tempRawData.length - 1) {
+                    lastParameter[index].employeeTargetAchievements =
+                      tempRawData;
+                    let newIds = tempRawData.map((emp) => emp.empId);
+                    if (newIds.length >= 2) {
+                      for (let i = 0; i < newIds.length; i++) {
+                        const element = newIds[i].toString();
+                        let tempPayload = getTotalPayload(
+                          employeeData,
+                          element
+                        );
+                        const response = await client.post(
+                          URL.GET_LIVE_LEADS_INSIGHTS(),
+                          tempPayload
+                        );
+                        const json = await response.json();
+                        if (Array.isArray(json)) {
+                          console.log("ssss", json);
+                          console.log(
+                            "lastParameter[index].employeeTargetAchievements[i]",
+                            lastParameter[index].employeeTargetAchievements[i]
+                              .targetAchievements
+                          );
+                          lastParameter[index].employeeTargetAchievements[
+                            i
+                          ].targetAchievements = json;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              setAllParameters([...localData]);
+              setTeamLoader(false);
+            }
+          );
+        }
+      } else {
+        setAllParameters([...localData]);
+        setTeamLoader(false);
+      }
+    } catch (error) {
+      setTeamLoader(false);
     }
   };
 
@@ -1039,13 +1123,20 @@ const ParametersScreen = ({ route }) => {
     return paramName;
   }
 
-  function navigateToEMS(params = "", screenName = "", selectedEmpId = [], isIgnore = false, parentId = "", isCRMOwnDATA = false,isgetCRMTotalData= false) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-   
-    // receptionist filter applied 
+  function navigateToEMS(
+    params = "",
+    screenName = "",
+    selectedEmpId = [],
+    isIgnore = false,
+    parentId = "",
+    isCRMOwnDATA = false,
+    isgetCRMTotalData = false
+  ) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+
+    // receptionist filter applied
     if (selector.saveLiveleadObject?.levelSelected) {
       setTimeout(() => {
-       
         if (params === "Contact") {
           navigation.navigate("PRE_ENQUIRY", {
             screenName: "ParametersScreen",
@@ -1073,11 +1164,8 @@ const ParametersScreen = ({ route }) => {
             parentId: parentId,
           });
         }
-
-
       }, 1000);
     } else if (selector.saveLiveleadObjectCRM.selectedempId) {
-      
       setTimeout(() => {
         // crm filter applied case
         if (params === "Contact") {
@@ -1092,7 +1180,7 @@ const ParametersScreen = ({ route }) => {
             dealerCodes: selector.saveLiveleadObjectCRM.levelSelected,
             ignoreSelectedId: isIgnore,
             parentId: selector.saveLiveleadObjectCRM.selectedempId[0],
-            isCRMOwnDATA: false
+            isCRMOwnDATA: false,
           });
         } else {
           navigation.navigate("LEADS", {
@@ -1106,16 +1194,14 @@ const ParametersScreen = ({ route }) => {
             dealerCodes: selector.saveLiveleadObjectCRM.levelSelected,
             ignoreSelectedId: isIgnore,
             parentId: selector.saveLiveleadObjectCRM.selectedempId[0],
-            isCRMOwnDATA: false
+            isCRMOwnDATA: false,
           });
         }
       }, 1000);
-     
     } else {
-      
       // tree structure redirections also here
       setTimeout(() => {
-        // receptionist filter not applied 
+        // receptionist filter not applied
         if (params === "Contact") {
           navigation.navigate("PRE_ENQUIRY", {
             screenName: "ParametersScreen",
@@ -1128,11 +1214,10 @@ const ParametersScreen = ({ route }) => {
             dealerCodes: [],
             parentId: parentId,
             isCRMOwnDATA: isCRMOwnDATA,
-            isgetCRMTotalData : isgetCRMTotalData
+            isgetCRMTotalData: isgetCRMTotalData,
             // ignoreSelectedId: isIgnore
           });
-        } 
-        else {
+        } else {
           navigation.navigate("LEADS", {
             screenName: "ParametersScreen",
             params: params,
@@ -1144,20 +1229,15 @@ const ParametersScreen = ({ route }) => {
             dealerCodes: [],
             parentId: parentId,
             isCRMOwnDATA: isCRMOwnDATA,
-            isgetCRMTotalData: isgetCRMTotalData
+            isgetCRMTotalData: isgetCRMTotalData,
             // ignoreSelectedId: isIgnore
           });
         }
-       
       }, 1000);
     }
-     
-    
   }
 
-
   async function navigateToEmsScreen(item) {
-
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
@@ -1179,9 +1259,8 @@ const ParametersScreen = ({ route }) => {
             orgId: "",
             branchId: "",
           };
-          empIdLocal = selector.saveLiveleadObject?.selectedempId[0]
+          empIdLocal = selector.saveLiveleadObject?.selectedempId[0];
         }
-
       } else {
         employeeDetail = {
           empName: "",
@@ -1189,7 +1268,7 @@ const ParametersScreen = ({ route }) => {
           orgId: "",
           branchId: "",
         };
-        empIdLocal = jsonObj.empId
+        empIdLocal = jsonObj.empId;
       }
 
       if (isLead) {
@@ -1206,16 +1285,16 @@ const ParametersScreen = ({ route }) => {
             // dealerCodes: "",
             // fromScreen: ""
           });
-        }, 1000);
+        }, 2000);
       } else if (isContact) {
         navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
         setTimeout(() => {
           navigation.navigate(EmsTopTabNavigatorIdentifiers.preEnquiry, {
             moduleType: "live-leads",
             employeeDetail: employeeDetail,
-            selectedEmpId: empIdLocal
+            selectedEmpId: empIdLocal,
           });
-        }, 1000);
+        }, 2000);
       }
     }
   }
@@ -1276,14 +1355,11 @@ const ParametersScreen = ({ route }) => {
   const renderSelfInsightsViewRecepToCRM = (item, index) => {
     return (
       <Card
-        onPress={() =>{
-        
-          if (item?.achievment && item?.achievment > 0){
-
-            if(crmRole.includes(userData.hrmsRole)){
+        onPress={() => {
+          if (item?.achievment && item?.achievment > 0) {
+            if (crmRole.includes(userData.hrmsRole)) {
               if (index === 0) {
-                navigateToEMS("Contact", "", [], false, userData.empId,true);
-
+                navigateToEMS("Contact", "", [], false, userData.empId, true);
               } else if (index === 1) {
                 navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
               } else if (index === 2) {
@@ -1291,10 +1367,9 @@ const ParametersScreen = ({ route }) => {
               } else if (index === 3) {
                 navigateToEMS("Invoice", "", [], false, userData.empId, true);
               }
-            }else{
+            } else {
               if (index === 0) {
                 navigateToEMS("Contact", "", [], false, userData.empId, false);
-
               } else if (index === 1) {
                 navigateToEMS("ENQUIRY", "", [], false, userData.empId, false);
               } else if (index === 2) {
@@ -1303,17 +1378,12 @@ const ParametersScreen = ({ route }) => {
                 navigateToEMS("Invoice", "", [], false, userData.empId, false);
               }
             }
-
-
-            
           }
-          
+
           // item?.achievment && item?.achievment > 0
           //   ? navigateToEMS("","","","","","",item)
           //   : null
-        }
-          
-        }
+        }}
         style={[
           styles.paramCard,
           {
@@ -1360,852 +1430,39 @@ const ParametersScreen = ({ route }) => {
   };
 
   const formatCRrSecondLeveleData = (item, index) => {
-
-    setcreIndex(index)
+    setcreIndex(index);
 
     if (index === creIndex) {
-
-      setIsViewCreExpanded(!isViewCREExpanded)
+      setIsViewCreExpanded(!isViewCREExpanded);
     } else {
-
-      setIsViewCreExpanded(true)
+      setIsViewCreExpanded(true);
     }
 
     setStoreCREFirstLevelLocal(item);
 
-    let salesPeopleUnderCre = creFirstLevelSelfData[index].consultantList.filter(item2 => item2.emp_id !== item.emp_id)
-    setCreSecondLevelData(salesPeopleUnderCre)
-    
-
-
-  }
+    let salesPeopleUnderCre = creFirstLevelSelfData[
+      index
+    ].consultantList.filter((item2) => item2.emp_id !== item.emp_id);
+    setCreSecondLevelData(salesPeopleUnderCre);
+  };
 
   const renderCREtreeFirstLevel = () => {
     return (
-      <>{
-        creFirstLevelData.length > 0 &&
-        creFirstLevelData.map((item, index) => {
-          return (
-
-            <View style={{
-              borderColor: isViewCREExpanded && index === creIndex ? Colors.YELLOW : "",
-              borderWidth: isViewCREExpanded && index === creIndex ? 1 : 0,
-              borderRadius: 10,
-              margin: isViewCREExpanded && index === creIndex ? 10 : 0
-            }}>
-              <View
-                style={{
-                  paddingHorizontal: 8,
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 12,
-                  width: Dimensions.get("screen").width - 28,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {item?.emp_name}
-                </Text>
-              </View>
-              <Pressable
-                style={{ alignSelf: "flex-end" }}
-                onPress={() => {
-                 
-                  if (isViewCREExpanded) {
-                    handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd")
-                  } else {
-                    handleSourceModalNavigation(item, "", [], "CRM")
-                  }
-
-                  // navigation.navigate(
-                  //   AppNavigator.HomeStackIdentifiers.sourceModel,
-                  //   {
-                  //     empId: selector.saveLiveleadObject?.selectedempId[0],
-                  //     headerTitle: item?.emp_name,
-                  //     loggedInEmpId:
-                  //       selector.saveLiveleadObject?.selectedempId[0],
-                  //     type: "TEAM",
-                  //     moduleType: "live-leads",
-                  //   }
-                  // );
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: Colors.BLUE,
-                    marginLeft: 8,
-                    paddingRight: 12,
-                  }}
-                >
-                  Source/Model
-                </Text>
-              </Pressable>
-              {/*Source/Model View END */}
-              <View style={[{ flexDirection: "row" }]}>
-                {/*RIGHT SIDE VIEW*/}
-                <View
-                  style={[
-                    {
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "column",
-                      paddingHorizontal: 2,
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "row",
-                    }}
-                  >
-                    {/* todo */}
-                    <RenderLevel1NameViewCRM
-                      level={0}
-                      item={item}
-                      branchName={getBranchName(item?.branch)}
-                      color={Colors.CORAL}
-                      titleClick={async () => {
-                        formatCRrSecondLeveleData(item, index);
-                        // setIsViewCreExpanded(!isViewCREExpanded)
-                        // setStoreCREFirstLevelLocal(item);
-                        // setStoreFirstLevelLocal(item)
-
-                        return;
-                      }}
-                    />
-                    <View
-                      style={{
-                        flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      {[
-                        isViewCREExpanded && index === creIndex ? item.contactCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].contactsCount : 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].enquirysCount : 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].bookingsCount : 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.retailCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].RetailCount : 0 || 0,
-                      ].map((e, index) => {
-                        return (
-                          <Pressable onPress={() => {
-
-                            
-                            if (e > 0) {
-                              if (isViewCREExpanded) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false);
-                                }
-                              } else {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, false, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false, false);
-                                }
-                              }
-                            }
-
-                          }}>
-                            <View
-                              style={{
-                                width: 55,
-                                height: 30,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginLeft: 10,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
-                                  // marginLeft: 50,
-                                }}
-                              >
-                                {e || 0}
-                              </Text>
-                            </View>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                    {/* <View
-                      style={{
-                        width: "100%",
-                        height: boxHeight,
-                        flexDirection: "row",
-                        alignSelf: "center",
-                        // backgroundColor: "red",
-                      }}
-                    >
-                      {renderFilterData(item, "#C62159")}
-                    </View> */}
-                  </View>
-                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                </View>
-              </View>
-              {isViewCREExpanded && index === creIndex && renderCREtreeSecondLevel()}
-            </View>
-          );
-        })
-      }
-
-      </>)
-  }
-
-  const renderCREtreeSecondLevel = () => {
-    return (
-      <>{
-        creSecondLevelData.length > 0 &&
-        creSecondLevelData.map((item, index) => {
-          return (
-
-            <View style={{
-              // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-              // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-              // borderRadius: 10,
-              // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-            }}>
-              <View
-                style={{
-                  paddingHorizontal: 8,
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 12,
-                  width: Dimensions.get("screen").width - 28,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {item?.emp_name}
-                </Text>
-              </View>
-              <Pressable
-                style={{ alignSelf: "flex-end" }}
-                onPress={() => {
-                 
-               
-               
-                  handleSourceModalNavigation(item, storeCREFirstLevelLocal?.emp_id,[item.emp_id])
-                  
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: Colors.BLUE,
-                    marginLeft: 8,
-                    paddingRight: 12,
-                  }}
-                >
-                  Source/Model
-                </Text>
-              </Pressable>
-              {/*Source/Model View END */}
-              <View style={[{ flexDirection: "row" }]}>
-                {/*RIGHT SIDE VIEW*/}
-                <View
-                  style={[
-                    {
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "column",
-                      paddingHorizontal: 2,
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "row",
-                    }}
-                  >
-                    {/* todo */}
-                    <RenderLevel1NameViewCRM
-                      level={0}
-                      item={item}
-                      branchName={getBranchName(item?.branch)}
-                      color={"#2C97DE"}
-                      titleClick={async () => {
-                        // setIsViewExpanded(!isViewExpanded)
-                        // setIsSecondLevelExpanded(!isSecondLevelExpanded)
-                        formateSaleConsutantDataCRM(item, index)
-                        return;
-                      }}
-                    />
-                    <View
-                      style={{
-                        flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      {[
-                         item.contactCount || 0,
-                        item.enquiryCount || 0,
-                        item.bookingCount || 0,
-                        item.retailCount || 0,
-                      ].map((e, index) => {
-                        return (
-                          <Pressable onPress={() => {
-
-                           
-                            if (e > 0) {
-                              if (index === 0) {
-                                navigateToEMS("Contact", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-
-                              } else if (index === 1) {
-                                navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-                              } else if (index === 2) {
-                                navigateToEMS("BOOKING", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-                              } else if (index === 3) {
-                                navigateToEMS("Invoice", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-                              }
-
-                            }
-
-                          }}>
-                            <View
-                              style={{
-                                width: 55,
-                                height: 30,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginLeft: 10,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
-                                  // marginLeft: 50,
-                                }}
-                              >
-                                {e || 0}
-                              </Text>
-                            </View>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                    {/* <View
-                      style={{
-                        width: "100%",
-                        height: boxHeight,
-                        flexDirection: "row",
-                        alignSelf: "center",
-                        // backgroundColor: "red",
-                      }}
-                    >
-                      {renderFilterData(item, "#C62159")}
-                    </View> */}
-                  </View>
-                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                </View>
-              </View>
-              {/* {isSecondLevelExpanded && index === indexLocal && renderCRMtreeThirdLevel()} */}
-            </View>
-          );
-        })
-      }
-
-      </>)
-  }
-
-
-  const renderCRMtreeFirstLevel = ()=>{
-    return (
-      <>{
-        crmFirstLevelData.length > 0 &&
-        crmFirstLevelData.map((item, index) => {
-          return (
-
-            <View style={{
-              borderColor: isViewExpanded ? "#C62159" : "",
-              borderWidth: isViewExpanded ? 2 : 0, 
-              borderRadius: 10,
-              margin: isViewExpanded ? 10 : 0
-              }}>
-              <View
-                style={{
-                  paddingHorizontal: 8,
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 12,
-                  width: Dimensions.get("screen").width - 28,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {item?.emp_name}
-                </Text>
-              </View>
-              <Pressable
-                style={{ alignSelf: "flex-end" }}
-                onPress={() => {
-               
-                  if(isViewExpanded){
-                    
-                    handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd",true)
-                  }else{
-                   
-                    handleSourceModalNavigation(item, "", [], "CRM",true)
-                  }
-                 
-                  // navigation.navigate(
-                  //   AppNavigator.HomeStackIdentifiers.sourceModel,
-                  //   {
-                  //     empId: selector.saveLiveleadObject?.selectedempId[0],
-                  //     headerTitle: item?.emp_name,
-                  //     loggedInEmpId:
-                  //       selector.saveLiveleadObject?.selectedempId[0],
-                  //     type: "TEAM",
-                  //     moduleType: "live-leads",
-                  //   }
-                  // );
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: Colors.BLUE,
-                    marginLeft: 8,
-                    paddingRight: 12,
-                  }}
-                >
-                  Source/Model
-                </Text>
-              </Pressable>
-              {/*Source/Model View END */}
-              <View style={[{ flexDirection: "row" }]}>
-                {/*RIGHT SIDE VIEW*/}
-                <View
-                  style={[
-                    {
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "column",
-                      paddingHorizontal: 2,
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "row",
-                    }}
-                  >
-                    {/* todo */}
-                    <RenderLevel1NameViewCRM
-                      level={0}
-                      item={item}
-                      branchName={getBranchName(item?.branch)}
-                      color={"#C62159"}
-                      titleClick={async () => {
-                        setIsViewExpanded(!isViewExpanded)
-                        setStoreFirstLevelLocal(item)
-
-                        return;
-                      }}
-                    />
-                    <View
-                      style={{
-                        flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      {/* {[
-                        isViewExpanded ? item.contactCount : selector.crm_response_data.totalPreInquiryCount || 0,
-                        isViewExpanded ? item.enquiryCount : selector.crm_response_data.totalEnquiryCount || 0,
-                        isViewExpanded ? item.bookingCount : selector.crm_response_data.totalBookingCount || 0,
-                        isViewExpanded ? item.retailCount : selector.crm_response_data.totalRetailCount || 0,
-                      ]. */}
-                      {[
-                        isViewExpanded ? item.contactCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalPreInquiryCount : 0 || 0,
-                        isViewExpanded ? item.enquiryCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalEnquiryCount : 0 || 0,
-                        isViewExpanded ? item.bookingCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalBookingCount : 0|| 0,
-                        isViewExpanded ? item.retailCount :crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalRetailCount : 0 || 0,
-                      ].
-                        map((e, index) => {
-                        return (
-                          <Pressable onPress={() => {
-
-                            // todo redirections 
-                            if (e > 0) {
-
-                              if (isViewExpanded) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false);
-                                }
-                              } else {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, true,true);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, true, true);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, true, true);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, true, true);
-                                }
-                              }
-                            }
-
-                          }}>
-                            <View
-                              style={{
-                                width: 55,
-                                height: 30,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginLeft:10,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
-                                  // marginLeft: 50,
-                                }}
-                              >
-                                {e || 0}
-                              </Text>
-                            </View>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                    {/* <View
-                      style={{
-                        width: "100%",
-                        height: boxHeight,
-                        flexDirection: "row",
-                        alignSelf: "center",
-                        // backgroundColor: "red",
-                      }}
-                    >
-                      {renderFilterData(item, "#C62159")}
-                    </View> */}
-                  </View>
-                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                </View>
-              </View>
-              {isViewExpanded && renderCRMtreeSecondLevel()}
-            </View>
-          );
-          })
-      }
-      
-      </>)
-  }
-
-
-  const renderCRMtreeSecondLevel = () => {
-    return (
-      <>{
-        crmSecondLevelData.length > 0 &&
-        crmSecondLevelData.map((item, index) => {
-          return (
-
-            <View style={{
-              borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-              borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-              borderRadius: 10,
-              margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-            }}>
-              <View
-                style={{
-                  paddingHorizontal: 8,
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 12,
-                  width: Dimensions.get("screen").width - 28,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {item?.emp_name}
-                </Text>
-              </View>
-              <Pressable
-                style={{ alignSelf: "flex-end" }}
-                onPress={() => {
-                  // navigation.navigate(
-                  //   AppNavigator.HomeStackIdentifiers.sourceModel,
-                  //   {
-                  //     empId: selector.saveLiveleadObject?.selectedempId[0],
-                  //     headerTitle: item?.emp_name,
-                  //     loggedInEmpId:
-                  //       selector.saveLiveleadObject?.selectedempId[0],
-                  //     type: "TEAM",
-                  //     moduleType: "live-leads",
-                  //   }
-                  // );
-
-                  if (isSecondLevelExpanded){
-                    handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id, [storeSecondLevelLocal.emp_id])
-                  }else{
-                    if (item.roleName === "Field DSE") {
-                     
-                      handleSourceModalNavigation(item, storeFirstLevelLocal.emp_id, [item.emp_id])
-                    } else {
-                      
-                      handleSourceModalNavigation(item)
-                    }
-                  }
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: "600",
-                    color: Colors.BLUE,
-                    marginLeft: 8,
-                    paddingRight: 12,
-                  }}
-                >
-                  Source/Model
-                </Text>
-              </Pressable>
-              {/*Source/Model View END */}
-              <View style={[{ flexDirection: "row" }]}>
-                {/*RIGHT SIDE VIEW*/}
-                <View
-                  style={[
-                    {
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "column",
-                      paddingHorizontal: 2,
-                    },
-                  ]}
-                >
-                  <View
-                    style={{
-                      width: "100%",
-                      minHeight: 40,
-                      flexDirection: "row",
-                    }}
-                  >
-                    {/* todo */}
-                    <RenderLevel1NameViewCRM
-                      level={0}
-                      item={item}
-                      branchName={getBranchName(item?.branch)}
-                     color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" :"#FF4040"}
-                      titleClick={async () => {
-                        // setIsViewExpanded(!isViewExpanded)
-                        // setIsSecondLevelExpanded(!isSecondLevelExpanded)
-                        formateSaleConsutantDataCRM(item,index)
-                        return;
-                      }}
-                    />
-                    <View
-                      style={{
-                        flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
-                        alignItems: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      {[
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].contactCount : item.contactCount   || 0,
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].enquiryCount : item.enquiryCount   || 0,
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].bookingCount : item.bookingCount || 0,
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].retailCount  : item.retailCount || 0,
-                      ].map((e, index) => {
-                        return (
-                          <Pressable onPress={() => {
-
-                            
-                            if (e > 0) {
-                              if (isSecondLevelExpanded){
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [item.emp_id], false, item.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], false, item.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], false, item.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [item.emp_id], false, item.emp_id, false);
-                                }
-                              }else{
-                               
-                                if (item.roleName == "Field DSE"){
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
-                                  }
-
-                                }else{
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [], false, item.emp_id, false);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [], false, item.emp_id, false);
-                                  }
-                                }
-                               
-                              }
-                             
-                            }
-
-                          }}>
-                            <View
-                              style={{
-                                width: 55,
-                                height: 30,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginLeft: 10,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
-                                  // marginLeft: 50,
-                                }}
-                              >
-                                {e || 0}
-                              </Text>
-                            </View>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                    {/* <View
-                      style={{
-                        width: "100%",
-                        height: boxHeight,
-                        flexDirection: "row",
-                        alignSelf: "center",
-                        // backgroundColor: "red",
-                      }}
-                    >
-                      {renderFilterData(item, "#C62159")}
-                    </View> */}
-                  </View>
-                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                </View>
-              </View>
-              {isSecondLevelExpanded && index === indexLocal && renderCRMtreeThirdLevel()}
-            </View>
-          );
-        })
-      }
-
-      </>)
-  }
-
-  const formateSaleConsutantDataCRM = (itemMain, index) => {
-    // let salesconsultant = item.salesconsultant;
-   
-    setIndexLocal(index)
-
-    if (index === indexLocal) {
-     
-      setIsSecondLevelExpanded(!isSecondLevelExpanded)
-    } else {
-   
-      setIsSecondLevelExpanded(true)
-    }
-    
-    setCrmThirdLevelData(itemMain?.salesconsultant)
-    setstoreSecondLevelLocal(itemMain)
-
-    let findSelectedRecData = itemMain?.salesconsultant?.filter(item => item.emp_id === itemMain.emp_id);
-   
-    setCrmSecondLevelSelectedData(findSelectedRecData)
-  }
-
-  const renderCRMtreeThirdLevel = () => {
-    return (
-      <>{
-        crmThirdLevelData?.length > 0 &&
-        crmThirdLevelData?.map((item, index) => {
-          if (item.emp_id !== userData.empId && crmSecondLevelSelectedData[0].emp_id !== item.emp_id) {
+      <>
+        {creFirstLevelData.length > 0 &&
+          creFirstLevelData.map((item, index) => {
             return (
-
-              <View style={{
-                // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-                // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-                // borderRadius: 10,
-                // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-              }}>
+              <View
+                style={{
+                  borderColor:
+                    isViewCREExpanded && index === creIndex
+                      ? Colors.YELLOW
+                      : "",
+                  borderWidth: isViewCREExpanded && index === creIndex ? 1 : 0,
+                  borderRadius: 10,
+                  margin: isViewCREExpanded && index === creIndex ? 10 : 0,
+                }}
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -2229,9 +1486,289 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                 
+                    if (isViewCREExpanded) {
+                      handleSourceModalNavigation(
+                        item,
+                        item?.emp_id,
+                        [item.emp_id],
+                        "CRM_INd"
+                      );
+                    } else {
+                      handleSourceModalNavigation(item, "", [], "CRM");
+                    }
 
-                    handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id, [item.emp_id])
+                    // navigation.navigate(
+                    //   AppNavigator.HomeStackIdentifiers.sourceModel,
+                    //   {
+                    //     empId: selector.saveLiveleadObject?.selectedempId[0],
+                    //     headerTitle: item?.emp_name,
+                    //     loggedInEmpId:
+                    //       selector.saveLiveleadObject?.selectedempId[0],
+                    //     type: "TEAM",
+                    //     moduleType: "live-leads",
+                    //   }
+                    // );
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={getBranchName(item?.branch)}
+                        color={Colors.CORAL}
+                        titleClick={async () => {
+                          formatCRrSecondLeveleData(item, index);
+                          // setIsViewCreExpanded(!isViewCREExpanded)
+                          // setStoreCREFirstLevelLocal(item);
+                          // setStoreFirstLevelLocal(item)
+
+                          return;
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {[
+                          isViewCREExpanded && index === creIndex
+                            ? item.contactCount
+                            : creFirstLevelSelfData
+                            ? creFirstLevelSelfData[index].contactsCount
+                            : 0 || 0,
+                          isViewCREExpanded && index === creIndex
+                            ? item.enquiryCount
+                            : creFirstLevelSelfData
+                            ? creFirstLevelSelfData[index].enquirysCount
+                            : 0 || 0,
+                          isViewCREExpanded && index === creIndex
+                            ? item.bookingCount
+                            : creFirstLevelSelfData
+                            ? creFirstLevelSelfData[index].bookingsCount
+                            : 0 || 0,
+                          isViewCREExpanded && index === creIndex
+                            ? item.retailCount
+                            : creFirstLevelSelfData
+                            ? creFirstLevelSelfData[index].RetailCount
+                            : 0 || 0,
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (isViewCREExpanded) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false,
+                                        false
+                                      );
+                                    }
+                                  }
+                                }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isViewCREExpanded &&
+                  index === creIndex &&
+                  renderCREtreeSecondLevel()}
+              </View>
+            );
+          })}
+      </>
+    );
+  };
+
+  const renderCREtreeSecondLevel = () => {
+    return (
+      <>
+        {creSecondLevelData.length > 0 &&
+          creSecondLevelData.map((item, index) => {
+            return (
+              <View
+                style={
+                  {
+                    // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
+                    // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                    // borderRadius: 10,
+                    // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
+                  }
+                }
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item?.emp_name}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    handleSourceModalNavigation(
+                      item,
+                      storeCREFirstLevelLocal?.emp_id,
+                      [item.emp_id]
+                    );
                   }}
                 >
                   <Text
@@ -2273,15 +1810,16 @@ const ParametersScreen = ({ route }) => {
                         branchName={getBranchName(item?.branch)}
                         color={"#2C97DE"}
                         titleClick={async () => {
-                        
+                          // setIsViewExpanded(!isViewExpanded)
+                          // setIsSecondLevelExpanded(!isSecondLevelExpanded)
+                          formateSaleConsutantDataCRM(item, index);
                           return;
                         }}
                       />
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
@@ -2293,22 +1831,49 @@ const ParametersScreen = ({ route }) => {
                           item.retailCount || 0,
                         ].map((e, index) => {
                           return (
-                            <Pressable onPress={() => {
-
-                              if (e > 0) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (index === 0) {
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeCREFirstLevelLocal?.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 1) {
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeCREFirstLevelLocal?.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 2) {
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeCREFirstLevelLocal?.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 3) {
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeCREFirstLevelLocal?.emp_id,
+                                      false
+                                    );
+                                  }
                                 }
-
-                              }
-                            }}>
+                              }}
+                            >
                               <View
                                 style={{
                                   width: 55,
@@ -2322,7 +1887,8 @@ const ParametersScreen = ({ route }) => {
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
                                     // marginLeft: 50,
                                   }}
                                 >
@@ -2348,79 +1914,891 @@ const ParametersScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
+                {/* {isSecondLevelExpanded && index === indexLocal && renderCRMtreeThirdLevel()} */}
               </View>
             );
-          }
-        })
-      }
+          })}
+      </>
+    );
+  };
 
-      </>)
-  }
+  const renderCRMtreeFirstLevel = () => {
+    return (
+      <>
+        {crmFirstLevelData.length > 0 &&
+          crmFirstLevelData.map((item, index) => {
+            return (
+              <View
+                style={{
+                  borderColor: isViewExpanded ? "#C62159" : "",
+                  borderWidth: isViewExpanded ? 2 : 0,
+                  borderRadius: 10,
+                  margin: isViewExpanded ? 10 : 0,
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item?.emp_name}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    if (isViewExpanded) {
+                      handleSourceModalNavigation(
+                        item,
+                        item?.emp_id,
+                        [item.emp_id],
+                        "CRM_INd",
+                        true
+                      );
+                    } else {
+                      handleSourceModalNavigation(item, "", [], "CRM", true);
+                    }
 
+                    // navigation.navigate(
+                    //   AppNavigator.HomeStackIdentifiers.sourceModel,
+                    //   {
+                    //     empId: selector.saveLiveleadObject?.selectedempId[0],
+                    //     headerTitle: item?.emp_name,
+                    //     loggedInEmpId:
+                    //       selector.saveLiveleadObject?.selectedempId[0],
+                    //     type: "TEAM",
+                    //     moduleType: "live-leads",
+                    //   }
+                    // );
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={getBranchName(item?.branch)}
+                        color={"#C62159"}
+                        titleClick={async () => {
+                          setIsViewExpanded(!isViewExpanded);
+                          setStoreFirstLevelLocal(item);
 
-  const handleSourceModalNavigation = (item, parentId = "", empList = [], role = "",self = false) => {
-    
+                          return;
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {/* {[
+                        isViewExpanded ? item.contactCount : selector.crm_response_data.totalPreInquiryCount || 0,
+                        isViewExpanded ? item.enquiryCount : selector.crm_response_data.totalEnquiryCount || 0,
+                        isViewExpanded ? item.bookingCount : selector.crm_response_data.totalBookingCount || 0,
+                        isViewExpanded ? item.retailCount : selector.crm_response_data.totalRetailCount || 0,
+                      ]. */}
+                        {[
+                          isViewExpanded
+                            ? item.contactCount
+                            : crmFirstLevelTotalData
+                            ? crmFirstLevelTotalData?.totalPreInquiryCount
+                            : 0 || 0,
+                          isViewExpanded
+                            ? item.enquiryCount
+                            : crmFirstLevelTotalData
+                            ? crmFirstLevelTotalData?.totalEnquiryCount
+                            : 0 || 0,
+                          isViewExpanded
+                            ? item.bookingCount
+                            : crmFirstLevelTotalData
+                            ? crmFirstLevelTotalData?.totalBookingCount
+                            : 0 || 0,
+                          isViewExpanded
+                            ? item.retailCount
+                            : crmFirstLevelTotalData
+                            ? crmFirstLevelTotalData?.totalRetailCount
+                            : 0 || 0,
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections
+                                if (e > 0) {
+                                  if (isViewExpanded) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    }
+                                  }
+                                }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isViewExpanded && renderCRMtreeSecondLevel()}
+              </View>
+            );
+          })}
+      </>
+    );
+  };
+
+  const renderCRMtreeSecondLevel = () => {
+    return (
+      <>
+        {crmSecondLevelData.length > 0 &&
+          crmSecondLevelData.map((item, index) => {
+            return (
+              <View
+                style={{
+                  borderColor:
+                    isSecondLevelExpanded && indexLocal === index
+                      ? Colors.BLUE
+                      : "",
+                  borderWidth:
+                    isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                  borderRadius: 10,
+                  margin:
+                    isSecondLevelExpanded && indexLocal === index ? 10 : 0,
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item?.emp_name}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    // navigation.navigate(
+                    //   AppNavigator.HomeStackIdentifiers.sourceModel,
+                    //   {
+                    //     empId: selector.saveLiveleadObject?.selectedempId[0],
+                    //     headerTitle: item?.emp_name,
+                    //     loggedInEmpId:
+                    //       selector.saveLiveleadObject?.selectedempId[0],
+                    //     type: "TEAM",
+                    //     moduleType: "live-leads",
+                    //   }
+                    // );
+
+                    if (isSecondLevelExpanded) {
+                      handleSourceModalNavigation(
+                        item,
+                        storeSecondLevelLocal.emp_id,
+                        [storeSecondLevelLocal.emp_id]
+                      );
+                    } else {
+                      if (item.roleName === "Field DSE") {
+                        handleSourceModalNavigation(
+                          item,
+                          storeFirstLevelLocal.emp_id,
+                          [item.emp_id]
+                        );
+                      } else {
+                        handleSourceModalNavigation(item);
+                      }
+                    }
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={getBranchName(item?.branch)}
+                        color={
+                          item.roleName.toLowerCase() === "field dse"
+                            ? "#2C97DE"
+                            : "#FF4040"
+                        }
+                        titleClick={async () => {
+                          // setIsViewExpanded(!isViewExpanded)
+                          // setIsSecondLevelExpanded(!isSecondLevelExpanded)
+                          formateSaleConsutantDataCRM(item, index);
+                          return;
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {[
+                          isSecondLevelExpanded &&
+                          index === indexLocal &&
+                          crmSecondLevelSelectedData
+                            ? crmSecondLevelSelectedData[0].contactCount
+                            : item.contactCount || 0,
+                          isSecondLevelExpanded &&
+                          index === indexLocal &&
+                          crmSecondLevelSelectedData
+                            ? crmSecondLevelSelectedData[0].enquiryCount
+                            : item.enquiryCount || 0,
+                          isSecondLevelExpanded &&
+                          index === indexLocal &&
+                          crmSecondLevelSelectedData
+                            ? crmSecondLevelSelectedData[0].bookingCount
+                            : item.bookingCount || 0,
+                          isSecondLevelExpanded &&
+                          index === indexLocal &&
+                          crmSecondLevelSelectedData
+                            ? crmSecondLevelSelectedData[0].retailCount
+                            : item.retailCount || 0,
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (isSecondLevelExpanded) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    }
+                                  } else {
+                                    if (item.roleName == "Field DSE") {
+                                      if (index === 0) {
+                                        navigateToEMS(
+                                          "Contact",
+                                          "",
+                                          [item.emp_id],
+                                          false,
+                                          storeFirstLevelLocal.emp_id,
+                                          false
+                                        );
+                                      } else if (index === 1) {
+                                        navigateToEMS(
+                                          "ENQUIRY",
+                                          "",
+                                          [item.emp_id],
+                                          false,
+                                          storeFirstLevelLocal.emp_id,
+                                          false
+                                        );
+                                      } else if (index === 2) {
+                                        navigateToEMS(
+                                          "BOOKING",
+                                          "",
+                                          [item.emp_id],
+                                          false,
+                                          storeFirstLevelLocal.emp_id,
+                                          false
+                                        );
+                                      } else if (index === 3) {
+                                        navigateToEMS(
+                                          "Invoice",
+                                          "",
+                                          [item.emp_id],
+                                          false,
+                                          storeFirstLevelLocal.emp_id,
+                                          false
+                                        );
+                                      }
+                                    } else {
+                                      if (index === 0) {
+                                        navigateToEMS(
+                                          "Contact",
+                                          "",
+                                          [],
+                                          false,
+                                          item.emp_id,
+                                          false
+                                        );
+                                      } else if (index === 1) {
+                                        navigateToEMS(
+                                          "ENQUIRY",
+                                          "",
+                                          [],
+                                          false,
+                                          item.emp_id,
+                                          false
+                                        );
+                                      } else if (index === 2) {
+                                        navigateToEMS(
+                                          "BOOKING",
+                                          "",
+                                          [],
+                                          false,
+                                          item.emp_id,
+                                          false
+                                        );
+                                      } else if (index === 3) {
+                                        navigateToEMS(
+                                          "Invoice",
+                                          "",
+                                          [],
+                                          false,
+                                          item.emp_id,
+                                          false
+                                        );
+                                      }
+                                    }
+                                  }
+                                }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isSecondLevelExpanded &&
+                  index === indexLocal &&
+                  renderCRMtreeThirdLevel()}
+              </View>
+            );
+          })}
+      </>
+    );
+  };
+
+  const formateSaleConsutantDataCRM = (itemMain, index) => {
+    // let salesconsultant = item.salesconsultant;
+
+    setIndexLocal(index);
+
+    if (index === indexLocal) {
+      setIsSecondLevelExpanded(!isSecondLevelExpanded);
+    } else {
+      setIsSecondLevelExpanded(true);
+    }
+
+    setCrmThirdLevelData(itemMain?.salesconsultant);
+    setstoreSecondLevelLocal(itemMain);
+
+    let findSelectedRecData = itemMain?.salesconsultant?.filter(
+      (item) => item.emp_id === itemMain.emp_id
+    );
+
+    setCrmSecondLevelSelectedData(findSelectedRecData);
+  };
+
+  const renderCRMtreeThirdLevel = () => {
+    return (
+      <>
+        {crmThirdLevelData?.length > 0 &&
+          crmThirdLevelData?.map((item, index) => {
+            if (
+              item.emp_id !== userData.empId &&
+              crmSecondLevelSelectedData[0].emp_id !== item.emp_id
+            ) {
+              return (
+                <View
+                  style={
+                    {
+                      // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
+                      // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                      // borderRadius: 10,
+                      // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
+                    }
+                  }
+                >
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      width: Dimensions.get("screen").width - 28,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item?.emp_name}
+                    </Text>
+                  </View>
+                  <Pressable
+                    style={{ alignSelf: "flex-end" }}
+                    onPress={() => {
+                      handleSourceModalNavigation(
+                        item,
+                        storeSecondLevelLocal.emp_id,
+                        [item.emp_id]
+                      );
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        color: Colors.BLUE,
+                        marginLeft: 8,
+                        paddingRight: 12,
+                      }}
+                    >
+                      Source/Model
+                    </Text>
+                  </Pressable>
+                  {/*Source/Model View END */}
+                  <View style={[{ flexDirection: "row" }]}>
+                    {/*RIGHT SIDE VIEW*/}
+                    <View
+                      style={[
+                        {
+                          width: "100%",
+                          minHeight: 40,
+                          flexDirection: "column",
+                          paddingHorizontal: 2,
+                        },
+                      ]}
+                    >
+                      <View
+                        style={{
+                          width: "100%",
+                          minHeight: 40,
+                          flexDirection: "row",
+                        }}
+                      >
+                        {/* todo */}
+                        <RenderLevel1NameViewCRM
+                          level={0}
+                          item={item}
+                          branchName={getBranchName(item?.branch)}
+                          color={"#2C97DE"}
+                          titleClick={async () => {
+                            return;
+                          }}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            backgroundColor: "rgba(223,228,231,0.67)",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {[
+                            item.contactCount || 0,
+                            item.enquiryCount || 0,
+                            item.bookingCount || 0,
+                            item.retailCount || 0,
+                          ].map((e, index) => {
+                            return (
+                              <Pressable
+                                onPress={() => {
+                                  if (e > 0) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeSecondLevelLocal.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeSecondLevelLocal.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeSecondLevelLocal.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeSecondLevelLocal.emp_id,
+                                        false
+                                      );
+                                    }
+                                  }
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginLeft: 10,
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine:
+                                        e > 0 ? "underline" : "none",
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                        {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                      </View>
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                    </View>
+                  </View>
+                </View>
+              );
+            }
+          })}
+      </>
+    );
+  };
+
+  const handleSourceModalNavigation = (
+    item,
+    parentId = "",
+    empList = [],
+    role = "",
+    self = false
+  ) => {
     switch (item.roleName.toLowerCase()) {
       case "tele caller":
-        navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
-          {
-            empId: parentId ? parentId : item?.emp_id,
-            headerTitle: item?.emp_name,
-            loggedInEmpId: parentId ? parentId : item.emp_id,
-            type: "TEAM",
-            moduleType: "live-leads",
-            headerTitle: "Source/Model",
-            orgId: userData.orgId,
-            role: item.roleName,
-            branchList: userData.branchs.map(
-              (a) => a.branchId
-            ),
-            empList: empList,
-            self: false
-          }
-        );
+        navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+          empId: parentId ? parentId : item?.emp_id,
+          headerTitle: item?.emp_name,
+          loggedInEmpId: parentId ? parentId : item.emp_id,
+          type: "TEAM",
+          moduleType: "live-leads",
+          headerTitle: "Source/Model",
+          orgId: userData.orgId,
+          role: item.roleName,
+          branchList: userData.branchs.map((a) => a.branchId),
+          empList: empList,
+          self: false,
+        });
         break;
       case "cre":
-        navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
-          {
-            empId: parentId ? parentId : item?.emp_id,
-            headerTitle: item?.emp_name,
-            loggedInEmpId: parentId ? parentId : item.emp_id,
-            type: "TEAM",
-            moduleType: "live-leads",
-            headerTitle: "Source/Model",
-            orgId: userData.orgId,
-            role: item.roleName,
-            branchList: userData.branchs.map(
-              (a) => a.branchId
-            ),
-            empList: empList,
-            self: false
-          }
-        );
+        navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+          empId: parentId ? parentId : item?.emp_id,
+          headerTitle: item?.emp_name,
+          loggedInEmpId: parentId ? parentId : item.emp_id,
+          type: "TEAM",
+          moduleType: "live-leads",
+          headerTitle: "Source/Model",
+          orgId: userData.orgId,
+          role: item.roleName,
+          branchList: userData.branchs.map((a) => a.branchId),
+          empList: empList,
+          self: false,
+        });
         break;
       case "field dse":
-
-        navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
-          {
-            empId: parentId ? parentId : item?.emp_id,
-            headerTitle: item?.emp_name,
-            loggedInEmpId: parentId ? parentId : item.emp_id,
-            type: "TEAM",
-            moduleType: "live-leads",
-            headerTitle: "Source/Model",
-            orgId: userData.orgId,
-            role: item.roleName,
-            branchList: userData.branchs.map(
-              (a) => a.branchId
-            ),
-            empList: empList,
-            self: false
-          }
-        );
+        navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+          empId: parentId ? parentId : item?.emp_id,
+          headerTitle: item?.emp_name,
+          loggedInEmpId: parentId ? parentId : item.emp_id,
+          type: "TEAM",
+          moduleType: "live-leads",
+          headerTitle: "Source/Model",
+          orgId: userData.orgId,
+          role: item.roleName,
+          branchList: userData.branchs.map((a) => a.branchId),
+          empList: empList,
+          self: false,
+        });
         // navigation.navigate(
         //   AppNavigator
         //     .HomeStackIdentifiers
@@ -2438,8 +2816,6 @@ const ParametersScreen = ({ route }) => {
 
         break;
       case "crm":
-       
-
         // navigation.navigate(
         //   AppNavigator.HomeStackIdentifiers.sourceModel,
         //   {
@@ -2451,46 +2827,40 @@ const ParametersScreen = ({ route }) => {
         //     moduleType: "live-leads",
         //   }
         // )
-       
-        navigation.navigate(
-          "RECEP_SOURCE_MODEL_CRM",
-          {
-            empId: parentId ? parentId : item?.emp_id,
-            headerTitle: item?.emp_name,
-            loggedInEmpId: parentId ? parentId : item.emp_id,
-            type: "TEAM",
-            moduleType: "live-leads",
-            headerTitle: "Source/Model",
-            orgId: userData.orgId,
-            role: role == "CRM" ? "CRM" : "CRM_INd",
-            branchList: userData.branchs.map(
-              (a) => a.branchId
-            ),
-            empList: empList,
-            self: self
-          }
-        );
+
+        navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+          empId: parentId ? parentId : item?.emp_id,
+          headerTitle: item?.emp_name,
+          loggedInEmpId: parentId ? parentId : item.emp_id,
+          type: "TEAM",
+          moduleType: "live-leads",
+          headerTitle: "Source/Model",
+          orgId: userData.orgId,
+          role: role == "CRM" ? "CRM" : "CRM_INd",
+          branchList: userData.branchs.map((a) => a.branchId),
+          empList: empList,
+          self: self,
+        });
         break;
       default:
         break;
     }
-  }
+  };
 
-  const renderCRMFilterView = ()=>{
-
+  const renderCRMFilterView = () => {
     return (
       <>
-        {
-          CRM_filterParameters.length > 0 &&
+        {CRM_filterParameters.length > 0 &&
           CRM_filterParameters.map((item, index) => {
-          
             return (
-              <View style={{
-                borderColor: isFilterViewExapanded ? Colors.BLUE : "",
-                borderWidth: isFilterViewExapanded ? 1 : 0,
-                borderRadius: 10,
-                margin: isFilterViewExapanded ? 5 : 0
-              }}>
+              <View
+                style={{
+                  borderColor: isFilterViewExapanded ? Colors.BLUE : "",
+                  borderWidth: isFilterViewExapanded ? 1 : 0,
+                  borderRadius: 10,
+                  margin: isFilterViewExapanded ? 5 : 0,
+                }}
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -2515,9 +2885,11 @@ const ParametersScreen = ({ route }) => {
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
                     if (isFilterViewExapanded) {
-                      handleSourceModalNavigation(item, item.emp_id, [item.emp_id])
+                      handleSourceModalNavigation(item, item.emp_id, [
+                        item.emp_id,
+                      ]);
                     } else {
-                      handleSourceModalNavigation(item, item.emp_id, [])
+                      handleSourceModalNavigation(item, item.emp_id, []);
                     }
                     // handleSourceModalNavigation(item, item.emp_id, [])
                   }}
@@ -2561,22 +2933,18 @@ const ParametersScreen = ({ route }) => {
                         branchName={getBranchName(item?.branch)}
                         color={Colors.CORAL}
                         titleClick={async () => {
-                          setisFilterViewExapanded(!isFilterViewExapanded)
+                          setisFilterViewExapanded(!isFilterViewExapanded);
                           return;
                         }}
                       />
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
                       >
-
-
-      
                         {/* {[
                           item.contactCount || 0,
                           item.enquiryCount || 0,
@@ -2590,55 +2958,119 @@ const ParametersScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                         {[
-                          isFilterViewExapanded ? item.contactCount : selector.receptionist_self_data?.contactsCount || 0,
-                          isFilterViewExapanded ? item.enquiryCount : selector.receptionist_self_data?.enquirysCount || 0,
-                          isFilterViewExapanded ? item.bookingCount : selector.receptionist_self_data?.bookingsCount || 0,
-                          isFilterViewExapanded ? item.retailCount : selector.receptionist_self_data?.RetailCount || 0,
-                        ].
-                          map((e, index) => {
+                          isFilterViewExapanded
+                            ? item.contactCount
+                            : selector.receptionist_self_data?.contactsCount ||
+                              0,
+                          isFilterViewExapanded
+                            ? item.enquiryCount
+                            : selector.receptionist_self_data?.enquirysCount ||
+                              0,
+                          isFilterViewExapanded
+                            ? item.bookingCount
+                            : selector.receptionist_self_data?.bookingsCount ||
+                              0,
+                          isFilterViewExapanded
+                            ? item.retailCount
+                            : selector.receptionist_self_data?.RetailCount || 0,
+                        ].map((e, index) => {
                           return (
-                            <Pressable onPress={() => {
-                              if (e > 0) {
-                                if (isFilterViewExapanded) {
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [item.emp_id], false, userData.empId, true);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, userData.empId, true);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], false, userData.empId, true);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [item.emp_id], false, userData.empId, true);
-                                  }
-                                } else {
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [], false, userData.empId, true);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [], false, userData.empId, true);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (isFilterViewExapanded) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    }
                                   }
                                 }
+                                // // todo redirections logic filter UI
+                                // if (e > 0) {
+                                //   if (index === 0) {
+                                //     navigateToEMS("Contact", "", [], false, userData.empId, true);
 
-                              }
-                              // // todo redirections logic filter UI 
-                              // if (e > 0) {
-                              //   if (index === 0) {
-                              //     navigateToEMS("Contact", "", [], false, userData.empId, true);
-
-                              //   } else if (index === 1) {
-                              //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
-                              //   } else if (index === 2) {
-                              //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
-                              //   } else if (index === 3) {
-                              //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
-                              //   }
-                              // }
-
-                            }}>
+                                //   } else if (index === 1) {
+                                //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                //   } else if (index === 2) {
+                                //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                //   } else if (index === 3) {
+                                //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                //   }
+                                // }
+                              }}
+                            >
                               <View
                                 style={{
                                   width: 55,
@@ -2652,7 +3084,8 @@ const ParametersScreen = ({ route }) => {
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
                                     // marginLeft: 50,
                                   }}
                                 >
@@ -2681,26 +3114,27 @@ const ParametersScreen = ({ route }) => {
                 {isFilterViewExapanded && renderCRMFilterViewSecondLevel()}
               </View>
             );
-          })
-        }
-      </>)
-  }
+          })}
+      </>
+    );
+  };
 
   const renderCRMFilterViewSecondLevel = () => {
-
     return (
       <>
-        {
-          CRM_filterParametersSecondLevel.length > 0 &&
+        {CRM_filterParametersSecondLevel.length > 0 &&
           CRM_filterParametersSecondLevel.map((item, index) => {
-
             return (
-              <View style={{
-                // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-                // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-                // borderRadius: 10,
-                // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-              }}>
+              <View
+                style={
+                  {
+                    // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
+                    // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                    // borderRadius: 10,
+                    // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
+                  }
+                }
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -2724,7 +3158,11 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    handleSourceModalNavigation(item, selector.saveLiveleadObjectCRM?.selectedempId[0], [item.emp_id])
+                    handleSourceModalNavigation(
+                      item,
+                      selector.saveLiveleadObjectCRM?.selectedempId[0],
+                      [item.emp_id]
+                    );
                   }}
                 >
                   <Text
@@ -2766,22 +3204,17 @@ const ParametersScreen = ({ route }) => {
                         branchName={getBranchName(item?.branch)}
                         color={"#2C97DE"}
                         titleClick={async () => {
-
                           return;
                         }}
                       />
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
                       >
-
-
-
                         {/* {[
                           item.contactCount || 0,
                           item.enquiryCount || 0,
@@ -2793,49 +3226,80 @@ const ParametersScreen = ({ route }) => {
                           item?.enquiryCount || 0,
                           item?.bookingCount || 0,
                           item?.retailCount || 0,
-                        ].
-                          map((e, index) => {
-                            return (
-                              <Pressable onPress={() => {
-
-                                // todo redirections logic filter UI 
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections logic filter UI
                                 if (e > 0) {
                                   if (index === 0) {
-                                    navigateToEMS("Contact", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
-
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   }
                                 }
-
-                              }}>
-                                <View
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
                                   style={{
-                                    width: 55,
-                                    height: 30,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginLeft: 10,
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
                                   }}
                                 >
-                                  <Text
-                                    style={{
-                                      fontSize: 16,
-                                      fontWeight: "700",
-                                      textDecorationLine: e > 0 ? "underline" : "none"
-                                      // marginLeft: 50,
-                                    }}
-                                  >
-                                    {e || 0}
-                                  </Text>
-                                </View>
-                              </Pressable>
-                            );
-                          })}
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
                       </View>
                       {/* <View
                       style={{
@@ -2854,133 +3318,242 @@ const ParametersScreen = ({ route }) => {
                 </View>
               </View>
             );
-          })
-        }
-      </>)
-  }
+          })}
+      </>
+    );
+  };
 
-  const renderCRMFilterViewTeamTotal = ()=>{
-    return (<>
-    { totalOfTeamAfterFilter && (
-      <View>
-        <Pressable
-          style={{ alignSelf: "flex-end" }}
-          onPress={() => {
-            navigation.navigate(
-              "RECEP_SOURCE_MODEL_CRM",
-              {
-                empId: selector.login_employee_details.empId,
-                headerTitle: "Grand Total",
-                loggedInEmpId: selector.login_employee_details.empId,
-                type: "TEAM",
-                moduleType: "live-leads",
-                orgId: userData.orgId,
-                role: userData.hrmsRole,
-                branchList: userData.branchs.map(
-                  (a) => a.branchId
-                ),
-                self: false
-              }
-            );
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: "600",
-              color: Colors.BLUE,
-              marginLeft: 8,
-              paddingRight: 12,
-            }}
-          >
-            {/* Source/Model */}
-          </Text>
-        </Pressable>
-
-        <View style={{ flexDirection: "row", height: 40 }}>
-          <View
-            style={{
-              width: 70,
-              minHeight: 40,
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexDirection: "row",
-              backgroundColor: Colors.RED,
-            }}
-          >
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: 6,
+  const renderCRMFilterViewTeamTotal = () => {
+    return (
+      <>
+        {totalOfTeamAfterFilter && (
+          <View>
+            <Pressable
+              style={{ alignSelf: "flex-end" }}
+              onPress={() => {
+                navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                  empId: selector.login_employee_details.empId,
+                  headerTitle: "Grand Total",
+                  loggedInEmpId: selector.login_employee_details.empId,
+                  type: "TEAM",
+                  moduleType: "live-leads",
+                  orgId: userData.orgId,
+                  role: userData.hrmsRole,
+                  branchList: userData.branchs.map((a) => a.branchId),
+                  self: false,
+                });
               }}
             >
               <Text
-                style={[
-                  styles.grandTotalText,
-                  {
-                    color: Colors.WHITE,
-                    fontSize: 12,
-                  },
-                ]}
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: Colors.BLUE,
+                  marginLeft: 8,
+                  paddingRight: 12,
+                }}
               >
-                Total
+                {/* Source/Model */}
               </Text>
+            </Pressable>
+
+            <View style={{ flexDirection: "row", height: 40 }}>
+              <View
+                style={{
+                  width: 70,
+                  minHeight: 40,
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  backgroundColor: Colors.RED,
+                }}
+              >
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginLeft: 6,
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.grandTotalText,
+                      {
+                        color: Colors.WHITE,
+                        fontSize: 12,
+                      },
+                    ]}
+                  >
+                    Total
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  minHeight: 40,
+                  flexDirection: "column",
+                }}
+              >
+                <View
+                  style={{
+                    // minHeight: 40,
+                    flexDirection: "row",
+                    // backgroundColor:"yellow"
+                  }}
+                >
+                  {totalOfTeamAfterFilter.map((e) => {
+                    return (
+                      <View
+                        style={{
+                          width: 70,
+                          height: 40,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: Colors.RED,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            color: Colors.WHITE,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
             </View>
-
           </View>
-          <View
-            style={{
-              minHeight: 40,
-              flexDirection: "column",
+        )}
+      </>
+    );
+  };
 
+  const RenderEmployee = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+    return (
+      <View key={`${item.empId} ${index}`}>
+        <View
+          style={{
+            paddingHorizontal: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 12,
+            width: "100%",
+          }}
+        >
+          <Text style={{ fontSize: 12, fontWeight: "600" }}>
+            {item.empName}
+          </Text>
+          <Pressable
+            onPress={() => {
+              // navigation.navigate(
+              //   AppNavigator.HomeStackIdentifiers.sourceModel,
+              //   {
+              //     empId: item.empId,
+              //     headerTitle: item.empName,
+              //     loggedInEmpId: selector.login_employee_details.empId,
+              //     orgId: selector.login_employee_details.orgId,
+              //     type: "TEAM",
+              //     moduleType: "live-leads",
+              //   }
+              // );
+              navigation.navigate(
+                AppNavigator.HomeStackIdentifiers.sourceModel,
+                {
+                  empId: item.empId,
+                  headerTitle: item.empName,
+                  loggedInEmpId: selector.login_employee_details.empId,
+                  orgId: selector.login_employee_details.orgId,
+                  type: "TEAM",
+                  moduleType: "live-leads",
+                  isOpenner: item.isOpenInner,// added to manage source/model issue
+                  isFromHome: true// added to manage source/model issue
+                }
+              );
             }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                color: Colors.BLUE,
+              }}
+            >
+              Source/Model
+            </Text>
+          </Pressable>
+        </View>
+        {/*Source/Model View END */}
+        <View
+          style={[
+            { flexDirection: "row" },
+            item.isOpenInner && {
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: borderColor,
+            },
+          ]}
+        >
+          {/*RIGHT SIDE VIEW*/}
+          <View
+            style={[
+              {
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "column",
+                paddingHorizontal: 5,
+              },
+            ]}
           >
             <View
               style={{
-                // minHeight: 40,
+                width: "100%",
+                minHeight: 40,
                 flexDirection: "row",
-                // backgroundColor:"yellow"
               }}
             >
-                {totalOfTeamAfterFilter.map((e) => {
-                return (
-                  <View
-                    style={{
-                      width: 70,
-                      height: 40,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: Colors.RED,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "700",
-                        color: Colors.WHITE,
-
-                      }}
-                    >
-                      {e || 0}
-                    </Text>
-                  </View>
+              <RenderLevel1NameView
+                level={0}
+                item={item}
+                branchName={getBranchName(item.branchId)}
+                color={borderColor}
+                teamLoader={teamLoader}
+                teamMember={teamMember}
+                titleClick={async () => {
+                  await onEmployeeNameClick2(item, index, allData);
+                }}
+              />
+              {renderData(item, borderColor)}
+            </View>
+            {item.isOpenInner &&
+              item.employeeTargetAchievements.length > 0 &&
+              item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
+                return RenderEmployee(
+                  innerItem1,
+                  innerIndex1,
+                  item.employeeTargetAchievements,
+                  levelColors,
+                  hierarchyLevel + 1
                 );
               })}
-            </View>
           </View>
         </View>
       </View>
-    )}
-    </>)
-  }
+    );
+  };
 
   return (
     <>
       <View style={styles.container}>
         {selector.isTeam ? (
-         <>
-           
+          <>
             <View>
               <View
                 style={{
@@ -3049,7 +3622,7 @@ const ParametersScreen = ({ route }) => {
                     {/* <View
                       style={{ width: 70, height: 20, marginRight: 5 }}
                     ></View> */}
-                      {/* <View
+                    {/* <View
                         // style={styles.itemBox}
                         style={{ width: 70, height: 20, marginRight: 5, alignItems: "center" }}
                       >
@@ -3064,30 +3637,38 @@ const ParametersScreen = ({ route }) => {
                         }}>Employee</Text>
 
                       </View> */}
-                      <View
-                        style={{ width: 70, height: 20, marginRight: 5, alignItems: "flex-start",    }}
-                      >
-                        <View
-                          style={[
-                            styles.itemBox,
-                            {
-                              // width: 55,
-                            },
-                          ]}
-
-                        >
-                          <Text
-                            style={{
-                              color: Colors.RED,
-                              fontSize: 12,
-                            }}
-                          >
-                            Employee
-                          </Text>
-                        </View>
-                      </View>
                     <View
-                      style={{ width: "100%", height: 20, flexDirection: "row" }}
+                      style={{
+                        width: 70,
+                        height: 20,
+                        marginRight: 5,
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <View
+                        style={[
+                          styles.itemBox,
+                          {
+                            // width: 55,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={{
+                            color: Colors.RED,
+                            fontSize: 12,
+                          }}
+                        >
+                          Employee
+                        </Text>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        width: "100%",
+                        height: 20,
+                        flexDirection: "row",
+                      }}
                     >
                       {toggleParamsMetaData.map((param) => {
                         return (
@@ -3106,40 +3687,45 @@ const ParametersScreen = ({ route }) => {
                     </View>
                   </View>
 
-                    {crmRole.includes(userData.hrmsRole) ? <>
-                    
-                      {CRM_filterParameters.length > 0 ?  renderCRMFilterView() : null}
-                      { CRM_filterParameters.length > 0 ?renderCRMFilterViewTeamTotal(): null}
-                      {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null}
-                      {CRM_filterParameters.length == 0 ? renderCREtreeFirstLevel() : null}
+                  {crmRole.includes(userData.hrmsRole) ? (
+                    <>
+                      {CRM_filterParameters.length > 0
+                        ? renderCRMFilterView()
+                        : null}
+                      {CRM_filterParameters.length > 0
+                        ? renderCRMFilterViewTeamTotal()
+                        : null}
+                      {CRM_filterParameters.length == 0
+                        ? renderCRMtreeFirstLevel()
+                        : null}
+                      {CRM_filterParameters.length == 0
+                        ? renderCREtreeFirstLevel()
+                        : null}
                       {/* Grand Total Section */}
                       {/* isViewExpanded ? item.contactCount : selector.crm_response_data.totalPreInquiryCount || 0,
                       isViewExpanded ? item.enquiryCount : selector.crm_response_data.totalEnquiryCount || 0,
                       isViewExpanded ? item.bookingCount : selector.crm_response_data.totalBookingCount || 0,
                       isViewExpanded ? item.retailCount : selector.crm_response_data.totalRetailCount || 0, */}
 
-                    
                       {totalOfTeam && CRM_filterParameters.length == 0 && (
                         <View>
                           <Pressable
                             style={{ alignSelf: "flex-end" }}
                             onPress={() => {
-                              navigation.navigate(
-                                "RECEP_SOURCE_MODEL_CRM",
-                                {
-                                  empId: selector.login_employee_details.empId,
-                                  headerTitle: "Grand Total",
-                                  loggedInEmpId: selector.login_employee_details.empId,
-                                  type: "TEAM",
-                                  moduleType: "live-leads",
-                                  orgId: userData.orgId,
-                                  role: userData.hrmsRole,
-                                  branchList: userData.branchs.map(
-                                    (a) => a.branchId
-                                  ),
-                                  self: false
-                                }
-                              );
+                              navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                                empId: selector.login_employee_details.empId,
+                                headerTitle: "Grand Total",
+                                loggedInEmpId:
+                                  selector.login_employee_details.empId,
+                                type: "TEAM",
+                                moduleType: "live-leads",
+                                orgId: userData.orgId,
+                                role: userData.hrmsRole,
+                                branchList: userData.branchs.map(
+                                  (a) => a.branchId
+                                ),
+                                self: false,
+                              });
                             }}
                           >
                             <Text
@@ -3185,13 +3771,11 @@ const ParametersScreen = ({ route }) => {
                                   Total
                                 </Text>
                               </View>
-
                             </View>
                             <View
                               style={{
                                 minHeight: 40,
                                 flexDirection: "column",
-                                
                               }}
                             >
                               <View
@@ -3217,7 +3801,6 @@ const ParametersScreen = ({ route }) => {
                                           fontSize: 16,
                                           fontWeight: "700",
                                           color: Colors.WHITE,
-                                          
                                         }}
                                       >
                                         {e || 0}
@@ -3316,43 +3899,158 @@ const ParametersScreen = ({ route }) => {
                           </View>
                         </View>
                       )} */}
-                    </> :<>
-
-                        {/* Employee params section */}
-                        {filterParameters.length > 0 &&
-                          filterParameters.map((item, index) => {
-                            return (
-                              <View>
-                                <View
+                    </>
+                  ) : (
+                    <>
+                      {/* Employee params section */}
+                      {filterParameters.length > 0 &&
+                        filterParameters.map((item, index) => {
+                          return (
+                            <View>
+                              <View
+                                style={{
+                                  paddingHorizontal: 8,
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  marginTop: 12,
+                                  width: Dimensions.get("screen").width - 28,
+                                }}
+                              >
+                                <Text
                                   style={{
-                                    paddingHorizontal: 8,
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 12,
-                                    width: Dimensions.get("screen").width - 28,
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    textTransform: "capitalize",
                                   }}
                                 >
-                                  <Text
+                                  {item?.empName}
+                                </Text>
+                              </View>
+                              <Pressable
+                                style={{ alignSelf: "flex-end" }}
+                                onPress={() => {
+                                  navigation.navigate(
+                                    AppNavigator.HomeStackIdentifiers
+                                      .sourceModel,
+                                    {
+                                      empId:
+                                        selector.saveLiveleadObject
+                                          ?.selectedempId[0],
+                                      headerTitle: item?.empName,
+                                      loggedInEmpId:
+                                        selector.saveLiveleadObject
+                                          ?.selectedempId[0],
+                                      type: "TEAM",
+                                      moduleType: "live-leads",
+                                    }
+                                  );
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    color: Colors.BLUE,
+                                    marginLeft: 8,
+                                    paddingRight: 12,
+                                  }}
+                                >
+                                  Source/Model
+                                </Text>
+                              </Pressable>
+                              {/*Source/Model View END */}
+                              <View style={[{ flexDirection: "row" }]}>
+                                {/*RIGHT SIDE VIEW*/}
+                                <View
+                                  style={[
+                                    {
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "column",
+                                      paddingHorizontal: 2,
+                                    },
+                                  ]}
+                                >
+                                  <View
                                     style={{
-                                      fontSize: 12,
-                                      fontWeight: "600",
-                                      textTransform: "capitalize",
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "row",
                                     }}
                                   >
-                                    {item?.empName}
-                                  </Text>
+                                    {/* todo */}
+                                    <RenderLevel1NameView
+                                      level={0}
+                                      item={item}
+                                      branchName={getBranchName(item?.branch)}
+                                      color={"#C62159"}
+                                      titleClick={async () => {
+                                        return;
+                                      }}
+                                    />
+                                    <View
+                                      style={{
+                                        width: "100%",
+                                        height: boxHeight,
+                                        flexDirection: "row",
+                                        alignSelf: "center",
+                                        // backgroundColor: "red",
+                                      }}
+                                    >
+                                      {renderFilterData(item, "#C62159")}
+                                    </View>
+                                  </View>
+                                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                                 </View>
+                              </View>
+                            </View>
+                          );
+                        })}
+                      {allParameters.length > 0 &&
+                        allParameters.map((item, index) => {
+                          return RenderEmployee(
+                            item,
+                            index,
+                            allParameters,
+                            color,
+                            0
+                          );
+                        })}
+
+                      {/* {allParameters.length > 0 && filterParameters.length == 0 && */}
+                      {allParameters.length > 0 &&
+                        allParameters.map((item, index) => {
+                          return;
+                          return (
+                            <View key={`${item.empId} ${index}`}>
+                              <View
+                                style={{
+                                  paddingHorizontal: 8,
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  marginTop: 12,
+                                  width: "100%",
+                                }}
+                              >
+                                <Text
+                                  style={{ fontSize: 12, fontWeight: "600" }}
+                                >
+                                  {item.empName}
+                                </Text>
                                 <Pressable
-                                  style={{ alignSelf: "flex-end" }}
                                   onPress={() => {
                                     navigation.navigate(
-                                      AppNavigator.HomeStackIdentifiers.sourceModel,
+                                      AppNavigator.HomeStackIdentifiers
+                                        .sourceModel,
                                       {
-                                        empId: selector.saveLiveleadObject?.selectedempId[0],
-                                        headerTitle: item?.empName,
+                                        empId: item.empId,
+                                        headerTitle: item.empName,
                                         loggedInEmpId:
-                                          selector.saveLiveleadObject?.selectedempId[0],
+                                          selector.login_employee_details.empId,
+                                        orgId:
+                                          selector.login_employee_details.orgId,
                                         type: "TEAM",
                                         moduleType: "live-leads",
                                       }
@@ -3364,608 +4062,560 @@ const ParametersScreen = ({ route }) => {
                                       fontSize: 12,
                                       fontWeight: "600",
                                       color: Colors.BLUE,
-                                      marginLeft: 8,
-                                      paddingRight: 12,
                                     }}
                                   >
                                     Source/Model
                                   </Text>
                                 </Pressable>
-                                {/*Source/Model View END */}
-                                <View style={[{ flexDirection: "row" }]}>
-                                  {/*RIGHT SIDE VIEW*/}
-                                  <View
-                                    style={[
-                                      {
-                                        width: "100%",
-                                        minHeight: 40,
-                                        flexDirection: "column",
-                                        paddingHorizontal: 2,
-                                      },
-                                    ]}
-                                  >
-                                    <View
-                                      style={{
-                                        width: "100%",
-                                        minHeight: 40,
-                                        flexDirection: "row",
-                                      }}
-                                    >
-                                      {/* todo */}
-                                      <RenderLevel1NameView
-                                        level={0}
-                                        item={item}
-                                        branchName={getBranchName(item?.branch)}
-                                        color={"#C62159"}
-                                        titleClick={async () => {
-                                          return;
-                                        }}
-                                      />
-                                      <View
-                                        style={{
-                                          width: "100%",
-                                          height: boxHeight,
-                                          flexDirection: "row",
-                                          alignSelf: "center",
-                                          // backgroundColor: "red",
-                                        }}
-                                      >
-                                        {renderFilterData(item, "#C62159")}
-                                      </View>
-                                    </View>
-                                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                                  </View>
-                                </View>
                               </View>
-                            );
-                          })}
-
-
-                        {/* {allParameters.length > 0 && filterParameters.length == 0 && */}
-                        {
-                          allParameters.length > 0  &&
-                          allParameters.map((item, index) => {
-                            return (
-                              <View key={`${item.empId} ${index}`}>
-                                <View
-                                  style={{
-                                    paddingHorizontal: 8,
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 12,
-                                    width: "100%",
-                                  }}
-                                >
-                                  <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                                    {item.empName}
-                                  </Text>
-                                  <Pressable
-                                    onPress={() => {
-                                      navigation.navigate(
-                                        AppNavigator.HomeStackIdentifiers.sourceModel,
-                                        {
-                                          empId: item.empId,
-                                          headerTitle: item.empName,
-                                          loggedInEmpId:
-                                            selector.login_employee_details.empId,
-                                          orgId: selector.login_employee_details.orgId,
-                                          type: "TEAM",
-                                          moduleType: "live-leads",
-                                        }
-                                      );
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        fontSize: 12,
-                                        fontWeight: "600",
-                                        color: Colors.BLUE,
-                                      }}
-                                    >
-                                      Source/Model
-                                    </Text>
-                                  </Pressable>
-                                </View>
-                                {/*Source/Model View END */}
+                              {/*Source/Model View END */}
+                              <View
+                                style={[
+                                  { flexDirection: "row" },
+                                  item.isOpenInner && {
+                                    borderRadius: 10,
+                                    borderWidth: 1,
+                                    borderColor: "#C62159",
+                                  },
+                                ]}
+                              >
+                                {/*RIGHT SIDE VIEW*/}
                                 <View
                                   style={[
-                                    { flexDirection: "row" },
-                                    item.isOpenInner && {
-                                      borderRadius: 10,
-                                      borderWidth: 1,
-                                      borderColor: "#C62159",
+                                    {
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "column",
+                                      paddingHorizontal: 5,
                                     },
                                   ]}
                                 >
-                                  {/*RIGHT SIDE VIEW*/}
                                   <View
-                                    style={[
-                                      {
-                                        width: "100%",
-                                        minHeight: 40,
-                                        flexDirection: "column",
-                                        paddingHorizontal: 5,
-                                      },
-                                    ]}
+                                    style={{
+                                      width: "100%",
+                                      minHeight: 40,
+                                      flexDirection: "row",
+                                    }}
                                   >
-                                    <View
-                                      style={{
-                                        width: "100%",
-                                        minHeight: 40,
-                                        flexDirection: "row",
+                                    <RenderLevel1NameView
+                                      level={0}
+                                      item={item}
+                                      branchName={getBranchName(item.branchId)}
+                                      color={"#C62159"}
+                                      titleClick={async () => {
+                                        await onEmployeeNameClick(item, index);
                                       }}
-                                    >
-                                      <RenderLevel1NameView
-                                        level={0}
-                                        item={item}
-                                        branchName={getBranchName(item.branchId)}
-                                        color={"#C62159"}
-                                        titleClick={async () => {
-                                          await onEmployeeNameClick(item, index);
-                                        }}
-                                      />
-                                      {renderData(item, "#C62159")}
-                                    </View>
+                                    />
+                                    {renderData(item, "#C62159")}
+                                  </View>
 
-                                    {item.isOpenInner &&
-                                      item.employeeTargetAchievements.length > 0 &&
-                                      item.employeeTargetAchievements.map(
-                                        (innerItem1, innerIndex1) => {
-                                          return (
+                                  {item.isOpenInner &&
+                                    item.employeeTargetAchievements.length >
+                                      0 &&
+                                    item.employeeTargetAchievements.map(
+                                      (innerItem1, innerIndex1) => {
+                                        return (
+                                          <View
+                                            key={innerIndex1}
+                                            style={[
+                                              {
+                                                width: "100%",
+                                                minHeight: 40,
+                                                flexDirection: "column",
+                                              },
+                                              innerItem1.isOpenInner && {
+                                                borderRadius: 10,
+                                                borderWidth: 1,
+                                                borderColor: "#F59D00",
+                                                backgroundColor: "#FFFFFF",
+                                              },
+                                            ]}
+                                          >
                                             <View
-                                              key={innerIndex1}
                                               style={[
                                                 {
                                                   width: "100%",
                                                   minHeight: 40,
                                                   flexDirection: "column",
                                                 },
-                                                innerItem1.isOpenInner && {
-                                                  borderRadius: 10,
-                                                  borderWidth: 1,
-                                                  borderColor: "#F59D00",
-                                                  backgroundColor: "#FFFFFF",
-                                                },
                                               ]}
                                             >
                                               <View
-                                                style={[
-                                                  {
-                                                    width: "100%",
-                                                    minHeight: 40,
-                                                    flexDirection: "column",
-                                                  },
-                                                ]}
+                                                style={{
+                                                  paddingHorizontal: 4,
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  justifyContent:
+                                                    "space-between",
+                                                  marginTop: 8,
+                                                }}
                                               >
-                                                <View
+                                                <Text
                                                   style={{
-                                                    paddingHorizontal: 4,
-                                                    display: "flex",
-                                                    flexDirection: "row",
-                                                    justifyContent: "space-between",
-                                                    marginTop: 8,
+                                                    fontSize: 10,
+                                                    fontWeight: "500",
+                                                  }}
+                                                >
+                                                  {innerItem1.empName}
+                                                </Text>
+                                                <Pressable
+                                                  onPress={() => {
+                                                    navigation.navigate(
+                                                      AppNavigator
+                                                        .HomeStackIdentifiers
+                                                        .sourceModel,
+                                                      {
+                                                        empId: innerItem1.empId,
+                                                        headerTitle:
+                                                          innerItem1.empName,
+                                                        type: "TEAM",
+                                                        moduleType:
+                                                          "live-leads",
+                                                      }
+                                                    );
                                                   }}
                                                 >
                                                   <Text
                                                     style={{
-                                                      fontSize: 10,
-                                                      fontWeight: "500",
+                                                      fontSize: 12,
+                                                      fontWeight: "600",
+                                                      color: Colors.BLUE,
+                                                      marginLeft: 8,
                                                     }}
                                                   >
-                                                    {innerItem1.empName}
+                                                    Source/Model
                                                   </Text>
-                                                  <Pressable
-                                                    onPress={() => {
-                                                      navigation.navigate(
-                                                        AppNavigator
-                                                          .HomeStackIdentifiers
-                                                          .sourceModel,
-                                                        {
-                                                          empId: innerItem1.empId,
-                                                          headerTitle:
-                                                            innerItem1.empName,
-                                                          type: "TEAM",
-                                                          moduleType: "live-leads",
-                                                        }
-                                                      );
-                                                    }}
-                                                  >
-                                                    <Text
-                                                      style={{
-                                                        fontSize: 12,
-                                                        fontWeight: "600",
-                                                        color: Colors.BLUE,
-                                                        marginLeft: 8,
-                                                      }}
-                                                    >
-                                                      Source/Model
-                                                    </Text>
-                                                  </Pressable>
-                                                </View>
-                                                {/*Source/Model View END */}
-                                                <View style={{ flexDirection: "row" }}>
-                                                  <RenderLevel1NameView
-                                                    level={1}
-                                                    item={innerItem1}
-                                                    color={"#F59D00"}
-                                                    titleClick={async () => {
-                                                      setSelectedName(
-                                                        innerItem1.empName
-                                                      );
-                                                      setTimeout(() => {
-                                                        setSelectedName("");
-                                                      }, 900);
-                                                      let localData = [
-                                                        ...allParameters,
-                                                      ];
-                                                      let current =
-                                                        localData[index]
-                                                          .employeeTargetAchievements[
-                                                          innerIndex1
-                                                        ].isOpenInner;
-                                                      for (
-                                                        let i = 0;
-                                                        i <
+                                                </Pressable>
+                                              </View>
+                                              {/*Source/Model View END */}
+                                              <View
+                                                style={{ flexDirection: "row" }}
+                                              >
+                                                <RenderLevel1NameView
+                                                  level={1}
+                                                  item={innerItem1}
+                                                  color={"#F59D00"}
+                                                  titleClick={async () => {
+                                                    setSelectedName(
+                                                      innerItem1.empName
+                                                    );
+                                                    setTimeout(() => {
+                                                      setSelectedName("");
+                                                    }, 900);
+                                                    let localData = [
+                                                      ...allParameters,
+                                                    ];
+                                                    let current =
+                                                      localData[index]
+                                                        .employeeTargetAchievements[
+                                                        innerIndex1
+                                                      ].isOpenInner;
+                                                    for (
+                                                      let i = 0;
+                                                      i <
+                                                      localData[index]
+                                                        .employeeTargetAchievements
+                                                        .length;
+                                                      i++
+                                                    ) {
+                                                      localData[
+                                                        index
+                                                      ].employeeTargetAchievements[
+                                                        i
+                                                      ].isOpenInner = false;
+                                                      if (
+                                                        i ===
                                                         localData[index]
                                                           .employeeTargetAchievements
-                                                          .length;
-                                                        i++
+                                                          .length -
+                                                          1
                                                       ) {
                                                         localData[
                                                           index
                                                         ].employeeTargetAchievements[
-                                                          i
-                                                        ].isOpenInner = false;
-                                                        if (
-                                                          i ===
-                                                          localData[index]
-                                                            .employeeTargetAchievements
-                                                            .length -
-                                                          1
-                                                        ) {
-                                                          localData[
-                                                            index
-                                                          ].employeeTargetAchievements[
-                                                            innerIndex1
-                                                          ].isOpenInner = !current;
-                                                        }
+                                                          innerIndex1
+                                                        ].isOpenInner =
+                                                          !current;
                                                       }
+                                                    }
 
-                                                      if (!current) {
-                                                        let employeeData =
-                                                          await AsyncStore.getData(
-                                                            AsyncStore.Keys
-                                                              .LOGIN_EMPLOYEE
+                                                    if (!current) {
+                                                      let employeeData =
+                                                        await AsyncStore.getData(
+                                                          AsyncStore.Keys
+                                                            .LOGIN_EMPLOYEE
+                                                        );
+                                                      if (employeeData) {
+                                                        const jsonObj =
+                                                          JSON.parse(
+                                                            employeeData
                                                           );
-                                                        if (employeeData) {
-                                                          const jsonObj =
-                                                            JSON.parse(employeeData);
-                                                          const dateFormat =
-                                                            "YYYY-MM-DD";
-                                                          const currentDate =
-                                                            moment().format(dateFormat);
-                                                          const monthFirstDate = moment(
+                                                        const dateFormat =
+                                                          "YYYY-MM-DD";
+                                                        const currentDate =
+                                                          moment().format(
+                                                            dateFormat
+                                                          );
+                                                        const monthFirstDate =
+                                                          moment(
                                                             currentDate,
                                                             dateFormat
                                                           )
-                                                            .subtract(0, "months")
+                                                            .subtract(
+                                                              0,
+                                                              "months"
+                                                            )
                                                             .startOf("month")
                                                             .format(dateFormat);
-                                                          const monthLastDate = moment(
+                                                        const monthLastDate =
+                                                          moment(
                                                             currentDate,
                                                             dateFormat
                                                           )
-                                                            .subtract(0, "months")
+                                                            .subtract(
+                                                              0,
+                                                              "months"
+                                                            )
                                                             .endOf("month")
                                                             .format(dateFormat);
-                                                          let payload = {
-                                                            orgId: jsonObj.orgId,
-                                                            selectedEmpId:
-                                                              innerItem1.empId,
-                                                            endDate: monthLastDate,
-                                                            loggedInEmpId:
-                                                              jsonObj.empId,
-                                                            empId: innerItem1.empId,
-                                                            startDate: monthFirstDate,
-                                                            levelSelected: null,
-                                                            pageNo: 0,
-                                                            size: 100,
-                                                          };
-                                                          Promise.all([
-                                                            dispatch(
-                                                              getUserWiseTargetParameters(
-                                                                payload
-                                                              )
-                                                            ),
-                                                          ]).then(async (res) => {
-                                                            let tempRawData = [];
-                                                            tempRawData =
-                                                              res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                (item) =>
-                                                                  item.empId !==
-                                                                  innerItem1.empId
-                                                              );
-                                                            if (
-                                                              tempRawData.length > 0
+                                                        let payload = {
+                                                          orgId: jsonObj.orgId,
+                                                          selectedEmpId:
+                                                            innerItem1.empId,
+                                                          endDate:
+                                                            monthLastDate,
+                                                          loggedInEmpId:
+                                                            jsonObj.empId,
+                                                          empId:
+                                                            innerItem1.empId,
+                                                          startDate:
+                                                            monthFirstDate,
+                                                          levelSelected: null,
+                                                          pageNo: 0,
+                                                          size: 100,
+                                                        };
+                                                        Promise.all([
+                                                          dispatch(
+                                                            getUserWiseTargetParameters(
+                                                              payload
+                                                            )
+                                                          ),
+                                                        ]).then(async (res) => {
+                                                          let tempRawData = [];
+                                                          tempRawData =
+                                                            res[0]?.payload?.employeeTargetAchievements.filter(
+                                                              (item) =>
+                                                                item.empId !==
+                                                                innerItem1.empId
+                                                            );
+                                                          if (
+                                                            tempRawData.length >
+                                                            0
+                                                          ) {
+                                                            for (
+                                                              let i = 0;
+                                                              i <
+                                                              tempRawData.length;
+                                                              i++
                                                             ) {
-                                                              for (
-                                                                let i = 0;
-                                                                i < tempRawData.length;
-                                                                i++
+                                                              tempRawData[i] = {
+                                                                ...tempRawData[
+                                                                  i
+                                                                ],
+                                                                isOpenInner: false,
+                                                                employeeTargetAchievements:
+                                                                  [],
+                                                                tempTargetAchievements:
+                                                                  tempRawData[i]
+                                                                    ?.targetAchievements,
+                                                              };
+                                                              if (
+                                                                i ===
+                                                                tempRawData.length -
+                                                                  1
                                                               ) {
-                                                                tempRawData[i] = {
-                                                                  ...tempRawData[i],
-                                                                  isOpenInner: false,
-                                                                  employeeTargetAchievements:
-                                                                    [],
-                                                                  tempTargetAchievements:
-                                                                    tempRawData[i]
-                                                                      ?.targetAchievements,
-                                                                };
+                                                                localData[
+                                                                  index
+                                                                ].employeeTargetAchievements[
+                                                                  innerIndex1
+                                                                ].employeeTargetAchievements =
+                                                                  tempRawData;
+                                                                let newIds =
+                                                                  tempRawData.map(
+                                                                    (emp) =>
+                                                                      emp.empId
+                                                                  );
                                                                 if (
-                                                                  i ===
-                                                                  tempRawData.length - 1
+                                                                  newIds.length >=
+                                                                  2
                                                                 ) {
-                                                                  localData[
-                                                                    index
-                                                                  ].employeeTargetAchievements[
-                                                                    innerIndex1
-                                                                  ].employeeTargetAchievements =
-                                                                    tempRawData;
-                                                                  let newIds =
-                                                                    tempRawData.map(
-                                                                      (emp) => emp.empId
-                                                                    );
-                                                                  if (
-                                                                    newIds.length >= 2
+                                                                  for (
+                                                                    let i = 0;
+                                                                    i <
+                                                                    newIds.length;
+                                                                    i++
                                                                   ) {
-                                                                    for (
-                                                                      let i = 0;
-                                                                      i < newIds.length;
-                                                                      i++
+                                                                    const element =
+                                                                      newIds[
+                                                                        i
+                                                                      ].toString();
+                                                                    let tempPayload =
+                                                                      getTotalPayload(
+                                                                        employeeData,
+                                                                        element
+                                                                      );
+                                                                    const response =
+                                                                      await client.post(
+                                                                        URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                        tempPayload
+                                                                      );
+                                                                    const json =
+                                                                      await response.json();
+                                                                    if (
+                                                                      Array.isArray(
+                                                                        json
+                                                                      )
                                                                     ) {
-                                                                      const element =
-                                                                        newIds[
-                                                                          i
-                                                                        ].toString();
-                                                                      let tempPayload =
-                                                                        getTotalPayload(
-                                                                          employeeData,
-                                                                          element
-                                                                        );
-                                                                      const response =
-                                                                        await client.post(
-                                                                          URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                          tempPayload
-                                                                        );
-                                                                      const json =
-                                                                        await response.json();
-                                                                      if (
-                                                                        Array.isArray(
-                                                                          json
-                                                                        )
-                                                                      ) {
-                                                                        localData[
-                                                                          index
-                                                                        ].employeeTargetAchievements[
-                                                                          innerIndex1
-                                                                        ].employeeTargetAchievements[
-                                                                          i
-                                                                        ].targetAchievements =
-                                                                          json;
-                                                                      }
+                                                                      localData[
+                                                                        index
+                                                                      ].employeeTargetAchievements[
+                                                                        innerIndex1
+                                                                      ].employeeTargetAchievements[
+                                                                        i
+                                                                      ].targetAchievements =
+                                                                        json;
                                                                     }
                                                                   }
                                                                 }
                                                               }
                                                             }
-                                                            setAllParameters([
-                                                              ...localData,
-                                                            ]);
-                                                          });
+                                                          }
+                                                          setAllParameters([
+                                                            ...localData,
+                                                          ]);
+                                                        });
 
-                                                          // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                          //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                          //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                          //   }
-                                                          // }
-                                                          // setAllParameters([...localData])
-                                                        }
-                                                      } else {
-                                                        setAllParameters([
-                                                          ...localData,
-                                                        ]);
+                                                        // if (localData[index].employeeTargetAchievements.length > 0) {
+                                                        //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                                        //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                                        //   }
+                                                        // }
+                                                        // setAllParameters([...localData])
                                                       }
-                                                      // setAllParameters([...localData])
-                                                    }}
-                                                  />
-                                                  {renderData(innerItem1, "#F59D00")}
-                                                </View>
-                                                {innerItem1.isOpenInner &&
-                                                  innerItem1.employeeTargetAchievements
-                                                    .length > 0 &&
-                                                  innerItem1.employeeTargetAchievements.map(
-                                                    (innerItem2, innerIndex2) => {
-                                                      return (
+                                                    } else {
+                                                      setAllParameters([
+                                                        ...localData,
+                                                      ]);
+                                                    }
+                                                    // setAllParameters([...localData])
+                                                  }}
+                                                />
+                                                {renderData(
+                                                  innerItem1,
+                                                  "#F59D00"
+                                                )}
+                                              </View>
+                                              {innerItem1.isOpenInner &&
+                                                innerItem1
+                                                  .employeeTargetAchievements
+                                                  .length > 0 &&
+                                                innerItem1.employeeTargetAchievements.map(
+                                                  (innerItem2, innerIndex2) => {
+                                                    return (
+                                                      <View
+                                                        key={innerIndex2}
+                                                        style={[
+                                                          {
+                                                            width: "98%",
+                                                            minHeight: 40,
+                                                            flexDirection:
+                                                              "column",
+                                                          },
+                                                          innerItem2.isOpenInner && {
+                                                            borderRadius: 10,
+                                                            borderWidth: 1,
+                                                            borderColor:
+                                                              "#2C97DE",
+                                                            backgroundColor:
+                                                              "#EEEEEE",
+                                                            marginHorizontal: 5,
+                                                          },
+                                                        ]}
+                                                      >
                                                         <View
-                                                          key={innerIndex2}
-                                                          style={[
-                                                            {
-                                                              width: "98%",
-                                                              minHeight: 40,
-                                                              flexDirection: "column",
-                                                            },
-                                                            innerItem2.isOpenInner && {
-                                                              borderRadius: 10,
-                                                              borderWidth: 1,
-                                                              borderColor: "#2C97DE",
-                                                              backgroundColor:
-                                                                "#EEEEEE",
-                                                              marginHorizontal: 5,
-                                                            },
-                                                          ]}
+                                                          style={{
+                                                            paddingHorizontal: 4,
+                                                            display: "flex",
+                                                            flexDirection:
+                                                              "row",
+                                                            justifyContent:
+                                                              "space-between",
+                                                            paddingVertical: 4,
+                                                          }}
                                                         >
-                                                          <View
+                                                          <Text
                                                             style={{
-                                                              paddingHorizontal: 4,
-                                                              display: "flex",
-                                                              flexDirection: "row",
-                                                              justifyContent:
-                                                                "space-between",
-                                                              paddingVertical: 4,
+                                                              fontSize: 10,
+                                                              fontWeight: "500",
+                                                            }}
+                                                          >
+                                                            {innerItem2.empName}
+                                                          </Text>
+                                                          <Pressable
+                                                            onPress={() => {
+                                                              navigation.navigate(
+                                                                AppNavigator
+                                                                  .HomeStackIdentifiers
+                                                                  .sourceModel,
+                                                                {
+                                                                  empId:
+                                                                    innerItem2.empId,
+                                                                  headerTitle:
+                                                                    innerItem2.empName,
+                                                                  type: "TEAM",
+                                                                  moduleType:
+                                                                    "live-leads",
+                                                                }
+                                                              );
                                                             }}
                                                           >
                                                             <Text
                                                               style={{
-                                                                fontSize: 10,
-                                                                fontWeight: "500",
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                  "600",
+                                                                color:
+                                                                  Colors.BLUE,
+                                                                marginLeft: 8,
                                                               }}
                                                             >
-                                                              {innerItem2.empName}
+                                                              Source/Model
                                                             </Text>
-                                                            <Pressable
-                                                              onPress={() => {
-                                                                navigation.navigate(
-                                                                  AppNavigator
-                                                                    .HomeStackIdentifiers
-                                                                    .sourceModel,
-                                                                  {
-                                                                    empId:
-                                                                      innerItem2.empId,
-                                                                    headerTitle:
-                                                                      innerItem2.empName,
-                                                                    type: "TEAM",
-                                                                    moduleType:
-                                                                      "live-leads",
-                                                                  }
-                                                                );
-                                                              }}
-                                                            >
-                                                              <Text
-                                                                style={{
-                                                                  fontSize: 12,
-                                                                  fontWeight: "600",
-                                                                  color: Colors.BLUE,
-                                                                  marginLeft: 8,
-                                                                }}
-                                                              >
-                                                                Source/Model
-                                                              </Text>
-                                                            </Pressable>
-                                                          </View>
-                                                          <View
-                                                            style={{
-                                                              flexDirection: "row",
-                                                            }}
-                                                          >
-                                                            <RenderLevel1NameView
-                                                              level={2}
-                                                              item={innerItem2}
-                                                              color={"#2C97DE"}
-                                                              titleClick={async () => {
+                                                          </Pressable>
+                                                        </View>
+                                                        <View
+                                                          style={{
+                                                            flexDirection:
+                                                              "row",
+                                                          }}
+                                                        >
+                                                          <RenderLevel1NameView
+                                                            level={2}
+                                                            item={innerItem2}
+                                                            color={"#2C97DE"}
+                                                            titleClick={async () => {
+                                                              setSelectedName(
+                                                                innerItem2.empName
+                                                              );
+                                                              setTimeout(() => {
                                                                 setSelectedName(
-                                                                  innerItem2.empName
+                                                                  ""
                                                                 );
-                                                                setTimeout(() => {
-                                                                  setSelectedName("");
-                                                                }, 900);
-                                                                let localData = [
-                                                                  ...allParameters,
-                                                                ];
-                                                                let current =
-                                                                  localData[index]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex1
+                                                              }, 900);
+                                                              let localData = [
+                                                                ...allParameters,
+                                                              ];
+                                                              let current =
+                                                                localData[index]
+                                                                  .employeeTargetAchievements[
+                                                                  innerIndex1
+                                                                ]
+                                                                  .employeeTargetAchievements[
+                                                                  innerIndex2
+                                                                ].isOpenInner;
+                                                              for (
+                                                                let i = 0;
+                                                                i <
+                                                                localData[index]
+                                                                  .employeeTargetAchievements[
+                                                                  innerIndex1
+                                                                ]
+                                                                  .employeeTargetAchievements
+                                                                  .length;
+                                                                i++
+                                                              ) {
+                                                                localData[
+                                                                  index
+                                                                ].employeeTargetAchievements[
+                                                                  innerIndex1
+                                                                ].employeeTargetAchievements[
+                                                                  i
+                                                                ].isOpenInner = false;
+                                                                if (
+                                                                  i ===
+                                                                  localData[
+                                                                    index
                                                                   ]
-                                                                    .employeeTargetAchievements[
-                                                                    innerIndex2
-                                                                  ].isOpenInner;
-                                                                for (
-                                                                  let i = 0;
-                                                                  i <
-                                                                  localData[index]
                                                                     .employeeTargetAchievements[
                                                                     innerIndex1
                                                                   ]
                                                                     .employeeTargetAchievements
-                                                                    .length;
-                                                                  i++
+                                                                    .length -
+                                                                    1
                                                                 ) {
                                                                   localData[
                                                                     index
                                                                   ].employeeTargetAchievements[
                                                                     innerIndex1
                                                                   ].employeeTargetAchievements[
-                                                                    i
-                                                                  ].isOpenInner = false;
-                                                                  if (
-                                                                    i ===
-                                                                    localData[index]
-                                                                      .employeeTargetAchievements[
-                                                                      innerIndex1
-                                                                    ]
-                                                                      .employeeTargetAchievements
-                                                                      .length -
-                                                                    1
-                                                                  ) {
-                                                                    localData[
-                                                                      index
-                                                                    ].employeeTargetAchievements[
-                                                                      innerIndex1
-                                                                    ].employeeTargetAchievements[
-                                                                      innerIndex2
-                                                                    ].isOpenInner =
-                                                                      !current;
-                                                                  }
+                                                                    innerIndex2
+                                                                  ].isOpenInner =
+                                                                    !current;
                                                                 }
+                                                              }
 
-                                                                if (!current) {
-                                                                  let employeeData =
-                                                                    await AsyncStore.getData(
-                                                                      AsyncStore.Keys
-                                                                        .LOGIN_EMPLOYEE
+                                                              if (!current) {
+                                                                let employeeData =
+                                                                  await AsyncStore.getData(
+                                                                    AsyncStore
+                                                                      .Keys
+                                                                      .LOGIN_EMPLOYEE
+                                                                  );
+                                                                if (
+                                                                  employeeData
+                                                                ) {
+                                                                  const jsonObj =
+                                                                    JSON.parse(
+                                                                      employeeData
                                                                     );
-                                                                  if (employeeData) {
-                                                                    const jsonObj =
-                                                                      JSON.parse(
-                                                                        employeeData
-                                                                      );
-                                                                    const dateFormat =
-                                                                      "YYYY-MM-DD";
-                                                                    const currentDate =
-                                                                      moment().format(
-                                                                        dateFormat
-                                                                      );
-                                                                    const monthFirstDate =
-                                                                      moment(
-                                                                        currentDate,
-                                                                        dateFormat
+                                                                  const dateFormat =
+                                                                    "YYYY-MM-DD";
+                                                                  const currentDate =
+                                                                    moment().format(
+                                                                      dateFormat
+                                                                    );
+                                                                  const monthFirstDate =
+                                                                    moment(
+                                                                      currentDate,
+                                                                      dateFormat
+                                                                    )
+                                                                      .subtract(
+                                                                        0,
+                                                                        "months"
                                                                       )
-                                                                        .subtract(
-                                                                          0,
-                                                                          "months"
-                                                                        )
-                                                                        .startOf(
-                                                                          "month"
-                                                                        )
-                                                                        .format(
-                                                                          dateFormat
-                                                                        );
-                                                                    const monthLastDate =
-                                                                      moment(
-                                                                        currentDate,
-                                                                        dateFormat
+                                                                      .startOf(
+                                                                        "month"
                                                                       )
-                                                                        .subtract(
-                                                                          0,
-                                                                          "months"
-                                                                        )
-                                                                        .endOf("month")
-                                                                        .format(
-                                                                          dateFormat
-                                                                        );
-                                                                    let payload = {
+                                                                      .format(
+                                                                        dateFormat
+                                                                      );
+                                                                  const monthLastDate =
+                                                                    moment(
+                                                                      currentDate,
+                                                                      dateFormat
+                                                                    )
+                                                                      .subtract(
+                                                                        0,
+                                                                        "months"
+                                                                      )
+                                                                      .endOf(
+                                                                        "month"
+                                                                      )
+                                                                      .format(
+                                                                        dateFormat
+                                                                      );
+                                                                  let payload =
+                                                                    {
                                                                       orgId:
                                                                         jsonObj.orgId,
                                                                       selectedEmpId:
@@ -3983,271 +4633,305 @@ const ParametersScreen = ({ route }) => {
                                                                       pageNo: 0,
                                                                       size: 100,
                                                                     };
-                                                                    Promise.all([
-                                                                      dispatch(
-                                                                        getUserWiseTargetParameters(
-                                                                          payload
-                                                                        )
-                                                                      ),
-                                                                    ]).then(
-                                                                      async (res) => {
-                                                                        let tempRawData =
-                                                                          [];
-                                                                        tempRawData =
-                                                                          res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                            (item) =>
-                                                                              item.empId !==
-                                                                              innerItem2.empId
-                                                                          );
-                                                                        if (
-                                                                          tempRawData.length >
-                                                                          0
+                                                                  Promise.all([
+                                                                    dispatch(
+                                                                      getUserWiseTargetParameters(
+                                                                        payload
+                                                                      )
+                                                                    ),
+                                                                  ]).then(
+                                                                    async (
+                                                                      res
+                                                                    ) => {
+                                                                      let tempRawData =
+                                                                        [];
+                                                                      tempRawData =
+                                                                        res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                          (
+                                                                            item
+                                                                          ) =>
+                                                                            item.empId !==
+                                                                            innerItem2.empId
+                                                                        );
+                                                                      if (
+                                                                        tempRawData.length >
+                                                                        0
+                                                                      ) {
+                                                                        for (
+                                                                          let i = 0;
+                                                                          i <
+                                                                          tempRawData.length;
+                                                                          i++
                                                                         ) {
-                                                                          for (
-                                                                            let i = 0;
-                                                                            i <
-                                                                            tempRawData.length;
-                                                                            i++
-                                                                          ) {
-                                                                            tempRawData[
+                                                                          tempRawData[
+                                                                            i
+                                                                          ] = {
+                                                                            ...tempRawData[
                                                                               i
-                                                                            ] = {
-                                                                              ...tempRawData[
-                                                                              i
-                                                                              ],
-                                                                              isOpenInner: false,
-                                                                              employeeTargetAchievements:
-                                                                                [],
-                                                                              tempTargetAchievements:
-                                                                                tempRawData[
-                                                                                  i
-                                                                                ]
-                                                                                  ?.targetAchievements,
-                                                                            };
-                                                                            if (
-                                                                              i ===
-                                                                              tempRawData.length -
+                                                                            ],
+                                                                            isOpenInner: false,
+                                                                            employeeTargetAchievements:
+                                                                              [],
+                                                                            tempTargetAchievements:
+                                                                              tempRawData[
+                                                                                i
+                                                                              ]
+                                                                                ?.targetAchievements,
+                                                                          };
+                                                                          if (
+                                                                            i ===
+                                                                            tempRawData.length -
                                                                               1
+                                                                          ) {
+                                                                            localData[
+                                                                              index
+                                                                            ].employeeTargetAchievements[
+                                                                              innerIndex1
+                                                                            ].employeeTargetAchievements[
+                                                                              innerIndex2
+                                                                            ].employeeTargetAchievements =
+                                                                              tempRawData;
+                                                                            let newIds =
+                                                                              tempRawData.map(
+                                                                                (
+                                                                                  emp
+                                                                                ) =>
+                                                                                  emp.empId
+                                                                              );
+                                                                            if (
+                                                                              newIds.length >=
+                                                                              2
                                                                             ) {
-                                                                              localData[
-                                                                                index
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex1
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex2
-                                                                              ].employeeTargetAchievements =
-                                                                                tempRawData;
-                                                                              let newIds =
-                                                                                tempRawData.map(
-                                                                                  (
-                                                                                    emp
-                                                                                  ) =>
-                                                                                    emp.empId
-                                                                                );
-                                                                              if (
-                                                                                newIds.length >=
-                                                                                2
+                                                                              for (
+                                                                                let i = 0;
+                                                                                i <
+                                                                                newIds.length;
+                                                                                i++
                                                                               ) {
-                                                                                for (
-                                                                                  let i = 0;
-                                                                                  i <
-                                                                                  newIds.length;
-                                                                                  i++
+                                                                                const element =
+                                                                                  newIds[
+                                                                                    i
+                                                                                  ].toString();
+                                                                                let tempPayload =
+                                                                                  getTotalPayload(
+                                                                                    employeeData,
+                                                                                    element
+                                                                                  );
+                                                                                const response =
+                                                                                  await client.post(
+                                                                                    URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                    tempPayload
+                                                                                  );
+                                                                                const json =
+                                                                                  await response.json();
+                                                                                if (
+                                                                                  Array.isArray(
+                                                                                    json
+                                                                                  )
                                                                                 ) {
-                                                                                  const element =
-                                                                                    newIds[
-                                                                                      i
-                                                                                    ].toString();
-                                                                                  let tempPayload =
-                                                                                    getTotalPayload(
-                                                                                      employeeData,
-                                                                                      element
-                                                                                    );
-                                                                                  const response =
-                                                                                    await client.post(
-                                                                                      URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                                      tempPayload
-                                                                                    );
-                                                                                  const json =
-                                                                                    await response.json();
-                                                                                  if (
-                                                                                    Array.isArray(
-                                                                                      json
-                                                                                    )
-                                                                                  ) {
-                                                                                    localData[
-                                                                                      index
-                                                                                    ].employeeTargetAchievements[
-                                                                                      innerIndex1
-                                                                                    ].employeeTargetAchievements[
-                                                                                      innerIndex2
-                                                                                    ].employeeTargetAchievements[
-                                                                                      i
-                                                                                    ].targetAchievements =
-                                                                                      json;
-                                                                                  }
+                                                                                  localData[
+                                                                                    index
+                                                                                  ].employeeTargetAchievements[
+                                                                                    innerIndex1
+                                                                                  ].employeeTargetAchievements[
+                                                                                    innerIndex2
+                                                                                  ].employeeTargetAchievements[
+                                                                                    i
+                                                                                  ].targetAchievements =
+                                                                                    json;
                                                                                 }
                                                                               }
                                                                             }
                                                                           }
                                                                         }
-                                                                        setAllParameters(
-                                                                          [...localData]
-                                                                        );
                                                                       }
-                                                                    );
+                                                                      setAllParameters(
+                                                                        [
+                                                                          ...localData,
+                                                                        ]
+                                                                      );
+                                                                    }
+                                                                  );
 
-                                                                    // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                                    //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                                    //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                                    //   }
-                                                                    // }
-                                                                    // setAllParameters([...localData])
-                                                                  }
-                                                                } else {
-                                                                  setAllParameters([
-                                                                    ...localData,
-                                                                  ]);
+                                                                  // if (localData[index].employeeTargetAchievements.length > 0) {
+                                                                  //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                                                  //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                                                  //   }
+                                                                  // }
+                                                                  // setAllParameters([...localData])
                                                                 }
-                                                                // setAllParameters([...localData])
-                                                              }}
-                                                            />
-                                                            {renderData(
-                                                              innerItem2,
-                                                              "#2C97DE"
-                                                            )}
-                                                          </View>
-                                                          {innerItem2.isOpenInner &&
-                                                            innerItem2
-                                                              .employeeTargetAchievements
-                                                              .length > 0 &&
-                                                            innerItem2.employeeTargetAchievements.map(
-                                                              (
-                                                                innerItem3,
-                                                                innerIndex3
-                                                              ) => {
-                                                                return (
+                                                              } else {
+                                                                setAllParameters(
+                                                                  [...localData]
+                                                                );
+                                                              }
+                                                              // setAllParameters([...localData])
+                                                            }}
+                                                          />
+                                                          {renderData(
+                                                            innerItem2,
+                                                            "#2C97DE"
+                                                          )}
+                                                        </View>
+                                                        {innerItem2.isOpenInner &&
+                                                          innerItem2
+                                                            .employeeTargetAchievements
+                                                            .length > 0 &&
+                                                          innerItem2.employeeTargetAchievements.map(
+                                                            (
+                                                              innerItem3,
+                                                              innerIndex3
+                                                            ) => {
+                                                              return (
+                                                                <View
+                                                                  key={
+                                                                    innerIndex3
+                                                                  }
+                                                                  style={[
+                                                                    {
+                                                                      width:
+                                                                        "98%",
+                                                                      minHeight: 40,
+                                                                      flexDirection:
+                                                                        "column",
+                                                                    },
+                                                                    innerItem3.isOpenInner && {
+                                                                      borderRadius: 10,
+                                                                      borderWidth: 1,
+                                                                      borderColor:
+                                                                        "#EC3466",
+                                                                      backgroundColor:
+                                                                        "#FFFFFF",
+                                                                      marginHorizontal: 5,
+                                                                    },
+                                                                  ]}
+                                                                >
                                                                   <View
-                                                                    key={innerIndex3}
-                                                                    style={[
-                                                                      {
-                                                                        width: "98%",
-                                                                        minHeight: 40,
-                                                                        flexDirection:
-                                                                          "column",
-                                                                      },
-                                                                      innerItem3.isOpenInner && {
-                                                                        borderRadius: 10,
-                                                                        borderWidth: 1,
-                                                                        borderColor:
-                                                                          "#EC3466",
-                                                                        backgroundColor:
-                                                                          "#FFFFFF",
-                                                                        marginHorizontal: 5,
-                                                                      },
-                                                                    ]}
+                                                                    style={{
+                                                                      paddingHorizontal: 4,
+                                                                      display:
+                                                                        "flex",
+                                                                      flexDirection:
+                                                                        "row",
+                                                                      justifyContent:
+                                                                        "space-between",
+                                                                      paddingVertical: 4,
+                                                                    }}
                                                                   >
-                                                                    <View
+                                                                    <Text
                                                                       style={{
-                                                                        paddingHorizontal: 4,
-                                                                        display: "flex",
-                                                                        flexDirection:
-                                                                          "row",
-                                                                        justifyContent:
-                                                                          "space-between",
-                                                                        paddingVertical: 4,
+                                                                        fontSize: 10,
+                                                                        fontWeight:
+                                                                          "500",
+                                                                      }}
+                                                                    >
+                                                                      {
+                                                                        innerItem3.empName
+                                                                      }
+                                                                    </Text>
+                                                                    <Pressable
+                                                                      onPress={() => {
+                                                                        navigation.navigate(
+                                                                          AppNavigator
+                                                                            .HomeStackIdentifiers
+                                                                            .sourceModel,
+                                                                          {
+                                                                            empId:
+                                                                              innerItem3.empId,
+                                                                            headerTitle:
+                                                                              innerItem3.empName,
+                                                                            type: "TEAM",
+                                                                            moduleType:
+                                                                              "live-leads",
+                                                                          }
+                                                                        );
                                                                       }}
                                                                     >
                                                                       <Text
                                                                         style={{
-                                                                          fontSize: 10,
+                                                                          fontSize: 12,
                                                                           fontWeight:
-                                                                            "500",
+                                                                            "600",
+                                                                          color:
+                                                                            Colors.BLUE,
+                                                                          marginLeft: 8,
                                                                         }}
                                                                       >
-                                                                        {
-                                                                          innerItem3.empName
-                                                                        }
+                                                                        Source/Model
                                                                       </Text>
-                                                                      <Pressable
-                                                                        onPress={() => {
-                                                                          navigation.navigate(
-                                                                            AppNavigator
-                                                                              .HomeStackIdentifiers
-                                                                              .sourceModel,
-                                                                            {
-                                                                              empId:
-                                                                                innerItem3.empId,
-                                                                              headerTitle:
-                                                                                innerItem3.empName,
-                                                                              type: "TEAM",
-                                                                              moduleType:
-                                                                                "live-leads",
-                                                                            }
-                                                                          );
-                                                                        }}
-                                                                      >
-                                                                        <Text
-                                                                          style={{
-                                                                            fontSize: 12,
-                                                                            fontWeight:
-                                                                              "600",
-                                                                            color:
-                                                                              Colors.BLUE,
-                                                                            marginLeft: 8,
-                                                                          }}
-                                                                        >
-                                                                          Source/Model
-                                                                        </Text>
-                                                                      </Pressable>
-                                                                    </View>
-                                                                    <View
-                                                                      style={{
-                                                                        flexDirection:
-                                                                          "row",
-                                                                      }}
-                                                                    >
-                                                                      <RenderLevel1NameView
-                                                                        level={3}
-                                                                        item={
-                                                                          innerItem3
-                                                                        }
-                                                                        color={
-                                                                          "#EC3466"
-                                                                        }
-                                                                        titleClick={async () => {
-                                                                          setSelectedName(
-                                                                            innerItem3.empName
-                                                                          );
-                                                                          setTimeout(
-                                                                            () => {
-                                                                              setSelectedName(
-                                                                                ""
-                                                                              );
-                                                                            },
-                                                                            900
-                                                                          );
-                                                                          let localData =
-                                                                            [
-                                                                              ...allParameters,
-                                                                            ];
-                                                                          let current =
-                                                                            localData[
-                                                                              index
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex1
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex2
-                                                                            ]
-                                                                              .employeeTargetAchievements[
-                                                                              innerIndex3
-                                                                            ]
-                                                                              .isOpenInner;
-                                                                          for (
-                                                                            let i = 0;
-                                                                            i <
+                                                                    </Pressable>
+                                                                  </View>
+                                                                  <View
+                                                                    style={{
+                                                                      flexDirection:
+                                                                        "row",
+                                                                    }}
+                                                                  >
+                                                                    <RenderLevel1NameView
+                                                                      level={3}
+                                                                      item={
+                                                                        innerItem3
+                                                                      }
+                                                                      color={
+                                                                        "#EC3466"
+                                                                      }
+                                                                      titleClick={async () => {
+                                                                        setSelectedName(
+                                                                          innerItem3.empName
+                                                                        );
+                                                                        setTimeout(
+                                                                          () => {
+                                                                            setSelectedName(
+                                                                              ""
+                                                                            );
+                                                                          },
+                                                                          900
+                                                                        );
+                                                                        let localData =
+                                                                          [
+                                                                            ...allParameters,
+                                                                          ];
+                                                                        let current =
+                                                                          localData[
+                                                                            index
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex1
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex2
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex3
+                                                                          ]
+                                                                            .isOpenInner;
+                                                                        for (
+                                                                          let i = 0;
+                                                                          i <
+                                                                          localData[
+                                                                            index
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex1
+                                                                          ]
+                                                                            .employeeTargetAchievements[
+                                                                            innerIndex2
+                                                                          ]
+                                                                            .employeeTargetAchievements
+                                                                            .length;
+                                                                          i++
+                                                                        ) {
+                                                                          localData[
+                                                                            index
+                                                                          ].employeeTargetAchievements[
+                                                                            innerIndex1
+                                                                          ].employeeTargetAchievements[
+                                                                            innerIndex2
+                                                                          ].employeeTargetAchievements[
+                                                                            i
+                                                                          ].isOpenInner = false;
+                                                                          if (
+                                                                            i ===
                                                                             localData[
                                                                               index
                                                                             ]
@@ -4258,8 +4942,8 @@ const ParametersScreen = ({ route }) => {
                                                                               innerIndex2
                                                                             ]
                                                                               .employeeTargetAchievements
-                                                                              .length;
-                                                                            i++
+                                                                              .length -
+                                                                              1
                                                                           ) {
                                                                             localData[
                                                                               index
@@ -4268,89 +4952,65 @@ const ParametersScreen = ({ route }) => {
                                                                             ].employeeTargetAchievements[
                                                                               innerIndex2
                                                                             ].employeeTargetAchievements[
-                                                                              i
-                                                                            ].isOpenInner = false;
-                                                                            if (
-                                                                              i ===
-                                                                              localData[
-                                                                                index
-                                                                              ]
-                                                                                .employeeTargetAchievements[
-                                                                                innerIndex1
-                                                                              ]
-                                                                                .employeeTargetAchievements[
-                                                                                innerIndex2
-                                                                              ]
-                                                                                .employeeTargetAchievements
-                                                                                .length -
-                                                                              1
-                                                                            ) {
-                                                                              localData[
-                                                                                index
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex1
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex2
-                                                                              ].employeeTargetAchievements[
-                                                                                innerIndex3
-                                                                              ].isOpenInner =
-                                                                                !current;
-                                                                            }
+                                                                              innerIndex3
+                                                                            ].isOpenInner =
+                                                                              !current;
                                                                           }
+                                                                        }
 
+                                                                        if (
+                                                                          !current
+                                                                        ) {
+                                                                          let employeeData =
+                                                                            await AsyncStore.getData(
+                                                                              AsyncStore
+                                                                                .Keys
+                                                                                .LOGIN_EMPLOYEE
+                                                                            );
                                                                           if (
-                                                                            !current
+                                                                            employeeData
                                                                           ) {
-                                                                            let employeeData =
-                                                                              await AsyncStore.getData(
-                                                                                AsyncStore
-                                                                                  .Keys
-                                                                                  .LOGIN_EMPLOYEE
+                                                                            const jsonObj =
+                                                                              JSON.parse(
+                                                                                employeeData
                                                                               );
-                                                                            if (
-                                                                              employeeData
-                                                                            ) {
-                                                                              const jsonObj =
-                                                                                JSON.parse(
-                                                                                  employeeData
-                                                                                );
-                                                                              const dateFormat =
-                                                                                "YYYY-MM-DD";
-                                                                              const currentDate =
-                                                                                moment().format(
-                                                                                  dateFormat
-                                                                                );
-                                                                              const monthFirstDate =
-                                                                                moment(
-                                                                                  currentDate,
-                                                                                  dateFormat
+                                                                            const dateFormat =
+                                                                              "YYYY-MM-DD";
+                                                                            const currentDate =
+                                                                              moment().format(
+                                                                                dateFormat
+                                                                              );
+                                                                            const monthFirstDate =
+                                                                              moment(
+                                                                                currentDate,
+                                                                                dateFormat
+                                                                              )
+                                                                                .subtract(
+                                                                                  0,
+                                                                                  "months"
                                                                                 )
-                                                                                  .subtract(
-                                                                                    0,
-                                                                                    "months"
-                                                                                  )
-                                                                                  .startOf(
-                                                                                    "month"
-                                                                                  )
-                                                                                  .format(
-                                                                                    dateFormat
-                                                                                  );
-                                                                              const monthLastDate =
-                                                                                moment(
-                                                                                  currentDate,
-                                                                                  dateFormat
+                                                                                .startOf(
+                                                                                  "month"
                                                                                 )
-                                                                                  .subtract(
-                                                                                    0,
-                                                                                    "months"
-                                                                                  )
-                                                                                  .endOf(
-                                                                                    "month"
-                                                                                  )
-                                                                                  .format(
-                                                                                    dateFormat
-                                                                                  );
-                                                                              let payload =
+                                                                                .format(
+                                                                                  dateFormat
+                                                                                );
+                                                                            const monthLastDate =
+                                                                              moment(
+                                                                                currentDate,
+                                                                                dateFormat
+                                                                              )
+                                                                                .subtract(
+                                                                                  0,
+                                                                                  "months"
+                                                                                )
+                                                                                .endOf(
+                                                                                  "month"
+                                                                                )
+                                                                                .format(
+                                                                                  dateFormat
+                                                                                );
+                                                                            let payload =
                                                                               {
                                                                                 orgId:
                                                                                   jsonObj.orgId,
@@ -4369,44 +5029,44 @@ const ParametersScreen = ({ route }) => {
                                                                                 pageNo: 0,
                                                                                 size: 100,
                                                                               };
-                                                                              Promise.all(
-                                                                                [
-                                                                                  dispatch(
-                                                                                    getUserWiseTargetParameters(
-                                                                                      payload
-                                                                                    )
-                                                                                  ),
-                                                                                ]
-                                                                              ).then(
-                                                                                async (
-                                                                                  res
-                                                                                ) => {
-                                                                                  let tempRawData =
-                                                                                    [];
-                                                                                  tempRawData =
-                                                                                    res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                      (
-                                                                                        item
-                                                                                      ) =>
-                                                                                        item.empId !==
-                                                                                        innerItem3.empId
-                                                                                    );
-                                                                                  if (
-                                                                                    tempRawData.length >
-                                                                                    0
+                                                                            Promise.all(
+                                                                              [
+                                                                                dispatch(
+                                                                                  getUserWiseTargetParameters(
+                                                                                    payload
+                                                                                  )
+                                                                                ),
+                                                                              ]
+                                                                            ).then(
+                                                                              async (
+                                                                                res
+                                                                              ) => {
+                                                                                let tempRawData =
+                                                                                  [];
+                                                                                tempRawData =
+                                                                                  res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                    (
+                                                                                      item
+                                                                                    ) =>
+                                                                                      item.empId !==
+                                                                                      innerItem3.empId
+                                                                                  );
+                                                                                if (
+                                                                                  tempRawData.length >
+                                                                                  0
+                                                                                ) {
+                                                                                  for (
+                                                                                    let i = 0;
+                                                                                    i <
+                                                                                    tempRawData.length;
+                                                                                    i++
                                                                                   ) {
-                                                                                    for (
-                                                                                      let i = 0;
-                                                                                      i <
-                                                                                      tempRawData.length;
-                                                                                      i++
-                                                                                    ) {
-                                                                                      tempRawData[
-                                                                                        i
-                                                                                      ] =
+                                                                                    tempRawData[
+                                                                                      i
+                                                                                    ] =
                                                                                       {
                                                                                         ...tempRawData[
-                                                                                        i
+                                                                                          i
                                                                                         ],
                                                                                         isOpenInner: false,
                                                                                         employeeTargetAchievements:
@@ -4417,241 +5077,271 @@ const ParametersScreen = ({ route }) => {
                                                                                           ]
                                                                                             ?.targetAchievements,
                                                                                       };
-                                                                                      if (
-                                                                                        i ===
-                                                                                        tempRawData.length -
+                                                                                    if (
+                                                                                      i ===
+                                                                                      tempRawData.length -
                                                                                         1
+                                                                                    ) {
+                                                                                      localData[
+                                                                                        index
+                                                                                      ].employeeTargetAchievements[
+                                                                                        innerIndex1
+                                                                                      ].employeeTargetAchievements[
+                                                                                        innerIndex2
+                                                                                      ].employeeTargetAchievements[
+                                                                                        innerIndex3
+                                                                                      ].employeeTargetAchievements =
+                                                                                        tempRawData;
+                                                                                      let newIds =
+                                                                                        tempRawData.map(
+                                                                                          (
+                                                                                            emp
+                                                                                          ) =>
+                                                                                            emp.empId
+                                                                                        );
+                                                                                      if (
+                                                                                        newIds.length >=
+                                                                                        2
                                                                                       ) {
-                                                                                        localData[
-                                                                                          index
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex1
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex2
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex3
-                                                                                        ].employeeTargetAchievements =
-                                                                                          tempRawData;
-                                                                                        let newIds =
-                                                                                          tempRawData.map(
-                                                                                            (
-                                                                                              emp
-                                                                                            ) =>
-                                                                                              emp.empId
-                                                                                          );
-                                                                                        if (
-                                                                                          newIds.length >=
-                                                                                          2
+                                                                                        for (
+                                                                                          let i = 0;
+                                                                                          i <
+                                                                                          newIds.length;
+                                                                                          i++
                                                                                         ) {
-                                                                                          for (
-                                                                                            let i = 0;
-                                                                                            i <
-                                                                                            newIds.length;
-                                                                                            i++
+                                                                                          const element =
+                                                                                            newIds[
+                                                                                              i
+                                                                                            ].toString();
+                                                                                          let tempPayload =
+                                                                                            getTotalPayload(
+                                                                                              employeeData,
+                                                                                              element
+                                                                                            );
+                                                                                          const response =
+                                                                                            await client.post(
+                                                                                              URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                              tempPayload
+                                                                                            );
+                                                                                          const json =
+                                                                                            await response.json();
+                                                                                          if (
+                                                                                            Array.isArray(
+                                                                                              json
+                                                                                            )
                                                                                           ) {
-                                                                                            const element =
-                                                                                              newIds[
-                                                                                                i
-                                                                                              ].toString();
-                                                                                            let tempPayload =
-                                                                                              getTotalPayload(
-                                                                                                employeeData,
-                                                                                                element
-                                                                                              );
-                                                                                            const response =
-                                                                                              await client.post(
-                                                                                                URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                                                tempPayload
-                                                                                              );
-                                                                                            const json =
-                                                                                              await response.json();
-                                                                                            if (
-                                                                                              Array.isArray(
-                                                                                                json
-                                                                                              )
-                                                                                            ) {
-                                                                                              localData[
-                                                                                                index
-                                                                                              ].employeeTargetAchievements[
-                                                                                                innerIndex1
-                                                                                              ].employeeTargetAchievements[
-                                                                                                innerIndex2
-                                                                                              ].employeeTargetAchievements[
-                                                                                                innerIndex3
-                                                                                              ].employeeTargetAchievements[
-                                                                                                i
-                                                                                              ].targetAchievements =
-                                                                                                json;
-                                                                                            }
+                                                                                            localData[
+                                                                                              index
+                                                                                            ].employeeTargetAchievements[
+                                                                                              innerIndex1
+                                                                                            ].employeeTargetAchievements[
+                                                                                              innerIndex2
+                                                                                            ].employeeTargetAchievements[
+                                                                                              innerIndex3
+                                                                                            ].employeeTargetAchievements[
+                                                                                              i
+                                                                                            ].targetAchievements =
+                                                                                              json;
                                                                                           }
                                                                                         }
                                                                                       }
                                                                                     }
                                                                                   }
-                                                                                  setAllParameters(
-                                                                                    [
-                                                                                      ...localData,
-                                                                                    ]
-                                                                                  );
                                                                                 }
-                                                                              );
-                                                                            }
-                                                                          } else {
-                                                                            setAllParameters(
-                                                                              [
-                                                                                ...localData,
-                                                                              ]
+                                                                                setAllParameters(
+                                                                                  [
+                                                                                    ...localData,
+                                                                                  ]
+                                                                                );
+                                                                              }
                                                                             );
                                                                           }
-                                                                          // setAllParameters([...localData])
-                                                                        }}
-                                                                      />
+                                                                        } else {
+                                                                          setAllParameters(
+                                                                            [
+                                                                              ...localData,
+                                                                            ]
+                                                                          );
+                                                                        }
+                                                                        // setAllParameters([...localData])
+                                                                      }}
+                                                                    />
 
-                                                                      {renderData(
-                                                                        innerItem3,
-                                                                        "#EC3466"
-                                                                      )}
-                                                                    </View>
-                                                                    {innerItem3.isOpenInner &&
-                                                                      innerItem3
-                                                                        .employeeTargetAchievements
-                                                                        .length > 0 &&
-                                                                      innerItem3.employeeTargetAchievements.map(
-                                                                        (
-                                                                          innerItem4,
-                                                                          innerIndex4
-                                                                        ) => {
-                                                                          return (
+                                                                    {renderData(
+                                                                      innerItem3,
+                                                                      "#EC3466"
+                                                                    )}
+                                                                  </View>
+                                                                  {innerItem3.isOpenInner &&
+                                                                    innerItem3
+                                                                      .employeeTargetAchievements
+                                                                      .length >
+                                                                      0 &&
+                                                                    innerItem3.employeeTargetAchievements.map(
+                                                                      (
+                                                                        innerItem4,
+                                                                        innerIndex4
+                                                                      ) => {
+                                                                        return (
+                                                                          <View
+                                                                            key={
+                                                                              innerIndex4
+                                                                            }
+                                                                            style={[
+                                                                              {
+                                                                                width:
+                                                                                  "98%",
+                                                                                minHeight: 40,
+                                                                                flexDirection:
+                                                                                  "column",
+                                                                              },
+                                                                              innerItem4.isOpenInner && {
+                                                                                borderRadius: 10,
+                                                                                borderWidth: 1,
+                                                                                borderColor:
+                                                                                  "#1C95A6",
+                                                                                backgroundColor:
+                                                                                  "#EEEEEE",
+                                                                                marginHorizontal: 5,
+                                                                              },
+                                                                            ]}
+                                                                          >
                                                                             <View
-                                                                              key={
-                                                                                innerIndex4
-                                                                              }
-                                                                              style={[
-                                                                                {
-                                                                                  width:
-                                                                                    "98%",
-                                                                                  minHeight: 40,
-                                                                                  flexDirection:
-                                                                                    "column",
-                                                                                },
-                                                                                innerItem4.isOpenInner && {
-                                                                                  borderRadius: 10,
-                                                                                  borderWidth: 1,
-                                                                                  borderColor:
-                                                                                    "#1C95A6",
-                                                                                  backgroundColor:
-                                                                                    "#EEEEEE",
-                                                                                  marginHorizontal: 5,
-                                                                                },
-                                                                              ]}
+                                                                              style={{
+                                                                                paddingHorizontal: 4,
+                                                                                display:
+                                                                                  "flex",
+                                                                                flexDirection:
+                                                                                  "row",
+                                                                                justifyContent:
+                                                                                  "space-between",
+                                                                                paddingVertical: 4,
+                                                                              }}
                                                                             >
-                                                                              <View
+                                                                              <Text
                                                                                 style={{
-                                                                                  paddingHorizontal: 4,
-                                                                                  display:
-                                                                                    "flex",
-                                                                                  flexDirection:
-                                                                                    "row",
-                                                                                  justifyContent:
-                                                                                    "space-between",
-                                                                                  paddingVertical: 4,
+                                                                                  fontSize: 10,
+                                                                                  fontWeight:
+                                                                                    "500",
+                                                                                }}
+                                                                              >
+                                                                                {
+                                                                                  innerItem4.empName
+                                                                                }
+                                                                              </Text>
+                                                                              <Pressable
+                                                                                onPress={() => {
+                                                                                  navigation.navigate(
+                                                                                    AppNavigator
+                                                                                      .HomeStackIdentifiers
+                                                                                      .sourceModel,
+                                                                                    {
+                                                                                      empId:
+                                                                                        innerItem4.empId,
+                                                                                      headerTitle:
+                                                                                        innerItem4.empName,
+                                                                                      type: "TEAM",
+                                                                                      moduleType:
+                                                                                        "live-leads",
+                                                                                    }
+                                                                                  );
                                                                                 }}
                                                                               >
                                                                                 <Text
                                                                                   style={{
-                                                                                    fontSize: 10,
+                                                                                    fontSize: 12,
                                                                                     fontWeight:
-                                                                                      "500",
+                                                                                      "600",
+                                                                                    color:
+                                                                                      Colors.BLUE,
+                                                                                    marginLeft: 8,
                                                                                   }}
                                                                                 >
-                                                                                  {
-                                                                                    innerItem4.empName
-                                                                                  }
+                                                                                  Source/Model
                                                                                 </Text>
-                                                                                <Pressable
-                                                                                  onPress={() => {
-                                                                                    navigation.navigate(
-                                                                                      AppNavigator
-                                                                                        .HomeStackIdentifiers
-                                                                                        .sourceModel,
-                                                                                      {
-                                                                                        empId:
-                                                                                          innerItem4.empId,
-                                                                                        headerTitle:
-                                                                                          innerItem4.empName,
-                                                                                        type: "TEAM",
-                                                                                        moduleType:
-                                                                                          "live-leads",
-                                                                                      }
-                                                                                    );
-                                                                                  }}
-                                                                                >
-                                                                                  <Text
-                                                                                    style={{
-                                                                                      fontSize: 12,
-                                                                                      fontWeight:
-                                                                                        "600",
-                                                                                      color:
-                                                                                        Colors.BLUE,
-                                                                                      marginLeft: 8,
-                                                                                    }}
-                                                                                  >
-                                                                                    Source/Model
-                                                                                  </Text>
-                                                                                </Pressable>
-                                                                              </View>
-                                                                              <View
-                                                                                style={{
-                                                                                  flexDirection:
-                                                                                    "row",
-                                                                                }}
-                                                                              >
-                                                                                <RenderLevel1NameView
-                                                                                  level={
-                                                                                    4
-                                                                                  }
-                                                                                  item={
-                                                                                    innerItem4
-                                                                                  }
-                                                                                  color={
-                                                                                    "#1C95A6"
-                                                                                  }
-                                                                                  titleClick={async () => {
-                                                                                    setSelectedName(
-                                                                                      innerItem4.empName
-                                                                                    );
-                                                                                    setTimeout(
-                                                                                      () => {
-                                                                                        setSelectedName(
-                                                                                          ""
-                                                                                        );
-                                                                                      },
-                                                                                      900
-                                                                                    );
-                                                                                    let localData =
-                                                                                      [
-                                                                                        ...allParameters,
-                                                                                      ];
-                                                                                    let current =
-                                                                                      localData[
-                                                                                        index
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex1
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex2
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex3
-                                                                                      ]
-                                                                                        .employeeTargetAchievements[
-                                                                                        innerIndex4
-                                                                                      ]
-                                                                                        .isOpenInner;
-                                                                                    for (
-                                                                                      let i = 0;
-                                                                                      i <
+                                                                              </Pressable>
+                                                                            </View>
+                                                                            <View
+                                                                              style={{
+                                                                                flexDirection:
+                                                                                  "row",
+                                                                              }}
+                                                                            >
+                                                                              <RenderLevel1NameView
+                                                                                level={
+                                                                                  4
+                                                                                }
+                                                                                item={
+                                                                                  innerItem4
+                                                                                }
+                                                                                color={
+                                                                                  "#1C95A6"
+                                                                                }
+                                                                                titleClick={async () => {
+                                                                                  setSelectedName(
+                                                                                    innerItem4.empName
+                                                                                  );
+                                                                                  setTimeout(
+                                                                                    () => {
+                                                                                      setSelectedName(
+                                                                                        ""
+                                                                                      );
+                                                                                    },
+                                                                                    900
+                                                                                  );
+                                                                                  let localData =
+                                                                                    [
+                                                                                      ...allParameters,
+                                                                                    ];
+                                                                                  let current =
+                                                                                    localData[
+                                                                                      index
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex1
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex2
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex3
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex4
+                                                                                    ]
+                                                                                      .isOpenInner;
+                                                                                  for (
+                                                                                    let i = 0;
+                                                                                    i <
+                                                                                    localData[
+                                                                                      index
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex1
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex2
+                                                                                    ]
+                                                                                      .employeeTargetAchievements[
+                                                                                      innerIndex3
+                                                                                    ]
+                                                                                      .employeeTargetAchievements
+                                                                                      .length;
+                                                                                    i++
+                                                                                  ) {
+                                                                                    localData[
+                                                                                      index
+                                                                                    ].employeeTargetAchievements[
+                                                                                      innerIndex1
+                                                                                    ].employeeTargetAchievements[
+                                                                                      innerIndex2
+                                                                                    ].employeeTargetAchievements[
+                                                                                      innerIndex3
+                                                                                    ].employeeTargetAchievements[
+                                                                                      i
+                                                                                    ].isOpenInner = false;
+                                                                                    if (
+                                                                                      i ===
                                                                                       localData[
                                                                                         index
                                                                                       ]
@@ -4665,8 +5355,8 @@ const ParametersScreen = ({ route }) => {
                                                                                         innerIndex3
                                                                                       ]
                                                                                         .employeeTargetAchievements
-                                                                                        .length;
-                                                                                      i++
+                                                                                        .length -
+                                                                                        1
                                                                                     ) {
                                                                                       localData[
                                                                                         index
@@ -4677,94 +5367,65 @@ const ParametersScreen = ({ route }) => {
                                                                                       ].employeeTargetAchievements[
                                                                                         innerIndex3
                                                                                       ].employeeTargetAchievements[
-                                                                                        i
-                                                                                      ].isOpenInner = false;
-                                                                                      if (
-                                                                                        i ===
-                                                                                        localData[
-                                                                                          index
-                                                                                        ]
-                                                                                          .employeeTargetAchievements[
-                                                                                          innerIndex1
-                                                                                        ]
-                                                                                          .employeeTargetAchievements[
-                                                                                          innerIndex2
-                                                                                        ]
-                                                                                          .employeeTargetAchievements[
-                                                                                          innerIndex3
-                                                                                        ]
-                                                                                          .employeeTargetAchievements
-                                                                                          .length -
-                                                                                        1
-                                                                                      ) {
-                                                                                        localData[
-                                                                                          index
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex1
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex2
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex3
-                                                                                        ].employeeTargetAchievements[
-                                                                                          innerIndex4
-                                                                                        ].isOpenInner =
-                                                                                          !current;
-                                                                                      }
+                                                                                        innerIndex4
+                                                                                      ].isOpenInner =
+                                                                                        !current;
                                                                                     }
+                                                                                  }
 
+                                                                                  if (
+                                                                                    !current
+                                                                                  ) {
+                                                                                    let employeeData =
+                                                                                      await AsyncStore.getData(
+                                                                                        AsyncStore
+                                                                                          .Keys
+                                                                                          .LOGIN_EMPLOYEE
+                                                                                      );
                                                                                     if (
-                                                                                      !current
+                                                                                      employeeData
                                                                                     ) {
-                                                                                      let employeeData =
-                                                                                        await AsyncStore.getData(
-                                                                                          AsyncStore
-                                                                                            .Keys
-                                                                                            .LOGIN_EMPLOYEE
+                                                                                      const jsonObj =
+                                                                                        JSON.parse(
+                                                                                          employeeData
                                                                                         );
-                                                                                      if (
-                                                                                        employeeData
-                                                                                      ) {
-                                                                                        const jsonObj =
-                                                                                          JSON.parse(
-                                                                                            employeeData
-                                                                                          );
-                                                                                        const dateFormat =
-                                                                                          "YYYY-MM-DD";
-                                                                                        const currentDate =
-                                                                                          moment().format(
-                                                                                            dateFormat
-                                                                                          );
-                                                                                        const monthFirstDate =
-                                                                                          moment(
-                                                                                            currentDate,
-                                                                                            dateFormat
+                                                                                      const dateFormat =
+                                                                                        "YYYY-MM-DD";
+                                                                                      const currentDate =
+                                                                                        moment().format(
+                                                                                          dateFormat
+                                                                                        );
+                                                                                      const monthFirstDate =
+                                                                                        moment(
+                                                                                          currentDate,
+                                                                                          dateFormat
+                                                                                        )
+                                                                                          .subtract(
+                                                                                            0,
+                                                                                            "months"
                                                                                           )
-                                                                                            .subtract(
-                                                                                              0,
-                                                                                              "months"
-                                                                                            )
-                                                                                            .startOf(
-                                                                                              "month"
-                                                                                            )
-                                                                                            .format(
-                                                                                              dateFormat
-                                                                                            );
-                                                                                        const monthLastDate =
-                                                                                          moment(
-                                                                                            currentDate,
-                                                                                            dateFormat
+                                                                                          .startOf(
+                                                                                            "month"
                                                                                           )
-                                                                                            .subtract(
-                                                                                              0,
-                                                                                              "months"
-                                                                                            )
-                                                                                            .endOf(
-                                                                                              "month"
-                                                                                            )
-                                                                                            .format(
-                                                                                              dateFormat
-                                                                                            );
-                                                                                        let payload =
+                                                                                          .format(
+                                                                                            dateFormat
+                                                                                          );
+                                                                                      const monthLastDate =
+                                                                                        moment(
+                                                                                          currentDate,
+                                                                                          dateFormat
+                                                                                        )
+                                                                                          .subtract(
+                                                                                            0,
+                                                                                            "months"
+                                                                                          )
+                                                                                          .endOf(
+                                                                                            "month"
+                                                                                          )
+                                                                                          .format(
+                                                                                            dateFormat
+                                                                                          );
+                                                                                      let payload =
                                                                                         {
                                                                                           orgId:
                                                                                             jsonObj.orgId,
@@ -4783,44 +5444,44 @@ const ParametersScreen = ({ route }) => {
                                                                                           pageNo: 0,
                                                                                           size: 100,
                                                                                         };
-                                                                                        Promise.all(
-                                                                                          [
-                                                                                            dispatch(
-                                                                                              getUserWiseTargetParameters(
-                                                                                                payload
-                                                                                              )
-                                                                                            ),
-                                                                                          ]
-                                                                                        ).then(
-                                                                                          async (
-                                                                                            res
-                                                                                          ) => {
-                                                                                            let tempRawData =
-                                                                                              [];
-                                                                                            tempRawData =
-                                                                                              res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                                (
-                                                                                                  item
-                                                                                                ) =>
-                                                                                                  item.empId !==
-                                                                                                  innerItem4.empId
-                                                                                              );
-                                                                                            if (
-                                                                                              tempRawData.length >
-                                                                                              0
+                                                                                      Promise.all(
+                                                                                        [
+                                                                                          dispatch(
+                                                                                            getUserWiseTargetParameters(
+                                                                                              payload
+                                                                                            )
+                                                                                          ),
+                                                                                        ]
+                                                                                      ).then(
+                                                                                        async (
+                                                                                          res
+                                                                                        ) => {
+                                                                                          let tempRawData =
+                                                                                            [];
+                                                                                          tempRawData =
+                                                                                            res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                              (
+                                                                                                item
+                                                                                              ) =>
+                                                                                                item.empId !==
+                                                                                                innerItem4.empId
+                                                                                            );
+                                                                                          if (
+                                                                                            tempRawData.length >
+                                                                                            0
+                                                                                          ) {
+                                                                                            for (
+                                                                                              let i = 0;
+                                                                                              i <
+                                                                                              tempRawData.length;
+                                                                                              i++
                                                                                             ) {
-                                                                                              for (
-                                                                                                let i = 0;
-                                                                                                i <
-                                                                                                tempRawData.length;
-                                                                                                i++
-                                                                                              ) {
-                                                                                                tempRawData[
-                                                                                                  i
-                                                                                                ] =
+                                                                                              tempRawData[
+                                                                                                i
+                                                                                              ] =
                                                                                                 {
                                                                                                   ...tempRawData[
-                                                                                                  i
+                                                                                                    i
                                                                                                   ],
                                                                                                   isOpenInner: false,
                                                                                                   employeeTargetAchievements:
@@ -4831,248 +5492,282 @@ const ParametersScreen = ({ route }) => {
                                                                                                     ]
                                                                                                       ?.targetAchievements,
                                                                                                 };
-                                                                                                if (
-                                                                                                  i ===
-                                                                                                  tempRawData.length -
+                                                                                              if (
+                                                                                                i ===
+                                                                                                tempRawData.length -
                                                                                                   1
+                                                                                              ) {
+                                                                                                localData[
+                                                                                                  index
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex1
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex2
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex3
+                                                                                                ].employeeTargetAchievements[
+                                                                                                  innerIndex4
+                                                                                                ].employeeTargetAchievements =
+                                                                                                  tempRawData;
+                                                                                                let newIds =
+                                                                                                  tempRawData.map(
+                                                                                                    (
+                                                                                                      emp
+                                                                                                    ) =>
+                                                                                                      emp.empId
+                                                                                                  );
+                                                                                                if (
+                                                                                                  newIds.length >=
+                                                                                                  2
                                                                                                 ) {
-                                                                                                  localData[
-                                                                                                    index
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex1
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex2
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex3
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex4
-                                                                                                  ].employeeTargetAchievements =
-                                                                                                    tempRawData;
-                                                                                                  let newIds =
-                                                                                                    tempRawData.map(
-                                                                                                      (
-                                                                                                        emp
-                                                                                                      ) =>
-                                                                                                        emp.empId
-                                                                                                    );
-                                                                                                  if (
-                                                                                                    newIds.length >=
-                                                                                                    2
+                                                                                                  for (
+                                                                                                    let i = 0;
+                                                                                                    i <
+                                                                                                    newIds.length;
+                                                                                                    i++
                                                                                                   ) {
-                                                                                                    for (
-                                                                                                      let i = 0;
-                                                                                                      i <
-                                                                                                      newIds.length;
-                                                                                                      i++
+                                                                                                    const element =
+                                                                                                      newIds[
+                                                                                                        i
+                                                                                                      ].toString();
+                                                                                                    let tempPayload =
+                                                                                                      getTotalPayload(
+                                                                                                        employeeData,
+                                                                                                        element
+                                                                                                      );
+                                                                                                    const response =
+                                                                                                      await client.post(
+                                                                                                        URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                                        tempPayload
+                                                                                                      );
+                                                                                                    const json =
+                                                                                                      await response.json();
+                                                                                                    if (
+                                                                                                      Array.isArray(
+                                                                                                        json
+                                                                                                      )
                                                                                                     ) {
-                                                                                                      const element =
-                                                                                                        newIds[
-                                                                                                          i
-                                                                                                        ].toString();
-                                                                                                      let tempPayload =
-                                                                                                        getTotalPayload(
-                                                                                                          employeeData,
-                                                                                                          element
-                                                                                                        );
-                                                                                                      const response =
-                                                                                                        await client.post(
-                                                                                                          URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                                                          tempPayload
-                                                                                                        );
-                                                                                                      const json =
-                                                                                                        await response.json();
-                                                                                                      if (
-                                                                                                        Array.isArray(
-                                                                                                          json
-                                                                                                        )
-                                                                                                      ) {
-                                                                                                        localData[
-                                                                                                          index
-                                                                                                        ].employeeTargetAchievements[
-                                                                                                          innerIndex1
-                                                                                                        ].employeeTargetAchievements[
-                                                                                                          innerIndex2
-                                                                                                        ].employeeTargetAchievements[
-                                                                                                          innerIndex3
-                                                                                                        ].employeeTargetAchievements[
-                                                                                                          innerIndex4
-                                                                                                        ].employeeTargetAchievements[
-                                                                                                          i
-                                                                                                        ].targetAchievements =
-                                                                                                          json;
-                                                                                                      }
+                                                                                                      localData[
+                                                                                                        index
+                                                                                                      ].employeeTargetAchievements[
+                                                                                                        innerIndex1
+                                                                                                      ].employeeTargetAchievements[
+                                                                                                        innerIndex2
+                                                                                                      ].employeeTargetAchievements[
+                                                                                                        innerIndex3
+                                                                                                      ].employeeTargetAchievements[
+                                                                                                        innerIndex4
+                                                                                                      ].employeeTargetAchievements[
+                                                                                                        i
+                                                                                                      ].targetAchievements =
+                                                                                                        json;
                                                                                                     }
                                                                                                   }
                                                                                                 }
                                                                                               }
                                                                                             }
-                                                                                            setAllParameters(
-                                                                                              [
-                                                                                                ...localData,
-                                                                                              ]
-                                                                                            );
                                                                                           }
-                                                                                        );
-                                                                                      }
-                                                                                    } else {
-                                                                                      setAllParameters(
-                                                                                        [
-                                                                                          ...localData,
-                                                                                        ]
+                                                                                          setAllParameters(
+                                                                                            [
+                                                                                              ...localData,
+                                                                                            ]
+                                                                                          );
+                                                                                        }
                                                                                       );
                                                                                     }
-                                                                                    // setAllParameters([...localData])
-                                                                                  }}
-                                                                                />
-                                                                                {renderData(
-                                                                                  innerItem4,
-                                                                                  "#1C95A6"
-                                                                                )}
-                                                                              </View>
-                                                                              {innerItem4.isOpenInner &&
-                                                                                innerItem4
-                                                                                  .employeeTargetAchievements
-                                                                                  .length >
+                                                                                  } else {
+                                                                                    setAllParameters(
+                                                                                      [
+                                                                                        ...localData,
+                                                                                      ]
+                                                                                    );
+                                                                                  }
+                                                                                  // setAllParameters([...localData])
+                                                                                }}
+                                                                              />
+                                                                              {renderData(
+                                                                                innerItem4,
+                                                                                "#1C95A6"
+                                                                              )}
+                                                                            </View>
+                                                                            {innerItem4.isOpenInner &&
+                                                                              innerItem4
+                                                                                .employeeTargetAchievements
+                                                                                .length >
                                                                                 0 &&
-                                                                                innerItem4.employeeTargetAchievements.map(
-                                                                                  (
-                                                                                    innerItem5,
-                                                                                    innerIndex5
-                                                                                  ) => {
-                                                                                    return (
+                                                                              innerItem4.employeeTargetAchievements.map(
+                                                                                (
+                                                                                  innerItem5,
+                                                                                  innerIndex5
+                                                                                ) => {
+                                                                                  return (
+                                                                                    <View
+                                                                                      key={
+                                                                                        innerIndex5
+                                                                                      }
+                                                                                      style={[
+                                                                                        {
+                                                                                          width:
+                                                                                            "98%",
+                                                                                          minHeight: 40,
+                                                                                          flexDirection:
+                                                                                            "column",
+                                                                                        },
+                                                                                        innerItem5.isOpenInner && {
+                                                                                          borderRadius: 10,
+                                                                                          borderWidth: 1,
+                                                                                          borderColor:
+                                                                                            "#C62159",
+                                                                                          backgroundColor:
+                                                                                            "#FFFFFF",
+                                                                                          marginHorizontal: 5,
+                                                                                        },
+                                                                                      ]}
+                                                                                    >
                                                                                       <View
-                                                                                        key={
-                                                                                          innerIndex5
-                                                                                        }
-                                                                                        style={[
-                                                                                          {
-                                                                                            width:
-                                                                                              "98%",
-                                                                                            minHeight: 40,
-                                                                                            flexDirection:
-                                                                                              "column",
-                                                                                          },
-                                                                                          innerItem5.isOpenInner && {
-                                                                                            borderRadius: 10,
-                                                                                            borderWidth: 1,
-                                                                                            borderColor:
-                                                                                              "#C62159",
-                                                                                            backgroundColor:
-                                                                                              "#FFFFFF",
-                                                                                            marginHorizontal: 5,
-                                                                                          },
-                                                                                        ]}
+                                                                                        style={{
+                                                                                          paddingHorizontal: 4,
+                                                                                          display:
+                                                                                            "flex",
+                                                                                          flexDirection:
+                                                                                            "row",
+                                                                                          justifyContent:
+                                                                                            "space-between",
+                                                                                          paddingVertical: 4,
+                                                                                        }}
                                                                                       >
-                                                                                        <View
+                                                                                        <Text
                                                                                           style={{
-                                                                                            paddingHorizontal: 4,
-                                                                                            display:
-                                                                                              "flex",
-                                                                                            flexDirection:
-                                                                                              "row",
-                                                                                            justifyContent:
-                                                                                              "space-between",
-                                                                                            paddingVertical: 4,
+                                                                                            fontSize: 10,
+                                                                                            fontWeight:
+                                                                                              "500",
+                                                                                          }}
+                                                                                        >
+                                                                                          {
+                                                                                            innerItem5.empName
+                                                                                          }
+                                                                                        </Text>
+                                                                                        <Pressable
+                                                                                          onPress={() => {
+                                                                                            navigation.navigate(
+                                                                                              AppNavigator
+                                                                                                .HomeStackIdentifiers
+                                                                                                .sourceModel,
+                                                                                              {
+                                                                                                empId:
+                                                                                                  innerItem5.empId,
+                                                                                                headerTitle:
+                                                                                                  innerItem5.empName,
+                                                                                                type: "TEAM",
+                                                                                                moduleType:
+                                                                                                  "live-leads",
+                                                                                              }
+                                                                                            );
                                                                                           }}
                                                                                         >
                                                                                           <Text
                                                                                             style={{
-                                                                                              fontSize: 10,
+                                                                                              fontSize: 12,
                                                                                               fontWeight:
-                                                                                                "500",
+                                                                                                "600",
+                                                                                              color:
+                                                                                                Colors.BLUE,
+                                                                                              marginLeft: 8,
                                                                                             }}
                                                                                           >
-                                                                                            {
-                                                                                              innerItem5.empName
-                                                                                            }
+                                                                                            Source/Model
                                                                                           </Text>
-                                                                                          <Pressable
-                                                                                            onPress={() => {
-                                                                                              navigation.navigate(
-                                                                                                AppNavigator
-                                                                                                  .HomeStackIdentifiers
-                                                                                                  .sourceModel,
-                                                                                                {
-                                                                                                  empId:
-                                                                                                    innerItem5.empId,
-                                                                                                  headerTitle:
-                                                                                                    innerItem5.empName,
-                                                                                                  type: "TEAM",
-                                                                                                  moduleType:
-                                                                                                    "live-leads",
-                                                                                                }
-                                                                                              );
-                                                                                            }}
-                                                                                          >
-                                                                                            <Text
-                                                                                              style={{
-                                                                                                fontSize: 12,
-                                                                                                fontWeight:
-                                                                                                  "600",
-                                                                                                color:
-                                                                                                  Colors.BLUE,
-                                                                                                marginLeft: 8,
-                                                                                              }}
-                                                                                            >
-                                                                                              Source/Model
-                                                                                            </Text>
-                                                                                          </Pressable>
-                                                                                        </View>
-                                                                                        <View
-                                                                                          style={{
-                                                                                            flexDirection:
-                                                                                              "row",
-                                                                                          }}
-                                                                                        >
-                                                                                          <RenderLevel1NameView
-                                                                                            level={
-                                                                                              5
-                                                                                            }
-                                                                                            item={
-                                                                                              innerItem5
-                                                                                            }
-                                                                                            color={
-                                                                                              "#C62159"
-                                                                                            }
-                                                                                            titleClick={async () => {
-                                                                                              setSelectedName(
-                                                                                                innerItem5.empName
-                                                                                              );
-                                                                                              setTimeout(
-                                                                                                () => {
-                                                                                                  setSelectedName(
-                                                                                                    ""
-                                                                                                  );
-                                                                                                },
-                                                                                                900
-                                                                                              );
-                                                                                              let localData =
-                                                                                                [
-                                                                                                  ...allParameters,
-                                                                                                ];
-                                                                                              let current =
-                                                                                                localData[
-                                                                                                  index
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex1
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex2
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex3
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex4
-                                                                                                ]
-                                                                                                  .employeeTargetAchievements[
-                                                                                                  innerIndex5
-                                                                                                ]
-                                                                                                  .isOpenInner;
-                                                                                              for (
-                                                                                                let i = 0;
-                                                                                                i <
+                                                                                        </Pressable>
+                                                                                      </View>
+                                                                                      <View
+                                                                                        style={{
+                                                                                          flexDirection:
+                                                                                            "row",
+                                                                                        }}
+                                                                                      >
+                                                                                        <RenderLevel1NameView
+                                                                                          level={
+                                                                                            5
+                                                                                          }
+                                                                                          item={
+                                                                                            innerItem5
+                                                                                          }
+                                                                                          color={
+                                                                                            "#C62159"
+                                                                                          }
+                                                                                          titleClick={async () => {
+                                                                                            setSelectedName(
+                                                                                              innerItem5.empName
+                                                                                            );
+                                                                                            setTimeout(
+                                                                                              () => {
+                                                                                                setSelectedName(
+                                                                                                  ""
+                                                                                                );
+                                                                                              },
+                                                                                              900
+                                                                                            );
+                                                                                            let localData =
+                                                                                              [
+                                                                                                ...allParameters,
+                                                                                              ];
+                                                                                            let current =
+                                                                                              localData[
+                                                                                                index
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex1
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex2
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex3
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex4
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex5
+                                                                                              ]
+                                                                                                .isOpenInner;
+                                                                                            for (
+                                                                                              let i = 0;
+                                                                                              i <
+                                                                                              localData[
+                                                                                                index
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex1
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex2
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex3
+                                                                                              ]
+                                                                                                .employeeTargetAchievements[
+                                                                                                innerIndex4
+                                                                                              ]
+                                                                                                .employeeTargetAchievements
+                                                                                                .length;
+                                                                                              i++
+                                                                                            ) {
+                                                                                              localData[
+                                                                                                index
+                                                                                              ].employeeTargetAchievements[
+                                                                                                innerIndex1
+                                                                                              ].employeeTargetAchievements[
+                                                                                                innerIndex2
+                                                                                              ].employeeTargetAchievements[
+                                                                                                innerIndex3
+                                                                                              ].employeeTargetAchievements[
+                                                                                                innerIndex4
+                                                                                              ].employeeTargetAchievements[
+                                                                                                i
+                                                                                              ].isOpenInner = false;
+                                                                                              if (
+                                                                                                i ===
                                                                                                 localData[
                                                                                                   index
                                                                                                 ]
@@ -5089,8 +5784,8 @@ const ParametersScreen = ({ route }) => {
                                                                                                   innerIndex4
                                                                                                 ]
                                                                                                   .employeeTargetAchievements
-                                                                                                  .length;
-                                                                                                i++
+                                                                                                  .length -
+                                                                                                  1
                                                                                               ) {
                                                                                                 localData[
                                                                                                   index
@@ -5103,99 +5798,65 @@ const ParametersScreen = ({ route }) => {
                                                                                                 ].employeeTargetAchievements[
                                                                                                   innerIndex4
                                                                                                 ].employeeTargetAchievements[
-                                                                                                  i
-                                                                                                ].isOpenInner = false;
-                                                                                                if (
-                                                                                                  i ===
-                                                                                                  localData[
-                                                                                                    index
-                                                                                                  ]
-                                                                                                    .employeeTargetAchievements[
-                                                                                                    innerIndex1
-                                                                                                  ]
-                                                                                                    .employeeTargetAchievements[
-                                                                                                    innerIndex2
-                                                                                                  ]
-                                                                                                    .employeeTargetAchievements[
-                                                                                                    innerIndex3
-                                                                                                  ]
-                                                                                                    .employeeTargetAchievements[
-                                                                                                    innerIndex4
-                                                                                                  ]
-                                                                                                    .employeeTargetAchievements
-                                                                                                    .length -
-                                                                                                  1
-                                                                                                ) {
-                                                                                                  localData[
-                                                                                                    index
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex1
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex2
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex3
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex4
-                                                                                                  ].employeeTargetAchievements[
-                                                                                                    innerIndex5
-                                                                                                  ].isOpenInner =
-                                                                                                    !current;
-                                                                                                }
+                                                                                                  innerIndex5
+                                                                                                ].isOpenInner =
+                                                                                                  !current;
                                                                                               }
+                                                                                            }
 
+                                                                                            if (
+                                                                                              !current
+                                                                                            ) {
+                                                                                              let employeeData =
+                                                                                                await AsyncStore.getData(
+                                                                                                  AsyncStore
+                                                                                                    .Keys
+                                                                                                    .LOGIN_EMPLOYEE
+                                                                                                );
                                                                                               if (
-                                                                                                !current
+                                                                                                employeeData
                                                                                               ) {
-                                                                                                let employeeData =
-                                                                                                  await AsyncStore.getData(
-                                                                                                    AsyncStore
-                                                                                                      .Keys
-                                                                                                      .LOGIN_EMPLOYEE
+                                                                                                const jsonObj =
+                                                                                                  JSON.parse(
+                                                                                                    employeeData
                                                                                                   );
-                                                                                                if (
-                                                                                                  employeeData
-                                                                                                ) {
-                                                                                                  const jsonObj =
-                                                                                                    JSON.parse(
-                                                                                                      employeeData
-                                                                                                    );
-                                                                                                  const dateFormat =
-                                                                                                    "YYYY-MM-DD";
-                                                                                                  const currentDate =
-                                                                                                    moment().format(
-                                                                                                      dateFormat
-                                                                                                    );
-                                                                                                  const monthFirstDate =
-                                                                                                    moment(
-                                                                                                      currentDate,
-                                                                                                      dateFormat
+                                                                                                const dateFormat =
+                                                                                                  "YYYY-MM-DD";
+                                                                                                const currentDate =
+                                                                                                  moment().format(
+                                                                                                    dateFormat
+                                                                                                  );
+                                                                                                const monthFirstDate =
+                                                                                                  moment(
+                                                                                                    currentDate,
+                                                                                                    dateFormat
+                                                                                                  )
+                                                                                                    .subtract(
+                                                                                                      0,
+                                                                                                      "months"
                                                                                                     )
-                                                                                                      .subtract(
-                                                                                                        0,
-                                                                                                        "months"
-                                                                                                      )
-                                                                                                      .startOf(
-                                                                                                        "month"
-                                                                                                      )
-                                                                                                      .format(
-                                                                                                        dateFormat
-                                                                                                      );
-                                                                                                  const monthLastDate =
-                                                                                                    moment(
-                                                                                                      currentDate,
-                                                                                                      dateFormat
+                                                                                                    .startOf(
+                                                                                                      "month"
                                                                                                     )
-                                                                                                      .subtract(
-                                                                                                        0,
-                                                                                                        "months"
-                                                                                                      )
-                                                                                                      .endOf(
-                                                                                                        "month"
-                                                                                                      )
-                                                                                                      .format(
-                                                                                                        dateFormat
-                                                                                                      );
-                                                                                                  let payload =
+                                                                                                    .format(
+                                                                                                      dateFormat
+                                                                                                    );
+                                                                                                const monthLastDate =
+                                                                                                  moment(
+                                                                                                    currentDate,
+                                                                                                    dateFormat
+                                                                                                  )
+                                                                                                    .subtract(
+                                                                                                      0,
+                                                                                                      "months"
+                                                                                                    )
+                                                                                                    .endOf(
+                                                                                                      "month"
+                                                                                                    )
+                                                                                                    .format(
+                                                                                                      dateFormat
+                                                                                                    );
+                                                                                                let payload =
                                                                                                   {
                                                                                                     orgId:
                                                                                                       jsonObj.orgId,
@@ -5214,44 +5875,44 @@ const ParametersScreen = ({ route }) => {
                                                                                                     pageNo: 0,
                                                                                                     size: 100,
                                                                                                   };
-                                                                                                  Promise.all(
-                                                                                                    [
-                                                                                                      dispatch(
-                                                                                                        getUserWiseTargetParameters(
-                                                                                                          payload
-                                                                                                        )
-                                                                                                      ),
-                                                                                                    ]
-                                                                                                  ).then(
-                                                                                                    async (
-                                                                                                      res
-                                                                                                    ) => {
-                                                                                                      let tempRawData =
-                                                                                                        [];
-                                                                                                      tempRawData =
-                                                                                                        res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                                          (
-                                                                                                            item
-                                                                                                          ) =>
-                                                                                                            item.empId !==
-                                                                                                            innerItem5.empId
-                                                                                                        );
-                                                                                                      if (
-                                                                                                        tempRawData.length >
-                                                                                                        0
+                                                                                                Promise.all(
+                                                                                                  [
+                                                                                                    dispatch(
+                                                                                                      getUserWiseTargetParameters(
+                                                                                                        payload
+                                                                                                      )
+                                                                                                    ),
+                                                                                                  ]
+                                                                                                ).then(
+                                                                                                  async (
+                                                                                                    res
+                                                                                                  ) => {
+                                                                                                    let tempRawData =
+                                                                                                      [];
+                                                                                                    tempRawData =
+                                                                                                      res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                                        (
+                                                                                                          item
+                                                                                                        ) =>
+                                                                                                          item.empId !==
+                                                                                                          innerItem5.empId
+                                                                                                      );
+                                                                                                    if (
+                                                                                                      tempRawData.length >
+                                                                                                      0
+                                                                                                    ) {
+                                                                                                      for (
+                                                                                                        let i = 0;
+                                                                                                        i <
+                                                                                                        tempRawData.length;
+                                                                                                        i++
                                                                                                       ) {
-                                                                                                        for (
-                                                                                                          let i = 0;
-                                                                                                          i <
-                                                                                                          tempRawData.length;
-                                                                                                          i++
-                                                                                                        ) {
-                                                                                                          tempRawData[
-                                                                                                            i
-                                                                                                          ] =
+                                                                                                        tempRawData[
+                                                                                                          i
+                                                                                                        ] =
                                                                                                           {
                                                                                                             ...tempRawData[
-                                                                                                            i
+                                                                                                              i
                                                                                                             ],
                                                                                                             isOpenInner: false,
                                                                                                             employeeTargetAchievements:
@@ -5262,255 +5923,294 @@ const ParametersScreen = ({ route }) => {
                                                                                                               ]
                                                                                                                 ?.targetAchievements,
                                                                                                           };
-                                                                                                          if (
-                                                                                                            i ===
-                                                                                                            tempRawData.length -
+                                                                                                        if (
+                                                                                                          i ===
+                                                                                                          tempRawData.length -
                                                                                                             1
+                                                                                                        ) {
+                                                                                                          localData[
+                                                                                                            index
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex1
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex2
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex3
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex4
+                                                                                                          ].employeeTargetAchievements[
+                                                                                                            innerIndex5
+                                                                                                          ].employeeTargetAchievements =
+                                                                                                            tempRawData;
+                                                                                                          let newIds =
+                                                                                                            tempRawData.map(
+                                                                                                              (
+                                                                                                                emp
+                                                                                                              ) =>
+                                                                                                                emp.empId
+                                                                                                            );
+                                                                                                          if (
+                                                                                                            newIds.length >=
+                                                                                                            2
                                                                                                           ) {
-                                                                                                            localData[
-                                                                                                              index
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex1
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex2
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex3
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex4
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex5
-                                                                                                            ].employeeTargetAchievements =
-                                                                                                              tempRawData;
-                                                                                                            let newIds =
-                                                                                                              tempRawData.map(
-                                                                                                                (
-                                                                                                                  emp
-                                                                                                                ) =>
-                                                                                                                  emp.empId
-                                                                                                              );
-                                                                                                            if (
-                                                                                                              newIds.length >=
-                                                                                                              2
+                                                                                                            for (
+                                                                                                              let i = 0;
+                                                                                                              i <
+                                                                                                              newIds.length;
+                                                                                                              i++
                                                                                                             ) {
-                                                                                                              for (
-                                                                                                                let i = 0;
-                                                                                                                i <
-                                                                                                                newIds.length;
-                                                                                                                i++
+                                                                                                              const element =
+                                                                                                                newIds[
+                                                                                                                  i
+                                                                                                                ].toString();
+                                                                                                              let tempPayload =
+                                                                                                                getTotalPayload(
+                                                                                                                  employeeData,
+                                                                                                                  element
+                                                                                                                );
+                                                                                                              const response =
+                                                                                                                await client.post(
+                                                                                                                  URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                                                  tempPayload
+                                                                                                                );
+                                                                                                              const json =
+                                                                                                                await response.json();
+                                                                                                              if (
+                                                                                                                Array.isArray(
+                                                                                                                  json
+                                                                                                                )
                                                                                                               ) {
-                                                                                                                const element =
-                                                                                                                  newIds[
-                                                                                                                    i
-                                                                                                                  ].toString();
-                                                                                                                let tempPayload =
-                                                                                                                  getTotalPayload(
-                                                                                                                    employeeData,
-                                                                                                                    element
-                                                                                                                  );
-                                                                                                                const response =
-                                                                                                                  await client.post(
-                                                                                                                    URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                                                                    tempPayload
-                                                                                                                  );
-                                                                                                                const json =
-                                                                                                                  await response.json();
-                                                                                                                if (
-                                                                                                                  Array.isArray(
-                                                                                                                    json
-                                                                                                                  )
-                                                                                                                ) {
-                                                                                                                  localData[
-                                                                                                                    index
-                                                                                                                  ].employeeTargetAchievements[
-                                                                                                                    innerIndex1
-                                                                                                                  ].employeeTargetAchievements[
-                                                                                                                    innerIndex2
-                                                                                                                  ].employeeTargetAchievements[
-                                                                                                                    innerIndex3
-                                                                                                                  ].employeeTargetAchievements[
-                                                                                                                    innerIndex4
-                                                                                                                  ].employeeTargetAchievements[
-                                                                                                                    innerIndex5
-                                                                                                                  ].employeeTargetAchievements[
-                                                                                                                    i
-                                                                                                                  ].targetAchievements =
-                                                                                                                    json;
-                                                                                                                }
+                                                                                                                localData[
+                                                                                                                  index
+                                                                                                                ].employeeTargetAchievements[
+                                                                                                                  innerIndex1
+                                                                                                                ].employeeTargetAchievements[
+                                                                                                                  innerIndex2
+                                                                                                                ].employeeTargetAchievements[
+                                                                                                                  innerIndex3
+                                                                                                                ].employeeTargetAchievements[
+                                                                                                                  innerIndex4
+                                                                                                                ].employeeTargetAchievements[
+                                                                                                                  innerIndex5
+                                                                                                                ].employeeTargetAchievements[
+                                                                                                                  i
+                                                                                                                ].targetAchievements =
+                                                                                                                  json;
                                                                                                               }
                                                                                                             }
                                                                                                           }
                                                                                                         }
                                                                                                       }
-                                                                                                      setAllParameters(
-                                                                                                        [
-                                                                                                          ...localData,
-                                                                                                        ]
-                                                                                                      );
                                                                                                     }
-                                                                                                  );
-                                                                                                }
-                                                                                              } else {
-                                                                                                setAllParameters(
-                                                                                                  [
-                                                                                                    ...localData,
-                                                                                                  ]
+                                                                                                    setAllParameters(
+                                                                                                      [
+                                                                                                        ...localData,
+                                                                                                      ]
+                                                                                                    );
+                                                                                                  }
                                                                                                 );
                                                                                               }
-                                                                                              // setAllParameters([...localData])
-                                                                                            }}
-                                                                                          />
-                                                                                          {renderData(
-                                                                                            innerItem5,
-                                                                                            "#C62159"
-                                                                                          )}
-                                                                                        </View>
-                                                                                        {innerItem5.isOpenInner &&
-                                                                                          innerItem5
-                                                                                            .employeeTargetAchievements
-                                                                                            .length >
+                                                                                            } else {
+                                                                                              setAllParameters(
+                                                                                                [
+                                                                                                  ...localData,
+                                                                                                ]
+                                                                                              );
+                                                                                            }
+                                                                                            // setAllParameters([...localData])
+                                                                                          }}
+                                                                                        />
+                                                                                        {renderData(
+                                                                                          innerItem5,
+                                                                                          "#C62159"
+                                                                                        )}
+                                                                                      </View>
+                                                                                      {innerItem5.isOpenInner &&
+                                                                                        innerItem5
+                                                                                          .employeeTargetAchievements
+                                                                                          .length >
                                                                                           0 &&
-                                                                                          innerItem5.employeeTargetAchievements.map(
-                                                                                            (
-                                                                                              innerItem6,
-                                                                                              innerIndex6
-                                                                                            ) => {
-                                                                                              return (
+                                                                                        innerItem5.employeeTargetAchievements.map(
+                                                                                          (
+                                                                                            innerItem6,
+                                                                                            innerIndex6
+                                                                                          ) => {
+                                                                                            return (
+                                                                                              <View
+                                                                                                key={
+                                                                                                  innerIndex6
+                                                                                                }
+                                                                                                style={[
+                                                                                                  {
+                                                                                                    width:
+                                                                                                      "98%",
+                                                                                                    minHeight: 40,
+                                                                                                    flexDirection:
+                                                                                                      "column",
+                                                                                                  },
+                                                                                                  innerItem6.isOpenInner && {
+                                                                                                    borderRadius: 10,
+                                                                                                    borderWidth: 1,
+                                                                                                    borderColor:
+                                                                                                      "#C62159",
+                                                                                                    backgroundColor:
+                                                                                                      "#FFFFFF",
+                                                                                                    marginHorizontal: 5,
+                                                                                                  },
+                                                                                                ]}
+                                                                                              >
                                                                                                 <View
-                                                                                                  key={
-                                                                                                    innerIndex6
-                                                                                                  }
-                                                                                                  style={[
-                                                                                                    {
-                                                                                                      width:
-                                                                                                        "98%",
-                                                                                                      minHeight: 40,
-                                                                                                      flexDirection:
-                                                                                                        "column",
-                                                                                                    },
-                                                                                                    innerItem6.isOpenInner && {
-                                                                                                      borderRadius: 10,
-                                                                                                      borderWidth: 1,
-                                                                                                      borderColor:
-                                                                                                        "#C62159",
-                                                                                                      backgroundColor:
-                                                                                                        "#FFFFFF",
-                                                                                                      marginHorizontal: 5,
-                                                                                                    },
-                                                                                                  ]}
+                                                                                                  style={{
+                                                                                                    paddingHorizontal: 4,
+                                                                                                    display:
+                                                                                                      "flex",
+                                                                                                    flexDirection:
+                                                                                                      "row",
+                                                                                                    justifyContent:
+                                                                                                      "space-between",
+                                                                                                    paddingVertical: 4,
+                                                                                                  }}
                                                                                                 >
-                                                                                                  <View
+                                                                                                  <Text
                                                                                                     style={{
-                                                                                                      paddingHorizontal: 4,
-                                                                                                      display:
-                                                                                                        "flex",
-                                                                                                      flexDirection:
-                                                                                                        "row",
-                                                                                                      justifyContent:
-                                                                                                        "space-between",
-                                                                                                      paddingVertical: 4,
+                                                                                                      fontSize: 10,
+                                                                                                      fontWeight:
+                                                                                                        "500",
+                                                                                                    }}
+                                                                                                  >
+                                                                                                    {
+                                                                                                      innerItem6.empName
+                                                                                                    }
+                                                                                                  </Text>
+                                                                                                  <Pressable
+                                                                                                    onPress={() => {
+                                                                                                      navigation.navigate(
+                                                                                                        AppNavigator
+                                                                                                          .HomeStackIdentifiers
+                                                                                                          .sourceModel,
+                                                                                                        {
+                                                                                                          empId:
+                                                                                                            innerItem6.empId,
+                                                                                                          headerTitle:
+                                                                                                            innerItem6.empName,
+                                                                                                          type: "TEAM",
+                                                                                                          moduleType:
+                                                                                                            "live-leads",
+                                                                                                        }
+                                                                                                      );
                                                                                                     }}
                                                                                                   >
                                                                                                     <Text
                                                                                                       style={{
-                                                                                                        fontSize: 10,
+                                                                                                        fontSize: 12,
                                                                                                         fontWeight:
-                                                                                                          "500",
+                                                                                                          "600",
+                                                                                                        color:
+                                                                                                          Colors.BLUE,
+                                                                                                        marginLeft: 8,
                                                                                                       }}
                                                                                                     >
-                                                                                                      {
-                                                                                                        innerItem6.empName
-                                                                                                      }
+                                                                                                      Source/Model
                                                                                                     </Text>
-                                                                                                    <Pressable
-                                                                                                      onPress={() => {
-                                                                                                        navigation.navigate(
-                                                                                                          AppNavigator
-                                                                                                            .HomeStackIdentifiers
-                                                                                                            .sourceModel,
-                                                                                                          {
-                                                                                                            empId:
-                                                                                                              innerItem6.empId,
-                                                                                                            headerTitle:
-                                                                                                              innerItem6.empName,
-                                                                                                            type: "TEAM",
-                                                                                                            moduleType:
-                                                                                                              "live-leads",
-                                                                                                          }
-                                                                                                        );
-                                                                                                      }}
-                                                                                                    >
-                                                                                                      <Text
-                                                                                                        style={{
-                                                                                                          fontSize: 12,
-                                                                                                          fontWeight:
-                                                                                                            "600",
-                                                                                                          color:
-                                                                                                            Colors.BLUE,
-                                                                                                          marginLeft: 8,
-                                                                                                        }}
-                                                                                                      >
-                                                                                                        Source/Model
-                                                                                                      </Text>
-                                                                                                    </Pressable>
-                                                                                                  </View>
-                                                                                                  <View
-                                                                                                    style={{
-                                                                                                      flexDirection:
-                                                                                                        "row",
-                                                                                                    }}
-                                                                                                  >
-                                                                                                    <RenderLevel1NameView
-                                                                                                      level={
-                                                                                                        6
-                                                                                                      }
-                                                                                                      item={
-                                                                                                        innerItem6
-                                                                                                      }
-                                                                                                      color={
-                                                                                                        "#C62159"
-                                                                                                      }
-                                                                                                      titleClick={async () => {
-                                                                                                        setSelectedName(
-                                                                                                          innerItem6.empName
-                                                                                                        );
-                                                                                                        setTimeout(
-                                                                                                          () => {
-                                                                                                            setSelectedName(
-                                                                                                              ""
-                                                                                                            );
-                                                                                                          },
-                                                                                                          900
-                                                                                                        );
-                                                                                                        let localData =
-                                                                                                          [
-                                                                                                            ...allParameters,
-                                                                                                          ];
-                                                                                                        let current =
-                                                                                                          localData[
-                                                                                                            index
-                                                                                                          ]
-                                                                                                            .employeeTargetAchievements[
-                                                                                                            innerIndex1
-                                                                                                          ]
-                                                                                                            .employeeTargetAchievements[
-                                                                                                            innerIndex2
-                                                                                                          ]
-                                                                                                            .employeeTargetAchievements[
-                                                                                                            innerIndex3
-                                                                                                          ]
-                                                                                                            .employeeTargetAchievements[
-                                                                                                            innerIndex4
-                                                                                                          ]
-                                                                                                            .employeeTargetAchievements[
-                                                                                                            innerIndex5
-                                                                                                          ]
-                                                                                                            .employeeTargetAchievements[
-                                                                                                            innerIndex6
-                                                                                                          ]
-                                                                                                            .isOpenInner;
-                                                                                                        for (
-                                                                                                          let i = 0;
-                                                                                                          i <
+                                                                                                  </Pressable>
+                                                                                                </View>
+                                                                                                <View
+                                                                                                  style={{
+                                                                                                    flexDirection:
+                                                                                                      "row",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <RenderLevel1NameView
+                                                                                                    level={
+                                                                                                      6
+                                                                                                    }
+                                                                                                    item={
+                                                                                                      innerItem6
+                                                                                                    }
+                                                                                                    color={
+                                                                                                      "#C62159"
+                                                                                                    }
+                                                                                                    titleClick={async () => {
+                                                                                                      setSelectedName(
+                                                                                                        innerItem6.empName
+                                                                                                      );
+                                                                                                      setTimeout(
+                                                                                                        () => {
+                                                                                                          setSelectedName(
+                                                                                                            ""
+                                                                                                          );
+                                                                                                        },
+                                                                                                        900
+                                                                                                      );
+                                                                                                      let localData =
+                                                                                                        [
+                                                                                                          ...allParameters,
+                                                                                                        ];
+                                                                                                      let current =
+                                                                                                        localData[
+                                                                                                          index
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex1
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex2
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex3
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex4
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex5
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex6
+                                                                                                        ]
+                                                                                                          .isOpenInner;
+                                                                                                      for (
+                                                                                                        let i = 0;
+                                                                                                        i <
+                                                                                                        localData[
+                                                                                                          index
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex1
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex2
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex3
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex4
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements[
+                                                                                                          innerIndex5
+                                                                                                        ]
+                                                                                                          .employeeTargetAchievements
+                                                                                                          .length;
+                                                                                                        i++
+                                                                                                      ) {
+                                                                                                        localData[
+                                                                                                          index
+                                                                                                        ].employeeTargetAchievements[
+                                                                                                          innerIndex1
+                                                                                                        ].employeeTargetAchievements[
+                                                                                                          innerIndex2
+                                                                                                        ].employeeTargetAchievements[
+                                                                                                          innerIndex3
+                                                                                                        ].employeeTargetAchievements[
+                                                                                                          innerIndex4
+                                                                                                        ].employeeTargetAchievements[
+                                                                                                          innerIndex5
+                                                                                                        ].employeeTargetAchievements[
+                                                                                                          i
+                                                                                                        ].isOpenInner = false;
+                                                                                                        if (
+                                                                                                          i ===
                                                                                                           localData[
                                                                                                             index
                                                                                                           ]
@@ -5530,8 +6230,8 @@ const ParametersScreen = ({ route }) => {
                                                                                                             innerIndex5
                                                                                                           ]
                                                                                                             .employeeTargetAchievements
-                                                                                                            .length;
-                                                                                                          i++
+                                                                                                            .length -
+                                                                                                            1
                                                                                                         ) {
                                                                                                           localData[
                                                                                                             index
@@ -5546,104 +6246,65 @@ const ParametersScreen = ({ route }) => {
                                                                                                           ].employeeTargetAchievements[
                                                                                                             innerIndex5
                                                                                                           ].employeeTargetAchievements[
-                                                                                                            i
-                                                                                                          ].isOpenInner = false;
-                                                                                                          if (
-                                                                                                            i ===
-                                                                                                            localData[
-                                                                                                              index
-                                                                                                            ]
-                                                                                                              .employeeTargetAchievements[
-                                                                                                              innerIndex1
-                                                                                                            ]
-                                                                                                              .employeeTargetAchievements[
-                                                                                                              innerIndex2
-                                                                                                            ]
-                                                                                                              .employeeTargetAchievements[
-                                                                                                              innerIndex3
-                                                                                                            ]
-                                                                                                              .employeeTargetAchievements[
-                                                                                                              innerIndex4
-                                                                                                            ]
-                                                                                                              .employeeTargetAchievements[
-                                                                                                              innerIndex5
-                                                                                                            ]
-                                                                                                              .employeeTargetAchievements
-                                                                                                              .length -
-                                                                                                            1
-                                                                                                          ) {
-                                                                                                            localData[
-                                                                                                              index
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex1
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex2
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex3
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex4
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex5
-                                                                                                            ].employeeTargetAchievements[
-                                                                                                              innerIndex6
-                                                                                                            ].isOpenInner =
-                                                                                                              !current;
-                                                                                                          }
+                                                                                                            innerIndex6
+                                                                                                          ].isOpenInner =
+                                                                                                            !current;
                                                                                                         }
+                                                                                                      }
 
+                                                                                                      if (
+                                                                                                        !current
+                                                                                                      ) {
+                                                                                                        let employeeData =
+                                                                                                          await AsyncStore.getData(
+                                                                                                            AsyncStore
+                                                                                                              .Keys
+                                                                                                              .LOGIN_EMPLOYEE
+                                                                                                          );
                                                                                                         if (
-                                                                                                          !current
+                                                                                                          employeeData
                                                                                                         ) {
-                                                                                                          let employeeData =
-                                                                                                            await AsyncStore.getData(
-                                                                                                              AsyncStore
-                                                                                                                .Keys
-                                                                                                                .LOGIN_EMPLOYEE
+                                                                                                          const jsonObj =
+                                                                                                            JSON.parse(
+                                                                                                              employeeData
                                                                                                             );
-                                                                                                          if (
-                                                                                                            employeeData
-                                                                                                          ) {
-                                                                                                            const jsonObj =
-                                                                                                              JSON.parse(
-                                                                                                                employeeData
-                                                                                                              );
-                                                                                                            const dateFormat =
-                                                                                                              "YYYY-MM-DD";
-                                                                                                            const currentDate =
-                                                                                                              moment().format(
-                                                                                                                dateFormat
-                                                                                                              );
-                                                                                                            const monthFirstDate =
-                                                                                                              moment(
-                                                                                                                currentDate,
-                                                                                                                dateFormat
+                                                                                                          const dateFormat =
+                                                                                                            "YYYY-MM-DD";
+                                                                                                          const currentDate =
+                                                                                                            moment().format(
+                                                                                                              dateFormat
+                                                                                                            );
+                                                                                                          const monthFirstDate =
+                                                                                                            moment(
+                                                                                                              currentDate,
+                                                                                                              dateFormat
+                                                                                                            )
+                                                                                                              .subtract(
+                                                                                                                0,
+                                                                                                                "months"
                                                                                                               )
-                                                                                                                .subtract(
-                                                                                                                  0,
-                                                                                                                  "months"
-                                                                                                                )
-                                                                                                                .startOf(
-                                                                                                                  "month"
-                                                                                                                )
-                                                                                                                .format(
-                                                                                                                  dateFormat
-                                                                                                                );
-                                                                                                            const monthLastDate =
-                                                                                                              moment(
-                                                                                                                currentDate,
-                                                                                                                dateFormat
+                                                                                                              .startOf(
+                                                                                                                "month"
                                                                                                               )
-                                                                                                                .subtract(
-                                                                                                                  0,
-                                                                                                                  "months"
-                                                                                                                )
-                                                                                                                .endOf(
-                                                                                                                  "month"
-                                                                                                                )
-                                                                                                                .format(
-                                                                                                                  dateFormat
-                                                                                                                );
-                                                                                                            let payload =
+                                                                                                              .format(
+                                                                                                                dateFormat
+                                                                                                              );
+                                                                                                          const monthLastDate =
+                                                                                                            moment(
+                                                                                                              currentDate,
+                                                                                                              dateFormat
+                                                                                                            )
+                                                                                                              .subtract(
+                                                                                                                0,
+                                                                                                                "months"
+                                                                                                              )
+                                                                                                              .endOf(
+                                                                                                                "month"
+                                                                                                              )
+                                                                                                              .format(
+                                                                                                                dateFormat
+                                                                                                              );
+                                                                                                          let payload =
                                                                                                             {
                                                                                                               orgId:
                                                                                                                 jsonObj.orgId,
@@ -5662,44 +6323,44 @@ const ParametersScreen = ({ route }) => {
                                                                                                               pageNo: 0,
                                                                                                               size: 100,
                                                                                                             };
-                                                                                                            Promise.all(
-                                                                                                              [
-                                                                                                                dispatch(
-                                                                                                                  getUserWiseTargetParameters(
-                                                                                                                    payload
-                                                                                                                  )
-                                                                                                                ),
-                                                                                                              ]
-                                                                                                            ).then(
-                                                                                                              async (
-                                                                                                                res
-                                                                                                              ) => {
-                                                                                                                let tempRawData =
-                                                                                                                  [];
-                                                                                                                tempRawData =
-                                                                                                                  res[0]?.payload?.employeeTargetAchievements.filter(
-                                                                                                                    (
-                                                                                                                      item
-                                                                                                                    ) =>
-                                                                                                                      item.empId !==
-                                                                                                                      innerItem6.empId
-                                                                                                                  );
-                                                                                                                if (
-                                                                                                                  tempRawData.length >
-                                                                                                                  0
+                                                                                                          Promise.all(
+                                                                                                            [
+                                                                                                              dispatch(
+                                                                                                                getUserWiseTargetParameters(
+                                                                                                                  payload
+                                                                                                                )
+                                                                                                              ),
+                                                                                                            ]
+                                                                                                          ).then(
+                                                                                                            async (
+                                                                                                              res
+                                                                                                            ) => {
+                                                                                                              let tempRawData =
+                                                                                                                [];
+                                                                                                              tempRawData =
+                                                                                                                res[0]?.payload?.employeeTargetAchievements.filter(
+                                                                                                                  (
+                                                                                                                    item
+                                                                                                                  ) =>
+                                                                                                                    item.empId !==
+                                                                                                                    innerItem6.empId
+                                                                                                                );
+                                                                                                              if (
+                                                                                                                tempRawData.length >
+                                                                                                                0
+                                                                                                              ) {
+                                                                                                                for (
+                                                                                                                  let i = 0;
+                                                                                                                  i <
+                                                                                                                  tempRawData.length;
+                                                                                                                  i++
                                                                                                                 ) {
-                                                                                                                  for (
-                                                                                                                    let i = 0;
-                                                                                                                    i <
-                                                                                                                    tempRawData.length;
-                                                                                                                    i++
-                                                                                                                  ) {
-                                                                                                                    tempRawData[
-                                                                                                                      i
-                                                                                                                    ] =
+                                                                                                                  tempRawData[
+                                                                                                                    i
+                                                                                                                  ] =
                                                                                                                     {
                                                                                                                       ...tempRawData[
-                                                                                                                      i
+                                                                                                                        i
                                                                                                                       ],
                                                                                                                       isOpenInner: false,
                                                                                                                       employeeTargetAchievements:
@@ -5710,262 +6371,268 @@ const ParametersScreen = ({ route }) => {
                                                                                                                         ]
                                                                                                                           ?.targetAchievements,
                                                                                                                     };
-                                                                                                                    if (
-                                                                                                                      i ===
-                                                                                                                      tempRawData.length -
+                                                                                                                  if (
+                                                                                                                    i ===
+                                                                                                                    tempRawData.length -
                                                                                                                       1
+                                                                                                                  ) {
+                                                                                                                    localData[
+                                                                                                                      index
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex1
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex2
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex3
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex4
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex5
+                                                                                                                    ].employeeTargetAchievements[
+                                                                                                                      innerIndex6
+                                                                                                                    ].employeeTargetAchievements =
+                                                                                                                      tempRawData;
+                                                                                                                    let newIds =
+                                                                                                                      tempRawData.map(
+                                                                                                                        (
+                                                                                                                          emp
+                                                                                                                        ) =>
+                                                                                                                          emp.empId
+                                                                                                                      );
+                                                                                                                    if (
+                                                                                                                      newIds.length >=
+                                                                                                                      2
                                                                                                                     ) {
-                                                                                                                      localData[
-                                                                                                                        index
-                                                                                                                      ].employeeTargetAchievements[
-                                                                                                                        innerIndex1
-                                                                                                                      ].employeeTargetAchievements[
-                                                                                                                        innerIndex2
-                                                                                                                      ].employeeTargetAchievements[
-                                                                                                                        innerIndex3
-                                                                                                                      ].employeeTargetAchievements[
-                                                                                                                        innerIndex4
-                                                                                                                      ].employeeTargetAchievements[
-                                                                                                                        innerIndex5
-                                                                                                                      ].employeeTargetAchievements[
-                                                                                                                        innerIndex6
-                                                                                                                      ].employeeTargetAchievements =
-                                                                                                                        tempRawData;
-                                                                                                                      let newIds =
-                                                                                                                        tempRawData.map(
-                                                                                                                          (
-                                                                                                                            emp
-                                                                                                                          ) =>
-                                                                                                                            emp.empId
-                                                                                                                        );
-                                                                                                                      if (
-                                                                                                                        newIds.length >=
-                                                                                                                        2
+                                                                                                                      for (
+                                                                                                                        let i = 0;
+                                                                                                                        i <
+                                                                                                                        newIds.length;
+                                                                                                                        i++
                                                                                                                       ) {
-                                                                                                                        for (
-                                                                                                                          let i = 0;
-                                                                                                                          i <
-                                                                                                                          newIds.length;
-                                                                                                                          i++
+                                                                                                                        const element =
+                                                                                                                          newIds[
+                                                                                                                            i
+                                                                                                                          ].toString();
+                                                                                                                        let tempPayload =
+                                                                                                                          getTotalPayload(
+                                                                                                                            employeeData,
+                                                                                                                            element
+                                                                                                                          );
+                                                                                                                        const response =
+                                                                                                                          await client.post(
+                                                                                                                            URL.GET_LIVE_LEADS_INSIGHTS(),
+                                                                                                                            tempPayload
+                                                                                                                          );
+                                                                                                                        const json =
+                                                                                                                          await response.json();
+                                                                                                                        if (
+                                                                                                                          Array.isArray(
+                                                                                                                            json
+                                                                                                                          )
                                                                                                                         ) {
-                                                                                                                          const element =
-                                                                                                                            newIds[
-                                                                                                                              i
-                                                                                                                            ].toString();
-                                                                                                                          let tempPayload =
-                                                                                                                            getTotalPayload(
-                                                                                                                              employeeData,
-                                                                                                                              element
-                                                                                                                            );
-                                                                                                                          const response =
-                                                                                                                            await client.post(
-                                                                                                                              URL.GET_LIVE_LEADS_INSIGHTS(),
-                                                                                                                              tempPayload
-                                                                                                                            );
-                                                                                                                          const json =
-                                                                                                                            await response.json();
-                                                                                                                          if (
-                                                                                                                            Array.isArray(
-                                                                                                                              json
-                                                                                                                            )
-                                                                                                                          ) {
-                                                                                                                            localData[
-                                                                                                                              index
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              innerIndex1
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              innerIndex2
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              innerIndex3
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              innerIndex4
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              innerIndex5
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              innerIndex6
-                                                                                                                            ].employeeTargetAchievements[
-                                                                                                                              i
-                                                                                                                            ].targetAchievements =
-                                                                                                                              json;
-                                                                                                                          }
+                                                                                                                          localData[
+                                                                                                                            index
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            innerIndex1
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            innerIndex2
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            innerIndex3
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            innerIndex4
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            innerIndex5
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            innerIndex6
+                                                                                                                          ].employeeTargetAchievements[
+                                                                                                                            i
+                                                                                                                          ].targetAchievements =
+                                                                                                                            json;
                                                                                                                         }
                                                                                                                       }
                                                                                                                     }
                                                                                                                   }
                                                                                                                 }
-                                                                                                                setAllParameters(
-                                                                                                                  [
-                                                                                                                    ...localData,
-                                                                                                                  ]
-                                                                                                                );
                                                                                                               }
-                                                                                                            );
-                                                                                                          }
-                                                                                                        } else {
-                                                                                                          setAllParameters(
-                                                                                                            [
-                                                                                                              ...localData,
-                                                                                                            ]
+                                                                                                              setAllParameters(
+                                                                                                                [
+                                                                                                                  ...localData,
+                                                                                                                ]
+                                                                                                              );
+                                                                                                            }
                                                                                                           );
                                                                                                         }
-                                                                                                        // setAllParameters([...localData])
-                                                                                                      }}
-                                                                                                    />
-                                                                                                    {renderData(
-                                                                                                      innerItem6,
-                                                                                                      "#C62159"
-                                                                                                    )}
-                                                                                                  </View>
+                                                                                                      } else {
+                                                                                                        setAllParameters(
+                                                                                                          [
+                                                                                                            ...localData,
+                                                                                                          ]
+                                                                                                        );
+                                                                                                      }
+                                                                                                      // setAllParameters([...localData])
+                                                                                                    }}
+                                                                                                  />
+                                                                                                  {renderData(
+                                                                                                    innerItem6,
+                                                                                                    "#C62159"
+                                                                                                  )}
                                                                                                 </View>
-                                                                                              );
-                                                                                            }
-                                                                                          )}
-                                                                                      </View>
-                                                                                    );
-                                                                                  }
-                                                                                )}
-                                                                            </View>
-                                                                          );
-                                                                        }
-                                                                      )}
-                                                                  </View>
-                                                                );
-                                                              }
-                                                            )}
-                                                        </View>
-                                                      );
-                                                    }
-                                                  )}
-                                              </View>
+                                                                                              </View>
+                                                                                            );
+                                                                                          }
+                                                                                        )}
+                                                                                    </View>
+                                                                                  );
+                                                                                }
+                                                                              )}
+                                                                          </View>
+                                                                        );
+                                                                      }
+                                                                    )}
+                                                                </View>
+                                                              );
+                                                            }
+                                                          )}
+                                                      </View>
+                                                    );
+                                                  }
+                                                )}
                                             </View>
-                                          );
-                                        }
-                                      )}
-                                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-                                  </View>
-                                </View>
-                              </View>
-                            );
-                          })}
-
-                        {/* Grand Total Section */}
-                        {selector.totalParameters.length > 0 && (
-                          <View>
-                            <Pressable
-                              style={{ alignSelf: "flex-end" }}
-                              onPress={() => {
-                                navigation.navigate(
-                                  AppNavigator.HomeStackIdentifiers.sourceModel,
-                                  {
-                                    empId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId)  ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
-                                    headerTitle: "Grand Total",
-                                    loggedInEmpId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
-                                    type: "TEAM",
-                                    moduleType: "live-leads",
-                                  }
-                                );
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 12,
-                                  fontWeight: "600",
-                                  color: Colors.BLUE,
-                                  marginLeft: 8,
-                                  paddingRight: 12,
-                                }}
-                              >
-                                Source/Model
-                              </Text>
-                            </Pressable>
-
-                            <View style={{ flexDirection: "row", height: 40 }}>
-                              <View
-                                style={{
-                                  width: 70,
-                                  minHeight: 40,
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  flexDirection: "row",
-                                  backgroundColor: Colors.RED,
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginLeft: 6,
-                                  }}
-                                >
-                                  <Text
-                                    style={[
-                                      styles.grandTotalText,
-                                      {
-                                        color: Colors.WHITE,
-                                        fontSize: 12,
-                                      },
-                                    ]}
-                                  >
-                                    Total
-                                  </Text>
-                                </View>
-                                {/*<View>*/}
-                                {/*    <Text style={{*/}
-                                {/*        fontSize: 6,*/}
-                                {/*        fontWeight: 'bold',*/}
-                                {/*        paddingVertical: 6,*/}
-                                {/*        paddingRight: 2,*/}
-                                {/*        height: 20,*/}
-                                {/*        color: Colors.WHITE*/}
-                                {/*    }}>CNT</Text>*/}
-                                {/*    <Text style={{*/}
-                                {/*        fontSize: 6,*/}
-                                {/*        fontWeight: 'bold',*/}
-                                {/*        paddingVertical: 6,*/}
-                                {/*        height: 20,*/}
-                                {/*        color: Colors.WHITE*/}
-                                {/*    }}>TGT</Text>*/}
-                                {/*</View>*/}
-                              </View>
-                              <View
-                                style={{
-                                  minHeight: 40,
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    minHeight: 40,
-                                    flexDirection: "row",
-                                  }}
-                                >
-                                  <RenderGrandTotal
-                                    totalParams={selector.totalParameters}
-                                    displayType={togglePercentage}
-                                    params={toggleParamsMetaData}
-                                    moduleType={"live-leads"}
-                                  />
+                                          </View>
+                                        );
+                                      }
+                                    )}
+                                  {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                                 </View>
                               </View>
                             </View>
+                          );
+                        })}
+
+                      {/* Grand Total Section */}
+                      {selector.totalParameters.length > 0 && (
+                        <View>
+                          <Pressable
+                            style={{ alignSelf: "flex-end" }}
+                            onPress={() => {
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: !_.isEmpty(
+                                    selector.saveLiveleadObject?.selectedempId
+                                  )
+                                    ? selector.saveLiveleadObject
+                                        ?.selectedempId[0]
+                                    : selector.login_employee_details.empId,
+                                  headerTitle: "Grand Total",
+                                  loggedInEmpId: !_.isEmpty(
+                                    selector.saveLiveleadObject?.selectedempId
+                                  )
+                                    ? selector.saveLiveleadObject
+                                        ?.selectedempId[0]
+                                    : selector.login_employee_details.empId,
+                                  type: "TEAM",
+                                  moduleType: "live-leads",
+                                }
+                              );
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: Colors.BLUE,
+                                marginLeft: 8,
+                                paddingRight: 12,
+                              }}
+                            >
+                              Source/Model
+                            </Text>
+                          </Pressable>
+
+                          <View style={{ flexDirection: "row", height: 40 }}>
+                            <View
+                              style={{
+                                width: 70,
+                                minHeight: 40,
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexDirection: "row",
+                                backgroundColor: Colors.RED,
+                              }}
+                            >
+                              <View
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 6,
+                                }}
+                              >
+                                <Text
+                                  style={[
+                                    styles.grandTotalText,
+                                    {
+                                      color: Colors.WHITE,
+                                      fontSize: 12,
+                                    },
+                                  ]}
+                                >
+                                  Total
+                                </Text>
+                              </View>
+                              {/*<View>*/}
+                              {/*    <Text style={{*/}
+                              {/*        fontSize: 6,*/}
+                              {/*        fontWeight: 'bold',*/}
+                              {/*        paddingVertical: 6,*/}
+                              {/*        paddingRight: 2,*/}
+                              {/*        height: 20,*/}
+                              {/*        color: Colors.WHITE*/}
+                              {/*    }}>CNT</Text>*/}
+                              {/*    <Text style={{*/}
+                              {/*        fontSize: 6,*/}
+                              {/*        fontWeight: 'bold',*/}
+                              {/*        paddingVertical: 6,*/}
+                              {/*        height: 20,*/}
+                              {/*        color: Colors.WHITE*/}
+                              {/*    }}>TGT</Text>*/}
+                              {/*</View>*/}
+                            </View>
+                            <View
+                              style={{
+                                minHeight: 40,
+                                flexDirection: "column",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  minHeight: 40,
+                                  flexDirection: "row",
+                                }}
+                              >
+                                <RenderGrandTotal
+                                  totalParams={selector.totalParameters}
+                                  displayType={togglePercentage}
+                                  params={toggleParamsMetaData}
+                                  moduleType={"live-leads"}
+                                />
+                              </View>
+                            </View>
                           </View>
-                        )}
-                    </>}   
-            
-                
-
-
+                        </View>
+                      )}
+                    </>
+                  )}
                 </ScrollView>
               )}
-            </View>  
-
-          
+            </View>
           </>
         ) : (
           // IF Self or insights
           <>
-
-              {!receptionistRole.includes(userData.hrmsRole) && !crmRole.includes(userData.hrmsRole) ? <>
+            {!receptionistRole.includes(userData.hrmsRole) &&
+            !crmRole.includes(userData.hrmsRole) ? (
+              <>
                 <View style={{ marginTop: 16, marginHorizontal: 24 }}>
                   <Pressable
                     style={{ alignSelf: "flex-end" }}
@@ -5973,12 +6640,21 @@ const ParametersScreen = ({ route }) => {
                       navigation.navigate(
                         AppNavigator.HomeStackIdentifiers.sourceModel,
                         {
-                          empId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
+                          empId: !_.isEmpty(
+                            selector.saveLiveleadObject?.selectedempId
+                          )
+                            ? selector.saveLiveleadObject?.selectedempId[0]
+                            : selector.login_employee_details.empId,
                           headerTitle: "Source/Model",
-                          loggedInEmpId: !_.isEmpty(selector.saveLiveleadObject?.selectedempId) ? selector.saveLiveleadObject?.selectedempId[0] : selector.login_employee_details.empId,
+                          loggedInEmpId: !_.isEmpty(
+                            selector.saveLiveleadObject?.selectedempId
+                          )
+                            ? selector.saveLiveleadObject?.selectedempId[0]
+                            : selector.login_employee_details.empId,
                           type: selector.isDSE ? "SELF" : "INSIGHTS",
                           moduleType: "live-leads",
                           orgId: selector.login_employee_details.orgId,
+                          isOpenner : false
                         }
                       );
                     }}
@@ -6010,29 +6686,26 @@ const ParametersScreen = ({ route }) => {
                       />
                     )}
                 </View>
-              </> : null}
-            
-            {receptionistRole.includes(userData.hrmsRole) ? <>
+              </>
+            ) : null}
+
+            {receptionistRole.includes(userData.hrmsRole) ? (
+              <>
                 <View style={{ marginTop: 16, marginHorizontal: 24 }}>
                   <Pressable
                     style={{ alignSelf: "flex-end" }}
                     onPress={() => {
-                      navigation.navigate(
-                        "RECEP_SOURCE_MODEL_CRM",
-                        {
-                          empId: selector.login_employee_details.empId,
-                          headerTitle: "Source/Model",
-                          loggedInEmpId: selector.login_employee_details.empId,
-                          type: "TEAM",
-                          moduleType: "live-leads",
-                          orgId: userData.orgId,
-                          role: userData.hrmsRole,
-                          branchList: userData.branchs.map(
-                            (a) => a.branchId
-                          ),
-                          self:false
-                        }
-                      );
+                      navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                        empId: selector.login_employee_details.empId,
+                        headerTitle: "Source/Model",
+                        loggedInEmpId: selector.login_employee_details.empId,
+                        type: "TEAM",
+                        moduleType: "live-leads",
+                        orgId: userData.orgId,
+                        role: userData.hrmsRole,
+                        branchList: userData.branchs.map((a) => a.branchId),
+                        self: false,
+                      });
                       // navigation.navigate(
                       //   AppNavigator.HomeStackIdentifiers.sourceModel,
                       //   {
@@ -6073,17 +6746,20 @@ const ParametersScreen = ({ route }) => {
                       />
                     )}
                 </View>
-            </> : null }
+              </>
+            ) : null}
 
-
-              {crmRole.includes(userData.hrmsRole) ? <>
+            {crmRole.includes(userData.hrmsRole) ? (
+              <>
                 <View style={{ marginTop: 16, marginHorizontal: 24 }}>
                   <Pressable
                     style={{ alignSelf: "flex-end" }}
                     onPress={() => {
-                      if(CRM_filterParameters.length > 0 ){
-                      
-                        handleSourceModalNavigation(CRM_filterParameters[0],CRM_filterParameters[0].emp_id)
+                      if (CRM_filterParameters.length > 0) {
+                        handleSourceModalNavigation(
+                          CRM_filterParameters[0],
+                          CRM_filterParameters[0].emp_id
+                        );
                         // navigation.navigate(
                         //   "RECEP_SOURCE_MODEL_CRM",
                         //   {
@@ -6099,26 +6775,20 @@ const ParametersScreen = ({ route }) => {
                         //     ),
                         //   }
                         // );
-                      }else{
-                        navigation.navigate(
-                          "RECEP_SOURCE_MODEL_CRM",
-                          {
-                            empId: selector.login_employee_details.empId,
-                            headerTitle: "Source/Model",
-                            loggedInEmpId: selector.login_employee_details.empId,
-                            type: "TEAM",
-                            moduleType: "live-leads",
-                            orgId: userData.orgId,
-                            role: userData.hrmsRole,
-                            branchList: userData.branchs.map(
-                              (a) => a.branchId
-                            ),
-                            self:false,
-                          }
-                        );
+                      } else {
+                        navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                          empId: selector.login_employee_details.empId,
+                          headerTitle: "Source/Model",
+                          loggedInEmpId: selector.login_employee_details.empId,
+                          type: "TEAM",
+                          moduleType: "live-leads",
+                          orgId: userData.orgId,
+                          role: userData.hrmsRole,
+                          branchList: userData.branchs.map((a) => a.branchId),
+                          self: false,
+                        });
                       }
 
-                      
                       // navigation.navigate(
                       //   AppNavigator.HomeStackIdentifiers.sourceModel,
                       //   {
@@ -6159,8 +6829,8 @@ const ParametersScreen = ({ route }) => {
                       />
                     )}
                 </View>
-              </> : null}
-
+              </>
+            ) : null}
           </>
         )}
       </View>
@@ -6183,6 +6853,8 @@ export const RenderLevel1NameView = ({
   color,
   titleClick,
   disable = false,
+  teamLoader = false,
+  teamMember = "",
 }) => {
   return (
     <View
@@ -6195,29 +6867,50 @@ export const RenderLevel1NameView = ({
       }}
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity
-          disabled={disable}
-          style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-          onPress={titleClick}
-        >
-          <Text
+        {teamLoader && teamMember === item?.empName ? (
+          <View
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Lottie
+              source={require("../../../assets/Animations/lf20_qispmsyg.json")}
+              autoPlay
+              loop
+            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            disabled={disable}
+            style={{
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+            onPress={titleClick}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+        )}
         {level === 0 && !!branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton
@@ -6257,7 +6950,6 @@ export const RenderLevel1NameView = ({
     </View>
   );
 };
-
 
 export const RenderLevel1NameViewCRM = ({
   level,
@@ -6340,7 +7032,6 @@ export const RenderLevel1NameViewCRM = ({
     </View>
   );
 };
-
 
 export const SourceModelView = ({ style = null, onClick }) => {
   return (

@@ -15,7 +15,9 @@ var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
-export const distanceFilterValue = 5;
+export const distanceFilterValue = 25;
+export const GlobalSpeed = 1.25; // 10 km/hr in m/s
+
 export const officeRadius = 0.1;
 export const sleep = (time) =>
   new Promise((resolve) => setTimeout(() => resolve(), time));
@@ -48,7 +50,7 @@ export const MarkAbsent = async (absentRequest = false) => {
             )
           );
           const json = await response.json();
-         
+
           let latestDate = new Date(
             json[json?.length - 1]?.createdtimestamp
           )?.getDate();
@@ -73,7 +75,6 @@ const saveData = async (payload, absentRequest = false) => {
   try {
     const saveData = await client.post(URL.SAVE_EMPLOYEE_ATTENDANCE(), payload);
     const savedJson = await saveData.json();
-   
   } catch (error) {
     console.error("savedJsonERROR", error);
   }
@@ -88,11 +89,9 @@ export const veryIntensiveTask = async (taskDataArguments) => {
   const { delay } = taskDataArguments;
   await new Promise(async (resolve) => {
     for (let i = 0; BackgroundService.isRunning(); i++) {
-      
       try {
         await Geolocation.watchPosition(
           (lastPosition) => {
-           
             var newLatLng = {
               latitude: lastPosition.coords.latitude,
               longitude: lastPosition.coords.longitude,
@@ -101,9 +100,7 @@ export const veryIntensiveTask = async (taskDataArguments) => {
           (error) => alert(JSON.stringify(error)),
           { enableHighAccuracy: true, distanceFilter: 100 }
         );
-        Geolocation.watchPosition((data) => {
-         
-        });
+        Geolocation.watchPosition((data) => {});
       } catch (error) {}
 
       await BackgroundService.updateNotification({
@@ -155,6 +152,25 @@ export function getDistanceBetweenTwoPoints(lat1, lon1, lat2, lon2) {
 
   return dist;
 }
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
+
+export const getDistanceBetweenTwoPointsLatLong = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distanceInMeters = R * c * 1000; // Distance in meters
+  return distanceInMeters;
+};
 
 export function createDateTime(time) {
   var splitted = time.split(":");

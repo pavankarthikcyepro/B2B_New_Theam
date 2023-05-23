@@ -195,6 +195,7 @@ const URL = {
   GET_EMPID: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },
+  GET_CALL_URI: () => sales_url + `/callrecording/saveCallRecordings`,
   GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
     return (
       sales_url +
@@ -208,6 +209,15 @@ const URL = {
     return sales_url + `/master-data/customertype/${orgId}`;
   },
   MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+  GET_ROLES_LIST: () => {
+    return roleManagement_url + `/dms/getRoles`;
+  },
+  GET_DESIGNATION_LIST: () => {
+    return roleManagement_url + `/dms/getDesignation`;
+  },
+  SAVE_EMPLOYEE: () => {
+    return roleManagement_url + `/dms/save-employee`;
+  },
   MY_TASKS_RESCHEDULED_HISTORY: (empId) =>
     sales_url + `/task-history/resheduled-update-today?empId=${empId}`,
   CONTACT_DETAILS: (universalId) => {
@@ -263,6 +273,10 @@ const URL = {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
+  
+  POST_FINANCE: () => sales_url + "/dms/finance",
+  POST_EVALUTION: () => sales_url + "/dms/evaluation",
+
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",
   GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
@@ -387,6 +401,14 @@ const URL = {
   GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
     return sales_url + `/booking-amount/lead/${leadId}`;
   },
+  GET_RECORDED_CALLS: (taskId) => {
+    return sales_url + `/callrecording/getCallHistory-urls?recordId=${taskId}`;
+  },
+
+  SAVE_BOOKING_CANCEL_ATTACHMENT: () => {
+    return sales_url + `/payment/saveReceiptdoc`;
+  },
+
   GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
     return sales_url + `/workflow/lead/stage/${universalId}`;
   },
@@ -396,6 +418,14 @@ const URL = {
       `/dms/getAllServiceEventsByFilterWithoutPagination?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`
     );
   },
+
+  UPLOAD_ATTACHMENTS: () => {
+    return (
+      notificationServices_url +
+      `/dms-core-api/dmsUpload/uploadFiles?uploadType=attachments`
+    );
+  },
+
   GENERATE_OTP: () => {
     return notificationServices_url + "/generateOTP";
   },
@@ -405,6 +435,55 @@ const URL = {
   SAVETESTDRIVE: () => {
     return sales_url + "/task-history/savetestDrive";
   },
+
+  SAVEHOMEVISIT: () => {
+    return sales_url + "/task-history/savehomevisit";
+  },
+
+  UPDATELIST_HOME_VISIT: (recordid) => {
+    return sales_url + `/task-history/updateListHV/${recordid}`;
+  },
+
+  UPDATE_HOMEVISIT_WORKFLOW: (recordid) => {
+    return sales_url + `/workflow/updateHomeVisit/${recordid}`;
+  },
+
+  GET_HOME_HISTORY_COUNT: (universalId) => {
+    return (
+      sales_url + `/task-history/get-count-auditHV?customerId=${universalId}`
+    );
+  },
+
+  GET_HOME_VISIT_COUNT_DETAILS: (universalId) => {
+    return (
+      sales_url +
+      `/task-history/get-homevisit-history?customerId=${universalId}`
+    );
+  },
+
+  SAVE_RECHEDULE_REMARKS: () => {
+    return sales_url + "/task-history/saveReScheduleRemark";
+  },
+
+  GET_RECHEDULE_REMARKS: (universalId) => {
+    return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+  },
+
+  GET_WORKFLOW_TASKS: (entityId, taskName) => {
+    return sales_url + `/dms/workflowtask/${entityId}/${taskName}`;
+  },
+  POST_WORKFLOW_TASKS: () => {
+    return sales_url + `/dms/workflowtaskhistory`;
+  },
+  GET_PUT_WORKFLOW_HISTORY: (recordid) => {
+    return sales_url + `/dms/putWorkflowHistory/${recordid}`;
+  },
+
+  
+
+  UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
+    return sales_url + `/task-history/updateList/${recordid}`;
+  },
   // ORG_HIRARCHY: (orgId, empId) => {
   //   return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
   // },
@@ -412,7 +491,9 @@ const URL = {
   ORG_HIRARCHY: (orgId, empId) => {
     return orgnaizationHirarchy + `/v1/active-levels/${orgId}/${empId}`;
   },
-
+  ORG_HIRARCHY2: (orgId, empId) => {
+    return orgnaizationHirarchy + `/active-levels/${orgId}/${empId}`;
+  },
   ORG_HIRARCHY_DEALDER_DESIGNATIONS: (orgId, empId) => {
     return (
       orgnaizationHirarchy + `/active-dropdowns-designation/${orgId}/${empId}`
@@ -605,6 +686,12 @@ const URL = {
   GET_MY_TASKS_NEW_DATA: () => {
     return dashboard + "/v2/get_todays_datav2/filter";
   },
+  GET_MY_TASKS_NEW_DATA2: () => {
+    return dashboard + "/v3/get_todays_datav2/filter/counts";
+  },
+  GET_MY_TASKS_NEW_DATA3: () => {
+    return dashboard + "/v3/get_todays_datav2/filter";
+  },
   GET_WORK_FLOW_TASKS: (universalId) => {
     return sales_url + `/workflow/lead/universalId/${universalId}`;
   },
@@ -623,6 +710,15 @@ const URL = {
   UPDATE_REF: () => {
     return sales_url + `/lead-customer-reference/update`;
   },
+
+  GET_LEAD_DROP_DETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/lead-drop/leaddropdetails/${leadid}`;
+  },
+
+  GET_LEAD_RECEPDETAILS_BOOKING_CANCEL: (leadid) => {
+    return sales_url + `/payment/getReceiptdoc/${leadid}`;
+  },
+
   GET_BRANCH: () => {
     return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
   },
@@ -716,21 +812,13 @@ const URL = {
   },
   GET_LEADERBOARD_DATA_DEALER: (orgId, branchId) => {
     return (
-      baseUrl +
-      "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" +
-      orgId +
-      "/branchName/" +
-      branchId
+      baseUrl + "dfd/dashboard/v2/get_emp_target_Dealer_ranking/org/" + orgId
     );
   },
 
   GET_LEADERBOARD_DATA_Branch_new: (orgId, branchId) => {
     return (
-      baseUrl +
-      "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" +
-      orgId +
-      "/branchName/" +
-      branchId
+      baseUrl + "dfd/dashboard/v2/get_emp_target_Branch_ranking/org/" + orgId
     );
   },
 
@@ -948,6 +1036,24 @@ const URL = {
   },
   CALL_DEALLOCATE: (empId) => {
     return roleManagement_url + "/dms/emp-update/" + empId;
+  },
+  GET_INVENTORY: () => {
+    return baseUrl + "dfdr/vehicle-inventory/getInventory";
+  },
+  GET_INVENTORY_BY_LOCATION: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-locationBasedVehicles`;
+  },
+  GET_INVENTORY_BY_VEHICLE: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-branchBasedVehicles`;
+  },
+  GET_INVENTORY_BY_VEHICLE_MODEL: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-modelBasedVehicles`;
+  },
+  GET_INVENTORY_BY_VEHICLE_COLOR: () => {
+    return baseUrl + `dfdr/vehicle-inventory/get-varientBasedVehicles`;
+  },
+  GET_INVENTORY_BY_STOCK_YARD_BRANCHES: (orgId) => {
+    return baseUrl + `dfdr/vehicle-inventory/get-stockyardbranches/${orgId}`;
   },
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;

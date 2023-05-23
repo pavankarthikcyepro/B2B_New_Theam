@@ -354,6 +354,111 @@ export const getAssignedTasksApi = createAsyncThunk(
   }
 );
 
+export const saveReceiptdocApiCall = createAsyncThunk(
+  "BOOKING_FORMS_SLICE/saveReceiptdocApiCall",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.SAVE_BOOKING_CANCEL_ATTACHMENT(), payload);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      // console.error(
+      //   "preBookingPaymentApi JSON parse error: ",
+      //   error + " : " + JSON.stringify(response)
+      // );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+export const updateSingleApproval = createAsyncThunk(
+  "BOOKING_FORMS_SLICE/updateSingleApproval",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.UPDATE_SINGLEAPPROVAL(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+export const updateRef = createAsyncThunk(
+  "BOOKING_FORMS_SLICE/updateRef",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_REF(), payload);
+    try {
+      // const json = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(response);
+      }
+      return response;
+    } catch (error) {
+      console.error(JSON.stringify(response));
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+
+
+export const getLeadDropDetailsFOrBooking = createAsyncThunk(
+  "BOOKING_FORMS_SLICE/getLeadDropDetailsFOrBooking",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_LEAD_DROP_DETAILS_BOOKING_CANCEL(payload));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getAssignedTasksApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+
+export const getReceiptDocCancelBooking = createAsyncThunk(
+  "BOOKING_FORMS_SLICE/getReceiptDocCancelBooking",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_LEAD_RECEPDETAILS_BOOKING_CANCEL(payload));
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error(
+        "getAssignedTasksApi JSON parse error: ",
+        error + " : " + JSON.stringify(response)
+      );
+      return rejectWithValue({
+        message: "Json parse error: " + JSON.stringify(response),
+      });
+    }
+  }
+);
+
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -516,6 +621,19 @@ const bookingFormSlice = createSlice({
     addOnPrice: 0,
     accessories_discount: "",
     insurance_discount: "",
+
+    cancel_reason_dropdown_value:"",
+    cancel_reason_remarks:"",
+    cancel_reason_attachmet:"",
+    cancel_updateSingleApproval_response :"",
+    cancel_saveReceiptdocApiCall: "",
+    cancel_updateRef: "",
+
+    cancel_lead_drop_details:{},
+    cancel_Receipt_details: {},
+    cancel_Receipt_details_status: "",
+    
+
   },
   reducers: {
     clearState: (state, action) => {
@@ -643,6 +761,17 @@ const bookingFormSlice = createSlice({
       state.addOnPrice = 0;
       state.accessories_discount = "";
       state.insurance_discount = "";
+
+      state.cancel_reason_attachmet="";
+      state.cancel_reason_dropdown_value="";
+      state.cancel_reason_remarks = "",
+      state.cancel_updateSingleApproval_response = "",
+      state.cancel_saveReceiptdocApiCall = "",
+      state.cancel_updateRef = ""
+      state.cancel_lead_drop_details ={}
+      state.cancel_Receipt_details = {},
+        state.cancel_Receipt_details_status= ""
+
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -724,6 +853,14 @@ const bookingFormSlice = createSlice({
           break;
         case "VEHICLE_TYPE":
           state.vehicle_type = value;
+          break;
+
+        case "BOOKING_CANCEL_REASONS":
+          state.cancel_reason_dropdown_value = value;
+          break;
+
+        case "CANCEL_REMARKS":
+          state.cancel_reason_remarks = value;
           break;
       }
     },
@@ -1748,6 +1885,87 @@ const bookingFormSlice = createSlice({
       state.assigned_tasks_list = [];
       state.assigned_tasks_list_status = "failed";
       state.isLoading = false;
+    });
+    
+
+    builder.addCase(saveReceiptdocApiCall.pending, (state, action) => {
+      // state.assigned_tasks_list = [];
+      state.cancel_saveReceiptdocApiCall = "pending";
+      // state.isLoading = true;
+    });
+    builder.addCase(saveReceiptdocApiCall.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.cancel_saveReceiptdocApiCall = "success";
+      }
+      // state.isLoading = false;
+      
+    });
+    builder.addCase(saveReceiptdocApiCall.rejected, (state, action) => {
+      state.cancel_saveReceiptdocApiCall = "failed";
+      
+    });
+
+    builder.addCase(updateSingleApproval.pending, (state, action) => {
+      
+      state.cancel_updateSingleApproval_response = "pending";
+      // state.isLoading = true;
+    });
+    builder.addCase(updateSingleApproval.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.cancel_updateSingleApproval_response = "success";
+      }
+    });
+    builder.addCase(updateSingleApproval.rejected, (state, action) => {
+      state.cancel_updateSingleApproval_response = "failed";
+    });
+
+
+    builder.addCase(updateRef.pending, (state, action) => {
+      // state.assigned_tasks_list = [];
+      state.cancel_updateRef = "pending";
+      // state.isLoading = true;
+    });
+    builder.addCase(updateRef.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.cancel_updateRef = "success";
+      }
+    });
+    builder.addCase(updateRef.rejected, (state, action) => {
+      state.cancel_updateRef = "failed";
+    });
+
+    
+    builder.addCase(getLeadDropDetailsFOrBooking.pending, (state, action) => {
+      // state.assigned_tasks_list = [];
+      // state.cancel_lead_drop_details = "pending";
+      // state.isLoading = true;
+    });
+    builder.addCase(getLeadDropDetailsFOrBooking.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.cancel_lead_drop_details = action.payload;
+        let res = action.payload;
+        state.cancel_reason_dropdown_value = res[res.length - 1].lostReason;
+        state.cancel_reason_remarks = res[res.length - 1].additionalRemarks;
+      }
+    });
+    builder.addCase(getLeadDropDetailsFOrBooking.rejected, (state, action) => {
+      // state.cancel_updateRef = "failed";
+    });
+
+
+    builder.addCase(getReceiptDocCancelBooking.pending, (state, action) => {
+      // state.assigned_tasks_list = [];
+      state.cancel_Receipt_details_status = "pending";
+      // state.isLoading = true;
+    });
+    builder.addCase(getReceiptDocCancelBooking.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.cancel_Receipt_details = action.payload;
+        state.cancel_Receipt_details_status= "success"
+      }
+    });
+    builder.addCase(getReceiptDocCancelBooking.rejected, (state, action) => {
+      state.cancel_Receipt_details_status = "failed";
     });
   },
 });

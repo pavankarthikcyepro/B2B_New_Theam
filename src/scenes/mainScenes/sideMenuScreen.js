@@ -60,6 +60,12 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
+import {
+  updateAgingFrom,
+  updateAgingTo,
+  updateLocation,
+  updateSelectedDealerCode,
+} from "../../redux/myStockReducer";
 import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM, updateDealerFilterData as updateDealerFilterDataLive, updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads } from "../../redux/liveLeadsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV3, updateFilterLevelSelectedData as updateFilterLevelSelectedDatav2, updateLiveLeadObjectData as updateLiveLeadObjectDatav2, updateLiveLeadObjectDataCRM as updateLiveLeadObjectDataCRMv2, updateDealerFilterData as updateDealerFilterDataLivev2, updateEmployeeDropdownLiveleadReceptionist } from "../../redux/liveLeadsReducerReceptionist";
@@ -76,6 +82,7 @@ const commonMenu = [
   "QR Code",
   "Drop Analysis",
   "My Attendance",
+  "My Stock",
   "Download Report",
   "Complaint Tracker",
   "Knowledge Center",
@@ -332,10 +339,19 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateFilterSelectedDataReceptionist({}));
         dispatch(updateFilterLevelSelectedDataReceptionist({}));
         dispatch(updateDealerFilterData_Recep({}));
-        dispatch(updateCrm_employees_drop_down_data({}));
-        dispatch(updateFilterIds({}));
-        dispatch(updateEmpDropDown_Local({}));
-
+        dispatch(updateCrm_employees_drop_down_data({}))
+        dispatch(
+          updateFilterIds({
+            startDate: "",
+            endDate: "",
+            levelSelected: [],
+            empSelected: [],
+            allEmpSelected: [],
+            employeeName: [],
+          })
+        );
+        dispatch(updateEmpDropDown_Local({}))
+        
         break;
       case 100:
         navigation.navigate(
@@ -459,6 +475,13 @@ const SideMenuScreen = ({ navigation }) => {
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
         break;
+      case 120:
+         dispatch(updateLocation({}));
+         dispatch(updateSelectedDealerCode({}));
+         dispatch(updateAgingFrom(null));
+         dispatch(updateAgingTo(null));
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock,{refresh:true});
+        break;
       case 121:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
         break;
@@ -487,8 +510,6 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
     AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
     AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-    await BackgroundService.stop();
-
     navigation.closeDrawer();
     //realm.close();
     setBranchId("");
@@ -505,6 +526,10 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterLevelSelectedData({}));
     dispatch(updateLiveLeadObjectData({}));
     dispatch(updateDealerFilterData({}));
+    dispatch(updateLocation({}));
+    dispatch(updateSelectedDealerCode({}));
+    dispatch(updateAgingFrom(null));
+    dispatch(updateAgingTo(null));
     dispatch(updatereceptionistDataObjectData({}))
     dispatch(updateDealerFilterData_Recep({}))
     dispatch(updateFilterLevelSelectedDataReceptionist({}))
@@ -517,10 +542,19 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterSelectedDataHome({}));
     dispatch(updateFilterSelectedDataReceptionist({}));
     dispatch(updateCrm_employees_drop_down_data({}))
-    dispatch(updateFilterIds({}))
+    dispatch(
+      updateFilterIds({
+        startDate: "",
+        endDate: "",
+        levelSelected: [],
+        empSelected: [],
+        allEmpSelected: [],
+        employeeName: [],
+      })
+    );
     dispatch(updateEmpDropDown_Local({}))
-
     signOut();
+    await BackgroundService.stop();
   };
 
   const selectImage = () => {
@@ -888,6 +922,9 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
+          if (userData.isSelfManager === "N" && item.title === "My Stock") {
+            return;
+          }
           if (userData.isAttendance === "N" && item.title === "My Attendance")
             return;
           if (userData.isGeolocation === "N" && item.title === "Geolocation")

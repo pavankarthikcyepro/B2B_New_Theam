@@ -1,32 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  SectionList,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Linking,
-} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getWorkFlow,
-  getEnquiryDetails,
-  getLeadAge,
-  getFollowUPCount,
-  getTestDriveHistoryCount,
-  clearListData,
-} from "../../../redux/taskThreeSixtyReducer";
-import { Colors, GlobalStyle } from "../../../styles";
+import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount, getTestDriveHistoryCount, clearListData } from "../../../redux/taskThreeSixtyReducer";
+import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import { IconButton } from "react-native-paper";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -41,6 +24,9 @@ const mytasksIdentifires = {
   bookingfollowupdse: "BOOKING_FOLLOW_UP",
   task360History: "TASK_360_HISTORY",
 };
+
+const disabledColor = Colors.TARGET_GRAY;
+const activeColor = Colors.PINK;
 
 const TaskThreeSixtyScreen = ({ route, navigation }) => {
   const { universalId, mobileNo, itemData, leadStatus } = route.params;
@@ -66,14 +52,14 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    return () => {
+     return () => {
       setPlannedTasks([]);
       dispatch(clearListData());
     };
   }, []);
-
+  
   useEffect(() => {
-    navigation.addListener("focus", () => {
+    navigation.addListener('focus', () => {
       dispatch(getLeadAge(universalId));
       dispatch(getFollowUPCount(universalId));
       dispatch(getTestDriveHistoryCount(universalId));
@@ -104,21 +90,27 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
       const data = [];
       if (selector.wrokflow_response.length > 0) {
         selector.wrokflow_response.forEach((element) => {
-          if (element.taskStatus === "CLOSED") {
-            closedData.push(element);
-          } else if (
-            (element.taskStatus !== "CLOSED" &&
-              selector.enquiry_leadDto_response.leadStage ===
-                element.taskCategory.taskCategory) ||
-            (element.taskCategory.taskCategory === "APPROVAL" &&
-              element.taskStatus === "ASSIGNED") ||
-            (element.taskStatus &&
-              element.taskStatus !== "APPROVAL" &&
-              (element.taskName === "Home Visit" ||
-                element.taskName === "Test Drive"))
-          ) {
-            plannedData.push(element);
-          }
+            if (element.taskStatus === "CLOSED") {
+              closedData.push(element);
+            } else if (
+              (element.taskStatus !== "CLOSED" &&
+                selector.enquiry_leadDto_response.leadStage ===
+                  element.taskCategory.taskCategory) ||
+              (element.taskCategory.taskCategory === "APPROVAL" &&
+                element.taskStatus === "ASSIGNED")  || 
+              (element.taskStatus &&
+                element.taskStatus !== "APPROVAL" &&
+                (element.taskName === "Home Visit" ||
+                  element.taskName === "Test Drive")) 
+                  // || (selector.enquiry_leadDto_response.leadStage === "PREBOOKING") && element.taskCategory.taskCategory ==="ENQUIRY"
+            ) {
+              plannedData.push(element);
+            } else if (element.taskStatus !== "CLOSED"  && element.taskName === "Evaluation" || element.taskName === "Finance"){
+              if (selector.enquiry_leadDto_response.leadStage !== "PREENQUIRY"){ // added to manage not display in contacts 
+                plannedData.push(element);
+              }
+            
+            }
         });
       }
 
@@ -153,8 +145,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     const taskStatus = item.taskStatus;
     const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-    if (item.taskStatus === "CLOSED") {
+    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit" && taskName !== "Re Test Drive" && taskName !== "Re Home Visit") {
       const name = checkForTaskNames(taskName);
+      
       showToast(name + " task has been closed");
       return;
     }
@@ -166,6 +159,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     let taskNameNew = "";
     switch (finalTaskName) {
       case "testdrive":
+        navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+        taskNameNew = "Test Drive";
+        break;
+      case "retestdrive":
         navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
         taskNameNew = "Test Drive";
         break;
@@ -186,6 +183,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         taskNameNew = "";
         break;
       case "homevisit":
+        navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
+        taskNameNew = "Home Visit";
+        break;
+      case "rehomevisit":
         navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
         taskNameNew = "Home Visit";
         break;
@@ -272,445 +273,299 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     });
   };
 
+  const checkForEnqFollow = (item, section) => {
+    if (
+      item.taskName == "Enquiry Follow Up" &&
+      section?.title == "Planned Tasks"
+    ) {
+      let formate = "DD/MM/YYYY hh:mm a";
+      const { taskUpdatedTime } = item;
+      const current = moment().format(formate);
+      const startDate = moment(current, formate);
+      const create = moment(taskUpdatedTime).format(formate);
+      const createDate = moment(create, formate);
+      const timeDiff = startDate.diff(createDate, "hours");
+      return timeDiff;
+    } else {
+      return 0;
+    }
+  };
+
+  const renderItem = ({ item, index, section }) => {
+    let isHistory = section.title == "Planned Tasks";
+    let isDotVisible =
+      item.taskName.includes("Pre Booking Follow Up") ||
+      item.taskName.includes("Booking Follow Up - DSE") ||
+      item.taskName.includes("Enquiry Follow Up") ||
+      item.taskName.includes("Pre Enquiry Follow Up");
+    let isDotVisibleForClosed =
+      item.taskName.includes("Pre Booking Follow Up") ||
+      item.taskName.includes("Booking Follow Up - DSE") ||
+      item.taskName.includes("Enquiry Follow Up") ||
+      item.taskName.includes("Pre Enquiry Follow Up") ||
+      item.taskName.includes("Test Drive");
+
+    function TaskNameView(taskName) {
+      const name = checkForTaskNames(taskName);
+      return (
+        <Text style={styles.taskNameText}>
+          {name}
+          {item?.taskUpdatedBy?.designationName ? (
+            <Text
+              style={styles.sideTitle}
+            >{` - ${item?.taskUpdatedBy?.designationName}`}</Text>
+          ) : null}
+        </Text>
+      );
+    }
+
+    function isIconEnable(type = "", item) {
+      if (type == "location") {
+        if (item.lat && item.lon) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      if (type == "history") {
+        if (isHistory && isDotVisible) {
+          return true;
+        } else if (!isHistory && isDotVisibleForClosed) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    const date = moment(item.taskUpdatedTime)
+      .format("DD/MM/YY h:mm a")
+      .split(" ");
+    const radioColor =
+      item.taskStatus === "CLOSED" ? Colors.DARK_GREEN : Colors.LIGHT_GRAY2;
+    const isHoursVisible = checkForEnqFollow(item, section) >= 2;
+
+    return (
+      <View style={styles.itemContainer}>
+        {section.data[index + 1] ? (
+          <View
+            style={[styles.progressColumn, { backgroundColor: radioColor }]}
+          />
+        ) : null}
+        <View style={styles.radioContainer}>
+          <View style={[styles.radioRound, { backgroundColor: radioColor }]} />
+        </View>
+        <TouchableOpacity
+          onPress={() => itemClicked(item)}
+          style={[
+            styles.itemDetailsContainer,
+            isHoursVisible ? styles.cardBorder : null,
+          ]}
+        >
+          {isHoursVisible ? (
+            <View style={styles.itemTopRow}>
+              <View style={styles.hourContainer}>
+                <Text style={styles.hourText}>{`Last follow up >${checkForEnqFollow(
+                  item,
+                  section
+                )}hrs`}</Text>
+              </View>
+              <Text style={styles.dateTimeText}>
+                {date[0]} | {date[1] + " " + date[2]}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.dateTimeText}>
+              {date[0]} | {date[1] + " " + date[2]}
+            </Text>
+          )}
+
+          {TaskNameView(item.taskName)}
+          <Text style={styles.assigneeNameText}>
+            {"Assignee: " + item.assignee?.empName}
+          </Text>
+          {item?.taskUpdatedBy?.empName ? (
+            <Text style={styles.followUpText}>
+              Follow-up by: {item.taskUpdatedBy.empName}
+            </Text>
+          ) : null}
+          {item.employeeRemarks ? (
+            <View style={styles.remarksContainer}>
+              <Text style={styles.remarksTitleText}>Remarks</Text>
+              <Text style={styles.remarksValueText}>
+                {item.employeeRemarks}
+              </Text>
+            </View>
+          ) : null}
+          <View style={styles.iconContainer}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => {
+                navigation.navigate(
+                  AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                  {
+                    phone: mobileNo,
+                    uniqueId: item.taskId,
+                  }
+                );
+              }}
+              style={styles.iconBoxView}
+            >
+              <View style={styles.iconView}>
+                <IconButton
+                  icon={"phone"}
+                  borderless={true}
+                  size={19}
+                  style={styles.playIcon}
+                  color={activeColor}
+                />
+              </View>
+              <Text style={styles.iconText}>Call</Text>
+            </TouchableOpacity>
+            <View style={styles.iconDivider} />
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => {
+                navigation.navigate(
+                  AppNavigator.EmsStackIdentifiers.recordedCalls,
+                  {
+                    taskId: item.taskId,
+                  }
+                );
+              }}
+              style={styles.iconBoxView}
+            >
+              <View style={styles.iconView}>
+                <IconButton
+                  icon={"play"}
+                  size={20}
+                  style={styles.playIcon}
+                  color={activeColor}
+                />
+              </View>
+              <Text numberOfLines={1} style={styles.iconText}>
+                Recordings
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.iconDivider} />
+            <TouchableOpacity
+              onPress={() => openMap(item.lat, item.lon)}
+              activeOpacity={0.6}
+              style={styles.iconBoxView}
+              disabled={!isIconEnable("location", item)}
+            >
+              <View style={styles.iconView}>
+                <IconButton
+                  icon={"map-marker"}
+                  size={18}
+                  style={styles.playIcon}
+                  color={
+                    isIconEnable("location", item) ? activeColor : disabledColor
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.iconText,
+                  !isIconEnable("location", item) ? styles.disabledText : "",
+                ]}
+              >
+                Geo
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.iconDivider} />
+            <View style={styles.iconBoxView}>
+              <View style={styles.iconView}>
+                <IconButton
+                  icon={"checkbox-marked-circle-outline"}
+                  size={18}
+                  style={styles.playIcon}
+                  color={activeColor}
+                />
+                {dataForFOllowUpCount !== undefined ? (
+                  <Text style={styles.followUpCountText}>
+                    {item.taskName === "Pre Enquiry Follow Up"
+                      ? dataForFOllowUpCount?.conntactFollowUpCount
+                          ?.toString()
+                          .trim()
+                      : item.taskName === "Enquiry Follow Up"
+                      ? dataForFOllowUpCount?.enquiryFollowUpCount
+                          ?.toString()
+                          .trim()
+                      : item.taskName === "Pre Booking Follow Up"
+                      ? dataForFOllowUpCount?.preBookingFollowUpCount
+                          ?.toString()
+                          .trim()
+                      : item.taskName === "Booking Follow Up"
+                      ? dataForFOllowUpCount?.bookingFollowUpCount
+                          ?.toString()
+                          .trim()
+                      : item.taskName === "Booking Follow Up - DSE"
+                      ? dataForFOllowUpCount?.bookingFollowUpCountDse
+                          ?.toString()
+                          .trim()
+                      : 0}
+                  </Text>
+                ) : null}
+              </View>
+              <Text numberOfLines={1} style={styles.iconText}>
+                Follow-ups
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            if (isHistory && isDotVisible) {
+              navigation.navigate(EmsStackIdentifiers.task360History, {
+                identifier: mytasksIdentifires.task360History,
+                title: item.taskName,
+                universalId: item.universalId,
+              });
+            } else if (!isHistory && isDotVisibleForClosed) {
+              if (item.taskName !== "Test Drive") {
+                navigation.navigate(EmsStackIdentifiers.task360History, {
+                  identifier: mytasksIdentifires.task360History,
+                  title: item.taskName,
+                  universalId: item.universalId,
+                });
+              } else {
+                navigation.navigate("TEST_HISTORY", {
+                  universalId: universalId,
+                });
+              }
+            } else {
+              showToast("Not Available");
+            }
+          }}
+        >
+          <Image
+            source={require("./../../../assets/images/dots_sixty.png")}
+            resizeMode="contain"
+            style={[
+              styles.dotContainer,
+              {
+                tintColor: isIconEnable("history")
+                  ? Colors.BLACK
+                  : disabledColor,
+              },
+            ]}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
         <SectionList
           sections={dataForSectionList}
           keyExtractor={(item, index) => item + index}
-          renderItem={({ item, index, section }) => {
-            const date = moment(item.taskUpdatedTime)
-              .format("DD/MM/YY h:mm a")
-              .split(" ");
-
-            let topBcgColor = Colors.LIGHT_GRAY;
-            let bottomBcgColor = Colors.LIGHT_GRAY;
-            if (section.data[index - 1] !== undefined) {
-              topBcgColor = Colors.GRAY;
-            }
-
-            if (section.data[index + 1] !== undefined) {
-              bottomBcgColor = Colors.GRAY;
-            }
-
-            function TaskNameView(taskName) {
-              const name = checkForTaskNames(taskName);
-              return (
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "700",
-                    marginBottom: 5,
-                    // flex:1
-                    width: "60%",
-                  }}
-                >
-                  {name}
-                  {item?.taskUpdatedBy?.designationName ? (
-                    <Text
-                      style={styles.sideTitle}
-                    >{` - ${item?.taskUpdatedBy?.designationName}`}</Text>
-                  ) : null}
-                </Text>
-              );
-            }
-
-            // Pre Booking Follow Up = Booking approval follow up
-            // Booking Follow Up - DSE = booking followup
-            // Enquiry Follow Up=Enquiry Follow Up
-            // pre Enquiry Follow Up= Contact follow up
-            let isHistory = section.title == "Planned Tasks";
-            let isDotVisible =
-              item.taskName.includes("Pre Booking Follow Up") ||
-              item.taskName.includes("Booking Follow Up - DSE") ||
-              item.taskName.includes("Enquiry Follow Up") ||
-              item.taskName.includes("Pre Enquiry Follow Up");
-            let isDotVisibleForClosed =
-              item.taskName.includes("Pre Booking Follow Up") ||
-              item.taskName.includes("Booking Follow Up - DSE") ||
-              item.taskName.includes("Enquiry Follow Up") ||
-              item.taskName.includes("Pre Enquiry Follow Up") ||
-              item.taskName.includes("Test Drive");
-
-            // let isDotVisible = item.taskName == "Pre Enquiry Follow Up" || item.taskName == "Enquiry Follow Up"
-            //   || item.taskName == "Pre Booking Follow Up" || item.taskName == "Enquiry Follow Up" ;
-
-            return (
-              <>
-                {item.taskName === "Test Drive Approval" ? (
-                  isApprovar ? (
-                    <View style={styles.view2}>
-                      <View style={styles.view3}>
-                        <View
-                          style={{
-                            marginLeft: 8,
-                            flex: 1,
-                            width: 2,
-                            backgroundColor: topBcgColor,
-                          }}
-                        ></View>
-                        <View
-                          style={{
-                            marginLeft: 8,
-                            flex: 1,
-                            width: 2,
-                            backgroundColor: bottomBcgColor,
-                          }}
-                        ></View>
-
-                        <View
-                          style={{
-                            alignItems: "center",
-                            flexDirection: "row",
-                            position: "absolute",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              height: 20,
-                              width: 20,
-                              borderRadius: 10,
-                              backgroundColor: Colors.GRAY,
-                            }}
-                          ></Text>
-                          <View style={{ marginLeft: 5 }}>
-                            <Text style={styles.txt2}>{date[0]}</Text>
-                            <Text style={styles.txt2}>
-                              {date[1] + " " + date[2]}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={{ width: "75%", padding: 5 }}>
-                        <View
-                          style={[
-                            { backgroundColor: Colors.WHITE },
-                            GlobalStyle.shadow,
-                          ]}
-                        >
-                          <TouchableOpacity onPress={() => itemClicked(item)}>
-                            <View style={[styles.view1]}>
-                              <View
-                                style={{
-                                  flexDirection: "row",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <Text style={styles.txt1}>{item.taskName}</Text>
-                                {item.lat && item.lon && (
-                                  <TouchableOpacity
-                                    style={styles.btn1}
-                                    onPress={() => openMap(item.lat, item.lon)}
-                                  >
-                                    <Image
-                                      style={{
-                                        height: 25,
-                                        width: 15,
-                                      }}
-                                      source={require("../../../assets/images/local2.png")}
-                                      tintColor={Colors.PINK}
-                                    />
-                                  </TouchableOpacity>
-                                )}
-                              </View>
-                              <Text style={styles.txt3}>
-                                {"Assignee: " + item.assignee?.empName}
-                              </Text>
-                              {item?.taskUpdatedBy?.empName ? (
-                                <Text style={styles.followUpText}>
-                                  Follow-up by: {item.taskUpdatedBy.empName}
-                                </Text>
-                              ) : null}
-                              <Text
-                                style={{
-                                  fontSize: 14,
-                                  fontWeight: "400",
-                                  color: Colors.GRAY,
-                                }}
-                              >
-                                {"Remarks: " +
-                                  (item.employeeRemarks
-                                    ? item.employeeRemarks
-                                    : "")}
-                              </Text>
-                            </View>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </View>
-                  ) : null
-                ) : (
-                  <View style={styles.view4}>
-                    <View style={styles.view3}>
-                      <View
-                        style={{
-                          marginLeft: 8,
-                          flex: 1,
-                          width: 2,
-                          backgroundColor: topBcgColor,
-                        }}
-                      ></View>
-                      <View
-                        style={{
-                          marginLeft: 8,
-                          flex: 1,
-                          width: 2,
-                          backgroundColor: bottomBcgColor,
-                        }}
-                      ></View>
-
-                      <View style={styles.view5}>
-                        <Text
-                          style={{
-                            height: 20,
-                            width: 20,
-                            borderRadius: 10,
-                            backgroundColor: Colors.GRAY,
-                          }}
-                        ></Text>
-                        <View style={{ marginLeft: 5 }}>
-                          <Text style={styles.txt2}>{date[0]}</Text>
-                          <Text style={styles.txt2}>
-                            {date[1] + " " + date[2]}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        // width: isHistory ? "80%" : "80%",
-                        padding: 5,
-                        flex: 1,
-                      }}
-                    >
-                      <View
-                        style={[
-                          { backgroundColor: Colors.RED, flexDirection: "row" },
-                          GlobalStyle.shadow,
-                          styles.view1,
-                        ]}
-                      >
-                        <TouchableOpacity
-                          style={{ flex: 1 }}
-                          onPress={() => itemClicked(item)}
-                        >
-                          <View style={[styles.view1]}>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                // backgroundColor:"red"
-                              }}
-                            >
-                              {TaskNameView(item.taskName)}
-                              {/* Bubble count UI  */}
-
-                              {isDotVisibleForClosed && !isHistory && (
-                                <View
-                                  style={[
-                                    styles.btn4,
-                                    {
-                                      marginEnd: item.lat && item.lon ? 10 : 0,
-                                    },
-                                  ]}
-                                >
-                                  <Image
-                                    source={require("./../../../assets/images/check-list.png")}
-                                    resizeMode="contain"
-                                    tintColor={Colors.GRAY}
-                                    style={[styles.countCointaner]}
-                                  />
-                                  {dataForFOllowUpCount !== undefined ? (
-                                    <Text style={styles.txt8}>
-                                      {item.taskName === "Pre Enquiry Follow Up"
-                                        ? dataForFOllowUpCount?.conntactFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName === "Enquiry Follow Up"
-                                        ? dataForFOllowUpCount?.enquiryFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName ===
-                                          "Pre Booking Follow Up"
-                                        ? dataForFOllowUpCount?.preBookingFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName === "Booking Follow Up"
-                                        ? dataForFOllowUpCount?.bookingFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName === "Test Drive"
-                                        ? selector.testDrivCount
-                                        : item.taskName ===
-                                          "Booking Follow Up - DSE"
-                                        ? dataForFOllowUpCount?.bookingFollowUpCountDse
-                                            ?.toString()
-                                            .trim()
-                                        : 0}
-                                    </Text>
-                                  ) : null}
-                                </View>
-                                // <View
-                                //   style={styles.btn3}
-
-                                // >
-                                //   <Text style={styles.txt7}>3</Text>
-                                // </View>
-                              )}
-                              {isDotVisible && isHistory && (
-                                <View
-                                  style={[
-                                    styles.btn4,
-                                    {
-                                      marginEnd: item.lat && item.lon ? 10 : 0,
-                                    },
-                                  ]}
-                                >
-                                  <Image
-                                    source={require("./../../../assets/images/check-list.png")}
-                                    resizeMode="contain"
-                                    tintColor={Colors.GRAY}
-                                    style={[styles.countCointaner]}
-                                  />
-                                  {dataForFOllowUpCount !== undefined ? (
-                                    <Text style={styles.txt8}>
-                                      {item.taskName === "Pre Enquiry Follow Up"
-                                        ? dataForFOllowUpCount?.conntactFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName === "Enquiry Follow Up"
-                                        ? dataForFOllowUpCount?.enquiryFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName ===
-                                          "Pre Booking Follow Up"
-                                        ? dataForFOllowUpCount?.preBookingFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName === "Booking Follow Up"
-                                        ? dataForFOllowUpCount?.bookingFollowUpCount
-                                            ?.toString()
-                                            .trim()
-                                        : item.taskName ===
-                                          "Booking Follow Up - DSE"
-                                        ? dataForFOllowUpCount?.bookingFollowUpCountDse
-                                            ?.toString()
-                                            .trim()
-                                        : 0}
-                                    </Text>
-                                  ) : null}
-                                </View>
-                                // <View
-                                //   style={styles.btn3}
-
-                                // >
-                                //   <Text style={styles.txt7}>3</Text>
-                                // </View>
-                              )}
-                              {item.lat && item.lon && (
-                                <TouchableOpacity
-                                  style={styles.btn2}
-                                  onPress={() => openMap(item.lat, item.lon)}
-                                >
-                                  <Image
-                                    style={{
-                                      height: 25,
-                                      width: 15,
-                                    }}
-                                    source={require("../../../assets/images/local2.png")}
-                                    tintColor={Colors.PINK}
-                                  />
-                                </TouchableOpacity>
-                              )}
-                            </View>
-                            <Text style={styles.txt3}>
-                              {"Assignee: " + item.assignee?.empName}
-                            </Text>
-                            {item?.taskUpdatedBy?.empName ? (
-                              <Text style={styles.followUpText}>
-                                Follow-up by: {item.taskUpdatedBy.empName}
-                              </Text>
-                            ) : null}
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 14,
-                                  fontWeight: "400",
-                                  color: Colors.GRAY,
-                                  flex: 1,
-                                }}
-                              >
-                                {"Remarks: " +
-                                  (item.employeeRemarks
-                                    ? item.employeeRemarks
-                                    : "")}
-                              </Text>
-                            </View>
-                          </View>
-                        </TouchableOpacity>
-
-                        {isHistory && isDotVisible ? (
-                          <TouchableOpacity
-                            style={{ justifyContent: "center" }}
-                            onPress={() =>
-                              navigation.navigate(
-                                EmsStackIdentifiers.task360History,
-                                {
-                                  identifier: mytasksIdentifires.task360History,
-                                  title: item.taskName,
-                                  universalId: item.universalId,
-                                }
-                              )
-                            }
-                          >
-                            <Image
-                              source={require("./../../../assets/images/dots.png")}
-                              resizeMode="contain"
-                              style={styles.dotContainer}
-                            />
-                          </TouchableOpacity>
-                        ) : null}
-                        {!isHistory && isDotVisibleForClosed ? (
-                          <TouchableOpacity
-                            style={{ justifyContent: "center" }}
-                            onPress={() => {
-                              if (item.taskName !== "Test Drive") {
-                                navigation.navigate(
-                                  EmsStackIdentifiers.task360History,
-                                  {
-                                    identifier:
-                                      mytasksIdentifires.task360History,
-                                    title: item.taskName,
-                                    universalId: item.universalId,
-                                  }
-                                );
-                              } else {
-                                navigation.navigate("TEST_HISTORY", {
-                                  universalId: universalId,
-                                });
-                              }
-                            }}
-                          >
-                            <Image
-                              source={require("./../../../assets/images/dots.png")}
-                              resizeMode="contain"
-                              style={styles.dotContainer}
-                            />
-                          </TouchableOpacity>
-                        ) : null}
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </>
-            );
-          }}
+          renderItem={renderItem}
           renderSectionHeader={({ section: { title } }) => (
             <View style={{ height: 50, justifyContent: "center" }}>
               <Text style={styles.txt4}>{title}</Text>
@@ -729,108 +584,161 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 5,
     paddingHorizontal: 10,
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
+  },
+  txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
+  progressColumn: {
+    height: "100%",
+    width: 3,
+    backgroundColor: Colors.LIGHT_GRAY2,
+    marginTop: 27,
+    position: "absolute",
+    marginHorizontal: 8
+  },
+  itemContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  radioContainer: {
+    padding: 1,
+    height: 18,
+    width: 18,
+    borderRadius: 18 / 2,
+    borderWidth: 1,
+    borderColor: Colors.GRAY,
+    backgroundColor: Colors.WHITE,
+    overflow: "hidden",
+    marginTop: 10,
+  },
+  radioRound: {
+    height: "100%",
+    width: "100%",
+    borderRadius: 18 / 2,
+    backgroundColor: Colors.LIGHT_GRAY2,
+  },
+  itemDetailsContainer: {
+    ...GlobalStyle.shadow,
+    flex: 1,
+    padding: 10,
+    backgroundColor: Colors.WHITE,
+    marginHorizontal: 10,
+    borderRadius: 5,
+  },
+  cardBorder: {
+    borderLeftColor: Colors.PINK,
+    borderLeftWidth: 1.5,
+  },
+  itemTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 3,
+  },
+  hourContainer: {
+    borderRadius: 10,
+    backgroundColor: Colors.WHITE,
+    borderWidth: 1,
+    borderColor: Colors.PINK,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+  },
+  hourText: {
+    fontSize: 11,
+    fontWeight: "500",
+    color: Colors.BLACK,
+  },
+  dateTimeText: {
+    fontSize: 12,
+    fontWeight: "400",
+    alignSelf: "flex-end",
   },
   sideTitle: {
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  taskNameText: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 5,
+  },
+  assigneeNameText: {
+    flex: 1,
     fontSize: 14,
     fontWeight: "400",
   },
   followUpText: {
     fontSize: 14,
     fontWeight: "400",
-    marginVertical: 3,
+    marginVertical: 5,
   },
-
-  dotContainer: {
-    height: 55,
-    width: 30,
-    // backgroundColor:"red",
-    marginTop: 40,
+  remarksContainer: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    padding: 5,
+    borderRadius: 3,
+    marginTop: 5,
   },
-  view1: {
-    paddingVertical: 5,
-    paddingLeft: 10,
-    backgroundColor: Colors.WHITE,
-  },
-  txt1: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 5,
-    width: "75%",
-  },
-  btn1: {
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#d1d1d1",
-    borderRadius: 5,
-    marginTop: -5,
-  },
-  view2: {
-    width: "100%",
-    flexDirection: "row",
-  },
-  view3: {
-    width: "25%",
-    justifyContent: "center",
-  },
-  txt2: {
-    fontSize: 12,
-    fontWeight: "400",
-  },
-  txt3: {
+  remarksTitleText: {
     fontSize: 14,
     fontWeight: "400",
+    color: Colors.GRAY,
   },
-  view4: {
-    width: "100%",
+  remarksValueText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.BLACK,
+  },
+  iconContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.LIGHT_GRAY,
   },
-  view5: {
+  iconBoxView: {
     alignItems: "center",
-    flexDirection: "row",
-    position: "absolute",
+    justifyContent: "center",
+    width: "24%",
+    borderRadius: 3,
+    padding: 3,
   },
-  btn2: {
-    alignSelf: "flex-start",
-    marginTop: -5,
-    width: 35,
-    height: 35,
+  iconView: {
+    height: 33,
+    justifyContent: "center",
+  },
+  iconText: {
+    marginTop: 3,
+    fontSize: 10,
+    color: Colors.BLACK,
+    fontWeight: "500",
+  },
+  disabledText: {
+    color: disabledColor,
+  },
+  playIcon: {
+    margin: 0,
+  },
+  locationIcon: {
+    width: 32,
+    height: 32,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#d1d1d1",
+    borderColor: Colors.PINK,
     borderRadius: 5,
-    // marginEnd:-15
   },
-  btn3: {
-    alignSelf: "flex-start",
-    marginTop: -5,
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#d1d1d1",
-    borderRadius: 5,
-    marginEnd: -15,
+  locationDisableIcon: {
+    borderColor: Colors.TARGET_GRAY,
   },
-  txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
-  txt7: { fontSize: 16, fontWeight: "500", color: Colors.RED },
-  countCointaner: {
-    height: 25,
-    width: 25,
-  },
-  txt8: {
-    fontSize: 12,
+  followUpCountText: {
+    fontSize: 9,
     fontWeight: "500",
     color: Colors.WHITE,
     position: "absolute",
-    left: 28,
-    top: -3,
+    left: 15,
+    top: 0,
     backgroundColor: Colors.PINK,
     borderWidth: 1,
     borderColor: Colors.PINK,
@@ -839,31 +747,18 @@ const styles = StyleSheet.create({
     width: 15,
     overflow: "hidden",
   },
-  txt9: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: Colors.WHITE,
-    position: "absolute",
-    left: 28,
-    top: -3,
-    backgroundColor: Colors.PINK,
-    borderWidth: 1,
-    borderColor: Colors.PINK,
-    borderRadius: 5,
-    textAlign: "center",
-    width: 15,
-    overflow: "hidden",
-    height: 15,
+  countContainer: {
+    height: 18,
+    width: 18,
   },
-  btn4: {
-    alignSelf: "flex-start",
-    // marginTop: -5,
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    // borderWidth: 1,
-    // borderColor: "#d1d1d1",
-    // borderRadius: 5,
+  dotContainer: {
+    height: 30,
+    width: 20,
+  },
+  iconDivider: {
+    height: "80%",
+    width: 1,
+    backgroundColor: Colors.LIGHT_GRAY2,
+    alignSelf: "center",
   },
 });

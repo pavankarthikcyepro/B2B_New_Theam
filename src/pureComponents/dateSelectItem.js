@@ -1,9 +1,10 @@
 import React from 'react';
+import { TextInput } from 'react-native';
 import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../styles';
 
-export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
+export const DateSelectItem = ({ label, value, disabled = false, onPress, iconsName = "calendar-range" }) => {
     return (
         <Pressable onPress={onPress} disabled={disabled}>
             <View style={styles.container}>
@@ -11,7 +12,7 @@ export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
                 <View style={[styles.view3]}>
                     <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]}>{value ? value : label}</Text>
                     <IconButton
-                        icon="calendar-range"
+                        icon={iconsName}
                         color={disabled ? Colors.GRAY : Colors.BLACK}
                         size={25}
                     />
@@ -21,6 +22,55 @@ export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
         </Pressable>
     )
 }
+
+export const NumberInput = ({ label, value, disabled = false, onPress, onChange }) => {
+  return (
+    <View>
+      <View style={styles.container}>
+        <Text style={styles.label}>{label}</Text>
+        <View style={[styles.view3]}>
+          {/* <Text
+            style={[
+              styles.text3,
+              {
+                color: value
+                  ? disabled
+                    ? Colors.GRAY
+                    : Colors.BLACK
+                  : Colors.GRAY,
+              },
+            ]}
+          >
+            {value ? value : label}
+          </Text> */}
+          <TextInput
+            style={[
+              styles.text3,
+              {
+                color: value
+                  ? disabled
+                    ? Colors.GRAY
+                    : Colors.BLACK
+                  : Colors.GRAY,
+                  minWidth:'70%'
+              },
+            ]}
+            keyboardType="numeric"
+            onChangeText={(text) => onChange(text)}
+            value={value}
+          />
+          <IconButton
+            icon="calendar-range"
+            color={disabled ? Colors.GRAY : Colors.BLACK}
+            size={25}
+          />
+        </View>
+        <Text style={GlobalStyle.underline}></Text>
+      </View>
+    </View>
+  );
+};
+
 
 const styles = StyleSheet.create({
     container: {

@@ -13,6 +13,7 @@ import { DropDownSelectionItem, DropDownSelectionItemV3 } from '../../../pureCom
 import { IconButton, Searchbar } from "react-native-paper";
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import _ from 'lodash';
+import { useIsFocused } from '@react-navigation/native';
 
 const dropdownData = [
   { label: 'Item 1', value: '1' },
@@ -38,6 +39,7 @@ const dropdownDataV2 = [
 export default function leaderBoardScreen(props) {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   const [showTop5View, setShowTop5View] = useState(false);
   const [showBottom5View, setShowBottom5View] = useState(false);
   const [groupDealerRank, setGroupDealerRank] = useState(null);
@@ -73,7 +75,7 @@ export default function leaderBoardScreen(props) {
    
 
       getUserData();
-  }, [])
+  }, [isFocused])
 
   useEffect(() => {
     // props.navigation.addListener("focus", () => {
@@ -181,8 +183,8 @@ export default function leaderBoardScreen(props) {
 
 
   const MyTaskFilter = ({ navigation }) => {
-    const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-    if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+    // const screen = useSelector((state) => state.mytaskReducer.currentScreen);
+    // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
     return (
       <IconButton
         icon="filter-outline"
@@ -234,12 +236,12 @@ export default function leaderBoardScreen(props) {
       setTimeout(() => {
         setTopRankList(top);
         setTop5RankList(top.slice(0, 5));
-      }, 2000);
+      }, 500);
 
       setTimeout(() => {
         setBottom5RankList([...bottom].reverse().slice(0, 5));
         setReverseBottomRankList([...bottom].reverse());
-      }, 2000);
+      }, 500);
     }
 
 
@@ -301,7 +303,7 @@ export default function leaderBoardScreen(props) {
       "size": 50,
       "startDate": startOfMonth,
       "orgId": jsonObj.orgId,
-      "branchId": deladerID ? deladerID[0] : branName,
+      "branchIds": deladerID ? deladerID : branName,
       "designationNames": loogedInid ? loogedInid: []
     };
     // alert(JSON.stringify(payload))
@@ -321,12 +323,12 @@ export default function leaderBoardScreen(props) {
     setTimeout(() => {
       setTopRankList(top);
       setTop5RankList(top.slice(0, 5));
-    }, 2000);
+    }, 500);
 
     setTimeout(() => {
       setBottom5RankList([...bottom].reverse().slice(0, 5));
       setReverseBottomRankList([...bottom].reverse());
-    }, 2000);
+    }, 500);
   }, []);
 
   const renderTableTopRow = () => {
@@ -710,7 +712,6 @@ export default function leaderBoardScreen(props) {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.rankBox}>
-
         <DropDownComponant
           visible={showDropDownModel}
           multiple={false}
@@ -721,15 +722,13 @@ export default function leaderBoardScreen(props) {
             let newdata = { name: item.name, id: item.id };
             switch (dropDownKey) {
               case "TOP_DATA":
-              
-                setselectedRankTop(newdata)
-                setDataOnSelection("TOP", newdata)
+                setselectedRankTop(newdata);
+                setDataOnSelection("TOP", newdata);
                 // setselectedRank(newdata);
                 break;
               case "LOW_DATA":
-             
-                setselectedRankLow(newdata)
-                setDataOnSelection("LOW", newdata)
+                setselectedRankLow(newdata);
+                setDataOnSelection("LOW", newdata);
                 // setselectedRank(newdata);
                 break;
 
@@ -819,10 +818,10 @@ export default function leaderBoardScreen(props) {
                     </View>
                 </View>
             */}
-        {!selector.isLoading ? null : (
+        {!selector.isDealerLoading ? null : (
           <LoaderComponent
-            visible={selector.isLoading}
-            onRequestClose={() => { }}
+            visible={selector.isDealerLoading}
+            onRequestClose={() => {}}
           />
         )}
         {/* top 5 view */}
@@ -841,12 +840,7 @@ export default function leaderBoardScreen(props) {
                 // disabled={!isInputsEditable()}
                 // label={"Top 5 Ranks"}
                 value={selectedRankTop.name}
-                onPress={() =>
-                  showDropDownModelMethod(
-                    "TOP_DATA",
-                    ""
-                  )
-                }
+                onPress={() => showDropDownModelMethod("TOP_DATA", "")}
               />
             </View>
           </View>
@@ -880,11 +874,7 @@ export default function leaderBoardScreen(props) {
               ]}
             >
               <View style={styles.topIconView}>
-                <ArrowIcon
-                  name="long-arrow-down"
-                  color={"#E40603"}
-                  size={20}
-                />
+                <ArrowIcon name="long-arrow-down" color={"#E40603"} size={20} />
               </View>
             </View>
             {/* <Text style={{ marginLeft: 10, fontSize: 16, fontWeight: "400" }}>
@@ -895,12 +885,7 @@ export default function leaderBoardScreen(props) {
                 // disabled={!isInputsEditable()}
                 // label={"Top 5 Ranks"}
                 value={selectedRankLow.name}
-                onPress={() =>
-                  showDropDownModelMethod(
-                    "LOW_DATA",
-                    ""
-                  )
-                }
+                onPress={() => showDropDownModelMethod("LOW_DATA", "")}
               />
             </View>
           </View>

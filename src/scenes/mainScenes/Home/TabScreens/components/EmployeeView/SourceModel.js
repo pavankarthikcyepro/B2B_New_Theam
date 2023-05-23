@@ -23,7 +23,7 @@ import { useIsFocused } from "@react-navigation/native";
 const SourceModel = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.homeReducer);
-  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType } =
+  const { empId, loggedInEmpId, headerTitle, orgId, type, moduleType, isOpenner = false, isFromHome = false } =
     route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -102,11 +102,40 @@ const SourceModel = ({ route, navigation }) => {
 
     // if (type != "TEAM") {
     if (selector.filterIds?.empSelected?.length) {
-      payload["empSelected"] = selector.filterIds.empSelected;
+      // added conditions to manage source/model issue sales 
+      if (isFromHome) {
+     
+        if (isOpenner) {
+         
+          // payload["empSelected"] = selector.filterIds.empSelected;
+          payload["empSelected"] = [empId];
+        } else {
+          
+          payload["empSelected"] = null;
+        }
+      } else {
+        
+        payload["empSelected"] = selector.filterIds.empSelected;
+      }
+      
     } else {
-      payload["levelSelected"] = selector.filterIds?.levelSelected?.length
-        ? selector.filterIds.levelSelected
-        : null;
+      if (isFromHome) {
+       
+        if (isOpenner) {
+         
+          // payload["empSelected"] = selector.filterIds.empSelected;
+          payload["empSelected"] = [empId];
+        } else {
+         
+          payload["empSelected"] = null;
+        }
+      } else {
+        
+        payload["empSelected"] = selector.filterIds.empSelected;
+      }
+      // payload["levelSelected"] = selector.filterIds?.levelSelected?.length
+      //   ? selector.filterIds.levelSelected
+      //   : null;
     }
     // }
 
@@ -389,9 +418,9 @@ const SourceModel = ({ route, navigation }) => {
       </>
     );
   }
-function isEmpty(obj) {
-  return Object.keys(obj).length === 0;
-}
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
   return (
     <>
       <View>
@@ -399,7 +428,7 @@ function isEmpty(obj) {
           style={[
             styles.flexRow,
             styles.justifyAlignCenter,
-            { marginBottom: 8 },
+            // { marginBottom: 8 },
           ]}
         >
           <View style={[styles.flexRow, styles.toggleButtonView]}>
@@ -417,6 +446,7 @@ function isEmpty(obj) {
                 {
                   backgroundColor:
                     isSourceIndex === 1 ? Colors.WHITE : Colors.RED,
+                  padding: 14,
                 },
               ]}
             >
@@ -443,6 +473,7 @@ function isEmpty(obj) {
                 {
                   backgroundColor:
                     isSourceIndex === 1 ? Colors.RED : Colors.WHITE,
+                  padding: 14,
                 },
               ]}
             >
@@ -682,11 +713,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.RED,
     borderWidth: 1,
     borderRadius: 5,
-    padding: 0.75,
-    height: 35,
-    marginTop: 10,
+    // padding: 0.75,
+    // height: 35,
+    marginVertical: 14,
     justifyContent: "center",
-    width: "70%",
+    width: "95%",
   },
   toggleViewButtons: {
     width: "50%",
