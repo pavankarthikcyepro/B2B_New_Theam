@@ -169,7 +169,7 @@ const data = [
     title: "Knowledge Center",
     icon: KNOWLEDGE_CENTER,
     screen: 124,
-    pngIcon: require("../assets/images/Target_Planning-01.png"),
+    pngIcon: require("../assets/images/knowledge.png"),
   },
   {
     title: "Sign Out",

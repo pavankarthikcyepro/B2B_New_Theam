@@ -1826,7 +1826,7 @@ const KnowledgeCenterStackNavigator = ({ navigation }) => {
         name={"MAIN_SCREEN"}
         component={KnowledgeCenterScreen}
         options={{
-          title: "Knowlegde Center",
+          title: "Knowledge Center",
           headerShown: true,
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
