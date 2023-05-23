@@ -700,6 +700,7 @@ const AppScreen = () => {
           detail: "fine",
         },
       }).then((granted) => {
+        console.log("granted",granted)
         if (granted) {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {
