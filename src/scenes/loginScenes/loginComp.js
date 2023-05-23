@@ -14,10 +14,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Alert,
-  PermissionsAndroid,
-  BackHandler,
-  Linking,
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";

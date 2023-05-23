@@ -40,7 +40,7 @@ import {
   PermissionsAndroid,
   Alert,
   Linking,
-  BackHandler
+  BackHandler,
 } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
@@ -698,9 +698,22 @@ const AppScreen = () => {
   //   }
   // }, [state.userToken]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (state.userToken) {
       BackgroundServices.start();
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (jsonObj.isGeolocation === "Y") {
+          if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
+            BackgroundServices.stop();
+          }
+        } else {
+          BackgroundServices.stop();
+        }
+      }
       RNLocation.requestPermission({
         ios: "whenInUse",
         android: {
@@ -713,9 +726,6 @@ const AppScreen = () => {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {
               console.log("LOCations", AppState.currentState, locations);
-              const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
-              );
               if (locations[0].speed >= GlobalSpeed) {
                 checkTheDate(employeeData, locations[0]);
               }
@@ -730,7 +740,7 @@ const AppScreen = () => {
               // }
             }
           );
-        } 
+        }
       });
 
       return () => {
