@@ -141,6 +141,8 @@ import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashbo
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
 import HomeVisitHistory from "../scenes/mainScenes/MyTasks/homeVisitHistory";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
+import KnowledgeCenterScreen from "../scenes/mainScenes/KnowledgeCenter";
+import ListScreen from "../scenes/mainScenes/KnowledgeCenter/listScreen";
 import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
 import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
 import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
@@ -409,10 +411,13 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  reportDownload: "REPORT_DOWNLOAD",
+  complaintTracker: "COMPLAINT_TRACKER",
   myStock: "MY_STOCK",
   reportDownload:"REPORT_DOWNLOAD",
   complaintTracker:"COMPLAINT_TRACKER",
   receptionistDashboard: "RECEPTIONIST_DASHBOARD",
+  knowledgeCenter: "KNOWLEDGE_CENTER",
 };
 
 export const TabStackIdentifiers = {
@@ -1658,7 +1663,6 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.dropAnalysis}
         component={DropAnalysisStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.upcomingDeliveries}
         component={UpcomingDeliveriestStackNavigator}
@@ -1671,12 +1675,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.taskManagement}
         component={TaskManagementStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.evtbrlReport}
         component={TabNavigator}
@@ -1693,6 +1695,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.reportDownload}
         component={DownloadReportNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.knowledgeCenter}
+        component={KnowledgeCenterStackNavigator}
       />
       {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
@@ -1805,6 +1811,32 @@ const MainStackNavigator = ({ navigation }) => {
         }}
       />
     </MainStack.Navigator>
+  );
+};
+
+const KnowledgeCenterStack = createStackNavigator();
+
+const KnowledgeCenterStackNavigator = ({ navigation }) => {
+  return (
+    <KnowledgeCenterStack.Navigator
+      initialRouteName={"MAIN_SCREEN"}
+      screenOptions={screeOptionStyle}
+    >
+      <KnowledgeCenterStack.Screen
+        name={"MAIN_SCREEN"}
+        component={KnowledgeCenterScreen}
+        options={{
+          title: "Knowledge Center",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <KnowledgeCenterStack.Screen
+        name={"LIST"}
+        component={ListScreen}
+        options={{ title: "List" }}
+      />
+    </KnowledgeCenterStack.Navigator>
   );
 };
 
