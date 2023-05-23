@@ -881,6 +881,32 @@ export const getReceptionistSource = createAsyncThunk(
 );
 
 // live receptinist/tele caller / cre
+export const getReceptionistSourceVol2 = createAsyncThunk(
+  "HOME/getReceptionistSourceVol2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_SOURCE_Vol2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+// live receptinist/tele caller / cre
+export const getReceptionistModelVol2 = createAsyncThunk(
+  "HOME/getReceptionistModelVol2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_MODEL_Vol2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
+// live receptinist/tele caller / cre
 export const getReceptionistSourceLive = createAsyncThunk(
   "HOME/getReceptionistSourceLive",
   async (payload, { rejectWithValue }) => {
@@ -1983,13 +2009,13 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistDataV2.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.receptionistDataV3 = {
-          RetailCount: dataObj.RetailCount,
-          bookingsCount: dataObj.bookingsCount,
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
           consultantList: dataObj.consultantList,
           totalAllocatedCount: dataObj.totalAllocatedCount,
           totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.contactsCount,
-          enquirysCount: dataObj.enquirysCount,
+          contactsCount: dataObj.totalContactCount,
+          enquirysCount: dataObj.totalEnquiryCount,
           totalLostCount: dataObj.totalLostCount,
           fullResponse: dataObj
         }
@@ -2201,6 +2227,21 @@ export const homeSlice = createSlice({
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModel.rejected, (state, action) => { })
+
+      // new api for recep/telecaler/cre vol2 
+      .addCase(getReceptionistSourceVol2.pending, (state) => { })
+      .addCase(getReceptionistSourceVol2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistSource = dataObj;
+      })
+      .addCase(getReceptionistSourceVol2.rejected, (state, action) => { })
+      .addCase(getReceptionistModelVol2.pending, (state) => { })
+      .addCase(getReceptionistModelVol2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getReceptionistModelVol2.rejected, (state, action) => { })
+
 
       // live receptinist/tele caller / cre
       .addCase(getReceptionistModelLive.pending, (state) => { })

@@ -1319,6 +1319,40 @@ const HomeScreen = ({ route, navigation }) => {
       />
     );
   };
+  function navigateToDropAnalysisVol2(leadIdList) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: "DROP_ANALYSIS",
+      params: {
+        emp_id: "",
+        fromScreen: "targetScreen1CRMVol2",
+        dealercodes: leadIdList,
+        isFilterApplied: false,
+        parentId: "",
+        isSelf: false,
+      },
+    });
+  }
+  function navigateToEmsVol2(leadidList) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "LEADS",
+        params: {
+          screenName: "TargetScreenCRMVol2",
+          params: "",
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: "",
+          startDate: "",
+          endDate: "",
+          dealerCodes: leadidList,
+          ignoreSelectedId: false,
+          parentId: "",
+          istotalClick: false,
+        },
+      },
+    });
+  }
   function navigateToDropLostCancel(params) {
     if (selector.saveCRMfilterObj.selectedempId) {
       navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
@@ -1393,7 +1427,8 @@ const HomeScreen = ({ route, navigation }) => {
         navigation={navigation}
       />
 
-      {userData.hrmsRole === "CRM" ? (
+      {/* {userData.hrmsRole === "CRM" ? ( */}
+      {receptionistRole.includes(userData.hrmsRole) ? (
         <View
           // nestedScrollEnabled={true} // changed due to scrolling issue with CRM login
           // showsVerticalScrollIndicator={false}
@@ -1582,7 +1617,141 @@ const HomeScreen = ({ route, navigation }) => {
                 </View>
               )
             ) : null}
+
             {receptionistRole.includes(userData.hrmsRole) && (
+              <View style={styles.view7}>
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistDataV3.contactsCount > 0 &&
+                      navigateToContact("Contact");
+                  }}
+                  style={styles.view8}
+                >
+                  <Text numberOfLines={2} style={styles.rankHeadingText}>
+                    {"Contact"}
+                  </Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistDataV3
+                          ?.contactsCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistDataV3?.contactsCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistDataV3.enquirysCount > 0 &&
+                      navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalEnquiryLeads)
+                      // navigateToEMS("ENQUIRY", "", [userData.empId]);
+                  }}
+                  style={styles.view8}
+                >
+                  <Text numberOfLines={2} style={styles.rankHeadingText}>
+                    {"Enquiry"}
+                  </Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistDataV3
+                          ?.enquirysCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistDataV3?.enquirysCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistDataV3.bookingsCount > 0 &&
+                      navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalBookingLeads)
+                      // navigateToEMS("BOOKING", "", [userData.empId]);
+                  }}
+                  style={styles.view8}
+                >
+                  <Text style={styles.rankHeadingText}>{"Booking"}</Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistDataV3
+                          ?.bookingsCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistDataV3?.bookingsCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistDataV3.RetailCount > 0 &&
+                      navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalRetailLeads)
+                      // navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                  }}
+                  style={styles.view8}
+                >
+                  <Text style={styles.rankHeadingText}>{"Retail"}</Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistDataV3
+                          ?.RetailCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistDataV3?.RetailCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    selector.receptionistDataV3.totalDroppedCount > 0 &&
+                      navigateToDropAnalysisVol2(selector.receptionistDataV3?.fullResponse?.totalDroppedLeads);
+                  }}
+                  style={styles.view8}
+                >
+                  <Text
+                    numberOfLines={1}
+                    style={{ ...styles.rankHeadingText, width: 50 }}
+                  >
+                    {"Drop"}
+                  </Text>
+                  <View style={styles.cardView}>
+                    <Text
+                      style={{
+                        ...styles.rankText,
+                        color: Colors.RED,
+                        textDecorationLine: selector.receptionistDataV3
+                          ?.totalDroppedCount
+                          ? "underline"
+                          : "none",
+                      }}
+                    >
+                      {selector.receptionistDataV3?.totalDroppedCount || 0}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+            {/* vol 1 receptionist header code  */}
+            {/* {receptionistRole.includes(userData.hrmsRole) && (
               <View style={styles.view7}>
                 <TouchableOpacity
                   onPress={() => {
@@ -1710,7 +1879,7 @@ const HomeScreen = ({ route, navigation }) => {
                   </View>
                 </TouchableOpacity>
               </View>
-            )}
+            )} */}
           </View>
 
           {selector.bannerList.length > 0 && renderBannerList()}

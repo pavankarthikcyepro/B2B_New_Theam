@@ -153,6 +153,25 @@ export const getLeadsListCRM = createAsyncThunk(
   }
 );
 
+// receptinoist,tele caller , cre
+export const getLeadsListReceptinistVol2 = createAsyncThunk(
+  "ENQUIRY/getLeadsListReceptinistVol2",
+  async (payload, { rejectWithValue }) => {
+    let url = URL.GET_LEAD_LIST_RECEPETIONIST_VOL2();
+    // if (payload?.isLive) {
+    //   url = url + "Live";
+    // }
+    const response = await client.post(url, payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+
 const enquirySlice = createSlice({
   name: "ENQUIRY",
   initialState: {
@@ -326,6 +345,31 @@ const enquirySlice = createSlice({
 
     });
     builder.addCase(getLeadsListCRM.rejected, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "rejected";
+      state.isLoading = false;
+    });
+
+    builder.addCase(getLeadsListReceptinistVol2.pending, (state, action) => {
+      state.leadList = [];
+      state.leadList_status = "pending";
+      state.isLoading = true;
+    });
+    builder.addCase(getLeadsListReceptinistVol2.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        //   state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        const content = dmsEntityObj.leadDtoPage.content;
+        state.leadList = content;
+        state.leadList_totoalElemntData = action.payload;
+        state.leadList_status = "success";
+        state.isLoading = false;
+        // state.enquiry_list = [...state.enquiry_list, ...content];
+      }
+
+    });
+    builder.addCase(getLeadsListReceptinistVol2.rejected, (state, action) => {
       state.leadList = [];
       state.leadList_status = "rejected";
       state.isLoading = false;

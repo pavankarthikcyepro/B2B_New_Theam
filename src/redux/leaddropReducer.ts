@@ -254,6 +254,20 @@ export const getDropAnalysisSalesHome = createAsyncThunk(
   }
 );
 
+export const getDropAnalysisReceptionistVol2 = createAsyncThunk(
+  "DROPANALYSIS/getDropAnalysisReceptionistVol2",
+  async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.DROP_ANALYSIS_LIST_RECEPTIONIST_VOL2(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const getdropstagemenu = createAsyncThunk(
   "DROPANALYSIS/getdropstagemenu",
   async (payload, { rejectWithValue }) => {
@@ -619,6 +633,38 @@ const leaddropListSlice = createSlice({
 
     });
     builder.addCase(getDropAnalysisSalesHome.rejected, (state, action) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = false;
+      state.status = "failed";
+    });
+
+
+
+    builder.addCase(getDropAnalysisReceptionistVol2.pending, (state) => {
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      state.isLoading = true;
+    });
+    builder.addCase(getDropAnalysisReceptionistVol2.fulfilled, (state, action) => {
+      const dmsLeadDropInfos = action.payload.dmsLeadDropInfos;
+
+      state.totalPages = 1;
+      state.pageNumber = 0;
+      state.leadDropList = [];
+      if (dmsLeadDropInfos) {
+        state.totalPages = dmsLeadDropInfos.totalPages;
+        state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
+        state.leadDropList = dmsLeadDropInfos.content;
+
+      }
+      state.isLoading = false;
+      state.status = "sucess";
+
+    });
+    builder.addCase(getDropAnalysisReceptionistVol2.rejected, (state, action) => {
       state.totalPages = 1;
       state.pageNumber = 0;
       state.leadDropList = [];

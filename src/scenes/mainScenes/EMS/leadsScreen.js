@@ -27,6 +27,7 @@ import * as AsyncStore from "../../../asyncStore";
 import {
   getEnquiryList,
   getLeadsListCRM,
+  getLeadsListReceptinistVol2,
   getLeadsListReceptionist,
   getLeadsListXrole,
   getLiveleadsReceptinoist,
@@ -436,6 +437,26 @@ const LeadsScreen = ({ route, navigation }) => {
           }, 2000);
 
         }
+
+
+      }
+
+      if (route?.params?.screenName === "TargetScreenCRMVol2") {
+        //  todo call new api here 
+
+        // setSearchedData([])
+
+        
+        let payloadReceptionist = {
+          "leadIdList": route.params.dealerCodes,
+          "limit": "50000",
+          "offset": "0"
+        }
+          setTimeout(() => {
+            dispatch(getLeadsListReceptinistVol2(payloadReceptionist))
+          }, 2000);
+
+        
 
 
       }

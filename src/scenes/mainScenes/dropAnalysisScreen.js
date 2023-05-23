@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM, getDropAnalysisRedirectionsXrole, getDropAnalysisSalesHome } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop, leadStatusDropped, clearLeadDropState, getDropAnalysisFilter, getdropstagemenu, getDropstagesubmenu, updateLeadStage, getDropAnalysisRedirections, getDropAnalysisRedirectionsCRM, getDropAnalysisRedirectionsXrole, getDropAnalysisSalesHome, getDropAnalysisReceptionistVol2 } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -367,6 +367,16 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             dispatch(getDropAnalysisSalesHome(payload))
 
 
+        } else if (from === "targetScreen1CRMVol2"){
+
+          let payload = {
+            "leadIdList": branchCodes ,
+            "limit": "50000",
+            "offset": "0",
+            "filterValue": ""
+          }
+          dispatch(getDropAnalysisReceptionistVol2(payload))
+
         }
         
         // const payload = getPayloadDataV3(CurrentMonthFirstDate, currentMonthLastDate, null, null, jsonObj.orgId, jsonObj.empName, "", jsonObj.empId)
@@ -605,6 +615,10 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             getDropAnalysisFromRedirections(route?.params?.emp_id, "targetSaleshome", route?.params?.dealercodes)
             setLeadsFilterDropDownText("Enquiry")
             setLeadsSubMenuFilterDropDownText("All");
+        } else if (route.params.fromScreen == "targetScreen1CRMVol2"){
+          getDropAnalysisFromRedirections(route?.params?.emp_id, "targetScreen1CRMVol2", route?.params?.dealercodes)
+          setLeadsFilterDropDownText("Enquiry")
+          setLeadsSubMenuFilterDropDownText("All");
         }
 
         if (route.params.fromScreen === "") {

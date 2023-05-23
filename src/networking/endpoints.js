@@ -522,6 +522,10 @@ const URL = {
   DROP_ANALYSIS_LIST_REDIRECTIONS_SALESHOME: () =>
     baseUrl + "dfd/dashboard/leads/redirection",
 
+  DROP_ANALYSIS_LIST_RECEPTIONIST_VOL2: () =>
+    sales_url + "/lead-drop/dashboard/leadlist",
+
+
   UPDATE_BULKAPPROVAL: () => {
     return sales_url + "/lead-drop/bulkdrop";
   },
@@ -602,6 +606,9 @@ const URL = {
   },
   GET_LEAD_LIST_CRM: () => {
     return sales_url + "/lead/receptionistManager/allByDateNew";
+  },
+  GET_LEAD_LIST_RECEPETIONIST_VOL2: () => {
+    return sales_url + "/lead/dashboard/leadlist";
   },
   GET_ALL_STATUS: () => {
     return sales_url + "/lead/alldatadropdown";
@@ -1004,6 +1011,13 @@ const URL = {
   },
   RECEPTIONIST_MODEL_LIVE: () => {
     return dashboard + "/liveLeads/model";
+  },
+
+  RECEPTIONIST_SOURCE_Vol2: () => {
+    return dashboard + "/source";
+  },
+  RECEPTIONIST_MODEL_Vol2: () => {
+    return dashboard + "/model";
   },
 
   XROLE_MODEL_LIVE: () => {
