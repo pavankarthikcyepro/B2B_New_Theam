@@ -368,9 +368,69 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
     }
   };
 
+  const ListItem = ({item, index}) => {
+    const [isImageAvailable, setIsImageAvailable] = useState(true);
+
+    return (
+      <View style={styles.ElementView}>
+        <View style={{ flex: 1 }}>
+          {item.imageUrl && isImageAvailable ? (
+            <Image
+              source={{ uri: item.imageUrl }}
+              resizeMode="contain"
+              style={{ width: 100, height: 80 }}
+              onError={(err) => setIsImageAvailable(false)}
+            />
+          ) : (
+            <Image
+              source={require("../../../assets/images/loginCar.jpg")}
+              resizeMode="contain"
+              style={{ width: 100, height: 80 }}
+            />
+          )}
+        </View>
+        <View
+          style={{
+            alignItems: "center",
+            flex: 1,
+          }}
+        >
+          <Text>{item.model}</Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            onPress={() => {
+              onDownload(item);
+            }}
+            style={{ marginHorizontal: 10 }}
+          >
+            <IconButton
+              icon={"download"}
+              size={24}
+              color={Colors.RED}
+              style={{ margin: 0, padding: 0 }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              onShare(item);
+            }}
+          >
+            <IconButton
+              icon={"share"}
+              size={24}
+              color={Colors.RED}
+              style={{ margin: 0, padding: 0 }}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flexDirection: "row" }}>
+      <View style={styles.topOptionsRow}>
         {OPTIONS.map((item) => (
           <RadioTextItem2
             label={item}
@@ -385,62 +445,9 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
       </View>
       {!errorView && (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {carList.map((item) => {
-            return (
-              <View style={styles.ElementView}>
-                <View style={{ flex: 1 }}>
-                  {item.imageUrl ? (
-                    <Image
-                      source={{ uri: item.imageUrl }}
-                      resizeMode="contain"
-                      style={{ width: 100, height: 80 }}
-                    />
-                  ) : (
-                    <Image
-                      source={require("../../../assets/images/loginCar.jpg")}
-                      resizeMode="contain"
-                      style={{ width: 100, height: 80 }}
-                    />
-                  )}
-                </View>
-                <View
-                  style={{
-                    alignItems: "center",
-                    flex: 1,
-                  }}
-                >
-                  <Text>{item.model}</Text>
-                </View>
-                <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onDownload(item);
-                    }}
-                    style={{ marginHorizontal: 10 }}
-                  >
-                    <IconButton
-                      icon={"download"}
-                      size={24}
-                      color={Colors.RED}
-                      style={{ margin: 0, padding: 0 }}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onShare(item);
-                    }}
-                  >
-                    <IconButton
-                      icon={"share"}
-                      size={24}
-                      color={Colors.RED}
-                      style={{ margin: 0, padding: 0 }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          })}
+          {carList.map((item, index) => (
+            <ListItem item={item} index={index} />
+          ))}
         </ScrollView>
       )}
       {errorView && (
@@ -475,5 +482,16 @@ const styles = StyleSheet.create({
     color: Colors.RED,
     fontSize: 22,
     fontWeight: "600",
+  },
+  topOptionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: Colors.BORDER_COLOR,
+    borderRadius: 5,
+    marginHorizontal: 5,
+    marginTop: 10,
+    marginBottom: 5,
+    backgroundColor: Colors.WHITE,
   },
 });
