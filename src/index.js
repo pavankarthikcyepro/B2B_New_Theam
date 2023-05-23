@@ -12,6 +12,7 @@ import * as AsyncStore from "./asyncStore";
 import { AuthContext } from "./utils/authContext";
 import BackgroundService from "react-native-background-actions";
 import {
+  checkLocationPermission,
   createDateTime,
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
@@ -696,45 +697,10 @@ const AppScreen = () => {
   //     };
   //   }
   // }, [state.userToken]);
-  const checkLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-      if (granted) {
-        console.log("Location permission granted");
-        // Do something with the location permission
-      } else {
-        console.log("Location permission not granted");
-        Alert.alert(
-          "Location Permission Required",
-          'Please enable "Allow All the time" for location in your device settings.',
-          [
-            {
-              text: "Cancel",
-              style: "cancel",
-              onPress:()=>{
-                BackHandler.exitApp();
-              }
-            },
-            {
-              text: "Open Settings",
-              onPress: () => {
-                Linking.openSettings();
-              },
-            },
-          ]
-        );
-      }
-    } catch (error) {
-      console.error("Error checking or requesting location permission:", error);
-    }
-  };
 
   useEffect(() => {
     if (state.userToken) {
       BackgroundServices.start();
-      // checkLocationPermission();
       RNLocation.requestPermission({
         ios: "whenInUse",
         android: {
@@ -742,6 +708,7 @@ const AppScreen = () => {
         },
       }).then((granted) => {
         console.log("granted", granted);
+        checkLocationPermission();
         if (granted) {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {

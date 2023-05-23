@@ -14,6 +14,10 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Alert,
+  PermissionsAndroid,
+  BackHandler,
+  Linking,
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -49,6 +53,7 @@ import Geolocation from "react-native-geolocation-service";
 import crashlytics from "@react-native-firebase/crashlytics";
 import {
   GlobalSpeed,
+  checkLocationPermission,
   distanceFilterValue,
   getDistanceBetweenTwoPoints,
   getDistanceBetweenTwoPointsLatLong,
@@ -565,7 +570,7 @@ const LoginScreen = ({ navigation }) => {
             AsyncStore.Keys.COORDINATES
           );
           const prevCoordinates = JSON.parse(coordinates);
-         
+
           console.log(
             "lastPosition.coords, prevCoordinates",
             lastPosition.coords,
@@ -573,14 +578,14 @@ const LoginScreen = ({ navigation }) => {
           );
           if (speed >= 0) {
             checkTheDate(employeeData, lastPosition.coords, prevCoordinates);
-             await AsyncStore.storeJsonData(
-               AsyncStore.Keys.COORDINATES,
-               JSON.stringify({
-                 longitude: lastPosition.coords.latitude,
-                 latitude: lastPosition.coords.longitude,
-                 time: new Date(),
-               })
-             );
+            await AsyncStore.storeJsonData(
+              AsyncStore.Keys.COORDINATES,
+              JSON.stringify({
+                longitude: lastPosition.coords.latitude,
+                latitude: lastPosition.coords.longitude,
+                time: new Date(),
+              })
+            );
           }
           // if (speed < GlobalSpeed && speed >= 0) {
           //   checkTheEndDate(employeeData, lastPosition);
