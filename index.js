@@ -25,7 +25,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 ReactNativeForegroundService.register();
 
 RNLocation.configure({
-  distanceFilter: 25, // Meters
+  distanceFilter: 50, // Meters
   desiredAccuracy: {
     ios: "best",
     android: "highAccuracy",

@@ -33,7 +33,14 @@ import URL, {
   saveLocation,
 } from "./networking/endpoints";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { Platform, AppState, PermissionsAndroid, Alert } from "react-native";
+import {
+  Platform,
+  AppState,
+  PermissionsAndroid,
+  Alert,
+  Linking,
+  BackHandler
+} from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
@@ -689,18 +696,52 @@ const AppScreen = () => {
   //     };
   //   }
   // }, [state.userToken]);
+  const checkLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+      if (granted) {
+        console.log("Location permission granted");
+        // Do something with the location permission
+      } else {
+        console.log("Location permission not granted");
+        Alert.alert(
+          "Location Permission Required",
+          'Please enable "Allow All the time" for location in your device settings.',
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress:()=>{
+                BackHandler.exitApp();
+              }
+            },
+            {
+              text: "Open Settings",
+              onPress: () => {
+                Linking.openSettings();
+              },
+            },
+          ]
+        );
+      }
+    } catch (error) {
+      console.error("Error checking or requesting location permission:", error);
+    }
+  };
 
   useEffect(() => {
     if (state.userToken) {
       BackgroundServices.start();
-
+      // checkLocationPermission();
       RNLocation.requestPermission({
         ios: "whenInUse",
         android: {
           detail: "fine",
         },
       }).then((granted) => {
-        console.log("granted",granted)
+        console.log("granted", granted);
         if (granted) {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {
@@ -722,7 +763,7 @@ const AppScreen = () => {
               // }
             }
           );
-        }
+        } 
       });
 
       return () => {

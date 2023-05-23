@@ -14,6 +14,8 @@ import {
   Platform,
   PermissionsAndroid,
   TouchableWithoutFeedback,
+  BackHandler,
+  Linking,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { IconButton, Card, Button, Portal } from "react-native-paper";
@@ -155,14 +157,69 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (isFocused || (isFocused && isDrawerOpen)) {
       Orientation.unlockAllOrientations();
-      dispatch(updatefilter_drop_down_designations({}))
-      dispatch(updateFilterLeadership_selectedDesignationName(""))
+      dispatch(updatefilter_drop_down_designations({}));
+      dispatch(updateFilterLeadership_selectedDesignationName(""));
       // dispatch(updatefilter_drop_down_designations({}))
       // dispatch(updateFilterLeadership_selectedDesignationName(""))
-      dispatch(updateFilterLeadership_selectedDesignation(""))
-      dispatch(updateLeaderShipFilter([]))
+      dispatch(updateFilterLeadership_selectedDesignation(""));
+      dispatch(updateLeaderShipFilter([]));
     }
   }, [isFocused, isDrawerOpen]);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      checkLocationPermission();
+    }
+  }, [isFocused, isDrawerOpen]);
+
+  const checkLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION
+      );
+      if (granted) {
+        console.log("Location permission is granted");
+        const settingsGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+          null,
+          "always"
+        );
+        console.log("settingsGranted", settingsGranted);
+        if (settingsGranted) {
+          console.log('Location option is set to "Always"');
+          // Handle the case where "Always" is selected
+        } else {
+          console.log('Location option is set to "Allow While Using App"');
+          // Handle the case where "Allow While Using App" is selected
+        }
+
+        // Do something with the location permission
+      } else {
+        console.log("Location permission not granted");
+        Alert.alert(
+          "Location Permission Required",
+          'Please enable "Allow All the time" for location in your device settings.',
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => {
+                BackHandler.exitApp();
+              },
+            },
+            {
+              text: "Open Settings",
+              onPress: () => {
+                Linking.openSettings();
+              },
+            },
+          ]
+        );
+      }
+    } catch (error) {
+      console.error("Error checking or requesting location permission:", error);
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.addListener("focus", () => {
