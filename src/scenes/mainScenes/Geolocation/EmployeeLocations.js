@@ -1,14 +1,9 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
-  Keyboard,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
-  Platform,
-  Image,
 } from "react-native";
 import { useDispatch } from "react-redux";
 
@@ -19,8 +14,9 @@ import URL, { baseUrl } from "../../../networking/endpoints";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import { MenuIcon } from "../../../navigations/appNavigator";
-import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
+import {
+  HomeStackIdentifiers,
+} from "../../../navigations/appNavigator";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 
 const dateFormat = "YYYY-MM-DD";
@@ -29,26 +25,31 @@ const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
 
-const GeoLocationScreen = ({ route, navigation }) => {
+const EmployeeLocationsScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [marker, setMarker] = useState({});
-  const [userData, setUserData] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    console.log("route.params", route.params);
+  }, [route.params]);
+
+  useEffect(() => {
     navigation.setOptions({
-      headerLeft: () => <MenuIcon navigation={navigation} />,
+      title: route?.params?.name
+        ? route?.params?.name + "'s Geolocation"
+        : "Geolocation",
     });
   }, [navigation]);
 
   useEffect(() => {
     setLoading(true);
-    getAttendance();
+    getAttendance(route.params);
   }, [currentMonth]);
 
-  const getAttendance = async () => {
+  const getAttendance = async (params) => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -56,11 +57,10 @@ const GeoLocationScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         var d = currentMonth;
-        setUserData(jsonObj);
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(
-            jsonObj.empId,
-            jsonObj.orgId,
+            params.empId,
+            params.orgId,
             monthNamesCap[d.getMonth()]
           )
         );
@@ -72,6 +72,8 @@ const GeoLocationScreen = ({ route, navigation }) => {
           for (let i = 0; i < json.length; i++) {
             const element = json[i];
             let format = {
+              // marked: true,
+              // dotColor: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               customStyles: {
                 container: {
                   backgroundColor:
@@ -86,8 +88,17 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
             let date = new Date(element.createdtimestamp);
             let formatedDate = moment(date).format(dateFormat);
+            // let weekReport = {
+            //   start: formatedDate,
+            //   // duration: "00:20:00",
+            //   note: element.comments,
+            //   reason: element.reason,
+            //   color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+            //   status: element.isPresent === 1 ? "Present" : "Absent",
+            // };
             dateArray.push(formatedDate);
             newArray.push(format);
+            // weekArray.push(weekReport);
           }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
@@ -95,6 +106,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
             obj[dateArray[i]] = element;
           }
           setLoading(false);
+          // setWeeklyRecord(weekArray);
           setMarker(obj);
         }
       }
@@ -105,9 +117,9 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
-    navigation.navigate(GeolocationTopTabNavigatorIdentifiers.tripList, {
-      empId: userData.empId,
-      orgId: userData.orgId,
+    navigation.navigate(HomeStackIdentifiers.location, {
+      empId: route.params.empId,
+      orgId: route.params.orgId,
       date: selectedDate,
     });
   };
@@ -148,7 +160,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   );
 };
 
-export default GeoLocationScreen;
+export default EmployeeLocationsScreen;
 
 const styles = StyleSheet.create({
   container: {

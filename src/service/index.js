@@ -303,7 +303,7 @@ export const checkLocationPermission = async () => {
       console.log("Location permission not granted");
       Alert.alert(
         "Location Permission Required",
-        'Permissions -> Location ->  Please enable "Allow All the Time" for location in your device settings.',
+        'Permissions -> Location ->  Please enable "Allow all the time" for location in your device settings.',
         [
           {
             text: "Cancel",

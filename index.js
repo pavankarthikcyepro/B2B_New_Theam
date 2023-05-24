@@ -32,7 +32,7 @@ RNLocation.configure({
   // Android only
   // androidProvider: 'auto',
   interval: 10000, // Milliseconds
-  fastestInterval: 3000, // Milliseconds
+  // fastestInterval: 3000, // Milliseconds
   // maxWaitTime: 1000, // Milliseconds
   // iOS Only
   activityType: "fitness",
