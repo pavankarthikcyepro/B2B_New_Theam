@@ -140,7 +140,6 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
   }
 
   function onChangeOption(params, DATA) {
-    console.log("DATA -> ", JSON.stringify(DATA));
     switch (params) {
       case "Images":
         const data = getSelectedItemsWithImages(DATA);
