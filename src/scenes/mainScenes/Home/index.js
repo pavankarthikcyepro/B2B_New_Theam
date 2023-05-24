@@ -14,6 +14,8 @@ import {
   Platform,
   PermissionsAndroid,
   TouchableWithoutFeedback,
+  BackHandler,
+  Linking,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { IconButton, Card, Button, Portal } from "react-native-paper";
@@ -94,6 +96,7 @@ import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import Geolocation from "@react-native-community/geolocation";
 import {
+  checkLocationPermission,
   createDateTime,
   getDistanceBetweenTwoPoints,
   officeRadius,
@@ -155,12 +158,18 @@ const HomeScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (isFocused || (isFocused && isDrawerOpen)) {
       Orientation.unlockAllOrientations();
-      dispatch(updatefilter_drop_down_designations({}))
-      dispatch(updateFilterLeadership_selectedDesignationName(""))
+      dispatch(updatefilter_drop_down_designations({}));
+      dispatch(updateFilterLeadership_selectedDesignationName(""));
       // dispatch(updatefilter_drop_down_designations({}))
       // dispatch(updateFilterLeadership_selectedDesignationName(""))
-      dispatch(updateFilterLeadership_selectedDesignation(""))
-      dispatch(updateLeaderShipFilter([]))
+      dispatch(updateFilterLeadership_selectedDesignation(""));
+      dispatch(updateLeaderShipFilter([]));
+    }
+  }, [isFocused, isDrawerOpen]);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      checkLocationPermission();
     }
   }, [isFocused, isDrawerOpen]);
 
