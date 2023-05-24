@@ -41,6 +41,7 @@ import { updateToken } from "../../redux/loginReducer";
 import messaging from "@react-native-firebase/messaging";
 import crashlytics from "@react-native-firebase/crashlytics";
 import { firebase } from "@react-native-firebase/app";
+import { checkLocationPermission } from "../../service";
 
 const WelcomeScreen = ({ navigation }) => {
   const { signOut } = React.useContext(AuthContext);
@@ -160,6 +161,12 @@ const WelcomeScreen = ({ navigation }) => {
        */
       requestPermissions: true,
     });
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      checkLocationPermission();
+    }
   }, []);
 
   const signOutClicked = async () => {

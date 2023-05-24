@@ -1,39 +1,25 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
-  Text,
-  Keyboard,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
-  Platform,
-  Image,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { LoaderComponent } from "../../../components";
-import { Colors, GlobalStyle } from "../../../styles";
+import { Colors } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL, { baseUrl } from "../../../networking/endpoints";
-import { IconButton } from "react-native-paper";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import AttendanceForm from "../../../components/AttendanceForm";
 import { MenuIcon } from "../../../navigations/appNavigator";
-import Geolocation from "@react-native-community/geolocation";
-import { getDistanceBetweenTwoPoints, officeRadius } from "../../../service";
-import { AppNavigator } from "../../../navigations";
 import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
-const officeLocation = {
-  latitude: 37.33233141,
-  longitude: -122.0312186,
-};
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
@@ -42,19 +28,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [isWeek, setIsWeek] = useState(false);
   const [marker, setMarker] = useState({});
-  const [attendance, setAttendance] = useState(false);
-  const [weeklyRecord, setWeeklyRecord] = useState([]);
-  const [reason, setReason] = useState(false);
-  const [initialPosition, setInitialPosition] = useState({});
-  const [imageUri, setImageUri] = useState(null);
-  const [attendanceCount, setAttendanceCount] = useState({
-    holidays: 0,
-    leave: 0,
-    present: 0,
-    wfh: 0,
-  });
   const [userData, setUserData] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -65,55 +39,9 @@ const GeoLocationScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    navigation.addListener("focus", () => {
-      getCurrentLocation();
-      // setLoading(true);
-      // getAttendance();
-    });
-  }, [navigation]);
-
-  useEffect(() => {
     setLoading(true);
     getAttendance();
   }, [currentMonth]);
-
-  const getCurrentLocation = async () => {
-    try {
-      // if (Platform.OS === "ios") {
-      //   Geolocation.requestAuthorization();
-      //   Geolocation.setRNConfiguration({
-      //     skipPermissionRequests: false,
-      //     authorizationLevel: "whenInUse",
-      //   });
-      // }
-      Geolocation.getCurrentPosition(
-        (position) => {
-        
-          const initialPosition = JSON.stringify(position);
-          let json = JSON.parse(initialPosition);
-          setInitialPosition(json.coords);
-          let dist = getDistanceBetweenTwoPoints(
-            officeLocation.latitude,
-            officeLocation.longitude,
-            json?.coords?.latitude,
-            json?.coords?.longitude
-          );
-        
-          if (dist > officeRadius) {
-            setReason(true); ///true for reason
-          } else {
-            setReason(false);
-          }
-        },
-        (error) => {
-         
-        },
-        { enableHighAccuracy: true }
-      );
-    } catch (error) {
-     
-    }
-  };
 
   const getAttendance = async () => {
     try {
@@ -122,10 +50,8 @@ const GeoLocationScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        getProfilePic(jsonObj);
-        getAttendanceCount(jsonObj);
-        setUserData(jsonObj);
         var d = currentMonth;
+        setUserData(jsonObj);
         const response = await client.get(
           URL.GET_ATTENDANCE_EMPID(
             jsonObj.empId,
@@ -141,8 +67,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
           for (let i = 0; i < json.length; i++) {
             const element = json[i];
             let format = {
-              // marked: true,
-              // dotColor: element.isPresent === 1 ? Colors.GREEN : Colors.RED,
               customStyles: {
                 container: {
                   backgroundColor:
@@ -157,17 +81,8 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
             let date = new Date(element.createdtimestamp);
             let formatedDate = moment(date).format(dateFormat);
-            // let weekReport = {
-            //   start: formatedDate,
-            //   // duration: "00:20:00",
-            //   note: element.comments,
-            //   reason: element.reason,
-            //   color: element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
-            //   status: element.isPresent === 1 ? "Present" : "Absent",
-            // };
             dateArray.push(formatedDate);
             newArray.push(format);
-            // weekArray.push(weekReport);
           }
           var obj = {};
           for (let i = 0; i < newArray.length; i++) {
@@ -175,7 +90,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
             obj[dateArray[i]] = element;
           }
           setLoading(false);
-          // setWeeklyRecord(weekArray);
           setMarker(obj);
         }
       }
@@ -186,93 +100,23 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   const isCurrentDate = (day) => {
     let selectedDate = day.dateString;
-    // if (currentDate === selectedDate) {
-      //   setAttendance(true);
-      navigation.navigate(GeolocationTopTabNavigatorIdentifiers.tripList, {
-        empId: userData.empId,
-        orgId: userData.orgId,
-        date: selectedDate,
-      });
-    // }
-  };
-
-  const isCurrentDateForWeekView = (day) => {
-    let selectedDate = moment(day).format(dateFormat);
-    if (currentDate === selectedDate) {
-      setAttendance(true);
-    }
-  };
-
-  const getProfilePic = (userData) => {
-     
-    // fetch(
-    //   `http://cyeprolive-1205754645.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    // )
-    fetch(
-      `${baseUrl}sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.length > 0) {
-          setImageUri(json[json.length - 1].documentPath);
-        } else {
-          setImageUri(
-            "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-          );
-        }
-      })
-      .catch((error) => {
-        setImageUri(
-          "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg"
-        );
-        console.error(error);
-      });
-  };
-
-  const getAttendanceCount = async (jsonObj) => {
-    try {
-      let d = currentMonth;
-      const response = await client.get(
-        URL.GET_ATTENDANCE_COUNT(
-          jsonObj.empId,
-          jsonObj.orgId,
-          monthNamesCap[d.getMonth()]
-        )
-      );
-      const json = await response.json();
-      if (json) {
-        setAttendanceCount({
-          holidays: json.holidays || 0,
-          leave: json.leave || 0,
-          present: json.present || 0,
-          wfh: json.wfh || 0,
-        });
-      }
-    } catch (error) {}
+    navigation.navigate(GeolocationTopTabNavigatorIdentifiers.tripList, {
+      empId: userData.empId,
+      orgId: userData.orgId,
+      date: selectedDate,
+    });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <AttendanceForm
-        visible={attendance}
-        showReason={reason}
-        inVisible={() => {
-          getAttendance();
-          setAttendance(false);
-        }}
-      />
       <View>
         <Calendar
           onDayPress={(day) => {
-           
             isCurrentDate(day);
           }}
-          onDayLongPress={(day) => {
-         
-          }}
+          onDayLongPress={(day) => {}}
           monthFormat={"MMM yyyy"}
           onMonthChange={(month) => {
-           
             setCurrentMonth(new Date(month.dateString));
           }}
           hideExtraDays={true}

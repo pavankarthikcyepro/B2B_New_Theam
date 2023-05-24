@@ -4346,11 +4346,12 @@ export const RenderLevel1NameView = ({
             onPress={() => {
               if (item.roleName !== "MD" && item.roleName !== "CEO") {
                 navigation.navigate(
-                  AppNavigator.HomeStackIdentifiers.location,
+                  AppNavigator.HomeStackIdentifiers.mapDetail,
                   {
                     empId: item.empId,
                     orgId: item.orgId,
-                    from: "HOME"
+                    name: item?.empName,
+                    from: "HOME",
                   }
                 );
               }
