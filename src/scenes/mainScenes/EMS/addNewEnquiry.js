@@ -177,6 +177,7 @@ import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import DuplicateMobileModel from "../../../components/DuplicateMobileModel";
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -338,6 +339,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [isVip, setIsVip] = useState(false);
   const [isHni, setIsHni] = useState(false);
+  const [duplicateMobileErrorData, setDuplicateMobileErrorData] = useState("");
+  const [duplicateMobileModelVisible, setDuplicateMobileModelVisible] =
+    useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -1717,7 +1721,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
-              showToast(json.message);
+              DuplicateErrorModal(json);
             }
           } else {
             const response1 = await client.post(
@@ -1731,11 +1735,11 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 json1?.dmsEntity?.leadCustomerReference?.referencenumber
               );
               postEvalutionForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId);
-              postFinanceForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId)
+              postFinanceForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId);
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
-              showToast(json1.message);
+              DuplicateErrorModal(json1);
             }
           }
           // navigation.goBack();
@@ -1778,6 +1782,33 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //     dispatch(updateRef(payload));
     //   });
     // }
+  };
+
+  const DuplicateErrorModal = (data) => {
+    const { message } = data;
+    if (message.includes("Account already exists")) {
+      const msgArr = message.split("[");
+      const msgArr2 = msgArr[1].split("]").join("");
+      const msgArr3 = msgArr2.split(":");
+      const msgArr4 = msgArr3[1].split(",");
+      const createdDate = msgArr3[2].trim();
+      const createdBy = msgArr4[0].trim();
+
+      const msgEnq = msgArr[2].split("]").join("");
+      const msgEnq2 = msgEnq.split(":");
+      const enqNumber = msgEnq2[1].trim();
+
+      let newObj = {
+        createdBy: createdBy,
+        createdDate: createdDate,
+        enqNumber: enqNumber,
+        mobileNumber: selector.mobile,
+      };
+      setDuplicateMobileErrorData(Object.assign({}, newObj));
+      setDuplicateMobileModelVisible(true);
+    } else {
+      showToast(data.message);
+    }
   };
 
   const mapContactOrAccountDto = (prevData) => {
@@ -3389,6 +3420,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+      <DuplicateMobileModel
+        duplicateMobileModelVisible={duplicateMobileModelVisible}
+        onRequestClose={() => {
+          setDuplicateMobileModelVisible(false);
+          setDuplicateMobileErrorData("");
+        }}
+        duplicateMobileErrorData={duplicateMobileErrorData}
+      />
+
       <SelectEmployeeComponant
         visible={showEmployeeSelectModel}
         headerTitle={"Select Employee"}

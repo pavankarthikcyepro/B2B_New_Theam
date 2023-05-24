@@ -61,6 +61,8 @@ import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
 import {
+  updateAgingFrom,
+  updateAgingTo,
   updateLocation,
   updateSelectedDealerCode,
 } from "../../redux/myStockReducer";
@@ -83,6 +85,7 @@ const commonMenu = [
   "My Stock",
   "Download Report",
   "Complaint Tracker",
+  "Knowledge Center",
 ];
 const salesMenu = [
   ...commonMenu,
@@ -387,6 +390,9 @@ const SideMenuScreen = ({ navigation }) => {
       case 111:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
         break;
+      case 124:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.knowledgeCenter);
+        break;
       case 113:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, { emp_id: "", fromScreen: "" });
         // added empty params to reset & manage APi call in dropanalysis screen
@@ -408,37 +414,42 @@ const SideMenuScreen = ({ navigation }) => {
           fromDate: "",
           toDate: "",
         });
-        dispatch(updateFilterSelectedDataV2({}))
+        dispatch(updateFilterSelectedDataV2({}));
         dispatch(updateFilterLevelSelectedData([]));
         dispatch(updateLiveLeadObjectData({}));
         dispatch(updateDealerFilterData({}));
-        dispatch(updateLiveLeadObjectDataCRM({}))
-        dispatch(updateDealerFilterDataLive({}))
-        dispatch(updateEmployeeDropdownData({}))
-        dispatch(updateEmployeeDropdownDataHome({}))
+        dispatch(updateLiveLeadObjectDataCRM({}));
+        dispatch(updateDealerFilterDataLive({}));
+        dispatch(updateEmployeeDropdownData({}));
+        dispatch(updateEmployeeDropdownDataHome({}));
         dispatch(updateEmployeeDropdownDataCRMLiVeLeads({}));
         break;
       case 170:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist, {
-          fromScreen: "",
-          selectedID: "",
-          fromDate: "",
-          toDate: "",
-        });
-        dispatch(updateFilterSelectedDataV3({}))
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist,
+          {
+            fromScreen: "",
+            selectedID: "",
+            fromDate: "",
+            toDate: "",
+          }
+        );
+        dispatch(updateFilterSelectedDataV3({}));
         dispatch(updateFilterLevelSelectedDatav2([]));
         dispatch(updateLiveLeadObjectDatav2({}));
         // dispatch(updateDealerFilterData({}));
-        dispatch(updateLiveLeadObjectDataCRMv2({}))
-        dispatch(updateDealerFilterDataLivev2({}))
-        dispatch(updateEmployeeDropdownLiveleadReceptionist({}))
+        dispatch(updateLiveLeadObjectDataCRMv2({}));
+        dispatch(updateDealerFilterDataLivev2({}));
+        dispatch(updateEmployeeDropdownLiveleadReceptionist({}));
         break;
       case 171:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard);
-        dispatch(updateDealerFilterData_Recep({}))
-        dispatch(updateFilterLevelSelectedDataReceptionist({}))
-        dispatch(updateFilterSelectedDataReceptionist({}))
-        dispatch(updateReceptionistObjectData({}))
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.receptionistDashboard
+        );
+        dispatch(updateDealerFilterData_Recep({}));
+        dispatch(updateFilterLevelSelectedDataReceptionist({}));
+        dispatch(updateFilterSelectedDataReceptionist({}));
+        dispatch(updateReceptionistObjectData({}));
         dispatch(updateCRMRecepDashboard_employees_drop_down_data({}));
         break;
       case 115:
@@ -458,13 +469,17 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateDealerFilterDataHome({}));
         dispatch(updateLiveLeadObjectDataHOme({}));
         dispatch(updateFilterSelectedDataHome({}));
-        dispatch(updateCrm_employees_drop_down_data({}))
-     
+        dispatch(updateCrm_employees_drop_down_data({}));
+
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
         break;
       case 120:
+         dispatch(updateLocation({}));
+         dispatch(updateSelectedDealerCode({}));
+         dispatch(updateAgingFrom(null));
+         dispatch(updateAgingTo(null));
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock,{refresh:true});
         break;
       case 121:
@@ -513,6 +528,8 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateDealerFilterData({}));
     dispatch(updateLocation({}));
     dispatch(updateSelectedDealerCode({}));
+    dispatch(updateAgingFrom(null));
+    dispatch(updateAgingTo(null));
     dispatch(updatereceptionistDataObjectData({}))
     dispatch(updateDealerFilterData_Recep({}))
     dispatch(updateFilterLevelSelectedDataReceptionist({}))

@@ -69,7 +69,8 @@ const VariantDetailScreen = ({ route, navigation }) => {
             stockyardBranchName: item?.branchName,
           };
           payload = { ...payload, ...newPayload };
-        } else {
+        }  
+        if (jsonObj.hrmsRole !== "Admin") {
           let newPayload = {
             branchName: item?.branchName,
           };
@@ -81,12 +82,14 @@ const VariantDetailScreen = ({ route, navigation }) => {
             minAge: selector.agingFrom,
             // branchName: selector.dealerCode.name,
           };
+          console.log("selector.dealerCode", selector.dealerCode);
           if (jsonObj.hrmsRole === "Admin") {
             let newPayload = {
-              stockyardBranchName: selector.dealerCode.name,
+              stockyardBranchName: selector.dealerCode.stockyardName,
             };
             payload = { ...payload, ...newPayload };
-          } else {
+          }
+          if (jsonObj.hrmsRole !== "Admin") {
             const branchName = jsonObj.branchs.filter(
               (item) =>
                 item.locationId.toString() ===
