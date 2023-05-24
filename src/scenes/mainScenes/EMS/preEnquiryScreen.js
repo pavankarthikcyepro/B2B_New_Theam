@@ -10,7 +10,7 @@ import CREATE_NEW from '../../../assets/images/create_new.svg';
 
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
-import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData, getPreEnquiryDataLiveReceptionist, getPreEnquiryDataLiveReceptionistManager } from '../../../redux/preEnquiryReducer';
+import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData, getPreEnquiryDataLiveReceptionist, getPreEnquiryDataLiveReceptionistManager, getReceptionistContactVol2 } from '../../../redux/preEnquiryReducer';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
@@ -163,7 +163,10 @@ const PreEnquiryScreen = ({ route, navigation }) => {
         }
         // setEmployeeId(jsonObj.empId);
         // onTempFliter(jsonObj.empId, lastMonthFirstDate, currentDate, [], [], [], leadStage, leadStatus);
-       
+        if (route?.params?.screenName === "TargetScreenCRMVol2") {
+          getReceptionistRedirectionsContacts()
+          return;
+        }
         getPreEnquiryListFromServer(
           employeeId,
           lastMonthFirstDateLocal,
@@ -201,7 +204,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
       if (route?.params?.screenName === "ParametersScreen"){
         getLiveleadsContacts()
       }
-          
+     
           // });
 
         // return () => {
@@ -261,7 +264,14 @@ const PreEnquiryScreen = ({ route, navigation }) => {
     };
   }, [])
 
-    
+  const getReceptionistRedirectionsContacts = ()=>{
+    let payload = {
+      "offset": 0,
+      "limit": 50000,
+      "leadIds": route.params.dealerCodes // sending lead ids in this 
+    }
+    dispatch(getReceptionistContactVol2(payload))
+  }
 
     const getPreEnquiryListFromDB = () => {
         const data = realm.objects('PRE_ENQUIRY_TABLE');

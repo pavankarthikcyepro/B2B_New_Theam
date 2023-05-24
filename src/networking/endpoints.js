@@ -181,6 +181,9 @@ const URL = {
     return deleteModelCard + `/delete_leadProduct?id=${value}`;
   },
   LEADS_LIST_API_FILTER: () => sales_url + "/lead/allByDate",
+
+  CONTACT_RECEP_ETC: () => sales_url + "/lead/allByDateReception",
+  
   MENULIST_API: (userName) => {
     return roleManagement_url + "/user/" + userName;
   },

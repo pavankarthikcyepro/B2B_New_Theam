@@ -62,6 +62,7 @@ import {
   updateLeaderShipFilter,
   updateLoader,
   getReceptionistDataV2,
+  getCRMDataV2,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -319,9 +320,21 @@ const HomeScreen = ({ route, navigation }) => {
       let payload = {
         orgId: userData.orgId,
         loggedInEmpId: userData.empId,
+        startDate: selector.receptionistFilterIds.startDate,
+        endDate: selector.receptionistFilterIds.endDate,
+        dealerCodes: selector.receptionistFilterIds.dealerCodes,
       };
-      // dispatch(getReceptionistManagerData(payload));
-      dispatch(getCRM_ReceptionistManagerData(payload));
+      dispatch(getCRMDataV2(payload));
+
+
+
+      // vol 1 working code
+      // let payload = {
+      //   orgId: userData.orgId,
+      //   loggedInEmpId: userData.empId,
+      // };
+      // // dispatch(getReceptionistManagerData(payload));
+      // dispatch(getCRM_ReceptionistManagerData(payload));
     }
   }, [userData, selector.receptionistFilterIds]);
 
@@ -1332,6 +1345,29 @@ const HomeScreen = ({ route, navigation }) => {
       },
     });
   }
+
+  function navigateToContactsVol2(leadidList) {
+    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+      screen: "EMS",
+      params: {
+        screen: "PRE_ENQUIRY",
+        params: {
+          screenName: "TargetScreenCRMVol2",
+          params: "",
+          moduleType: "",
+          employeeDetail: "",
+          selectedEmpId: "",
+          startDate: "",
+          endDate: "",
+          dealerCodes: leadidList, // sending lead ids in this 
+          ignoreSelectedId: "",
+          parentId: "",
+        },
+      },
+    });
+  }
+
+
   function navigateToEmsVol2(leadidList) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
       screen: "EMS",
@@ -1623,7 +1659,8 @@ const HomeScreen = ({ route, navigation }) => {
                 <TouchableOpacity
                   onPress={() => {
                     selector.receptionistDataV3.contactsCount > 0 &&
-                      navigateToContact("Contact");
+                      navigateToContactsVol2(selector.receptionistDataV3?.fullResponse?.totalContactLeads)
+                      // navigateToContact("Contact");
                   }}
                   style={styles.view8}
                 >

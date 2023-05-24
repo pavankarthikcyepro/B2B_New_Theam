@@ -739,6 +739,18 @@ export const getReceptionistDataV2 = createAsyncThunk(
     return json;
   }
 );
+// crm new vol2 api 
+export const getCRMDataV2 = createAsyncThunk(
+  "HOME/getCRMDataV2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_DASHBOARDV2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 export const getReceptionistData = createAsyncThunk(
   "HOME/getReceptionistData",
@@ -1123,6 +1135,17 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
+    receptionistDataV3CRM: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
     receptionistDataDigitalFilter: {
       RetailCount: 0,
       bookingsCount: 0,
@@ -1395,6 +1418,17 @@ export const homeSlice = createSlice({
         fullResponse: {}
       };
       state.receptionistDataV3 = {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {}
+      };
+      state.receptionistDataV3CRM = {
         RetailCount: 0,
         bookingsCount: 0,
         consultantList: [],
@@ -2021,6 +2055,24 @@ export const homeSlice = createSlice({
         }
       })
       .addCase(getReceptionistDataV2.rejected, (state, action) => { })
+
+      .addCase(getCRMDataV2.pending, (state) => { })
+      .addCase(getCRMDataV2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.receptionistDataV3CRM = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.consultantList,
+          totalAllocatedCount: dataObj.totalAllocatedCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalContactCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        }
+      })
+      .addCase(getCRMDataV2.rejected, (state, action) => { })
+
       .addCase(getReceptionistDataForRecepDashboard.pending, (state) => { state.isLoading = true; })
       .addCase(getReceptionistDataForRecepDashboard.fulfilled, (state, action) => {
         const dataObj = action.payload;

@@ -46,6 +46,17 @@ export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnq
   return json;
 })
 
+// for receptionist,cre,telecaller vol2
+export const getReceptionistContactVol2 = createAsyncThunk('PRE_ENQUIRY/getReceptionistContactVol2', async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.CONTACT_RECEP_ETC(), payload);
+  const json = await response.json()
+
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
 
 export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
@@ -160,6 +171,35 @@ export const preEnquirySlice = createSlice({
       state.isLoading = false;
     })
     builder.addCase(getPreEnquiryDataLiveReceptionistManager.rejected, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      state.isLoading = false;
+    })
+
+
+
+    builder.addCase(getReceptionistContactVol2.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getReceptionistContactVol2.fulfilled, (state, action) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
+        state.pre_enquiry_list_TotalElements = action.payload;
+        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content.length > 0 ? dmsEntityObj.leadDtoPage.content : [];
+
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(getReceptionistContactVol2.rejected, (state) => {
       state.totalPages = 1
       state.pageNumber = 0
       state.pre_enquiry_list = [];
