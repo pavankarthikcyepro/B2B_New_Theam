@@ -283,24 +283,19 @@ export const checkLocationPermission = async () => {
       PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION
     );
     if (granted) {
-      console.log("Location permission is granted");
       const settingsGranted = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
         null,
         "always"
       );
-      console.log("settingsGranted", settingsGranted);
       if (settingsGranted) {
-        console.log('Location option is set to "Always"');
         // Handle the case where "Always" is selected
       } else {
-        console.log('Location option is set to "Allow While Using App"');
         // Handle the case where "Allow While Using App" is selected
       }
 
       // Do something with the location permission
     } else {
-      console.log("Location permission not granted");
       Alert.alert(
         "Location Permission Required",
         'Permissions -> Location ->  Please enable "Allow all the time" for location in your device settings.',
@@ -336,10 +331,8 @@ export const requestNotificationPermission = async () => {
       PermissionsAndroid.PERMISSIONS.NOTIFICATIONS
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log("Notification permission granted");
       // Handle notification logic here
     } else {
-      console.log("Notification permission denied");
       // Handle permission denied case
     }
   } catch (error) {

@@ -1,14 +1,9 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
-  Text,
-  Keyboard,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
-  Platform,
-  Image,
 } from "react-native";
 import { useDispatch } from "react-redux";
 
