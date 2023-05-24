@@ -112,15 +112,28 @@ const ListComponent = ({ route, navigation }) => {
     });
     if (isFocused) {
       if (route.params) {
-        if (route.params?.from) {
-          dispatch(updateCurrentScreen(route.params.from));
-        }
-        if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
+        if (
+          route &&
+          route.name == "NEW_PENDING" &&
+          route.params &&
+          route.params.from == "PENDING" &&
+          route.params.isFrom == "notification" &&
+          route.params.isManager
+        ) {
           setIndex(1);
           changeTab(1);
+        } else {
+          if (homeSelector.isTeamPresent && !homeSelector.isDSE) {
+            setIndex(1);
+            changeTab(1);
+          }
+          if (!route.params.isTeam) {
+            setIndex(0);
+          }
         }
-        if (!route.params.isTeam) {
-          setIndex(0);
+        
+        if (route.params?.from) {
+          dispatch(updateCurrentScreen(route.params.from));
         }
         initialTask(
           notificationSelector.myTaskAllFilter
@@ -212,7 +225,6 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal, fromClick) => {
-    console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -332,8 +344,6 @@ const ListComponent = ({ route, navigation }) => {
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                console.log("todaysData", filteredData);
-
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
@@ -345,7 +355,6 @@ const ListComponent = ({ route, navigation }) => {
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
-                      console.log("sss");
                       setMyTeamsData(tempData);
                     }
                   }
