@@ -19,7 +19,7 @@ export const EVENT_DASHBOARD = "EVENT_DASHBOARD";
 export const MY_STOCK = "MY_STOCK";
 export const REPORT_DOWNLOAD = "REPORT_DOWNLOAD";
 export const COMPLAINT_TRACKER = "REPORT_DOWNLOAD";
-
+export const KNOWLEDGE_CENTER = "KNOWLEDGE_CENTER";
 
 const data = [
   {
@@ -166,6 +166,12 @@ const data = [
     pngIcon: require("../assets/images/review.png"),
   },
   {
+    title: "Knowledge Center",
+    icon: KNOWLEDGE_CENTER,
+    screen: 124,
+    pngIcon: require("../assets/images/knowledge.png"),
+  },
+  {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
@@ -251,6 +257,12 @@ const dataForManager = [
     icon: COMPLAINT_TRACKER,
     screen: 123,
     // pngIcon: require("../assets/images/review.png"),
+  },
+  {
+    title: "Knowledge Center",
+    icon: KNOWLEDGE_CENTER,
+    screen: 124,
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
 ];

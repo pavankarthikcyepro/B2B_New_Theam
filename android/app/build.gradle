@@ -254,6 +254,7 @@ dependencies {
     implementation(project(':react-native-maps')){
       exclude group: 'com.google.android.gms'
     }
+    implementation project(':react-native-share')
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.android.gms:play-services-location:19.0.1'

@@ -75,7 +75,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           )[0].branchName;
 
           let newPayload = {
-            branchName: branchName,
+            locationName: route?.params?.headerTitle,
           };
           payload = { ...payload, ...newPayload };
         }
@@ -96,7 +96,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
           };
           if (jsonObj.hrmsRole === "Admin") {
             let newPayload = {
-              stockyardBranchName: selector.dealerCode.stockyardName,
+              stockyardlocationName: selector.location.name,
             };
             payload = { ...payload, ...newPayload };
           } else {
@@ -106,7 +106,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
                 selector.dealerCode.refParentId.toString()
             )[0].branchName;
             let newPayload = {
-              branchName: branchName,
+              locationName: route?.params?.headerTitle,
             };
             payload = { ...payload, ...newPayload };
           }
@@ -119,7 +119,7 @@ const OverviewDetailScreen = ({ route, navigation }) => {
             payload = { ...payload, ...newPayload };
           } else {
             let newPayload = {
-              locationName: location,
+              locationName: route?.params?.headerTitle,
             };
             payload = { ...payload, ...newPayload };
           }

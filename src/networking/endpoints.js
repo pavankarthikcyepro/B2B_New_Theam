@@ -1076,6 +1076,9 @@ const URL = {
   ADDRESS_NAME: (lat, long) => {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
   },
+  KNOWLEGDE_CENTER: (orgId) => {
+    return vehicleInfoService_url + `/api/vehicle_details/?organizationId=${orgId}`;
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
