@@ -1,13 +1,21 @@
 import Geolocation from "@react-native-community/geolocation";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { Platform } from "react-native";
+import {
+  Alert,
+  BackHandler,
+  Linking,
+  PermissionsAndroid,
+  Platform,
+} from "react-native";
 import BackgroundService from "react-native-background-actions";
 import PushNotification from "react-native-push-notification";
+import IntentLauncher, { IntentConstant } from "react-native-intent-launcher";
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 import URL from "../networking/endpoints";
 import { client } from "../networking/client";
 import { monthNamesCap } from "../scenes/mainScenes/Attendance/AttendanceTop";
+import DeviceInfo from "react-native-device-info";
 
 export const GoogleMapKey = "AIzaSyD1p1YFpi2w3yBrYl1aUpudMqe9IzMQt2Y";
 var startDate = createDateTime("8:30");
@@ -15,8 +23,8 @@ var endDate = createDateTime("12:00");
 var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
-export const distanceFilterValue = 25;
-export const GlobalSpeed = 1.25; // 10 km/hr in m/s
+export const distanceFilterValue = 50; // Meters
+export const GlobalSpeed = 10 / 3.6; // 10 km/hr in m/s     ||  1 m/s = 3.6 kilometer per hour
 
 export const officeRadius = 0.1;
 export const sleep = (time) =>
@@ -266,5 +274,69 @@ export const sendAlertLocalNotification = (alert) => {
         });
       }
     );
+  }
+};
+
+export const checkLocationPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION
+    );
+    if (granted) {
+      const settingsGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+        null,
+        "always"
+      );
+      if (settingsGranted) {
+        // Handle the case where "Always" is selected
+      } else {
+        // Handle the case where "Allow While Using App" is selected
+      }
+
+      // Do something with the location permission
+    } else {
+      Alert.alert(
+        "Location Permission Required",
+        'Permissions -> Location ->  Please enable "Allow all the time" for location in your device settings.',
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => {
+              BackHandler.exitApp();
+            },
+          },
+          {
+            text: "Open Settings",
+            onPress: () => {
+              // Linking.openSettings();
+              IntentLauncher.startActivity({
+                action: "android.settings.APPLICATION_DETAILS_SETTINGS",
+                data: "package:" + DeviceInfo.getBundleId(),
+              });
+            },
+          },
+        ]
+      );
+    }
+  } catch (error) {
+    console.error("Error checking or requesting location permission:", error);
+  }
+};
+
+export const requestNotificationPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.NOTIFICATIONS
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      // Handle notification logic here
+    } else {
+      // Handle permission denied case
+    }
+  } catch (error) {
+    console.log("Error while requesting notification permission:", error);
+    // Handle error case
   }
 };
