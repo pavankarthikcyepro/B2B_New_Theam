@@ -1667,7 +1667,11 @@ const HomeScreen = ({ route, navigation }) => {
               <View style={styles.view7}>
                 <TouchableOpacity
                   onPress={() => {
-                    selector.receptionistDataV3.contactsCount > 0 &&
+                    userData.hrmsRole == "CRM" ?
+                      selector.receptionistDataV3CRM.contactsCount > 0 &&
+                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalContactLeads) :
+
+                      selector.receptionistDataV3.contactsCount > 0 &&
                       navigateToContactsVol2(selector.receptionistDataV3?.fullResponse?.totalContactLeads)
                       // navigateToContact("Contact");
                   }}
@@ -1677,23 +1681,39 @@ const HomeScreen = ({ route, navigation }) => {
                     {"Contact"}
                   </Text>
                   <View style={styles.cardView}>
-                    <Text
-                      style={{
-                        ...styles.rankText,
-                        color: Colors.RED,
-                        textDecorationLine: selector.receptionistDataV3
-                          ?.contactsCount
-                          ? "underline"
-                          : "none",
-                      }}
-                    >
-                      {selector.receptionistDataV3?.contactsCount || 0}
-                    </Text>
+                    {userData.hrmsRole == "CRM" ?
+                      <Text
+                        style={{
+                          ...styles.rankText,
+                          color: Colors.RED,
+                          textDecorationLine: selector.receptionistDataV3CRM
+                            ?.contactsCount
+                            ? "underline"
+                            : "none",
+                        }}
+                      >
+                        {selector.receptionistDataV3CRM?.contactsCount || 0}
+                      </Text> : <Text
+                        style={{
+                          ...styles.rankText,
+                          color: Colors.RED,
+                          textDecorationLine: selector.receptionistDataV3
+                            ?.contactsCount
+                            ? "underline"
+                            : "none",
+                        }}
+                      >
+                        {selector.receptionistDataV3?.contactsCount || 0}
+                      </Text>}
+                    
                   </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => {
+                    userData.hrmsRole == "CRM" ?
+                      selector.receptionistDataV3CRM.enquirysCount > 0 &&
+                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalEnquiryLeads) :
                     selector.receptionistDataV3.enquirysCount > 0 &&
                       navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalEnquiryLeads)
                       // navigateToEMS("ENQUIRY", "", [userData.empId]);
@@ -1704,6 +1724,19 @@ const HomeScreen = ({ route, navigation }) => {
                     {"Enquiry"}
                   </Text>
                   <View style={styles.cardView}>
+                    {userData.hrmsRole == "CRM" ?
+                      <Text
+                        style={{
+                          ...styles.rankText,
+                          color: Colors.RED,
+                          textDecorationLine: selector.receptionistDataV3CRM
+                            ?.enquirysCount
+                            ? "underline"
+                            : "none",
+                        }}
+                      >
+                        {selector.receptionistDataV3CRM?.enquirysCount || 0}
+                      </Text> :
                     <Text
                       style={{
                         ...styles.rankText,
@@ -1715,11 +1748,14 @@ const HomeScreen = ({ route, navigation }) => {
                       }}
                     >
                       {selector.receptionistDataV3?.enquirysCount || 0}
-                    </Text>
+                    </Text>}
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
+                    userData.hrmsRole == "CRM" ?
+                      selector.receptionistDataV3CRM.bookingsCount > 0 &&
+                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalBookingLeads) :
                     selector.receptionistDataV3.bookingsCount > 0 &&
                       navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalBookingLeads)
                       // navigateToEMS("BOOKING", "", [userData.empId]);
@@ -1728,6 +1764,19 @@ const HomeScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.rankHeadingText}>{"Booking"}</Text>
                   <View style={styles.cardView}>
+                    {userData.hrmsRole == "CRM" ?
+                      <Text
+                        style={{
+                          ...styles.rankText,
+                          color: Colors.RED,
+                          textDecorationLine: selector.receptionistDataV3CRM
+                            ?.bookingsCount
+                            ? "underline"
+                            : "none",
+                        }}
+                      >
+                        {selector.receptionistDataV3CRM?.bookingsCount || 0}
+                      </Text> :
                     <Text
                       style={{
                         ...styles.rankText,
@@ -1739,11 +1788,14 @@ const HomeScreen = ({ route, navigation }) => {
                       }}
                     >
                       {selector.receptionistDataV3?.bookingsCount || 0}
-                    </Text>
+                    </Text>}
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
+                    userData.hrmsRole == "CRM" ?
+                      selector.receptionistDataV3CRM.RetailCount > 0 &&
+                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalRetailLeads) :
                     selector.receptionistDataV3.RetailCount > 0 &&
                       navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalRetailLeads)
                       // navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
@@ -1752,6 +1804,19 @@ const HomeScreen = ({ route, navigation }) => {
                 >
                   <Text style={styles.rankHeadingText}>{"Retail"}</Text>
                   <View style={styles.cardView}>
+                    {userData.hrmsRole == "CRM" ?
+                      <Text
+                        style={{
+                          ...styles.rankText,
+                          color: Colors.RED,
+                          textDecorationLine: selector.receptionistDataV3CRM
+                            ?.RetailCount
+                            ? "underline"
+                            : "none",
+                        }}
+                      >
+                        {selector.receptionistDataV3CRM?.RetailCount || 0}
+                      </Text> :
                     <Text
                       style={{
                         ...styles.rankText,
@@ -1763,7 +1828,7 @@ const HomeScreen = ({ route, navigation }) => {
                       }}
                     >
                       {selector.receptionistDataV3?.RetailCount || 0}
-                    </Text>
+                    </Text>}
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -1780,6 +1845,19 @@ const HomeScreen = ({ route, navigation }) => {
                     {"Drop"}
                   </Text>
                   <View style={styles.cardView}>
+                    {userData.hrmsRole == "CRM" ?
+                      <Text
+                        style={{
+                          ...styles.rankText,
+                          color: Colors.RED,
+                          textDecorationLine: selector.receptionistDataV3CRM
+                            ?.totalDroppedCount
+                            ? "underline"
+                            : "none",
+                        }}
+                      >
+                        {selector.receptionistDataV3CRM?.totalDroppedCount || 0}
+                      </Text> :
                     <Text
                       style={{
                         ...styles.rankText,
@@ -1791,7 +1869,7 @@ const HomeScreen = ({ route, navigation }) => {
                       }}
                     >
                       {selector.receptionistDataV3?.totalDroppedCount || 0}
-                    </Text>
+                    </Text>}
                   </View>
                 </TouchableOpacity>
               </View>
