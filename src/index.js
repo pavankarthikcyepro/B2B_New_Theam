@@ -326,7 +326,9 @@ const AppScreen = () => {
           detail: "fine",
         },
       }).then((granted) => {
-        checkLocationPermission();
+        if (Platform.OS === "android") {
+          checkLocationPermission();
+        }
         if (granted) {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {

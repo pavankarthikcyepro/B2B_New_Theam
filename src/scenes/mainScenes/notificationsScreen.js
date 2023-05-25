@@ -31,7 +31,7 @@ import {
   ACCESSORIES,
   LEAD_ALLOCATION,
 } from "../../assets/icon";
-import { getNotificationList, notificationReadClearState, readNotification, setNotificationMyTaskAllFilter } from "../../redux/notificationReducer";
+import { getNotificationList, notificationReadClearState, readNotification, setNotificationManager, setNotificationMyTaskAllFilter } from "../../redux/notificationReducer";
 import AnimLoaderComp from "../../components/AnimLoaderComp";
 
 const NotificationScreen = ({ navigation }) => {
@@ -81,15 +81,11 @@ const NotificationScreen = ({ navigation }) => {
       }
       navigation.navigate(screenName);
       if (screenName != "Target Settings") {
-        let isManager = false;
         if (userData?.hrmsRole.toLowerCase().includes("manager")) {
-          isManager = true;
+          dispatch(setNotificationManager(true));
         }
         setTimeout(() => {
-          navigation.navigate("NEW_PENDING", {
-            isFrom: "notification",
-            isManager: isManager,
-          });
+          navigation.navigate("NEW_PENDING");
         }, 750);
       }
     }
