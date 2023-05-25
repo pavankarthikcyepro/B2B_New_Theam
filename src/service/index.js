@@ -24,7 +24,7 @@ var now = new Date();
 var isBetween = startDate <= now && now <= endDate;
 
 export const distanceFilterValue = 50; // Meters
-export const GlobalSpeed = 10 / 3.6; // 10 km/hr in m/s     ||  1 m/s = 3.6 kilometer per hour
+export const GlobalSpeed = 3 / 3.6; // 10 km/hr in m/s     ||  1 m/s = 3.6 kilometer per hour
 
 export const officeRadius = 0.1;
 export const sleep = (time) =>

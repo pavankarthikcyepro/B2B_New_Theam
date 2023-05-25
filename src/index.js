@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthStackNavigator } from "./navigations/authNavigator";
-import {
-  MainStackNavigator,
-} from "./navigations/appNavigator";
+import { MainStackNavigator } from "./navigations/appNavigator";
 import { Provider } from "react-redux";
 import reduxStore from "./redux/reduxStore";
 import * as AsyncStore from "./asyncStore";
@@ -15,14 +13,9 @@ import {
   GlobalSpeed,
 } from "./service";
 import { client } from "./networking/client";
-import URL, {
-  locationUpdate,
-  saveLocation,
-} from "./networking/endpoints";
+import URL, { locationUpdate, saveLocation } from "./networking/endpoints";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import {
-  Platform,
-} from "react-native";
+import { Platform } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
@@ -234,7 +227,14 @@ const AppScreen = () => {
             JSON.parse(hasObjectWithCurrentDate.location)
           );
           const finalArray = tempArray.concat([{ longitude, latitude }]);
-          if (true) {
+          const distanceCheck = tempArray[tempArray.length - 1];
+          let distance = getDistanceBetweenTwoPointsLatLong(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            latitude,
+            longitude
+          );
+          if (distance >= distanceFilterValue) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
               orgId: jsonObj?.orgId,
@@ -321,15 +321,18 @@ const AppScreen = () => {
         }
       }
       RNLocation.requestPermission({
-        ios: "whenInUse",
+        ios: "always",
         android: {
           detail: "fine",
         },
       }).then((granted) => {
-        checkLocationPermission();
+        if (Platform.OS === "android") {
+          checkLocationPermission();
+        }
         if (granted) {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {
+              console.log("locations", locations[0]);
               if (locations[0].speed >= GlobalSpeed) {
                 checkTheDate(employeeData, locations[0]);
               }
@@ -347,6 +350,13 @@ const AppScreen = () => {
       };
     }
   }, [state.userToken]);
+
+  useEffect(() => {
+    return () => {
+      locationSubscription && locationSubscription();
+      BackgroundServices.stop();
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={authContext}>

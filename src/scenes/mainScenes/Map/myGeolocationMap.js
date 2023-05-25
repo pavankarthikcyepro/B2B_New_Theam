@@ -342,29 +342,30 @@ const GeolocationMapScreen = ({ route }) => {
               strokeColors={[Colors.PINK]}
               strokeWidth={4}
             />
-            {coordinates.map((marker, index) => (
-              <Marker.Animated
-                key={`marker-${index}`}
-                coordinate={marker}
-                tracksViewChanges={false}
-                // icon={require("../../../assets/images/cyepro-tick.svg")}
-                style={{
-                  height: 15,
-                  width: 15,
-                  // padding:5,
-                  // flex:1
-                }}
-                // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
-                image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
-                // title={marker}
-                // description={}
-              >
-                {/* <View
+            {coordinates.map((marker, index) =>
+              index === 0 || coordinates.length -1 === index ? (
+                <Marker.Animated
+                  key={`marker-${index}`}
+                  coordinate={marker}
+                  tracksViewChanges={false}
+                  // icon={require("../../../assets/images/cyepro-tick.svg")}
+                  style={{
+                    height: 15,
+                    width: 15,
+                    // padding:5,
+                    // flex:1
+                  }}
+                  // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
+                  image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
+                  // title={marker}
+                  // description={}
+                >
+                  {/* <View
                   style={{ width: 33, height: Platform.OS === "ios" ? 59 : 37 }}
                 >
                   {IconMarker()}
                 </View> */}
-                {/* <Svg width={40} height={30}>
+                  {/* <Svg width={40} height={30}>
                   <Image
                     source={require("../../../assets/images/cyepro-tick.svg")}
                     // style={{
@@ -374,8 +375,9 @@ const GeolocationMapScreen = ({ route }) => {
                     resizeMode="contain"
                   />
                 </Svg> */}
-              </Marker.Animated>
-            ))}
+                </Marker.Animated>
+              ) : null
+            )}
           </MapView>
         )}
       </View>
