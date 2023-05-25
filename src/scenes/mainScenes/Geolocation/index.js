@@ -70,7 +70,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
               customStyles: {
                 container: {
                   backgroundColor:
-                    element.isPresent === 1 ? Colors.GREEN : "#ff5d68",
+                    element.isPresent === 1 ? Colors.RED : Colors.GRAY,
                 },
                 text: {
                   color: Colors.WHITE,
