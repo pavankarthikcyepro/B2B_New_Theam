@@ -430,6 +430,17 @@ export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS/getManagerLi
     return json;
 })
 
+// CRM live leads tree
+export const getCRM_ManagerLiveLeadsVol2 = createAsyncThunk("LIVE_LEADS/getManagerLiveLeads", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_MANAGERDATA_VOL2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+
 export const getCRMEmployeesDropDownData = createAsyncThunk(
     "HOME/getCRMEmployeesDropDownData",
     async (payload: any, { rejectWithValue }) => {

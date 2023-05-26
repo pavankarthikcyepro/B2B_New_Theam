@@ -61,1138 +61,7 @@ const color = [
   "#ec3466",
 ];
 
-const datav2 = {
-  self: {
-    level1: [
-      {
-        empId: 940,
-        empName: "Raghiv Sanghvi",
-        email: "raghivsanghvi@mps-fca.com",
-        mobile: "7997988101",
-        cognitoUserName: "raghivsanghvi",
-        orgId: 18,
-        branchId: 286,
-        managerId: 940,
-        roleName: "MD",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 0,
-          enquiryLeads: [],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-        total: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-      },
-    ],
-    selfUser: {
-      empId: 962,
-      empName: "Pallavi Sanjay",
-      email: "crmsales.blr@mps-fca.com",
-      mobile: "9066584290",
-      cognitoUserName: "pallavisanjay",
-      orgId: 18,
-      branchId: 286,
-      managerId: 941,
-      roleName: "CRM",
-      branchName: "JP Nagar - IC0700043",
-      isOpenInner: false,
-      innerData: [],
-      self: {
-        enquiryCount: 0,
-        enquiryLeads: [],
-        bookingCount: 0,
-        bookingLeads: [],
-        retailCount: 0,
-        retailLeads: [],
-        lostCount: 1,
-        lostLeads: [58399],
-      },
-      total: {
-        enquiryCount: 12,
-        enquiryLeads: [
-          58930, 55819, 14641, 15485, 58390, 15491, 17282, 15464, 15378,
-          15358, 58881, 56376,
-        ],
-        bookingCount: 5,
-        bookingLeads: [55819, 15464, 15358, 58881, 56376],
-        retailCount: 3,
-        retailLeads: [55819, 15464, 15358],
-        lostCount: 10,
-        lostLeads: [
-          58399, 55829, 14641, 15485, 15491, 15378, 15358, 56527, 58881,
-          56509,
-        ],
-      },
-    },
-    droppedCount: 5,
-    droppedLeads: [58901, 56247, 58392, 56373, 56374],
-    contactCount: 17,
-    contactLeads: [
-      58399, 58798, 58930, 14641, 15358, 15378, 15464, 15485, 15491, 17282,
-      55819, 55829, 58389, 58390, 56376, 56527, 58881,
-    ],
-    allTreeData: [
-      {
-        empId: 940,
-        empName: "Raghiv Sanghvi",
-        email: "raghivsanghvi@mps-fca.com",
-        mobile: "7997988101",
-        cognitoUserName: "raghivsanghvi",
-        orgId: 18,
-        branchId: 286,
-        managerId: 940,
-        roleName: "MD",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 0,
-          enquiryLeads: [],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-        total: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-      },
-      {
-        empId: 941,
-        empName: "Chandrashekar S",
-        email: "c.shekar@mps-fca.com",
-        mobile: "7997988799",
-        cognitoUserName: "chandrashekars",
-        orgId: 18,
-        branchId: 286,
-        managerId: 940,
-        roleName: "MD",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 0,
-          enquiryLeads: [],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-        total: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-      },
-      {
-        empId: 942,
-        empName: "Suresh Kumar S",
-        email: "suresh.kumar@mps-fca.com",
-        mobile: "8105916936",
-        cognitoUserName: "sureshkumars",
-        orgId: 18,
-        branchId: 286,
-        managerId: 941,
-        roleName: "branch manager",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 0,
-          enquiryLeads: [],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-        total: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-      },
-      {
-        empId: 946,
-        empName: "Gladstone Gideon",
-        email: "gladstone.g@mps-fca.com",
-        mobile: "9886600206",
-        cognitoUserName: "gladstonegideon",
-        orgId: 18,
-        branchId: 286,
-        managerId: 942,
-        roleName: "Sales Manager",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 0,
-          enquiryLeads: [],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-        total: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-      },
-      {
-        empId: 915,
-        empName: "Chetan",
-        email: "chetan.m@mps-fca.com",
-        mobile: "9902551744",
-        cognitoUserName: "chetan",
-        orgId: 18,
-        branchId: 286,
-        managerId: 946,
-        roleName: "Field DSE",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-        total: {
-          enquiryCount: 1,
-          enquiryLeads: [58930],
-          bookingCount: 0,
-          bookingLeads: [],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 0,
-          lostLeads: [],
-        },
-      },
-    ],
-    treeLevelCount: 5,
-  },
-  reportingUser: [
-    {
-      level1: [
-        {
-          empId: 940,
-          empName: "Raghiv Sanghvi",
-          email: "raghivsanghvi@mps-fca.com",
-          mobile: "7997988101",
-          cognitoUserName: "raghivsanghvi",
-          orgId: 18,
-          branchId: 286,
-          managerId: 940,
-          roleName: "MD",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 8,
-            enquiryLeads: [
-              14641, 15485, 58390, 15491, 17282, 15464, 15378, 15358,
-            ],
-            bookingCount: 2,
-            bookingLeads: [15464, 15358],
-            retailCount: 2,
-            retailLeads: [15464, 15358],
-            lostCount: 5,
-            lostLeads: [14641, 15485, 15491, 15378, 15358],
-          },
-        },
-      ],
-      selfUser: {
-        empId: 954,
-        empName: "jyotilaxmi",
-        email: "salescre2.blr@mps-fca.com",
-        mobile: "9844310725",
-        cognitoUserName: "jyotilaxmi",
-        orgId: 18,
-        branchId: 286,
-        managerId: 962,
-        roleName: "Tele Caller",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 1,
-          enquiryLeads: [55819],
-          bookingCount: 1,
-          bookingLeads: [55819],
-          retailCount: 1,
-          retailLeads: [55819],
-          lostCount: 1,
-          lostLeads: [55829],
-        },
-        total: {
-          enquiryCount: 9,
-          enquiryLeads: [
-            55819, 14641, 15485, 58390, 15491, 17282, 15464, 15378, 15358,
-          ],
-          bookingCount: 3,
-          bookingLeads: [55819, 15464, 15358],
-          retailCount: 3,
-          retailLeads: [55819, 15464, 15358],
-          lostCount: 6,
-          lostLeads: [55829, 14641, 15485, 15491, 15378, 15358],
-        },
-      },
-      droppedCount: 2,
-      droppedLeads: [56247, 58392],
-      contactCount: 11,
-      contactLeads: [
-        14641, 15358, 15378, 15464, 15485, 15491, 17282, 55819, 55829, 58389,
-        58390,
-      ],
-      allTreeData: [
-        {
-          empId: 940,
-          empName: "Raghiv Sanghvi",
-          email: "raghivsanghvi@mps-fca.com",
-          mobile: "7997988101",
-          cognitoUserName: "raghivsanghvi",
-          orgId: 18,
-          branchId: 286,
-          managerId: 940,
-          roleName: "MD",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 8,
-            enquiryLeads: [
-              14641, 15485, 58390, 15491, 17282, 15464, 15378, 15358,
-            ],
-            bookingCount: 2,
-            bookingLeads: [15464, 15358],
-            retailCount: 2,
-            retailLeads: [15464, 15358],
-            lostCount: 5,
-            lostLeads: [14641, 15485, 15491, 15378, 15358],
-          },
-        },
-        {
-          empId: 941,
-          empName: "Chandrashekar S",
-          email: "c.shekar@mps-fca.com",
-          mobile: "7997988799",
-          cognitoUserName: "chandrashekars",
-          orgId: 18,
-          branchId: 286,
-          managerId: 940,
-          roleName: "MD",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 8,
-            enquiryLeads: [
-              14641, 15485, 58390, 15491, 17282, 15464, 15378, 15358,
-            ],
-            bookingCount: 2,
-            bookingLeads: [15464, 15358],
-            retailCount: 2,
-            retailLeads: [15464, 15358],
-            lostCount: 5,
-            lostLeads: [14641, 15485, 15491, 15378, 15358],
-          },
-        },
-        {
-          empId: 942,
-          empName: "Suresh Kumar S",
-          email: "suresh.kumar@mps-fca.com",
-          mobile: "8105916936",
-          cognitoUserName: "sureshkumars",
-          orgId: 18,
-          branchId: 286,
-          managerId: 941,
-          roleName: "branch manager",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 6,
-            enquiryLeads: [14641, 15485, 58390, 15491, 17282, 15464],
-            bookingCount: 1,
-            bookingLeads: [15464],
-            retailCount: 1,
-            retailLeads: [15464],
-            lostCount: 3,
-            lostLeads: [14641, 15485, 15491],
-          },
-        },
-        {
-          empId: 943,
-          empName: "Mohammed Ameen",
-          email: "mohammed.ameen@mps-fca.com",
-          mobile: "9886197214",
-          cognitoUserName: "mohammedameen",
-          orgId: 18,
-          branchId: 287,
-          managerId: 941,
-          roleName: "branch manager",
-          branchName: "HSR Layout - IC0713847",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 2,
-            enquiryLeads: [15378, 15358],
-            bookingCount: 1,
-            bookingLeads: [15358],
-            retailCount: 1,
-            retailLeads: [15358],
-            lostCount: 2,
-            lostLeads: [15378, 15358],
-          },
-        },
-        {
-          empId: 946,
-          empName: "Gladstone Gideon",
-          email: "gladstone.g@mps-fca.com",
-          mobile: "9886600206",
-          cognitoUserName: "gladstonegideon",
-          orgId: 18,
-          branchId: 286,
-          managerId: 942,
-          roleName: "Sales Manager",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 5,
-            enquiryLeads: [14641, 15485, 58390, 15491, 17282],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 3,
-            lostLeads: [14641, 15485, 15491],
-          },
-        },
-        {
-          empId: 947,
-          empName: "Siddharth Shetty",
-          email: "siddharth.shetty@mps-fca.com",
-          mobile: "6363226078",
-          cognitoUserName: "siddharthshetty",
-          orgId: 18,
-          branchId: 286,
-          managerId: 942,
-          roleName: "Sales Manager",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [15464],
-            bookingCount: 1,
-            bookingLeads: [15464],
-            retailCount: 1,
-            retailLeads: [15464],
-            lostCount: 0,
-            lostLeads: [],
-          },
-        },
-        {
-          empId: 948,
-          empName: "Bebin RSB Baskaran",
-          email: "bebin.b@mps-fca.com",
-          mobile: "8151029652",
-          cognitoUserName: "bebinrsbbaskaran",
-          orgId: 18,
-          branchId: 287,
-          managerId: 943,
-          roleName: "Sales Manager",
-          branchName: "HSR Layout - IC0713847",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [15378],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [15378],
-          },
-        },
-        {
-          empId: 950,
-          empName: "IrfanI",
-          email: "irfan.i@mps-fca.com",
-          mobile: "7680828220",
-          cognitoUserName: "irfani",
-          orgId: 18,
-          branchId: 287,
-          managerId: 943,
-          roleName: "Sales Manager",
-          branchName: "HSR Layout - IC0713847",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [15358],
-            bookingCount: 1,
-            bookingLeads: [15358],
-            retailCount: 1,
-            retailLeads: [15358],
-            lostCount: 1,
-            lostLeads: [15358],
-          },
-        },
-        {
-          empId: 915,
-          empName: "Chetan",
-          email: "chetan.m@mps-fca.com",
-          mobile: "9902551744",
-          cognitoUserName: "chetan",
-          orgId: 18,
-          branchId: 286,
-          managerId: 946,
-          roleName: "Field DSE",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 3,
-            enquiryLeads: [14641, 15485, 58390],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 2,
-            lostLeads: [14641, 15485],
-          },
-          total: {
-            enquiryCount: 3,
-            enquiryLeads: [14641, 15485, 58390],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 2,
-            lostLeads: [14641, 15485],
-          },
-        },
-        {
-          empId: 918,
-          empName: "Nagesh C",
-          email: "nagesh.c@mps-fca.com",
-          mobile: "7829986846",
-          cognitoUserName: "nageshc",
-          orgId: 18,
-          branchId: 286,
-          managerId: 947,
-          roleName: "Field DSE",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 1,
-            enquiryLeads: [15464],
-            bookingCount: 1,
-            bookingLeads: [15464],
-            retailCount: 1,
-            retailLeads: [15464],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [15464],
-            bookingCount: 1,
-            bookingLeads: [15464],
-            retailCount: 1,
-            retailLeads: [15464],
-            lostCount: 0,
-            lostLeads: [],
-          },
-        },
-        {
-          empId: 919,
-          empName: "Vikas K K",
-          email: "vikas.k@mps-fca.com",
-          mobile: "7680838305",
-          cognitoUserName: "vikaskk",
-          orgId: 18,
-          branchId: 286,
-          managerId: 946,
-          roleName: "Walkin DSE",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 2,
-            enquiryLeads: [15491, 17282],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [15491],
-          },
-          total: {
-            enquiryCount: 2,
-            enquiryLeads: [15491, 17282],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [15491],
-          },
-        },
-        {
-          empId: 932,
-          empName: "Sharath K C",
-          email: "sharath.kc@mps-fca.com",
-          mobile: "7997988796",
-          cognitoUserName: "sharathkc",
-          orgId: 18,
-          branchId: 287,
-          managerId: 950,
-          roleName: "Field DSE",
-          branchName: "HSR Layout - IC0713847",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 1,
-            enquiryLeads: [15358],
-            bookingCount: 1,
-            bookingLeads: [15358],
-            retailCount: 1,
-            retailLeads: [15358],
-            lostCount: 1,
-            lostLeads: [15358],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [15358],
-            bookingCount: 1,
-            bookingLeads: [15358],
-            retailCount: 1,
-            retailLeads: [15358],
-            lostCount: 1,
-            lostLeads: [15358],
-          },
-        },
-        {
-          empId: 938,
-          empName: "Venkatesh R",
-          email: "venkatesh.r@mps-fca.com",
-          mobile: "8121013106",
-          cognitoUserName: "venkateshr",
-          orgId: 18,
-          branchId: 287,
-          managerId: 948,
-          roleName: "Field DSE",
-          branchName: "HSR Layout - IC0713847",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 1,
-            enquiryLeads: [15378],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [15378],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [15378],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [15378],
-          },
-        },
-      ],
-      treeLevelCount: 5,
-    },
-    {
-      level1: [
-        {
-          empId: 940,
-          empName: "Raghiv Sanghvi",
-          email: "raghivsanghvi@mps-fca.com",
-          mobile: "7997988101",
-          cognitoUserName: "raghivsanghvi",
-          orgId: 18,
-          branchId: 286,
-          managerId: 940,
-          roleName: "MD",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-        },
-      ],
-      selfUser: {
-        empId: 963,
-        empName: "Shilpa",
-        email: "cre3.blr@mps-fca.com",
-        mobile: "9663554256",
-        cognitoUserName: "shilpa",
-        orgId: 18,
-        branchId: 286,
-        managerId: 962,
-        roleName: "CRE",
-        branchName: "JP Nagar - IC0700043",
-        isOpenInner: false,
-        innerData: [],
-        self: {
-          enquiryCount: 1,
-          enquiryLeads: [58881],
-          bookingCount: 1,
-          bookingLeads: [58881],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 2,
-          lostLeads: [56527, 58881],
-        },
-        total: {
-          enquiryCount: 2,
-          enquiryLeads: [58881, 56376],
-          bookingCount: 2,
-          bookingLeads: [58881, 56376],
-          retailCount: 0,
-          retailLeads: [],
-          lostCount: 3,
-          lostLeads: [56527, 58881, 56509],
-        },
-      },
-      droppedCount: 2,
-      droppedLeads: [56373, 56374],
-      contactCount: 3,
-      contactLeads: [56376, 56527, 58881],
-      allTreeData: [
-        {
-          empId: 940,
-          empName: "Raghiv Sanghvi",
-          email: "raghivsanghvi@mps-fca.com",
-          mobile: "7997988101",
-          cognitoUserName: "raghivsanghvi",
-          orgId: 18,
-          branchId: 286,
-          managerId: 940,
-          roleName: "MD",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-        },
-        {
-          empId: 941,
-          empName: "Chandrashekar S",
-          email: "c.shekar@mps-fca.com",
-          mobile: "7997988799",
-          cognitoUserName: "chandrashekars",
-          orgId: 18,
-          branchId: 286,
-          managerId: 940,
-          roleName: "MD",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-        },
-        {
-          empId: 942,
-          empName: "Suresh Kumar S",
-          email: "suresh.kumar@mps-fca.com",
-          mobile: "8105916936",
-          cognitoUserName: "sureshkumars",
-          orgId: 18,
-          branchId: 286,
-          managerId: 941,
-          roleName: "branch manager",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-        },
-        {
-          empId: 945,
-          empName: "Akash Gupta B S",
-          email: "akash.bs@mps-fca.com",
-          mobile: "9071273303",
-          cognitoUserName: "akashguptabs",
-          orgId: 18,
-          branchId: 286,
-          managerId: 942,
-          roleName: "Sales Manager",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-        },
-        {
-          empId: 946,
-          empName: "Gladstone Gideon",
-          email: "gladstone.g@mps-fca.com",
-          mobile: "9886600206",
-          cognitoUserName: "gladstonegideon",
-          orgId: 18,
-          branchId: 286,
-          managerId: 942,
-          roleName: "Sales Manager",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-        },
-        {
-          empId: 919,
-          empName: "Vikas K K",
-          email: "vikas.k@mps-fca.com",
-          mobile: "7680838305",
-          cognitoUserName: "vikaskk",
-          orgId: 18,
-          branchId: 286,
-          managerId: 946,
-          roleName: "Walkin DSE",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-          total: {
-            enquiryCount: 0,
-            enquiryLeads: [],
-            bookingCount: 0,
-            bookingLeads: [],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 1,
-            lostLeads: [56509],
-          },
-        },
-        {
-          empId: 923,
-          empName: "Syed Tausiff",
-          email: "syed.tausiff@mps-fca.com",
-          mobile: "7680828270",
-          cognitoUserName: "syedtausiff",
-          orgId: 18,
-          branchId: 286,
-          managerId: 945,
-          roleName: "Field DSE",
-          branchName: "JP Nagar - IC0700043",
-          isOpenInner: false,
-          innerData: [],
-          self: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-          total: {
-            enquiryCount: 1,
-            enquiryLeads: [56376],
-            bookingCount: 1,
-            bookingLeads: [56376],
-            retailCount: 0,
-            retailLeads: [],
-            lostCount: 0,
-            lostLeads: [],
-          },
-        },
-      ],
-      treeLevelCount: 5,
-    },
-  ],
-  nonReportingUser: [],
-  totalEnquiryCount: 12,
-  totalEnquiryLeads: [
-    58930, 55819, 14641, 15485, 58390, 15491, 17282, 15464, 15378, 15358,
-    58881, 56376,
-  ],
-  totalBookingCount: 5,
-  totalBookingLeads: [55819, 15464, 15358, 58881, 56376],
-  totalRetailCount: 3,
-  totalRetailLeads: [55819, 15464, 15358],
-  totalLostCount: 10,
-  totalLostLeads: [
-    58399, 55829, 14641, 15485, 15491, 15378, 15358, 56527, 58881, 56509,
-  ],
-  totalDroppedCount: 5,
-  totalDroppedLeads: [58901, 56247, 58392, 56373, 56374],
-  totalContactCount: 17,
-  totalContactLeads: [
-    58399, 58798, 58930, 14641, 15358, 15378, 15464, 15485, 15491, 17282,
-    55819, 55829, 58389, 58390, 56376, 56527, 58881,
-  ],
-};
+
 const data = [
   {
     id: 0,
@@ -1300,7 +169,7 @@ const TargetScreenCRM = ({ route }) => {
   const [crmVol2ReportingAllTree, setCrmVol2ReportingAllTree] = useState([])
   const [crmVol2ReportingLevel1, setCrmVol2ReportingLevel1] = useState([])
   const [isViewExpandedCRMReporting, setIsViewExpandedCRMReporting] = useState(false);
-  const [tempData,setTempData] = useState(datav2)
+  const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
 
   const [userData, setUserData] = useState({
     empId: 0,
@@ -1932,6 +801,7 @@ const TargetScreenCRM = ({ route }) => {
 
       setCrmVol2ReportingData(selector.receptionistDataV3CRM.fullResponse.reportingUser)
 
+      setCrmVol2NonReportingData(selector.receptionistDataV3CRM.fullResponse.nonReportingUser)
       
 
       if (selector.receptionistDataV3CRM) {
@@ -2020,42 +890,53 @@ const TargetScreenCRM = ({ route }) => {
 
   }
 
-  const formateReportingUserDataForLevelN = async (item, index, originalData, heirarchyLevel) => {
+  const formateNonReportingUserData = async (item, index, originalData, heirarchyLevel) => {
 
     // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
     // let modifiedData =  [...crmVol2ReportingData];
     let modifiedData = _.cloneDeep(originalData);
+    let id = "";
+    let data = [];
+    let findLevel1Id = modifiedData.map((itemInner, indexInner) => {
+
+      if (itemInner.selfUser.empId == item.empId) {
+        id = itemInner.level1[0].empId;
+        data = itemInner.allTreeData;
+      }
+    })
+    setCrmVol2ReportingAllTree(data);
+
+    let findInnderDataLevel1 = data.filter((item2, index2) => item2.empId == id);
+
+
+    for (let index = 0; index < modifiedData.length; index++) {
+      const element = modifiedData[index];
+      if (element.selfUser.empId == item.empId) {
+
+        element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+        element.selfUser.innerData = findInnderDataLevel1;
+      } else {
+        element.selfUser.isOpenInner = false;
+        element.selfUser.innerData = [];
+      }
+
+    }
+
+    setCrmVol2NonReportingData(modifiedData)
+
+
+  }
+
+  const formateReportingUserDataForLevelN = async (item, index, originalData, heirarchyLevel) => {
+
+  
+    let modifiedData = _.cloneDeep(originalData);
     
     let filtrData = modifiedData.filter((itemInn) => itemInn.managerId != itemInn.empId && itemInn.managerId == item.empId)
-    console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", filtrData);
-    
   
     await item.isOpenInner ? (item.isOpenInner = false,
       item.innerData = []) : (item.isOpenInner = true, item.innerData.push(...filtrData))
-
-
-    // for (let index = 0; index < modifiedData.length; index++) {
-    //   const element = modifiedData[index];
-
-    //   if (element.selfUser.empId == item.empId) {
-    //     element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
-    //     element.selfUser.innerData = findInnderDataLevel1;
-    //   }
-
-    // }
-
-
-
-    //  const finalData =  modifiedData.map((item, index) => {
-    //     console.log("manthan hhh >  item ", JSON.stringify(modifiedData[index].selfUser));
-    //     if (item.selfUser.empId == 954) {
-    //    return   modifiedData[index].selfUser.isOpenInner =
-    //         !item.selfUser.isOpenInner;
-    //     }else{
-    //       return item;
-    //     }
-    //   });
-    // console.log("manthan kkk  ", JSON.stringify(modifiedData));
+    
     setCrmVol2ReportingData([...crmVol2ReportingData])
 
 
@@ -2802,7 +1683,7 @@ const TargetScreenCRM = ({ route }) => {
                         ? selector.receptionistDataV3CRM.RetailCount > 0 &&
                         navigateToEmsVol2(selector.receptionistDataV3CRM.fullResponse.totalRetailLeads)
                         : item.id === 3
-                          ? navigateToDropAnalysisVol2(selector.receptionistDataV3CRM.fullResponse.totalRetailLeads)
+                          ? navigateToDropAnalysisVol2(selector.receptionistDataV3CRM.fullResponse.totalLostLeads)
                           : null;
                 }
               }
@@ -4163,7 +3044,7 @@ const TargetScreenCRM = ({ route }) => {
                         navigation={navigation}
                         titleClick={async (e) => {
                           setIsViewExpanded(!isViewExpanded);
-                          formateFirstLevelData(item);
+                          // formateFirstLevelData(item);
                         }}
                         roleName={item.roleName}
                         stopLocation={true}
@@ -4252,15 +3133,262 @@ const TargetScreenCRM = ({ route }) => {
             // }
           })}
         {/* {renderCREFirstLevel()} */}
+        {renderCRMNonReportingUserTreeVol2()}
       </View>
     );
   };
 
+
+  const renderCRMNonReportingUserTreeVol2 = () => {
+    // todo manthan
+    const borderColor = color[4 % color.length];
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {crmVol2NonReportingData?.length > 0 &&
+          crmVol2NonReportingData?.map((item, index) => {
+            // if (item.empId === userData.empId) {
+            return (
+              <View
+                key={`${item.selfUser.empName} ${index}`}
+                style={{
+                  borderRadius: 10,
+                  borderWidth: item.selfUser.isOpenInner ? 2 : 0,
+                  borderColor: borderColor,
+                  backgroundColor: "#FFFFFF",
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item.selfUser.empName}
+                      {"  "}
+                      {"-   " + item.selfUser?.roleName}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}></View>
+                  <View style={{ flexDirection: "row" }}>
+                    {/* {selector.receptionistData?.fullResponse?.childUserCount >
+                      0 && (
+                        <Animated.View
+                          style={{
+                            transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                              alignSelf: "flex-start",
+                              marginLeft: 7,
+                              // transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>
+                              {
+                                selector.receptionistData?.fullResponse
+                                  ?.childUserCount
+                              }
+                            </Text>
+                          </View>
+                        </Animated.View>
+                      )} */}
+                    <SourceModelView
+                      onClick={() => {
+
+
+                        if (!item.selfUser.isOpenInner) {
+
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.lostLeads)
+
+
+                          handleSourcrModelNavigationVol2(tempArry, item.roleName)
+                        } else {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.lostLeads)
+
+                          handleSourcrModelNavigationVol2(tempArry, item.selfUser.roleName)
+                        }
+
+                        // navigation.navigate(
+                        //   "RECEP_SOURCE_MODEL",
+                        //   {
+                        //     empId: item?.emp_id,
+                        //     headerTitle: item?.emp_name,
+                        //     loggedInEmpId: item.emp_id,
+                        //     type: "TEAM",
+                        //     moduleType: "home",
+                        //     headerTitle: "Source/Model",
+                        //     orgId: userData.orgId,
+                        //     role: userData.hrmsRole,
+                        //     branchList: userData.branchs.map(
+                        //       (a) => a.branchId
+                        //     ),
+                        //   }
+                        // );
+                      }}
+                      style={{
+                        transform: [{ translateX: translation }],
+                      }}
+                    />
+                  </View>
+                </View>
+
+                {/*Source/Model View END */}
+                <View
+                  style={[
+                    { flexDirection: "row" },
+                    item.isOpenInner && {
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: "#C62159",
+                      marginHorizontal: 6,
+                      overflow: "hidden",
+                    },
+                  ]}
+                >
+                  {/*RIGHT SIDE VIEW*/}
+                  <View style={[styles.view6]}>
+                    <View style={styles.view7}>
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item.selfUser}
+                        branchName={item.selfUser.branch}
+                        color={borderColor}
+                        receptionManager={true}
+                        navigation={navigation}
+                        titleClick={async (e) => {
+
+                          formateNonReportingUserData(item.selfUser, index, crmVol2NonReportingData, 0);
+                        }}
+                        roleName={item.selfUser.roleName}
+                        stopLocation={true}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {[
+                          item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
+
+                          item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
+                          item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
+                          item.selfUser.isOpenInner ? item.selfUser.self.lostCount : item.selfUser.total.lostCount || 0
+                        ].map((e, indexss) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections logic  first level
+                                if (e > 0) {
+
+
+                                  if (item.selfUser.isOpenInner) {
+                                    if (indexss === 0) {
+                                      navigateToEmsVol2(item.selfUser.self.enquiryLeads)
+
+                                    } else if (indexss === 1) {
+                                      navigateToEmsVol2(item.selfUser.self.bookingLeads)
+                                    } else if (indexss === 2) {
+                                      navigateToEmsVol2(item.selfUser.self.retailLeads)
+                                    } else if (indexss === 3) {
+                                      navigateToDropAnalysisVol2(item.selfUser.self.lostLeads)
+                                    }
+                                  } else {
+                                    if (indexss === 0) {
+                                      navigateToEmsVol2(item.selfUser.total.enquiryLeads)
+
+                                    } else if (indexss === 1) {
+                                      navigateToEmsVol2(item.selfUser.total.bookingLeads)
+                                    } else if (indexss === 2) {
+                                      navigateToEmsVol2(item.selfUser.total.retailLeads)
+                                    } else if (indexss === 3) {
+                                      // todo navigate to lost
+
+                                      navigateToDropAnalysisVol2(item.selfUser.total.lostLeads)
+                                    }
+                                  }
+                                }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
+              </View>
+            );
+            // }
+          })}
+        {/* {renderCREFirstLevel()} */}
+      </View>
+    );
+  };
   
 
   const renderCRMReportingUserTreeVol2 = () => {
     // todo manthan
-
+    const borderColor = color[4 % color.length];
     return (
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
@@ -4406,13 +3534,11 @@ const TargetScreenCRM = ({ route }) => {
                         level={0}
                         item={item.selfUser}
                         branchName={item.selfUser.branch}
-                        color={"#C62159"}
+                        color={borderColor}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
-                          // setIsViewExpanded(!isViewExpanded);
-                          // formateFirstLevelData(item.selfUser);
-                          // console.log("manthan item.innner ", item.selfUser.empID);
+                      
                           formateReportingUserData(item.selfUser, index, crmVol2ReportingData,0);
                         }}
                         roleName={item.selfUser.roleName}
@@ -4513,8 +3639,8 @@ const TargetScreenCRM = ({ route }) => {
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {receptionistVol2Level0.length > 0 &&
-          receptionistVol2Level0.map((item, index) => {
+        {receptionistVol2Level0?.length > 0 &&
+          receptionistVol2Level0?.map((item, index) => {
            
             // if (item.empId === userData.empId) {
               return (
@@ -4987,7 +4113,7 @@ const TargetScreenCRM = ({ route }) => {
                 level={0}
                 item={item}
                 branchName={item.branch}
-                color={"#C62159"}
+                color={borderColor}
                 receptionManager={true}
                 navigation={navigation}
                 titleClick={async (e) => {
@@ -5096,7 +4222,7 @@ const TargetScreenCRM = ({ route }) => {
   const renderDynamicTree = (item, index,allData, levelColors, newLevel)=>{
     const hierarchyLevel = newLevel;
     const borderColor = levelColors[hierarchyLevel % levelColors.length];
- 
+    
     return (
       <View
         key={`${item.empName} ${index}`}
@@ -5247,7 +4373,7 @@ const TargetScreenCRM = ({ route }) => {
                 level={0}
                 item={item}
                 branchName={item.branch}
-                color={"#C62159"}
+                color={borderColor}
                 receptionManager={true}
                 navigation={navigation}
                 titleClick={async (e) => {
@@ -8403,13 +7529,19 @@ const TargetScreenCRM = ({ route }) => {
                             <SourceModelView
                               style={{ alignSelf: "flex-end" }}
                               onClick={() => {
-                                navigation.navigate("RECEP_SOURCE_MODEL", {
-                                  empId: userData.empId,
-                                  headerTitle: "Source/Model",
-                                  loggedInEmpId: userData.empId,
-                                  orgId: userData.orgId,
-                                  role: userData.hrmsRole,
-                                });
+                                let tempArry = [];
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalEnquiryLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalBookingLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalRetailLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalLostLeads)
+                                handleSourcrModelNavigationVol2(tempArry, userData.hrmsRole)
+                                // navigation.navigate("RECEP_SOURCE_MODEL", {
+                                //   empId: userData.empId,
+                                //   headerTitle: "Source/Model",
+                                //   loggedInEmpId: userData.empId,
+                                //   orgId: userData.orgId,
+                                //   role: userData.hrmsRole,
+                                // });
                               }}
                             />
                           </View>

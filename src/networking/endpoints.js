@@ -914,6 +914,8 @@ const URL = {
 
   GET_LIVE_LEADS_MANAGERDATA: () => `${dashboard}/managerLiveLeads`,
 
+  GET_LIVE_LEADS_MANAGERDATA_VOL2: () => `${dashboard}/receptionist/live/tree`,
+
   GET_LIVE_LEADS_INSIGHTS: () =>
     `${dashboardLiveLeads}/dashboard/v2/get_target_params`,
   GET_LIVE_LEADS_TEAM: () =>

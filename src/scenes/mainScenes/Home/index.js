@@ -1713,7 +1713,7 @@ const HomeScreen = ({ route, navigation }) => {
                   onPress={() => {
                     userData.hrmsRole == "CRM" ?
                       selector.receptionistDataV3CRM.enquirysCount > 0 &&
-                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalEnquiryLeads) :
+                      navigateToEmsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalEnquiryLeads) :
                     selector.receptionistDataV3.enquirysCount > 0 &&
                       navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalEnquiryLeads)
                       // navigateToEMS("ENQUIRY", "", [userData.empId]);
@@ -1755,7 +1755,7 @@ const HomeScreen = ({ route, navigation }) => {
                   onPress={() => {
                     userData.hrmsRole == "CRM" ?
                       selector.receptionistDataV3CRM.bookingsCount > 0 &&
-                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalBookingLeads) :
+                      navigateToEmsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalBookingLeads) :
                     selector.receptionistDataV3.bookingsCount > 0 &&
                       navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalBookingLeads)
                       // navigateToEMS("BOOKING", "", [userData.empId]);
@@ -1795,7 +1795,7 @@ const HomeScreen = ({ route, navigation }) => {
                   onPress={() => {
                     userData.hrmsRole == "CRM" ?
                       selector.receptionistDataV3CRM.RetailCount > 0 &&
-                      navigateToContactsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalRetailLeads) :
+                      navigateToEmsVol2(selector.receptionistDataV3CRM?.fullResponse?.totalRetailLeads) :
                     selector.receptionistDataV3.RetailCount > 0 &&
                       navigateToEmsVol2(selector.receptionistDataV3?.fullResponse?.totalRetailLeads)
                       // navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
@@ -1833,8 +1833,9 @@ const HomeScreen = ({ route, navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    selector.receptionistDataV3.totalDroppedCount > 0 &&
-                      navigateToDropAnalysisVol2(selector.receptionistDataV3?.fullResponse?.totalDroppedLeads);
+                    userData.hrmsRole == "CRM" ? selector.receptionistDataV3CRM.totalDroppedCount > 0 &&
+                      navigateToDropAnalysisVol2(selector.receptionistDataV3CRM?.fullResponse?.totalDroppedLeads) : selector.receptionistDataV3.totalDroppedCount > 0 &&
+                    navigateToDropAnalysisVol2(selector.receptionistDataV3?.fullResponse?.totalDroppedLeads);
                   }}
                   style={styles.view8}
                 >
