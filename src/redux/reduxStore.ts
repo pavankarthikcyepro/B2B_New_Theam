@@ -40,6 +40,7 @@ import liveLeadsReducerReceptionist from "./liveLeadsReducerReceptionist";
 import digitalDashboardReducer from "./digitalDashboardReducer";
 import webCallReducer from "./webCallReducer";
 import recordedCallsReducer from "./recordedCallsReducer";
+import emiCalculatorReducer from "./emiCalculatorReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -81,6 +82,7 @@ const reducer = combineReducers({
   digitalDashboardReducer,
   webCallReducer,
   recordedCallsReducer,
+  emiCalculatorReducer,
 });
 
 const createDebugger = require("redux-flipper").default;

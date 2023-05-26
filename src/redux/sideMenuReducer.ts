@@ -130,6 +130,12 @@ const data = [
   //   screen: 101,
   // },
   {
+    title: "EMI Calculator",
+    icon: CUSTOMER_RELATIONSHIP_STR,
+    screen: 125,
+    pngIcon: require("../assets/images/emi.png"),
+  },
+  {
     title: "Helpdesk",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 107,
