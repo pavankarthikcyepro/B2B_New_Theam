@@ -1884,7 +1884,8 @@ const LeadsScreen = ({ route, navigation }) => {
               onPress={() => {
                 setLeadsSubMenuFilterVisible(true);
               }}
-              disabled={subMenu.length <= 0 ? true : false}
+              // disabled={subMenu.length <= 0 ? true : false}
+              disabled={true}
             >
               <View
                 style={{
