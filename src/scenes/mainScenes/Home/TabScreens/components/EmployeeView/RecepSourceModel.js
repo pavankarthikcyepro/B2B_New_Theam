@@ -184,6 +184,12 @@ const RecepSourceModel = ({ route, navigation }) => {
             "empList": empList ? empList : null,
             "self": self
           };
+          let receptionistSourceModelPayload = {
+            "leadIdList": leadId_list,
+            "orgId": orgId
+          }
+          dispatch(getReceptionistSourceVol2(receptionistSourceModelPayload))
+          dispatch(getReceptionistModelVol2(receptionistSourceModelPayload))
           // vol 1 api code
           // dispatch(getReceptionistManagerSource(newPayload3));
           // dispatch(getReceptionistManagerModel(newPayload3));
@@ -195,6 +201,12 @@ const RecepSourceModel = ({ route, navigation }) => {
             "endDate": selector.saveCRMfilterObj.endDate,
             "dealerCodes": selector.saveCRMfilterObj.dealerCodes
           };
+          let receptionistSourceModelPayload = {
+            "leadIdList": leadId_list,
+            "orgId": orgId
+          }
+          dispatch(getReceptionistSourceVol2(receptionistSourceModelPayload))
+          dispatch(getReceptionistModelVol2(receptionistSourceModelPayload))
           // vol 1 api code
           // dispatch(getReceptionistSource(newPayload2));
           // dispatch(getReceptionistModel(newPayload2));

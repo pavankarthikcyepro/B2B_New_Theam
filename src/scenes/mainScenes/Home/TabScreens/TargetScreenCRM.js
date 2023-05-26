@@ -1297,7 +1297,7 @@ const TargetScreenCRM = ({ route }) => {
   const [crmVol2AlluserData, setCrmVol2AlluserData] = useState([])
   // const [crmVol2ReportingData, setCrmVol2ReportingData] =useState(datav2.reportingUser)
   const [crmVol2ReportingData, setCrmVol2ReportingData] = useState([])
-  const [crmVol2ReportingLevel0, setCrmVol2ReportingLevel0] = useState([])
+  const [crmVol2ReportingAllTree, setCrmVol2ReportingAllTree] = useState([])
   const [crmVol2ReportingLevel1, setCrmVol2ReportingLevel1] = useState([])
   const [isViewExpandedCRMReporting, setIsViewExpandedCRMReporting] = useState(false);
   const [tempData,setTempData] = useState(datav2)
@@ -1932,64 +1932,7 @@ const TargetScreenCRM = ({ route }) => {
 
       setCrmVol2ReportingData(selector.receptionistDataV3CRM.fullResponse.reportingUser)
 
-      // setCrmVol2ReportingLevel0(selector.receptionistDataV3CRM.fullResponse.reportingUser)
-      // const reportingUserData = Object.assign(
-      //   {},
-      //   selector.receptionistDataV3CRM?.fullResponse
-      // );
-      // let reportingUserDataV2 = Object.assign({}, reportingUserData);
-      // if (!_.isEmpty(reportingUserData)) {
-      //   for (let i = 0; i < reportingUserData.reportingUser.length; i++) {
-      //     const element = reportingUserData.reportingUser[i];
-      //     for (let j = 0; j < element.allTreeData.length; j++) {
-      //       const element2 = element.allTreeData[j];
-      //       const temp = {
-      //         ...element2,
-      //         isOpenInner: false,
-      //         innerData: [],
-      //       };
-            
-      //       reportingUserData.reportingUser[i].allTreeData[j] = Object.assign({}, temp);
-            
-      //     }
-      //   }
-      //   console.log("manthan ==>s ", reportingUserData);
-      // }
-      // for reporting users 
-      // let reportingUser = selector.receptionistDataV3CRM?.fullResponse.reportingUser.map((item) => ({ ...item, item.allTreeData.map(item2 => ({ ...item2, isOpenInner: false, innerData: [] }))}))
-      // const reportingUserData = Object.assign({}, selector.receptionistDataV3CRM?.fullResponse);
-      // let reportingUserDataV2 = Object.assign({}, reportingUserData);
-      // if (!_.isEmpty(reportingUserData)){
-      //   // console.log("manthan ff ", reportingUserData);
-      // reportingUserData?.reportingUser?.forEach((item, index) => {
-       
-      //     item.allTreeData.forEach((allTreeItem, index2) => 
-      //       {
-      //       // console.log("manthan ==>s allTreeItem ", reportingUserDataV2.reportingUser[index].allTreeData[index2]);
-      //       let temp = {
-      //         ...allTreeItem, isOpenInner: false,
-      //         innerData: [] }
-      //       console.log("manthan ==>s allTreeItem temp ", temp);
-      //       reportingUserDataV2.reportingUser[index].allTreeData[index2] = Object.assign({},temp)
-      //     }
-      //     );
-      //   });
-      //   console.log("manthan ==>s ", reportingUserDataV2);
-      // } 
-        // let test = [];
-        // let temp = reportingUserData.reportingUser.forEach(item,index => 
-          
-        //   item.allTreeData[index]
-        //   // test.push(item?.allTreeData)
-        //   // forEach(item2 => ({ ...item2, isOpenInner: false, innerData: [] }))
-
-        //   // item?.allTreeData?.forEach(item2 => {  return item2.isOpenInner = false, item2.innerData= [] })
-        //   )          
-          // item?.allTreeData?.forEach(item2 =>   ({ ...item2, isOpenInner: false, innerData: [] }))
-          // )
-        
-          
-        // console.log("manthan ---> ", JSON.stringify(test))
+      
 
       if (selector.receptionistDataV3CRM) {
         let totalKey1 = selector?.receptionistDataV3CRM?.enquirysCount;
@@ -2041,48 +1984,82 @@ const TargetScreenCRM = ({ route }) => {
 
   }
   
-  const formateReportingUserData = async (item, index,originalData) => {
+  const formateReportingUserData = async (item, index,originalData,heirarchyLevel) => {
 
     // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
     // let modifiedData =  [...crmVol2ReportingData];
     let modifiedData = _.cloneDeep(originalData);
-    console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", item.empId);
+    let id="";
+    let data=[]; 
+    let findLevel1Id = modifiedData.map((itemInner,indexInner) => { 
+     
+      if (itemInner.selfUser.empId == item.empId){
+        id = itemInner.level1[0].empId;
+        data = itemInner.allTreeData;
+    }})
+    setCrmVol2ReportingAllTree(data);
+  
+    let findInnderDataLevel1 = data.filter((item2, index2) =>  item2.empId == id);
+    
 
     for (let index = 0; index < modifiedData.length; index++) {
       const element = modifiedData[index];
-
       if (element.selfUser.empId == item.empId) {
+       
         element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+        element.selfUser.innerData = findInnderDataLevel1;
+      }else{
+        element.selfUser.isOpenInner = false;
+        element.selfUser.innerData = [];
       }
       
     }
     
-
-  //  const finalData =  modifiedData.map((item, index) => {
-  //     console.log("manthan hhh >  item ", JSON.stringify(modifiedData[index].selfUser));
-  //     if (item.selfUser.empId == 954) {
-  //    return   modifiedData[index].selfUser.isOpenInner =
-  //         !item.selfUser.isOpenInner;
-  //     }else{
-  //       return item;
-  //     }
-  //   });
     setCrmVol2ReportingData(modifiedData)
-    console.log("manthan hhh >  finalData ", JSON.stringify(modifiedData));
-//     const modifeidArray = {...selector.receptionistDataV3CRM.fullResponse};
-
-//     const modifiedData = {...selector.receptionistDataV3CRM.fullResponse};
-// let temp33;
-//     modifiedData.reportingUser.map((item, index) => {
-//       if (item.selfUser.empId == 954) {
-//         // modifiedData.reportingUser[index].selfUser.isOpenInner = true;
-//         _.update(modifiedData.reportingUser[index].selfUser, modifiedData.reportingUser[index].selfUser, function () { return modifiedData.reportingUser[index].selfUser.isOpenInner = true })
-        
-//       }
-//     });
+   
 
   }
 
+  const formateReportingUserDataForLevelN = async (item, index, originalData, heirarchyLevel) => {
+
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+    // let modifiedData =  [...crmVol2ReportingData];
+    let modifiedData = _.cloneDeep(originalData);
+    
+    let filtrData = modifiedData.filter((itemInn) => itemInn.managerId != itemInn.empId && itemInn.managerId == item.empId)
+    console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", filtrData);
+    
+  
+    await item.isOpenInner ? (item.isOpenInner = false,
+      item.innerData = []) : (item.isOpenInner = true, item.innerData.push(...filtrData))
+
+
+    // for (let index = 0; index < modifiedData.length; index++) {
+    //   const element = modifiedData[index];
+
+    //   if (element.selfUser.empId == item.empId) {
+    //     element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+    //     element.selfUser.innerData = findInnderDataLevel1;
+    //   }
+
+    // }
+
+
+
+    //  const finalData =  modifiedData.map((item, index) => {
+    //     console.log("manthan hhh >  item ", JSON.stringify(modifiedData[index].selfUser));
+    //     if (item.selfUser.empId == 954) {
+    //    return   modifiedData[index].selfUser.isOpenInner =
+    //         !item.selfUser.isOpenInner;
+    //     }else{
+    //       return item;
+    //     }
+    //   });
+    // console.log("manthan kkk  ", JSON.stringify(modifiedData));
+    setCrmVol2ReportingData([...crmVol2ReportingData])
+
+
+  }
   const findDataFromObject = (test)=>{
     const { self=[] } = test;
 
@@ -4288,8 +4265,8 @@ const TargetScreenCRM = ({ route }) => {
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {crmVol2ReportingData.length > 0 &&
-          crmVol2ReportingData.map((item, index) => {
+        {crmVol2ReportingData?.length > 0 &&
+          crmVol2ReportingData?.map((item, index) => {
             // if (item.empId === userData.empId) {
             return (
               <View
@@ -4436,7 +4413,7 @@ const TargetScreenCRM = ({ route }) => {
                           // setIsViewExpanded(!isViewExpanded);
                           // formateFirstLevelData(item.selfUser);
                           // console.log("manthan item.innner ", item.selfUser.empID);
-                          formateReportingUserData(item.selfUser, index, crmVol2ReportingData);
+                          formateReportingUserData(item.selfUser, index, crmVol2ReportingData,0);
                         }}
                         roleName={item.selfUser.roleName}
                         stopLocation={true}
@@ -4519,7 +4496,7 @@ const TargetScreenCRM = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {/* {isViewExpanded && renderCRMNewTreeLevel1()} */}
+                {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
               </View>
             );
             // }
@@ -4820,19 +4797,19 @@ const TargetScreenCRM = ({ route }) => {
     );
   };
 
-  const renderReportingUserTree = ()=>{
-
+  const renderReportingUserTree = (item)=>{
+ 
     return (
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {/* {crmVol2ReportingData.length > 0 &&
-          crmVol2ReportingData.map((item, index) => {
-            return renderDynamicTree(item, index, crmVol2ReportingData,
+        {item.innerData.length > 0 &&
+          item.innerData.map((item, index) => {
+            return renderDynamicTreeReportingUser(item, index, item,
               color,
-              0)
+              1)
 
-          })} */}
+          })}
        
       </View>
     );
@@ -4855,6 +4832,267 @@ const TargetScreenCRM = ({ route }) => {
       </View>
     );
   };
+
+  const renderDynamicTreeReportingUser = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+
+    return (
+      <View
+        key={`${item.empName} ${index}`}
+        style={[
+          {
+            // borderColor: item.isOpenInner ? borderColor : "",
+            // borderWidth: item.isOpenInner ? 2 : 0,
+            // borderRadius: 10,
+            // margin: item.isOpenInner ? 10 : 0,
+          },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: borderColor,
+            backgroundColor: "#FFFFFF",
+          },
+        ]}
+      // style={{
+      //   borderColor: item.isOpenInner ? borderColor : "",
+      //   borderWidth: item.isOpenInner ? 2 : 0,
+      //   borderRadius: 10,
+      //   margin: item.isOpenInner ? 10 : 0,
+      // }}
+      >
+        <View
+          style={{
+            paddingHorizontal: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 12,
+            width: Dimensions.get("screen").width - 28,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "capitalize",
+              }}
+            >
+              {item.empName}
+              {"  "}
+              {"-   " + item?.roleName}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}></View>
+          <View style={{ flexDirection: "row" }}>
+            {selector.receptionistData?.fullResponse?.childUserCount >
+              0 && (
+                <Animated.View
+                  style={{
+                    transform: [{ translateX: translation }],
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: "lightgrey",
+                      flexDirection: "row",
+                      paddingHorizontal: 7,
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 5,
+                      alignSelf: "flex-start",
+                      marginLeft: 7,
+                      // transform: [{ translateX: translation }],
+                    }}
+                  >
+                    <MaterialIcons
+                      name="person"
+                      size={15}
+                      color={Colors.BLACK}
+                    />
+                    <Text>
+                      {
+                        selector.receptionistData?.fullResponse
+                          ?.childUserCount
+                      }
+                    </Text>
+                  </View>
+                </Animated.View>
+              )}
+            <SourceModelView
+              onClick={() => {
+                if (!item.isOpenInner) {
+
+                  let tempArry = [];
+                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
+                  Array.prototype.push.apply(tempArry, item.total.bookingLeads)
+                  Array.prototype.push.apply(tempArry, item.total.retailLeads)
+                  Array.prototype.push.apply(tempArry, item.total.lostLeads)
+
+
+                  handleSourcrModelNavigationVol2(tempArry, item.roleName)
+                } else {
+                  let tempArry = [];
+                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
+                  Array.prototype.push.apply(tempArry, item.self.bookingLeads)
+                  Array.prototype.push.apply(tempArry, item.self.retailLeads)
+                  Array.prototype.push.apply(tempArry, item.self.lostLeads)
+
+                  handleSourcrModelNavigationVol2(tempArry, item.roleName)
+                }
+
+                // navigation.navigate(
+                //   "RECEP_SOURCE_MODEL",
+                //   {
+                //     empId: item?.emp_id,
+                //     headerTitle: item?.emp_name,
+                //     loggedInEmpId: item.emp_id,
+                //     type: "TEAM",
+                //     moduleType: "home",
+                //     headerTitle: "Source/Model",
+                //     orgId: userData.orgId,
+                //     role: userData.hrmsRole,
+                //     branchList: userData.branchs.map(
+                //       (a) => a.branchId
+                //     ),
+                //   }
+                // );
+              }}
+              style={{
+                transform: [{ translateX: translation }],
+              }}
+            />
+          </View>
+        </View>
+
+        {/*Source/Model View END */}
+        <View
+          style={[
+            { flexDirection: "row" },
+            // item.isOpenInner && {
+            //   borderRadius: 10,
+            //   borderWidth: 2,
+            //   borderColor: "#C62159",
+            //   marginHorizontal: 6,
+            //   overflow: "hidden",
+            // },
+          ]}
+        >
+          {/*RIGHT SIDE VIEW*/}
+          <View style={[styles.view6]}>
+            <View style={styles.view7}>
+              <RenderLevel1NameViewCRM
+                level={0}
+                item={item}
+                branchName={item.branch}
+                color={"#C62159"}
+                receptionManager={true}
+                navigation={navigation}
+                titleClick={async (e) => {
+                 
+                  formateReportingUserDataForLevelN(item, index, crmVol2ReportingAllTree, hierarchyLevel)
+                }}
+                roleName={item.roleName}
+                stopLocation={true}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "rgba(223,228,231,0.67)",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                {[
+                  item.isOpenInner ? item.self.enquiryCount : item.total.enquiryCount || 0,
+
+                  item.isOpenInner ? item.self.bookingCount : item.total.bookingCount || 0,
+                  item.isOpenInner ? item.self.retailCount : item.total.retailCount || 0,
+                  item.isOpenInner ? item.self.lostCount : item.total.lostCount || 0
+                ].map((e, indexss) => {
+                  return (
+                    <Pressable
+                      onPress={() => {
+                        // todo redirections logic  first level
+                        // if (e > 0) {
+
+                        if (item.isOpenInner) {
+                          if (indexss === 0) {
+                            navigateToEmsVol2(item.self.enquiryLeads)
+
+                          } else if (indexss === 1) {
+                            navigateToEmsVol2(item.self.bookingLeads)
+                          } else if (indexss === 2) {
+                            navigateToEmsVol2(item.self.retailLeads)
+                          } else if (indexss === 3) {
+                            navigateToDropAnalysisVol2(item.self.lostLeads)
+                          }
+                        } else {
+                          if (indexss === 0) {
+                            navigateToEmsVol2(item.total.enquiryLeads)
+
+                          } else if (indexss === 1) {
+                            navigateToEmsVol2(item.total.bookingLeads)
+                          } else if (indexss === 2) {
+                            navigateToEmsVol2(item.total.retailLeads)
+                          } else if (indexss === 3) {
+                            // todo navigate to lost
+
+                            navigateToDropAnalysisVol2(item.total.lostLeads)
+
+                          }
+                        }
+                        // }
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 55,
+                          height: 30,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            textDecorationLine:
+                              e > 0 ? "underline" : "none",
+                            // marginLeft: 50,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+            {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+          </View>
+        </View>
+        {/* {item.isOpenInner && renderCRMTreeChild()} */}
+
+        {item.isOpenInner &&
+          item.innerData.length > 0 &&
+          item.innerData.map((innerItem1, innerIndex1) => {
+            return renderDynamicTreeReportingUser(
+              item.innerData[innerIndex1],
+              innerIndex1,
+              item.innerData,
+              levelColors,
+              hierarchyLevel + 1
+            );
+          })}
+      </View>
+    );
+  }
+
+
   const renderDynamicTree = (item, index,allData, levelColors, newLevel)=>{
     const hierarchyLevel = newLevel;
     const borderColor = levelColors[hierarchyLevel % levelColors.length];
@@ -6179,12 +6417,17 @@ const TargetScreenCRM = ({ route }) => {
                         <View style={{ alignItems: "flex-end" }}>
                           <SourceModelView
                             onClick={() => {
-                              let tempArry = [];
-                              Array.prototype.push.apply(tempArry, selector.receptionistDataV3?.fullResponse?.totalEnquiryLeads)
-                              Array.prototype.push.apply(tempArry, selector.receptionistDataV3?.fullResponse?.totalBookingLeads)
-                              Array.prototype.push.apply(tempArry, selector.receptionistDataV3?.fullResponse?.totalRetailLeads)
-                              Array.prototype.push.apply(tempArry, selector.receptionistDataV3?.fullResponse?.totalLostLeads)
-                              handleSourcrModelNavigationVol2(tempArry, userData.hrmsRole)
+                              
+                                let tempArry = [];
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalEnquiryLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalBookingLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalRetailLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalLostLeads)
+                                console.log("manthan jjjd ",tempArry);
+                                handleSourcrModelNavigationVol2(tempArry, userData.hrmsRole)
+                              
+
+                             
                               // navigation.navigate("RECEP_SOURCE_MODEL", {
                               //   empId: userData.empId,
                               //   headerTitle: "Source/Model",
