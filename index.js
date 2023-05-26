@@ -24,7 +24,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 ReactNativeForegroundService.register();
 
 RNLocation.configure({
-  distanceFilter: 50, // Meters
+  // distanceFilter: 50, // Meters
   desiredAccuracy: {
     ios: "best",
     android: "highAccuracy",
@@ -32,7 +32,7 @@ RNLocation.configure({
   // Android only
   // androidProvider: 'auto',
   interval: 10000, // Milliseconds
-  // fastestInterval: 3000, // Milliseconds
+  fastestInterval: 10000, // Milliseconds
   // maxWaitTime: 1000, // Milliseconds
   // iOS Only
   activityType: "fitness",
