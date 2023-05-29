@@ -4,11 +4,14 @@ import {
   SafeAreaView,
   StyleSheet,
   Dimensions,
+  Text,
+  ScrollView,
+  Image,
 } from "react-native";
 import { useDispatch } from "react-redux";
 
 import { LoaderComponent } from "../../../components";
-import { Colors } from "../../../styles";
+import { Colors, GlobalStyle } from "../../../styles";
 import { client } from "../../../networking/client";
 import URL, { baseUrl } from "../../../networking/endpoints";
 import { Calendar } from "react-native-calendars";
@@ -17,6 +20,15 @@ import moment from "moment";
 import { MenuIcon } from "../../../navigations/appNavigator";
 import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { SceneMap, TabView } from "react-native-tab-view";
+import { TouchableOpacity } from "react-native";
+import {
+  DISTANCE,
+  FULL_TIME,
+  TRAVEL_TIME,
+  TRIP_ICON,
+} from "../../../assets/icon";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -31,6 +43,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   const [marker, setMarker] = useState({});
   const [userData, setUserData] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [index, setIndex] = useState(0);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -107,6 +120,128 @@ const GeoLocationScreen = ({ route, navigation }) => {
     });
   };
 
+  const handleTabPress = (index) => {
+    setIndex(index);
+  };
+
+  const renderTabBar = (props) => {
+    return (
+      <View style={styles.tabBar}>
+        {props.navigationState.routes.map((route, i) => (
+          <TouchableOpacity
+            key={route.key}
+            style={[styles.tabItem, index === i && styles.activeTab]}
+            onPress={() => handleTabPress(i)}
+          >
+            <Text style={[styles.tabText, index === i && styles.activeTabTxt]}>
+              {route.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+
+  const Card = ({ title, value, icon }) => {
+    return (
+      <View
+        style={[
+          {
+            borderRadius: 12,
+            borderColor: Colors.BLACK,
+            justifyContent: "space-around",
+            padding: 10,
+            backgroundColor: Colors.WHITE,
+            shadowColor: Colors.DARK_GRAY,
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowRadius: 2,
+            shadowOpacity: 0.5,
+            elevation: 3,
+            width: "45%",
+          },
+        ]}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 12,
+              backgroundColor: "#ffb6c1",
+              borderRadius: 25,
+            }}
+          >
+            {/* <MaterialIcons name="person" size={20} color={Colors.BLACK} /> */}
+            <Image
+              source={icon}
+              resizeMode="contain"
+              style={{ width: 20, height: 20 }}
+            />
+          </View>
+        </View>
+        <View style={{ marginTop: 15 }}>
+          <Text style={{ color: Colors.BLACK, fontSize: 15 }}>{title}</Text>
+          <Text
+            style={{
+              color: Colors.RED,
+              fontSize: 14,
+              fontWeight: "bold",
+              marginTop: 5,
+            }}
+          >
+            {value}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  const commonTab = () => (
+    // <View style={styles.tabContent}>
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginTop: 10,
+        }}
+      >
+        <Card title={"Trips"} value={"5"} icon={TRIP_ICON} />
+        <Card
+          title={"Start & End Time"}
+          value={"9:00 am - 12:56 pm"}
+          icon={FULL_TIME}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginVertical: 10,
+        }}
+      >
+        <Card title={"Travel Distance"} value={"1.86 KM"} icon={DISTANCE} />
+        <Card
+          title={"Travel Time"}
+          value={"03hr 10min 04sec"}
+          icon={TRAVEL_TIME}
+        />
+      </View>
+    </ScrollView>
+    // </View>
+  );
+
+  const renderScene = SceneMap({
+    tab1: commonTab,
+    tab2: commonTab,
+    tab3: commonTab,
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -139,6 +274,19 @@ const GeoLocationScreen = ({ route, navigation }) => {
         />
       </View>
       <LoaderComponent visible={loading} />
+      <TabView
+        navigationState={{
+          index,
+          routes: [
+            { key: "tab1", title: "Today" },
+            { key: "tab2", title: "This Week" },
+            { key: "tab3", title: "This Month" },
+          ],
+        }}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+      />
     </SafeAreaView>
   );
 };
@@ -393,5 +541,42 @@ const styles = StyleSheet.create({
     height: profileWidth,
     borderRadius: profileWidth / 2,
     borderColor: "#fff",
+  },
+  tabBar: {
+    flexDirection: "row",
+    backgroundColor: "#f2f2f2",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    backgroundColor: Colors.BORDER_COLOR,
+    width: "95%",
+    alignSelf: "center",
+    borderRadius: 5,
+    height: 35,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "23.75%",
+    borderRadius: 5,
+  },
+  activeTab: {
+    backgroundColor: Colors.RED,
+  },
+  tabText: {
+    fontSize: 13,
+    color: Colors.BLACK,
+    fontWeight: "600",
+  },
+  activeTabTxt: { color: Colors.WHITE },
+  tabContent: {
+    // flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
   },
 });
