@@ -50,7 +50,6 @@ const WelcomeScreen = ({ navigation }) => {
 
   useEffect(async () => {
     const token = await messaging().getToken();
-    console.log("OOOOO", token);
     // Clipboard.setString(token);
     messaging().requestPermission();
     messaging().onMessage(async (remoteMessage) => {
@@ -194,7 +193,7 @@ const WelcomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // checkAppUpdate();
+    checkAppUpdate();
   }, []);
 
   useEffect(() => {
@@ -309,7 +308,7 @@ const WelcomeScreen = ({ navigation }) => {
         <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
         <Text style={styles.textTwoStyle}>
           {
-            "By using this app, Version : CPR40-27052023 you agree to the use of cookies and data processing technologies by us."
+            "By using this app, Version : CPR42-27052023 you agree to the use of cookies and data processing technologies by us."
           }
         </Text>
       </View>

@@ -298,7 +298,7 @@ export const checkLocationPermission = async () => {
     } else {
       Alert.alert(
         "Location Permission Required",
-        'Permissions -> Location ->  Please enable "Allow all the time" for location in your device settings.',
+        'Permissions > Location > Please enable "Allow all the time" for location in your device settings for collects location data to enable your Trips even when the app is closed or not in use.',
         [
           {
             text: "Cancel",
