@@ -86,6 +86,7 @@ const commonMenu = [
   "Download Report",
   // "Complaint Tracker",
   "Knowledge Center",
+  "EMI Calculator",
 ];
 
 const salesMenu = [
@@ -488,6 +489,11 @@ const SideMenuScreen = ({ navigation }) => {
       case 123:
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.complaintTracker
+        );
+        break;
+      case 125:
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.emiCalculator
         );
         break;
       case 112:
