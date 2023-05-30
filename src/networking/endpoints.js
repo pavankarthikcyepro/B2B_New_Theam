@@ -277,6 +277,8 @@ const URL = {
   POST_FINANCE: () => sales_url + "/dms/finance",
   POST_EVALUTION: () => sales_url + "/dms/evaluation",
 
+  POST_ORG_TAGS: () => sales_url + "/orgTagConfiguration/addDmsOrgTagDetails",
+
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",
   GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
@@ -303,6 +305,8 @@ const URL = {
   SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
   GET_OTHER_PRICES_DROP_DOWN: (orgId) =>
     decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/otherCharges`),
+  GET_ORG_TAGS: (orgId) =>
+    decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/organizationTags`),
   GET_ALL_OFFERS: (varientId, vehicleId) => {
     return (
       ops_url +
