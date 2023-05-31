@@ -22,8 +22,8 @@ const maxLoanAmount = 20000000;
 const minInterestRate = 5;
 const maxInterestRate = 20;
 
-const minLoanTenure = 1;
-const maxLoanTenure = 10;
+const minLoanTenure = 11;
+const maxLoanTenure = 120;
 const rupeeSign = "\u20B9";
 
 const EMICalculator = ({ route, navigation }) => {
@@ -32,7 +32,7 @@ const EMICalculator = ({ route, navigation }) => {
 
   useEffect(() => {
     return () => {
-      // dispatch(clearEmiCalculatorData());
+      dispatch(clearEmiCalculatorData());
     };
   }, []);
 
@@ -67,11 +67,11 @@ const EMICalculator = ({ route, navigation }) => {
     }
 
     if (selector.loanTenure < minLoanTenure) {
-      showToast(`Please enter minimum loan tenure ${minLoanTenure} year`);
+      showToast(`Please enter minimum loan tenure ${minLoanTenure} month`);
       return;
     }
     if (selector.loanTenure > maxLoanTenure) {
-      showToast(`Please enter maximum loan tenure ${maxLoanTenure} year`);
+      showToast(`Please enter maximum loan tenure ${maxLoanTenure} month`);
       return;
     }
 
@@ -109,6 +109,26 @@ const EMICalculator = ({ route, navigation }) => {
               onChangeText={(text) =>
                 dispatch(setInputDetails({ key: "LOAN_AMOUNT", text: text }))
               }
+              onEndEditing={() => {
+                if (
+                  selector.loanAmount == "" ||
+                  selector.loanAmount < minLoanAmount
+                ) {
+                  dispatch(
+                    setInputDetails({
+                      key: "LOAN_AMOUNT",
+                      text: minLoanAmount,
+                    })
+                  );
+                } else if (selector.loanAmount > maxLoanAmount) {
+                  dispatch(
+                    setInputDetails({
+                      key: "LOAN_AMOUNT",
+                      text: maxLoanAmount,
+                    })
+                  );
+                }
+              }}
             />
             <View style={styles.sliderMainContainer}>
               <Slider
@@ -129,8 +149,8 @@ const EMICalculator = ({ route, navigation }) => {
                 }
               />
               <View style={styles.sliderMinMaxRow}>
-                <Text>{`${rupeeSign}${minLoanAmount}`}</Text>
-                <Text>{`${rupeeSign}${maxLoanAmount}`}</Text>
+                <Text>{`${rupeeSign}10K`}</Text>
+                <Text>{`${rupeeSign}2Cr`}</Text>
               </View>
             </View>
             <TextinputComp
@@ -142,6 +162,26 @@ const EMICalculator = ({ route, navigation }) => {
               onChangeText={(text) =>
                 dispatch(setInputDetails({ key: "INTEREST_RATE", text: text }))
               }
+              onEndEditing={() => {
+                if (
+                  selector.interestRate == "" ||
+                  selector.interestRate < minInterestRate
+                ) {
+                  dispatch(
+                    setInputDetails({
+                      key: "INTEREST_RATE",
+                      text: minInterestRate,
+                    })
+                  );
+                } else if (selector.interestRate > maxInterestRate) {
+                  dispatch(
+                    setInputDetails({
+                      key: "INTEREST_RATE",
+                      text: maxInterestRate,
+                    })
+                  );
+                }
+              }}
             />
             <View style={styles.sliderMainContainer}>
               <Slider
@@ -156,7 +196,7 @@ const EMICalculator = ({ route, navigation }) => {
                 thumbTintColor={Colors.PINK}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
-                step={0.5}
+                step={0.1}
                 onValueChange={(value) =>
                   onSliderValueChange(value, "interestRate")
                 }
@@ -171,10 +211,24 @@ const EMICalculator = ({ route, navigation }) => {
               value={`${selector.loanTenure}`}
               label={"Loan Tenure*"}
               keyboardType={"number-pad"}
-              maxLength={2}
+              maxLength={3}
               onChangeText={(text) =>
                 dispatch(setInputDetails({ key: "LOAN_TENURE", text: text }))
               }
+              onEndEditing={() => {
+                if (
+                  selector.loanTenure == "" ||
+                  selector.loanTenure < minLoanTenure
+                ) {
+                  dispatch(
+                    setInputDetails({ key: "LOAN_TENURE", text: minLoanTenure })
+                  );
+                } else if (selector.loanTenure > maxLoanTenure) {
+                  dispatch(
+                    setInputDetails({ key: "LOAN_TENURE", text: maxLoanTenure })
+                  );
+                }
+              }}
             />
             <View style={styles.sliderMainContainer}>
               <Slider
@@ -189,14 +243,14 @@ const EMICalculator = ({ route, navigation }) => {
                 thumbTintColor={Colors.PINK}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
-                step={0.5}
+                step={1}
                 onValueChange={(value) =>
                   onSliderValueChange(value, "loanTenure")
                 }
               />
               <View style={styles.sliderMinMaxRow}>
-                <Text>{`${minLoanTenure} year`}</Text>
-                <Text>{`${maxLoanTenure} year`}</Text>
+                <Text>{`${minLoanTenure} Months`}</Text>
+                <Text>{`${maxLoanTenure} Months`}</Text>
               </View>
             </View>
           </View>
@@ -224,7 +278,7 @@ const EMICalculator = ({ route, navigation }) => {
           <View style={styles.emiAmtRow}>
             <Text style={styles.emiRowText}>EMI Amt:</Text>
             <Text style={styles.emiRowText}>{`${rupeeSign}${
-              selector.emiResponse?.emiPerMonth ?? "0"
+              selector.emiResponse?.emiPerMonth?.toLocaleString() ?? "0"
             }`}</Text>
           </View>
 
@@ -232,24 +286,25 @@ const EMICalculator = ({ route, navigation }) => {
             <View style={styles.emiResultRow}>
               <Text style={styles.emiResultRowText}>Principle Amt:</Text>
               <Text style={styles.emiResultRowText}>{`${rupeeSign}${
-                selector.emiResponse ? selector.loanAmount : "0"
+                selector.emiResponse
+                  ? selector.loanAmount?.toLocaleString()
+                  : "0"
               }`}</Text>
             </View>
 
             <View style={styles.emiResultRow}>
               <Text style={styles.emiResultRowText}>Total Interest:</Text>
               <Text style={styles.emiResultRowText}>{`${rupeeSign}${
-                selector.emiResponse?.totalInterest ?? "0"
+                selector.emiResponse?.totalInterest?.toLocaleString() ?? "0"
               }`}</Text>
             </View>
 
             <View style={styles.emiResultRow}>
               <Text style={styles.emiResultRowText}>Total Amt Payble:</Text>
               <Text style={styles.emiResultRowText}>{`${rupeeSign}${
-                selector.emiResponse?.totalPayment ?? "0"
+                selector.emiResponse?.totalPayment?.toLocaleString() ?? "0"
               }`}</Text>
             </View>
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

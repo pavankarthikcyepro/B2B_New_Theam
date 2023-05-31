@@ -22,10 +22,10 @@ interface TextModel {
 
 const initialState = {
   isLoading: false,
-  loanAmount: "",
-  interestRate: "",
-  loanTenure: "",
-  emiResponse: ""
+  loanAmount: 10000,
+  interestRate: 5,
+  loanTenure: 11,
+  emiResponse: "",
 };
 
 export const emiCalculatorReducer = createSlice({
@@ -41,7 +41,8 @@ export const emiCalculatorReducer = createSlice({
           state.loanAmount = text;
           break;
         case "INTEREST_RATE":
-          state.interestRate = text;
+          let value = typeof text == "string" ? text : text.toFixed(2);
+          state.interestRate = value;
           break;
         case "LOAN_TENURE":
           state.loanTenure = text;
