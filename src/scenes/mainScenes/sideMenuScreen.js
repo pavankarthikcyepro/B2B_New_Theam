@@ -303,6 +303,7 @@ const SideMenuScreen = ({ navigation }) => {
       );
     } else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("dealer head") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
       newFilterData = selector.tableData.filter((item) =>
@@ -330,8 +331,8 @@ const SideMenuScreen = ({ navigation }) => {
   const itemSelected = (item) => {
     switch (item.screen) {
       case 99:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
-        // navigation.navigate(managerMenu[0]);
+        // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
+        navigation.navigate(managerMenu[0]);
         dispatch(updateFilterLevelSelectedDataHome({}));
         dispatch(updateDealerFilterDataHome({}));
         dispatch(updateLiveLeadObjectDataHOme({}));
