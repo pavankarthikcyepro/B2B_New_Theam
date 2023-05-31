@@ -273,7 +273,7 @@ const URL = {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
-  
+
   POST_FINANCE: () => sales_url + "/dms/finance",
   POST_EVALUTION: () => sales_url + "/dms/evaluation",
 
@@ -466,7 +466,9 @@ const URL = {
   },
 
   GET_RECHEDULE_REMARKS: (universalId) => {
-    return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+    return (
+      sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`
+    );
   },
 
   GET_WORKFLOW_TASKS: (entityId, taskName) => {
@@ -478,8 +480,6 @@ const URL = {
   GET_PUT_WORKFLOW_HISTORY: (recordid) => {
     return sales_url + `/dms/putWorkflowHistory/${recordid}`;
   },
-
-  
 
   UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
     return sales_url + `/task-history/updateList/${recordid}`;
@@ -1059,7 +1059,12 @@ const URL = {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
   },
   KNOWLEGDE_CENTER: (orgId) => {
-    return vehicleInfoService_url + `/api/vehicle_details/?organizationId=${orgId}`;
+    return (
+      vehicleInfoService_url + `/api/vehicle_details/?organizationId=${orgId}`
+    );
+  },
+  GEOLOCATION_DETAILS: (empId, orgId) => {
+    return sales_url + `/employeeTracking/getDetails/${empId}/${orgId}`;
   },
 };
 

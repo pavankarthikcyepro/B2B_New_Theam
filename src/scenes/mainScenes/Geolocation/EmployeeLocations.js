@@ -4,6 +4,10 @@ import {
   SafeAreaView,
   StyleSheet,
   Dimensions,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import { useDispatch } from "react-redux";
 
@@ -14,16 +18,44 @@ import URL, { baseUrl } from "../../../networking/endpoints";
 import { Calendar } from "react-native-calendars";
 import * as AsyncStore from "../../../asyncStore";
 import moment from "moment";
-import {
-  HomeStackIdentifiers,
-} from "../../../navigations/appNavigator";
+import { HomeStackIdentifiers } from "../../../navigations/appNavigator";
 import { monthNamesCap } from "../Attendance/AttendanceTop";
+import { SceneMap, TabView } from "react-native-tab-view";
+import {
+  DISTANCE,
+  FULL_TIME,
+  TRAVEL_TIME,
+  TRIP_ICON,
+} from "../../../assets/icon";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
+const layout = {
+  "This Week": {
+    trips: 0,
+    travelDistance: 0,
+    travelTime: 0,
+    startTime: "NA",
+    endTime: "NA",
+  },
+  Today: {
+    trips: 0,
+    travelDistance: 0,
+    travelTime: 0,
+    startTime: "00:00:00 AM",
+    endTime: "00:00:00 PM",
+  },
+  "This Month": {
+    trips: 0,
+    travelDistance: 0,
+    travelTime: 0,
+    startTime: "NA",
+    endTime: "NA",
+  },
+};
 
 const EmployeeLocationsScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
@@ -31,6 +63,8 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [marker, setMarker] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [stats, setStats] = useState(layout);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     console.log("route.params", route.params);
@@ -48,6 +82,32 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
     setLoading(true);
     getAttendance(route.params);
   }, [currentMonth]);
+
+  useEffect(() => {
+    if (route.params) {
+      getTabBarData(route.params);
+    }
+  }, [route.params]);
+
+  const getTabBarData = async (params) => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(
+          URL.GEOLOCATION_DETAILS(params.empId, params.orgId)
+        );
+        const json = await response.json();
+        if (response.ok) {
+          setStats(json);
+        } else {
+          setStats(layout);
+        }
+      }
+    } catch (error) {}
+  };
 
   const getAttendance = async (params) => {
     try {
@@ -123,7 +183,247 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
       date: selectedDate,
     });
   };
+  const handleTabPress = (index) => {
+    setIndex(index);
+  };
 
+  const renderTabBar = (props) => {
+    return (
+      <View style={styles.tabBar}>
+        {props.navigationState.routes.map((route, i) => (
+          <TouchableOpacity
+            key={route.key}
+            style={[styles.tabItem, index === i && styles.activeTab]}
+            onPress={() => handleTabPress(i)}
+          >
+            <Text style={[styles.tabText, index === i && styles.activeTabTxt]}>
+              {route.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+
+  const Card = ({ title, value, icon }) => {
+    return (
+      <View
+        style={[
+          {
+            borderRadius: 12,
+            borderColor: Colors.BLACK,
+            justifyContent: "space-around",
+            padding: 10,
+            backgroundColor: Colors.WHITE,
+            shadowColor: Colors.DARK_GRAY,
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowRadius: 2,
+            shadowOpacity: 0.5,
+            elevation: 3,
+            width: "45%",
+          },
+        ]}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 12,
+              backgroundColor: "#ffb6c1",
+              borderRadius: 25,
+            }}
+          >
+            <Image
+              source={icon}
+              resizeMode="contain"
+              style={{ width: 20, height: 20 }}
+            />
+          </View>
+        </View>
+        <View style={{ marginTop: 15 }}>
+          <Text style={{ color: Colors.BLACK, fontSize: 15 }}>{title}</Text>
+          <Text
+            disabled={title === "Trips" ? false : true}
+            onPress={() => {}}
+            style={{
+              color: Colors.RED,
+              fontSize: 14,
+              fontWeight: "bold",
+              marginTop: 5,
+              textDecorationLine: title === "Trips" ? "underline" : "none",
+              textDecorationColor: Colors.RED,
+            }}
+          >
+            {value}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  function formattedDate(params) {
+    if (params === "NA") {
+      return params;
+    } else {
+      const formattedTime = moment(params, "hh:mm:ss A").format("hh:mm a");
+      return formattedTime;
+    }
+  }
+
+  function formattedTime(diffInSeconds) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = diffInSeconds % 60;
+
+    return `${hours}hr ${minutes}min ${seconds}sec`;
+  }
+
+  const commonTab = () => (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginTop: 10,
+        }}
+      >
+        <Card title={"Trips"} value={stats["Today"].trips} icon={TRIP_ICON} />
+        <Card
+          title={"Start & End Time"}
+          value={
+            formattedDate(stats["Today"].startTime) +
+            " - " +
+            formattedDate(stats["Today"].endTime)
+          }
+          icon={FULL_TIME}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginVertical: 10,
+        }}
+      >
+        <Card
+          title={"Travel Distance"}
+          value={stats["Today"].travelDistance + " KM"}
+          icon={DISTANCE}
+        />
+        <Card
+          title={"Travel Time"}
+          value={formattedTime(stats["Today"].travelTime)}
+          icon={TRAVEL_TIME}
+        />
+      </View>
+    </ScrollView>
+  );
+
+  const commonTab1 = () => (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginTop: 10,
+        }}
+      >
+        <Card
+          title={"Trips"}
+          value={stats["This Week"].trips}
+          icon={TRIP_ICON}
+        />
+        <Card
+          title={"Start & End Time"}
+          value={
+            formattedDate(stats["This Week"].startTime) +
+            " - " +
+            formattedDate(stats["This Week"].endTime)
+          }
+          icon={FULL_TIME}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginVertical: 10,
+        }}
+      >
+        <Card
+          title={"Travel Distance"}
+          value={stats["This Week"].travelDistance + " KM"}
+          icon={DISTANCE}
+        />
+        <Card
+          title={"Travel Time"}
+          value={formattedTime(stats["This Week"].travelTime)}
+          icon={TRAVEL_TIME}
+        />
+      </View>
+    </ScrollView>
+  );
+
+  const commonTab2 = () => (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginTop: 10,
+        }}
+      >
+        <Card
+          title={"Trips"}
+          value={stats["This Month"].trips}
+          icon={TRIP_ICON}
+        />
+        <Card
+          title={"Start & End Time"}
+          value={
+            formattedDate(stats["This Month"].startTime) +
+            " - " +
+            formattedDate(stats["This Month"].endTime)
+          }
+          icon={FULL_TIME}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginVertical: 10,
+        }}
+      >
+        <Card
+          title={"Travel Distance"}
+          value={stats["This Month"].travelDistance + " KM"}
+          icon={DISTANCE}
+        />
+        <Card
+          title={"Travel Time"}
+          value={formattedTime(stats["This Month"].travelTime)}
+          icon={TRAVEL_TIME}
+        />
+      </View>
+    </ScrollView>
+  );
+
+  const renderScene = SceneMap({
+    tab1: commonTab,
+    tab2: commonTab1,
+    tab3: commonTab2,
+  });
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -142,6 +442,22 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
           onPressArrowRight={(addMonth) => addMonth()}
           enableSwipeMonths={true}
           theme={{
+            "stylesheet.calendar.header": {
+              dayTextAtIndex0: {
+                color: Colors.GRAY,
+              },
+              dayTextAtIndex6: {
+                color: Colors.GRAY,
+              },
+            },
+            "stylesheet.day.basic": {
+              dayTextAtIndex0: {
+                color: Colors.GRAY,
+              },
+              dayTextAtIndex6: {
+                color: Colors.GRAY,
+              },
+            },
             arrowColor: Colors.RED,
             dotColor: Colors.RED,
             textMonthFontWeight: "500",
@@ -150,12 +466,29 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
             dayTextColor: Colors.BLACK,
             selectedDayBackgroundColor: Colors.GRAY,
             textDayFontWeight: "500",
+            textDayStyle: {
+              color: Colors.BLACK,
+            },
+            textSectionTitleColor: Colors.BLACK,
           }}
           markingType={"custom"}
           markedDates={marker}
         />
       </View>
       <LoaderComponent visible={loading} />
+      <TabView
+        navigationState={{
+          index,
+          routes: [
+            { key: "tab1", title: "Today" },
+            { key: "tab2", title: "This Week" },
+            { key: "tab3", title: "This Month" },
+          ],
+        }}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+      />
     </SafeAreaView>
   );
 };
@@ -410,5 +743,42 @@ const styles = StyleSheet.create({
     height: profileWidth,
     borderRadius: profileWidth / 2,
     borderColor: "#fff",
+  },
+  tabBar: {
+    flexDirection: "row",
+    backgroundColor: "#f2f2f2",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    backgroundColor: Colors.BORDER_COLOR,
+    width: "95%",
+    alignSelf: "center",
+    borderRadius: 5,
+    height: 35,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "23.75%",
+    borderRadius: 5,
+  },
+  activeTab: {
+    backgroundColor: Colors.RED,
+  },
+  tabText: {
+    fontSize: 13,
+    color: Colors.BLACK,
+    fontWeight: "600",
+  },
+  activeTabTxt: { color: Colors.WHITE },
+  tabContent: {
+    // flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
   },
 });

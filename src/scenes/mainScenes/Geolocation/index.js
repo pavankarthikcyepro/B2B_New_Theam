@@ -7,6 +7,7 @@ import {
   Text,
   ScrollView,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { useDispatch } from "react-redux";
 
@@ -22,7 +23,6 @@ import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geol
 import { monthNamesCap } from "../Attendance/AttendanceTop";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { SceneMap, TabView } from "react-native-tab-view";
-import { TouchableOpacity } from "react-native";
 import {
   DISTANCE,
   FULL_TIME,
@@ -36,6 +36,29 @@ const currentDate = moment().format(dateFormat);
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
+const layout = {
+  "This Week": {
+    trips: 0,
+    travelDistance: 0,
+    travelTime: 0,
+    startTime: "NA",
+    endTime: "NA",
+  },
+  Today: {
+    trips: 0,
+    travelDistance: 0,
+    travelTime: 0,
+    startTime: "00:00:00 AM",
+    endTime: "00:00:00 PM",
+  },
+  "This Month": {
+    trips: 0,
+    travelDistance: 0,
+    travelTime: 0,
+    startTime: "NA",
+    endTime: "NA",
+  },
+};
 
 const GeoLocationScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
@@ -46,6 +69,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
   const [userData, setUserData] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [index, setIndex] = useState(0);
+  const [stats, setStats] = useState(layout);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -60,7 +84,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     getTabBarData();
-  }, []);
+  }, [isFocused]);
 
   const getTabBarData = async () => {
     try {
@@ -69,33 +93,18 @@ const GeoLocationScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        const response = await client.get();
+        const response = await client.get(
+          URL.GEOLOCATION_DETAILS(jsonObj.empId, jsonObj.orgId)
+        );
         const json = await response.json();
+        if (response.ok) {
+          setStats(json);
+        } else {
+          setStats(layout);
+        }
       }
     } catch (error) {}
   };
-
-  function getCurrentDates() {
-    var today = moment();
-    var currentMonth = today.month(); // Current month (0-11)
-    var currentYear = today.year(); // Current year
-
-    // Start and end date of the current month
-    var startOfMonth = moment([currentYear, currentMonth]);
-    var endOfMonth = moment(startOfMonth).endOf("month");
-
-    // Start and end date of the current week
-    var startOfWeek = moment(today).startOf("week");
-    var endOfWeek = moment(today).endOf("week");
-
-    return {
-      currentDate: today.format(dateFormat),
-      startOfMonth: startOfMonth.format(dateFormat),
-      endOfMonth: endOfMonth.format(dateFormat),
-      startOfWeek: startOfWeek.format(dateFormat),
-      endOfWeek: endOfWeek.format(dateFormat),
-    };
-  }
 
   const getAttendance = async () => {
     try {
@@ -243,6 +252,23 @@ const GeoLocationScreen = ({ route, navigation }) => {
     );
   };
 
+  function formattedDate(params) {
+    if (params === "NA") {
+      return params;
+    } else {
+      const formattedTime = moment(params, "hh:mm:ss A").format("hh:mm a");
+      return formattedTime;
+    }
+  }
+
+  function formattedTime(diffInSeconds) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = diffInSeconds % 60;
+
+    return `${hours}hr ${minutes}min ${seconds}sec`;
+  }
+
   const commonTab = () => (
     <ScrollView>
       <View
@@ -253,10 +279,14 @@ const GeoLocationScreen = ({ route, navigation }) => {
           marginTop: 10,
         }}
       >
-        <Card title={"Trips"} value={"5"} icon={TRIP_ICON} />
+        <Card title={"Trips"} value={stats["Today"].trips} icon={TRIP_ICON} />
         <Card
           title={"Start & End Time"}
-          value={"9:00 am - 12:56 pm"}
+          value={
+            formattedDate(stats["Today"].startTime) +
+            " - " +
+            formattedDate(stats["Today"].endTime)
+          }
           icon={FULL_TIME}
         />
       </View>
@@ -268,10 +298,108 @@ const GeoLocationScreen = ({ route, navigation }) => {
           marginVertical: 10,
         }}
       >
-        <Card title={"Travel Distance"} value={"1.86 KM"} icon={DISTANCE} />
+        <Card
+          title={"Travel Distance"}
+          value={stats["Today"].travelDistance + " KM"}
+          icon={DISTANCE}
+        />
         <Card
           title={"Travel Time"}
-          value={"03hr 10min 04sec"}
+          value={formattedTime(stats["Today"].travelTime)}
+          icon={TRAVEL_TIME}
+        />
+      </View>
+    </ScrollView>
+  );
+
+  const commonTab1 = () => (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginTop: 10,
+        }}
+      >
+        <Card
+          title={"Trips"}
+          value={stats["This Week"].trips}
+          icon={TRIP_ICON}
+        />
+        <Card
+          title={"Start & End Time"}
+          value={
+            formattedDate(stats["This Week"].startTime) +
+            " - " +
+            formattedDate(stats["This Week"].endTime)
+          }
+          icon={FULL_TIME}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginVertical: 10,
+        }}
+      >
+        <Card
+          title={"Travel Distance"}
+          value={stats["This Week"].travelDistance + " KM"}
+          icon={DISTANCE}
+        />
+        <Card
+          title={"Travel Time"}
+          value={formattedTime(stats["This Week"].travelTime)}
+          icon={TRAVEL_TIME}
+        />
+      </View>
+    </ScrollView>
+  );
+
+  const commonTab2 = () => (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginTop: 10,
+        }}
+      >
+        <Card
+          title={"Trips"}
+          value={stats["This Month"].trips}
+          icon={TRIP_ICON}
+        />
+        <Card
+          title={"Start & End Time"}
+          value={
+            formattedDate(stats["This Month"].startTime) +
+            " - " +
+            formattedDate(stats["This Month"].endTime)
+          }
+          icon={FULL_TIME}
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-around",
+          marginVertical: 10,
+        }}
+      >
+        <Card
+          title={"Travel Distance"}
+          value={stats["This Month"].travelDistance + " KM"}
+          icon={DISTANCE}
+        />
+        <Card
+          title={"Travel Time"}
+          value={formattedTime(stats["This Month"].travelTime)}
           icon={TRAVEL_TIME}
         />
       </View>
@@ -280,8 +408,8 @@ const GeoLocationScreen = ({ route, navigation }) => {
 
   const renderScene = SceneMap({
     tab1: commonTab,
-    tab2: commonTab,
-    tab3: commonTab,
+    tab2: commonTab1,
+    tab3: commonTab2,
   });
 
   return (
@@ -331,16 +459,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
             },
             textSectionTitleColor: Colors.BLACK,
           }}
-          // theme={{
-          //   arrowColor: Colors.RED,
-          //   dotColor: Colors.RED,
-          //   textMonthFontWeight: "500",
-          //   monthTextColor: Colors.RED,
-          //   indicatorColor: Colors.RED,
-          //   dayTextColor: Colors.BLACK,
-          //   selectedDayBackgroundColor: Colors.GRAY,
-          //   textDayFontWeight: "500",
-          // }}
           markingType={"custom"}
           markedDates={marker}
         />
