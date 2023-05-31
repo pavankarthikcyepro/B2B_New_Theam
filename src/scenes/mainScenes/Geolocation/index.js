@@ -29,6 +29,7 @@ import {
   TRAVEL_TIME,
   TRIP_ICON,
 } from "../../../assets/icon";
+import { useIsFocused } from "@react-navigation/native";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -38,6 +39,7 @@ const profileBgWidth = profileWidth + 5;
 
 const GeoLocationScreen = ({ route, navigation }) => {
   // const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [marker, setMarker] = useState({});
@@ -55,6 +57,45 @@ const GeoLocationScreen = ({ route, navigation }) => {
     setLoading(true);
     getAttendance();
   }, [currentMonth]);
+
+  useEffect(() => {
+    getTabBarData();
+  }, []);
+
+  const getTabBarData = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get();
+        const json = await response.json();
+      }
+    } catch (error) {}
+  };
+
+  function getCurrentDates() {
+    var today = moment();
+    var currentMonth = today.month(); // Current month (0-11)
+    var currentYear = today.year(); // Current year
+
+    // Start and end date of the current month
+    var startOfMonth = moment([currentYear, currentMonth]);
+    var endOfMonth = moment(startOfMonth).endOf("month");
+
+    // Start and end date of the current week
+    var startOfWeek = moment(today).startOf("week");
+    var endOfWeek = moment(today).endOf("week");
+
+    return {
+      currentDate: today.format(dateFormat),
+      startOfMonth: startOfMonth.format(dateFormat),
+      endOfMonth: endOfMonth.format(dateFormat),
+      startOfWeek: startOfWeek.format(dateFormat),
+      endOfWeek: endOfWeek.format(dateFormat),
+    };
+  }
 
   const getAttendance = async () => {
     try {
@@ -174,7 +215,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
               borderRadius: 25,
             }}
           >
-            {/* <MaterialIcons name="person" size={20} color={Colors.BLACK} /> */}
             <Image
               source={icon}
               resizeMode="contain"
@@ -185,11 +225,15 @@ const GeoLocationScreen = ({ route, navigation }) => {
         <View style={{ marginTop: 15 }}>
           <Text style={{ color: Colors.BLACK, fontSize: 15 }}>{title}</Text>
           <Text
+            disabled={title === "Trips" ? false : true}
+            onPress={() => {}}
             style={{
               color: Colors.RED,
               fontSize: 14,
               fontWeight: "bold",
               marginTop: 5,
+              textDecorationLine: title === "Trips" ? "underline" : "none",
+              textDecorationColor: Colors.RED,
             }}
           >
             {value}
@@ -200,7 +244,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   const commonTab = () => (
-    // <View style={styles.tabContent}>
     <ScrollView>
       <View
         style={{
@@ -233,7 +276,6 @@ const GeoLocationScreen = ({ route, navigation }) => {
         />
       </View>
     </ScrollView>
-    // </View>
   );
 
   const renderScene = SceneMap({
@@ -260,6 +302,22 @@ const GeoLocationScreen = ({ route, navigation }) => {
           onPressArrowRight={(addMonth) => addMonth()}
           enableSwipeMonths={true}
           theme={{
+            "stylesheet.calendar.header": {
+              dayTextAtIndex0: {
+                color: Colors.GRAY,
+              },
+              dayTextAtIndex6: {
+                color: Colors.GRAY,
+              },
+            },
+            "stylesheet.day.basic": {
+              dayTextAtIndex0: {
+                color: Colors.GRAY,
+              },
+              dayTextAtIndex6: {
+                color: Colors.GRAY,
+              },
+            },
             arrowColor: Colors.RED,
             dotColor: Colors.RED,
             textMonthFontWeight: "500",
@@ -268,7 +326,21 @@ const GeoLocationScreen = ({ route, navigation }) => {
             dayTextColor: Colors.BLACK,
             selectedDayBackgroundColor: Colors.GRAY,
             textDayFontWeight: "500",
+            textDayStyle: {
+              color: Colors.BLACK,
+            },
+            textSectionTitleColor: Colors.BLACK,
           }}
+          // theme={{
+          //   arrowColor: Colors.RED,
+          //   dotColor: Colors.RED,
+          //   textMonthFontWeight: "500",
+          //   monthTextColor: Colors.RED,
+          //   indicatorColor: Colors.RED,
+          //   dayTextColor: Colors.BLACK,
+          //   selectedDayBackgroundColor: Colors.GRAY,
+          //   textDayFontWeight: "500",
+          // }}
           markingType={"custom"}
           markedDates={marker}
         />

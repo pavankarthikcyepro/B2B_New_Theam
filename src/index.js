@@ -89,6 +89,30 @@ const AppScreen = () => {
     setSubscriptionId(null);
   };
 
+  const calculateDistance = (coord1, coord2) => {
+    return haversine(coord1, coord2, { unit: "km" });
+  };
+
+  // function to calculate the total distance traveled
+  const getTotalDistance = (coordinates) => {
+    let totalDistance = 0;
+    for (let i = 1; i < coordinates.length; i++) {
+      const coord1 = coordinates[i - 1];
+      const coord2 = coordinates[i];
+      const distance = calculateDistance(coord1, coord2);
+      totalDistance += distance;
+    }
+    return totalDistance;
+  };
+
+  const totalTimeTravel = (start, end) => {
+    const timestamp1 = new Date(start).getTime();
+    const timestamp2 = new Date(end).getTime();
+    const diffInMs = Math.abs(timestamp2 - timestamp1);
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    return diffInSeconds;
+  };
+
   const checkTheDate = async (employeeData, lastPosition) => {
     const { longitude, latitude, speed } = lastPosition;
     if (employeeData) {
@@ -129,6 +153,11 @@ const AppScreen = () => {
             latitude,
             longitude
           );
+          const totalDistance = getTotalDistance(finalArray);
+          const totalTime = totalTimeTravel(
+            hasObjectWithCurrentDate.createdtimestamp,
+            new Date()
+          );
           if (distance >= distanceFilterValue) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
@@ -145,6 +174,8 @@ const AppScreen = () => {
               speed: speed.toString(),
               isStart: "true",
               isEnd: "false",
+              travelDistance: totalDistance.toString(),
+              travelTime: totalTime,
             };
             const response = await client.put(
               locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
@@ -170,6 +201,8 @@ const AppScreen = () => {
             speed: speed.toString(),
             isStart: "true",
             isEnd: "false",
+            travelDistance: "0",
+            travelTime: null,
           };
           const response = await client.post(saveLocation, payload);
           const json = await response.json();
@@ -188,6 +221,8 @@ const AppScreen = () => {
           speed: speed.toString(),
           isStart: "true",
           isEnd: "false",
+          travelDistance: "0",
+          travelTime: null,
         };
         const response = await client.post(saveLocation, payload);
         const json = await response.json();
@@ -234,6 +269,11 @@ const AppScreen = () => {
             latitude,
             longitude
           );
+          const totalDistance = getTotalDistance(finalArray);
+          const totalTime = totalTimeTravel(
+            hasObjectWithCurrentDate.createdtimestamp,
+            new Date()
+          );
           if (distance >= distanceFilterValue) {
             const payload = {
               id: hasObjectWithCurrentDate.id,
@@ -250,6 +290,8 @@ const AppScreen = () => {
               speed: speed.toString(),
               isStart: "true",
               isEnd: "true",
+              travelDistance: totalDistance.toString(),
+              travelTime: totalTime,
             };
             const response = await client.put(
               locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
