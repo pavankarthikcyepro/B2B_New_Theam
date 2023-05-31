@@ -303,6 +303,7 @@ const SideMenuScreen = ({ navigation }) => {
       );
     } else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("dealer head") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
       newFilterData = selector.tableData.filter((item) =>
