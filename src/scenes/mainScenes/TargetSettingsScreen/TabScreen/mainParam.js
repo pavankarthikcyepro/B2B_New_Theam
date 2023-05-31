@@ -164,6 +164,15 @@ const MainParamScreen = ({ route, navigation }) => {
   const [teamMember, setTeamMember] = useState("");
   const scrollViewRef = useRef();
   const translation = useRef(new Animated.Value(0)).current;
+  const [userData, setUserData] = useState({
+    empId: 0,
+    empName: "",
+    hrmsRole: "",
+    orgId: 0,
+    branchs: [],
+    isSelfManager: "N",
+    orgName: "",
+  });
 
   const paramsMetadata = [
     // 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'
@@ -325,6 +334,15 @@ const MainParamScreen = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        setUserData({
+          empId: jsonObj.empId,
+          empName: jsonObj.empName,
+          hrmsRole: jsonObj.hrmsRole,
+          orgId: jsonObj.orgId,
+          branchs: jsonObj.branchs,
+          isSelfManager: jsonObj.isSelfManager,
+          orgName: jsonObj.orgName,
+        });
         jsonObj.employeeId = jsonObj.empId;
         setLoggedInEmpDetails(jsonObj);
       }
@@ -2000,6 +2018,16 @@ const MainParamScreen = ({ route, navigation }) => {
     }
   }
 
+  const checkIsSelfManager = () => {
+    if (
+      userData?.orgName?.includes("BikeWo Corporation") &&
+      userData.isSelfManager == "Y"
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <>
       {true && (
@@ -2206,7 +2234,11 @@ const MainParamScreen = ({ route, navigation }) => {
                                   <RenderLevel1NameView
                                     level={0}
                                     item={item}
-                                    branchName={getBranchName(item?.branch)}
+                                    branchName={
+                                      checkIsSelfManager()
+                                        ? ""
+                                        : getBranchName(item?.branch)
+                                    }
                                     color={"#C62159"}
                                     teamLoader={teamLoader}
                                     teamMember={teamMember}
@@ -2317,7 +2349,11 @@ const MainParamScreen = ({ route, navigation }) => {
                                   <RenderLevel1NameView
                                     level={0}
                                     item={item}
-                                    branchName={getBranchName(item?.branchId)}
+                                    branchName={
+                                      checkIsSelfManager()
+                                        ? ""
+                                        : getBranchName(item?.branchId)
+                                    }
                                     color={"#C62159"}
                                     teamLoader={teamLoader}
                                     teamMember={teamMember}
@@ -2445,9 +2481,13 @@ const MainParamScreen = ({ route, navigation }) => {
                                                   level={1}
                                                   item={innerItem1}
                                                   color={Colors.CORAL}
-                                                  branchName={getBranchName(
-                                                    innerItem1?.branchId
-                                                  )}
+                                                  branchName={
+                                                    checkIsSelfManager()
+                                                      ? ""
+                                                      : getBranchName(
+                                                          innerItem1?.branchId
+                                                        )
+                                                  }
                                                   teamLoader={teamLoader}
                                                   teamMember={teamMember}
                                                   titleClick={async () => {
@@ -2593,9 +2633,13 @@ const MainParamScreen = ({ route, navigation }) => {
                                                           teamMember={
                                                             teamMember
                                                           }
-                                                          branchName={getBranchName(
-                                                            innerItem2?.branchId
-                                                          )}
+                                                          branchName={
+                                                            checkIsSelfManager()
+                                                              ? ""
+                                                              : getBranchName(
+                                                                  innerItem2?.branchId
+                                                                )
+                                                          }
                                                           titleClick={async () => {
                                                             const localData = [
                                                               ...allParameters,
@@ -2745,9 +2789,13 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                     color={
                                                                       "#EC3466"
                                                                     }
-                                                                    branchName={getBranchName(
-                                                                      innerItem3?.branchId
-                                                                    )}
+                                                                    branchName={
+                                                                      checkIsSelfManager()
+                                                                        ? ""
+                                                                        : getBranchName(
+                                                                            innerItem3?.branchId
+                                                                          )
+                                                                    }
                                                                     teamLoader={
                                                                       teamLoader
                                                                     }
@@ -2915,9 +2963,13 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                               color={
                                                                                 "#1C95A6"
                                                                               }
-                                                                              branchName={getBranchName(
-                                                                                innerItem4?.branchId
-                                                                              )}
+                                                                              branchName={
+                                                                                checkIsSelfManager()
+                                                                                  ? ""
+                                                                                  : getBranchName(
+                                                                                      innerItem4?.branchId
+                                                                                    )
+                                                                              }
                                                                               teamLoader={
                                                                                 teamLoader
                                                                               }
@@ -3088,9 +3140,13 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                         color={
                                                                                           "#C62159"
                                                                                         }
-                                                                                        branchName={getBranchName(
-                                                                                          innerItem5?.branchId
-                                                                                        )}
+                                                                                        branchName={
+                                                                                          checkIsSelfManager()
+                                                                                            ? ""
+                                                                                            : getBranchName(
+                                                                                                innerItem5?.branchId
+                                                                                              )
+                                                                                        }
                                                                                         teamLoader={
                                                                                           teamLoader
                                                                                         }
@@ -3264,9 +3320,13 @@ const MainParamScreen = ({ route, navigation }) => {
                                                                                                   color={
                                                                                                     "#C62159"
                                                                                                   }
-                                                                                                  branchName={getBranchName(
-                                                                                                    innerItem6?.branchId
-                                                                                                  )}
+                                                                                                  branchName={
+                                                                                                    checkIsSelfManager()
+                                                                                                      ? ""
+                                                                                                      : getBranchName(
+                                                                                                          innerItem6?.branchId
+                                                                                                        )
+                                                                                                  }
                                                                                                   teamLoader={
                                                                                                     teamLoader
                                                                                                   }
@@ -4039,17 +4099,19 @@ export const RenderLevel1NameView = ({
             </Text>
           </TouchableOpacity>
         )}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <IconButton
-            icon="map-marker"
-            style={{ padding: 0, margin: 0 }}
-            color={Colors.RED}
-            size={8}
-          />
-          <Text style={{ fontSize: 8 }} numberOfLines={2}>
-            {branchName}
-          </Text>
-        </View>
+        {branchName ? (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </View>
+        ) : null}
       </View>
       <View
         style={{

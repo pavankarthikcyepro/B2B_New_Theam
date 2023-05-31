@@ -59,6 +59,8 @@ const ParametersScreen = ({ route }) => {
     hrmsRole: "",
     orgId: 0,
     branchs: [],
+    isSelfManager: "N",
+    orgName: "",
   });
   const [selfInsightsData, setSelfInsightsData] = useState([]);
 
@@ -237,6 +239,8 @@ const ParametersScreen = ({ route }) => {
           hrmsRole: jsonObj.hrmsRole,
           orgId: jsonObj.orgId,
           branchs: jsonObj.branchs,
+          isSelfManager: jsonObj.isSelfManager,
+          orgName: jsonObj.orgName,
         });
 
         if (
@@ -3473,8 +3477,8 @@ const ParametersScreen = ({ route }) => {
                   orgId: selector.login_employee_details.orgId,
                   type: "TEAM",
                   moduleType: "live-leads",
-                  isOpenner: item.isOpenInner,// added to manage source/model issue
-                  isFromHome: true// added to manage source/model issue
+                  isOpenner: item.isOpenInner, // added to manage source/model issue
+                  isFromHome: true, // added to manage source/model issue
                 }
               );
             }}
@@ -3522,7 +3526,9 @@ const ParametersScreen = ({ route }) => {
               <RenderLevel1NameView
                 level={0}
                 item={item}
-                branchName={getBranchName(item.branchId)}
+                branchName={
+                  checkIsSelfManager() ? "" : getBranchName(item.branchId)
+                }
                 color={borderColor}
                 teamLoader={teamLoader}
                 teamMember={teamMember}
@@ -3547,6 +3553,16 @@ const ParametersScreen = ({ route }) => {
         </View>
       </View>
     );
+  };
+
+  const checkIsSelfManager = () => {
+    if (
+      userData?.orgName?.includes("BikeWo Corporation") &&
+      userData.isSelfManager == "Y"
+    ) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -3983,7 +3999,11 @@ const ParametersScreen = ({ route }) => {
                                     <RenderLevel1NameView
                                       level={0}
                                       item={item}
-                                      branchName={getBranchName(item?.branch)}
+                                      branchName={
+                                        checkIsSelfManager()
+                                          ? ""
+                                          : getBranchName(item?.branch)
+                                      }
                                       color={"#C62159"}
                                       titleClick={async () => {
                                         return;
