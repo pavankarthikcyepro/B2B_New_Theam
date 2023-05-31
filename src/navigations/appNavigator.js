@@ -1597,7 +1597,6 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       }}
       screenOptions={{
         animationEnabled: false,
-        unmountOnBlur: true
       }}
       drawerContent={(props) => <SideMenuScreen {...props} />}
       initialRouteName={DrawerStackIdentifiers.home}
