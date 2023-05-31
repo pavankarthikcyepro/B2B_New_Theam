@@ -96,6 +96,19 @@ const salesMenu = [
   // "Event Dashboard",
 ];
 
+const bikeWoMenu = [
+  "Home",
+  "Sign Out",
+  "Settings",
+  "Helpdesk",
+  "QR Code",
+  "Drop Analysis",
+  "My Stock",
+  "Download Report",
+  "Live Leads",
+  "Target Planning",
+];
+
 const receptionTelCallerMenu = [
   ...commonMenu,
   "Live Leads",
@@ -285,7 +298,11 @@ const SideMenuScreen = ({ navigation }) => {
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
     let newFilterData = [];
-    if (
+    if (jsonObj.orgName?.includes("BikeWo Corporation")) {
+      newFilterData = selector.tableData.filter((item) =>
+        bikeWoMenu.includes(item.title)
+      );
+    } else if (
       jsonObj.hrmsRole == "Reception" ||
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
