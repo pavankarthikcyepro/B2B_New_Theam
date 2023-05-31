@@ -106,6 +106,7 @@ const bikeWoMenu = [
   "Download Report",
   "Live Leads",
   "Target Planning",
+  "Digital Dashboard",
 ];
 
 const receptionTelCallerMenu = [
