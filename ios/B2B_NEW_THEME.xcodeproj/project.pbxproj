@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* B2B_NEW_THEMETests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* B2B_NEW_THEMETests.m */; };
+		0F8A4C012A289FE600EE1DB1 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F8A4BFF2A289FE200EE1DB1 /* libsqlite3.0.tbd */; };
 		0F8C7DF929C2F6B300393A1E /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F8C7DF829C2F6B300393A1E /* OpenSSL.xcframework */; };
 		0F8C7DFC29C2F8D200393A1E /* libreact-native-maps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F8C7DFB29C2F8D200393A1E /* libreact-native-maps.a */; };
 		0F8C7E0A29C31B5A00393A1E /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8C7E0829C31B5A00393A1E /* icon.png */; };
@@ -47,6 +48,7 @@
 		0A42AF7A24EC43728963CA34 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		0F06DD2B2930A0150070A45E /* B2B_NEW_THEME.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = B2B_NEW_THEME.entitlements; path = B2B_NEW_THEME/B2B_NEW_THEME.entitlements; sourceTree = "<group>"; };
 		0F06DD2C2930A0280070A45E /* B2B_NEW_THEMERelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = B2B_NEW_THEMERelease.entitlements; path = B2B_NEW_THEME/B2B_NEW_THEMERelease.entitlements; sourceTree = "<group>"; };
+		0F8A4BFF2A289FE200EE1DB1 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		0F8C7DEC29C2E6DA00393A1E /* libreact-native-maps.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libreact-native-maps.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F8C7DEF29C2F18200393A1E /* AirMaps.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
 		0F8C7DF829C2F6B300393A1E /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = "Pods/OpenSSL-Universal/Frameworks/OpenSSL.xcframework"; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F8A4C012A289FE600EE1DB1 /* libsqlite3.0.tbd in Frameworks */,
 				0F8C7DFC29C2F8D200393A1E /* libreact-native-maps.a in Frameworks */,
 				0F8C7DF929C2F6B300393A1E /* OpenSSL.xcframework in Frameworks */,
 				BDAE9779297657E900F6B56E /* libswiftWebKit.tbd in Frameworks */,
@@ -153,6 +156,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0F8A4BFF2A289FE200EE1DB1 /* libsqlite3.0.tbd */,
 				0F8C7DFB29C2F8D200393A1E /* libreact-native-maps.a */,
 				0F8C7DF829C2F6B300393A1E /* OpenSSL.xcframework */,
 				0F8C7DEF29C2F18200393A1E /* AirMaps.xcodeproj */,
@@ -260,12 +264,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "B2B_NEW_THEME" */;
 			buildPhases = (
+				593F43DDDD47524BECF5F7B6 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				593F43DDDD47524BECF5F7B6 /* [CP] Check Pods Manifest.lock */,
 				0F8CA7A02D24AFCC3F96D013 /* [CP] Copy Pods Resources */,
 				B2898691AC5897438600A791 /* [CP-User] [RNFB] Core Configuration */,
 				959F4884D082FCE5F2D37C42 /* [CP-User] [RNFB] Crashlytics Configuration */,

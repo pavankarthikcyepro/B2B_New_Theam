@@ -12,6 +12,7 @@ import messaging from "@react-native-firebase/messaging";
 import TrackPlayer from "react-native-track-player";
 import ReactNativeForegroundService from "@supersami/rn-foreground-service";
 import RNLocation from "react-native-location";
+import App from "./src/App";
 
 if (__DEV__) {
   import("./config/ReactotronConfig").then(() => {});
@@ -43,5 +44,5 @@ RNLocation.configure({
   showsBackgroundLocationIndicator: true,
 });
 
-AppRegistry.registerComponent(appName, () => AppScreen);
+AppRegistry.registerComponent(appName, () => App);
 TrackPlayer.registerPlaybackService(() => require("./trackServices"));
