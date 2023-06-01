@@ -292,7 +292,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
-    approverId:""
+    approverId: "",
+    orgName: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -430,6 +431,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       employeeName: "",
       isSelfManager: "",
       isTracker: "",
+      orgName: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -556,7 +558,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
-        approverId: jsonObj.approverId
+        approverId: jsonObj.approverId,
+        orgName: jsonObj.orgName,
       });
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
@@ -2048,15 +2051,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const taskStatus = dataObj.taskStatus;
 
         if (taskNames === "") {
-          navigation.navigate(
-            AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-            {
-              identifier: "PROCEED_TO_PRE_BOOKING",
-              taskId,
-              universalId,
-              taskStatus,
-            }
-          );
+          proceedToFinalPreBookingClicked(taskId);
+          // navigation.navigate(
+          //   AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+          //   {
+          //     identifier: "PROCEED_TO_PRE_BOOKING",
+          //     taskId,
+          //     universalId,
+          //     taskStatus,
+          //   }
+          // );
         } else {
           Alert.alert(
             "Below tasks are pending, do you want to continue to proceed",
@@ -2201,9 +2205,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
-        if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
-          displayCreateEnquiryAlert();
-        }
+        displayCreateEnquiryAlert();
       } else if (
         proceedToPreSelector.update_enquiry_details_response_status === "failed"
       ) {
@@ -5560,7 +5562,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                        userData?.isSelfManager == "N" ||
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Fuel Type"
+                          : "Range"
                       }
                       value={selector.c_fuel_type}
                       onPress={() =>
@@ -5572,7 +5577,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y"
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Transmission Type"
+                          : userData.isSelfManager == "Y"
                           ? "Battery Type"
                           : userData.isTracker == "Y"
                           ? "Clutch Type"
@@ -5996,7 +6003,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      userData?.isSelfManager == "N" ||
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Fuel Type"
+                        : "Range"
                     }
                     value={selector.r_fuel_type}
                     onPress={() =>
@@ -6008,7 +6018,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y"
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Transmission Type"
+                        : userData.isSelfManager == "Y"
                         ? "Battery Type"
                         : userData.isTracker == "Y"
                         ? "Clutch Type"
