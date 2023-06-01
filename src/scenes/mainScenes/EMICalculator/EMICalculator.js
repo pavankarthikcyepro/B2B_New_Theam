@@ -140,7 +140,7 @@ const EMICalculator = ({ route, navigation }) => {
                 }
                 minimumValue={minLoanAmount}
                 maximumValue={maxLoanAmount}
-                thumbTintColor={Colors.PINK}
+                thumbImage={require("./../../../assets/images/cy2.png")}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
                 step={1}
@@ -193,7 +193,7 @@ const EMICalculator = ({ route, navigation }) => {
                 }
                 minimumValue={minInterestRate}
                 maximumValue={maxInterestRate}
-                thumbTintColor={Colors.PINK}
+                thumbImage={require("./../../../assets/images/cy2.png")}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
                 step={0.1}
@@ -240,7 +240,7 @@ const EMICalculator = ({ route, navigation }) => {
                 }
                 minimumValue={minLoanTenure}
                 maximumValue={maxLoanTenure}
-                thumbTintColor={Colors.PINK}
+                thumbImage={require("./../../../assets/images/cy2.png")}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
                 step={1}
@@ -282,7 +282,28 @@ const EMICalculator = ({ route, navigation }) => {
             }`}</Text>
           </View>
 
-          <View style={styles.resultContainer}>
+          <View style={styles.emiAmtRow}>
+            <Text style={styles.emiRowText}>Principle Amt:</Text>
+            <Text style={styles.emiRowText}>{`${rupeeSign}${
+              selector.emiResponse ? selector.loanAmount?.toLocaleString() : "0"
+            }`}</Text>
+          </View>
+
+          <View style={styles.emiAmtRow}>
+            <Text style={styles.emiRowText}>Total Interest:</Text>
+            <Text style={styles.emiRowText}>{`${rupeeSign}${
+              selector.emiResponse?.totalInterest?.toLocaleString() ?? "0"
+            }`}</Text>
+          </View>
+
+          <View style={styles.emiAmtRow}>
+            <Text style={styles.emiRowText}>Total Amt Payble:</Text>
+            <Text style={styles.emiRowText}>{`${rupeeSign}${
+              selector.emiResponse?.totalPayment?.toLocaleString() ?? "0"
+            }`}</Text>
+          </View>
+
+          {/* <View style={styles.resultContainer}>
             <View style={styles.emiResultRow}>
               <Text style={styles.emiResultRowText}>Principle Amt:</Text>
               <Text style={styles.emiResultRowText}>{`${rupeeSign}${
@@ -305,7 +326,7 @@ const EMICalculator = ({ route, navigation }) => {
                 selector.emiResponse?.totalPayment?.toLocaleString() ?? "0"
               }`}</Text>
             </View>
-          </View>
+          </View> */}
         </ScrollView>
       </KeyboardAvoidingView>
       <LoaderComponent visible={selector.isLoading} />
@@ -354,6 +375,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
     paddingHorizontal: 10,
     paddingVertical: 15,
+    marginBottom: 10
   },
   emiResultRow: {
     flexDirection: "row",
