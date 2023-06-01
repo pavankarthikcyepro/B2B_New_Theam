@@ -2048,15 +2048,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const taskStatus = dataObj.taskStatus;
 
         if (taskNames === "") {
-          navigation.navigate(
-            AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-            {
-              identifier: "PROCEED_TO_PRE_BOOKING",
-              taskId,
-              universalId,
-              taskStatus,
-            }
-          );
+          proceedToFinalPreBookingClicked(taskId);
+          // navigation.navigate(
+          //   AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+          //   {
+          //     identifier: "PROCEED_TO_PRE_BOOKING",
+          //     taskId,
+          //     universalId,
+          //     taskStatus,
+          //   }
+          // );
         } else {
           Alert.alert(
             "Below tasks are pending, do you want to continue to proceed",
@@ -2201,9 +2202,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
-        if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
-          displayCreateEnquiryAlert();
-        }
+        displayCreateEnquiryAlert();
       } else if (
         proceedToPreSelector.update_enquiry_details_response_status === "failed"
       ) {
