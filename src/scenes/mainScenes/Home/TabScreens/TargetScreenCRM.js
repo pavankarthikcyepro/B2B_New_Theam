@@ -3038,7 +3038,7 @@ const TargetScreenCRM = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={item.branchName}
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
@@ -3533,7 +3533,7 @@ const TargetScreenCRM = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item.selfUser}
-                        branchName={item.selfUser.branch}
+                        branchName={item.selfUser.branchName}
                         color={borderColor}
                         receptionManager={true}
                         navigation={navigation}
@@ -3780,7 +3780,7 @@ const TargetScreenCRM = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={item.branchName}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -4112,7 +4112,7 @@ const TargetScreenCRM = ({ route }) => {
               <RenderLevel1NameViewCRM
                 level={0}
                 item={item}
-                branchName={item.branch}
+                branchName={item.branchName}
                 color={borderColor}
                 receptionManager={true}
                 navigation={navigation}
@@ -4372,7 +4372,7 @@ const TargetScreenCRM = ({ route }) => {
               <RenderLevel1NameViewCRM
                 level={0}
                 item={item}
-                branchName={item.branch}
+                branchName={item.branchName}
                 color={borderColor}
                 receptionManager={true}
                 navigation={navigation}

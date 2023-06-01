@@ -430,8 +430,8 @@ export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS/getManagerLi
     return json;
 })
 
-// CRM live leads tree
-export const getCRM_ManagerLiveLeadsVol2 = createAsyncThunk("LIVE_LEADS/getManagerLiveLeads", async (payload, { rejectWithValue }) => {
+// CRM live leads tree 
+export const getCRM_ManagerLiveLeadsVol2 = createAsyncThunk("LIVE_LEADS/getCRM_ManagerLiveLeadsVol2", async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.GET_LIVE_LEADS_MANAGERDATA_VOL2(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -1118,6 +1118,24 @@ export const liveLeadsSlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(getCRM_ManagerLiveLeads.rejected, (state, action) => {
+            state.isLoading = false;
+            state.crm_response_data = [];
+        })
+
+
+        // Get receptionist/CRM/Tele caller /CRE live leads api 
+        builder.addCase(getCRM_ManagerLiveLeadsVol2.pending, (state, action) => {
+            state.isLoading = true;
+            state.crm_response_data = [];
+        })
+        builder.addCase(getCRM_ManagerLiveLeadsVol2.fulfilled, (state, action) => {
+            if (action.payload) {
+
+                state.crm_response_data = action.payload;
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getCRM_ManagerLiveLeadsVol2.rejected, (state, action) => {
             state.isLoading = false;
             state.crm_response_data = [];
         })

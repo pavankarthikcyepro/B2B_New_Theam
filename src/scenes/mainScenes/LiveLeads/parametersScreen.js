@@ -572,6 +572,17 @@ const ParametersScreen = ({ route }) => {
   }, [selector.isTeam]);
 
   useEffect(() => {
+    setTogglePercentage(0);
+    // setIsTeam(selector.isTeam);
+    // if (selector.isTeam) {
+      setToggleParamsIndex(0);
+      let data = [...paramsMetadata];
+      data = data.filter((x) => x.toggleIndex === 0);
+      setToggleParamsMetaData([...data]);
+    // }
+  }, [userData]);
+
+  useEffect(() => {
     allParameters[0] = {
       ...allParameters[0],
       targetAchievements: selector.totalParameters,
@@ -6650,6 +6661,479 @@ const ParametersScreen = ({ route }) => {
         ) : (
           // IF Self or insights
           <>
+              {receptionistRole.includes(userData.hrmsRole) ? (<>
+                <View>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      // borderBottomWidth: 2,
+                      // borderBottomColor: Colors.RED,
+                      paddingBottom: 8,
+                    }}
+                  >
+                    {/*<SegmentedControl*/}
+                    {/*    style={{*/}
+                    {/*        marginHorizontal: 4,*/}
+                    {/*        justifyContent: 'center',*/}
+                    {/*        alignSelf: 'flex-end',*/}
+                    {/*        height: 24,*/}
+                    {/*        marginTop: 8,*/}
+                    {/*        width: '75%'*/}
+                    {/*    }}*/}
+                    {/*    values={['ETVBRL', 'Allied', 'View All']}*/}
+                    {/*    selectedIndex={toggleParamsIndex}*/}
+                    {/*    tintColor={Colors.RED}*/}
+                    {/*    fontStyle={{color: Colors.BLACK, fontSize: 10}}*/}
+                    {/*    activeFontStyle={{color: Colors.WHITE, fontSize: 10}}*/}
+                    {/*    onChange={event => {*/}
+                    {/*        const index = event.nativeEvent.selectedSegmentIndex;*/}
+                    {/*        let data = [...paramsMetadata];*/}
+                    {/*        if (index !== 2) {*/}
+                    {/*            data = data.filter(x => x.toggleIndex === index);*/}
+                    {/*        } else {*/}
+                    {/*            data = [...paramsMetadata];*/}
+                    {/*        }*/}
+                    {/*        setToggleParamsMetaData([...data]);*/}
+                    {/*        setToggleParamsIndex(index);*/}
+                    {/*    }}*/}
+                    {/*/>*/}
+                    {/*<View style={{height: 24, width: '20%', marginLeft: 4}}>*/}
+                    {/*    <View style={styles.percentageToggleView}>*/}
+                    {/*        <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>*/}
+                    {/*    </View>*/}
+                    {/*</View>*/}
+                  </View>
+                  {isLoading ? (
+                    <AnimLoaderComp visible={true} />
+                  ) : (
+                    <ScrollView
+                      contentContainerStyle={{
+                        paddingRight: 0,
+                        flexDirection: "column",
+                      }}
+                      horizontal={true}
+                      directionalLockEnabled={true}
+                    >
+                      {/* TOP Header view */}
+                      <View
+                        key={"headers"}
+                        style={{
+                          flexDirection: "row",
+                          borderBottomWidth: 0.5,
+                          paddingBottom: 4,
+                          borderBottomColor: Colors.GRAY,
+                        }}
+                      >
+                        {/* <View
+                      style={{ width: 70, height: 20, marginRight: 5 }}
+                    ></View> */}
+                        {/* <View
+                        // style={styles.itemBox}
+                        style={{ width: 70, height: 20, marginRight: 5, alignItems: "center" }}
+                      >
+                        <Text style={{
+                          fontSize: 9,
+                          color: Colors.RED,
+                          fontWeight: "600",
+                          alignSelf: "center",
+                          textAlign: "center",
+
+                          marginTop: 10
+                        }}>Employee</Text>
+
+                      </View> */}
+                        <View
+                          style={{
+                            width: 70,
+                            height: 20,
+                            marginRight: 5,
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <View
+                            style={[
+                              styles.itemBox,
+                              {
+                                // width: 55,
+                              },
+                            ]}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.RED,
+                                fontSize: 12,
+                              }}
+                            >
+                              Employee
+                            </Text>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            width: "100%",
+                            height: 20,
+                            flexDirection: "row",
+                          }}
+                        >
+                          {toggleParamsMetaData.map((param) => {
+                            return (
+                              <View style={styles.itemBox} key={param.shortName}>
+                                <Text
+                                  style={{
+                                    color: param.color,
+                                    fontSize: 12,
+                                  }}
+                                >
+                                  {param.shortName}
+                                </Text>
+                              </View>
+                            );
+                          })}
+                        </View>
+                      </View>
+
+                      {crmRole.includes(userData.hrmsRole) ? (
+                        <>
+                          {CRM_filterParameters.length > 0
+                            ? renderCRMFilterView()
+                            : null}
+                          {CRM_filterParameters.length > 0
+                            ? renderCRMFilterViewTeamTotal()
+                            : null}
+                          {CRM_filterParameters.length == 0
+                            ? renderCRMtreeFirstLevel()
+                            : null}
+                          {CRM_filterParameters.length == 0
+                            ? renderCREtreeFirstLevel()
+                            : null}
+                          {/* Grand Total Section */}
+                          {/* isViewExpanded ? item.contactCount : selector.crm_response_data.totalPreInquiryCount || 0,
+                      isViewExpanded ? item.enquiryCount : selector.crm_response_data.totalEnquiryCount || 0,
+                      isViewExpanded ? item.bookingCount : selector.crm_response_data.totalBookingCount || 0,
+                      isViewExpanded ? item.retailCount : selector.crm_response_data.totalRetailCount || 0, */}
+
+                          {totalOfTeam && CRM_filterParameters.length == 0 && (
+                            <View>
+                              <Pressable
+                                style={{ alignSelf: "flex-end" }}
+                                onPress={() => {
+                                  navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                                    empId: selector.login_employee_details.empId,
+                                    headerTitle: "Grand Total",
+                                    loggedInEmpId:
+                                      selector.login_employee_details.empId,
+                                    type: "TEAM",
+                                    moduleType: "live-leads",
+                                    orgId: userData.orgId,
+                                    role: userData.hrmsRole,
+                                    branchList: userData.branchs.map(
+                                      (a) => a.branchId
+                                    ),
+                                    self: false,
+                                  });
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    color: Colors.BLUE,
+                                    marginLeft: 8,
+                                    paddingRight: 12,
+                                  }}
+                                >
+                                  Source/Model
+                                </Text>
+                              </Pressable>
+
+                              <View style={{ flexDirection: "row", height: 40 }}>
+                                <View
+                                  style={{
+                                    width: 70,
+                                    minHeight: 40,
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    backgroundColor: Colors.RED,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      marginLeft: 6,
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.grandTotalText,
+                                        {
+                                          color: Colors.WHITE,
+                                          fontSize: 12,
+                                        },
+                                      ]}
+                                    >
+                                      Total
+                                    </Text>
+                                  </View>
+                                </View>
+                                <View
+                                  style={{
+                                    minHeight: 40,
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      // minHeight: 40,
+                                      flexDirection: "row",
+                                      // backgroundColor:"yellow"
+                                    }}
+                                  >
+                                    {totalOfTeam.map((e) => {
+                                      return (
+                                        <View
+                                          style={{
+                                            width: 70,
+                                            height: 40,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            backgroundColor: Colors.RED,
+                                          }}
+                                        >
+                                          <Text
+                                            style={{
+                                              fontSize: 16,
+                                              fontWeight: "700",
+                                              color: Colors.WHITE,
+                                            }}
+                                          >
+                                            {e || 0}
+                                          </Text>
+                                        </View>
+                                      );
+                                    })}
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          )}
+                          {/* {selector.totalParameters.length > 0 && (
+                        <View>
+                          <Pressable
+                            style={{ alignSelf: "flex-end" }}
+                            onPress={() => {
+                              navigation.navigate(
+                                AppNavigator.HomeStackIdentifiers.sourceModel,
+                                {
+                                  empId: filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                                  headerTitle: "Grand Total",
+                                  loggedInEmpId:
+                                    filterParameters.length > 0 ? filterParameters[0].empId : selector.login_employee_details.empId,
+                                  type: "TEAM",
+                                  moduleType: "live-leads",
+                                }
+                              );
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "600",
+                                color: Colors.BLUE,
+                                marginLeft: 8,
+                                paddingRight: 12,
+                              }}
+                            >
+                              Source/Model
+                            </Text>
+                          </Pressable>
+
+                          <View style={{ flexDirection: "row", height: 40 }}>
+                            <View
+                              style={{
+                                width: 70,
+                                minHeight: 40,
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexDirection: "row",
+                                backgroundColor: Colors.RED,
+                              }}
+                            >
+                              <View
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 6,
+                                }}
+                              >
+                                <Text
+                                  style={[
+                                    styles.grandTotalText,
+                                    {
+                                      color: Colors.WHITE,
+                                      fontSize: 12,
+                                    },
+                                  ]}
+                                >
+                                  Total
+                                </Text>
+                              </View>
+                             
+                            </View>
+                            <View
+                              style={{
+                                minHeight: 40,
+                                flexDirection: "column",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  minHeight: 40,
+                                  flexDirection: "row",
+                                }}
+                              >
+                                <RenderGrandTotal
+                                  totalParams={selector.totalParameters}
+                                  displayType={togglePercentage}
+                                  params={toggleParamsMetaData}
+                                  moduleType={"live-leads"}
+                                />
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      )} */}
+                        </>
+                      ) : (
+                        <>
+                          {/* Employee params section */}
+                         
+                     
+
+                          
+
+                          {/* Grand Total Section */}
+                          {selector.totalParameters.length > 0 && (
+                            <View>
+                              <Pressable
+                                style={{ alignSelf: "flex-end" }}
+                                onPress={() => {
+                                  navigation.navigate(
+                                    AppNavigator.HomeStackIdentifiers.sourceModel,
+                                    {
+                                      empId: !_.isEmpty(
+                                        selector.saveLiveleadObject?.selectedempId
+                                      )
+                                        ? selector.saveLiveleadObject
+                                          ?.selectedempId[0]
+                                        : selector.login_employee_details.empId,
+                                      headerTitle: "Grand Total",
+                                      loggedInEmpId: !_.isEmpty(
+                                        selector.saveLiveleadObject?.selectedempId
+                                      )
+                                        ? selector.saveLiveleadObject
+                                          ?.selectedempId[0]
+                                        : selector.login_employee_details.empId,
+                                      type: "TEAM",
+                                      moduleType: "live-leads",
+                                    }
+                                  );
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    color: Colors.BLUE,
+                                    marginLeft: 8,
+                                    paddingRight: 12,
+                                  }}
+                                >
+                                  Source/Model
+                                </Text>
+                              </Pressable>
+
+                              <View style={{ flexDirection: "row", height: 40 }}>
+                                <View
+                                  style={{
+                                    width: 70,
+                                    minHeight: 40,
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    backgroundColor: Colors.RED,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      marginLeft: 6,
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.grandTotalText,
+                                        {
+                                          color: Colors.WHITE,
+                                          fontSize: 12,
+                                        },
+                                      ]}
+                                    >
+                                      Total
+                                    </Text>
+                                  </View>
+                                  {/*<View>*/}
+                                  {/*    <Text style={{*/}
+                                  {/*        fontSize: 6,*/}
+                                  {/*        fontWeight: 'bold',*/}
+                                  {/*        paddingVertical: 6,*/}
+                                  {/*        paddingRight: 2,*/}
+                                  {/*        height: 20,*/}
+                                  {/*        color: Colors.WHITE*/}
+                                  {/*    }}>CNT</Text>*/}
+                                  {/*    <Text style={{*/}
+                                  {/*        fontSize: 6,*/}
+                                  {/*        fontWeight: 'bold',*/}
+                                  {/*        paddingVertical: 6,*/}
+                                  {/*        height: 20,*/}
+                                  {/*        color: Colors.WHITE*/}
+                                  {/*    }}>TGT</Text>*/}
+                                  {/*</View>*/}
+                                </View>
+                                <View
+                                  style={{
+                                    minHeight: 40,
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      minHeight: 40,
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <RenderGrandTotal
+                                      totalParams={selector.totalParameters}
+                                      displayType={togglePercentage}
+                                      params={toggleParamsMetaData}
+                                      moduleType={"live-leads"}
+                                    />
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          )}
+                        </>
+                      )}
+                    </ScrollView>
+                  )}
+                </View>
+              </>): null }
             {!receptionistRole.includes(userData.hrmsRole) &&
             !crmRole.includes(userData.hrmsRole) ? (
               <>
@@ -6709,7 +7193,7 @@ const ParametersScreen = ({ route }) => {
               </>
             ) : null}
 
-            {receptionistRole.includes(userData.hrmsRole) ? (
+            {/* {receptionistRole.includes(userData.hrmsRole) ? (
               <>
                 <View style={{ marginTop: 16, marginHorizontal: 24 }}>
                   <Pressable
@@ -6753,7 +7237,7 @@ const ParametersScreen = ({ route }) => {
                 </View>
 
                 <View>
-                  {/*<RenderSelfInsights data={selfInsightsData} type={togglePercentage} navigation={navigation} moduleType={'live-leads'}/>*/}
+             
                   {selfInsightsData &&
                     selfInsightsData.length > 0 &&
                     !selector.isLoading && (
@@ -6767,7 +7251,7 @@ const ParametersScreen = ({ route }) => {
                     )}
                 </View>
               </>
-            ) : null}
+            ) : null} */}
 
             {crmRole.includes(userData.hrmsRole) ? (
               <>
