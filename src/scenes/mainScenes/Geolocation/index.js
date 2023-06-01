@@ -192,7 +192,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
     );
   };
 
-  const Card = ({ title, value, icon }) => {
+  const Card = ({ title, value, icon, onPress }) => {
     return (
       <View
         style={[
@@ -235,7 +235,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
           <Text style={{ color: Colors.BLACK, fontSize: 15 }}>{title}</Text>
           <Text
             disabled={title === "Trips" ? false : true}
-            onPress={() => {}}
+            onPress={onPress}
             style={{
               color: Colors.RED,
               fontSize: 14,
@@ -279,7 +279,21 @@ const GeoLocationScreen = ({ route, navigation }) => {
           marginTop: 10,
         }}
       >
-        <Card title={"Trips"} value={stats["Today"].trips} icon={TRIP_ICON} />
+        <Card
+          title={"Trips"}
+          value={stats["Today"].trips}
+          icon={TRIP_ICON}
+          onPress={() => {
+            navigation.navigate(
+              GeolocationTopTabNavigatorIdentifiers.statsTripList,
+              {
+                empId: userData.empId,
+                orgId: userData.orgId,
+                status: "TODAY",
+              }
+            );
+          }}
+        />
         <Card
           title={"Start & End Time"}
           value={
@@ -326,6 +340,16 @@ const GeoLocationScreen = ({ route, navigation }) => {
           title={"Trips"}
           value={stats["This Week"].trips}
           icon={TRIP_ICON}
+          onPress={() => {
+            navigation.navigate(
+              GeolocationTopTabNavigatorIdentifiers.statsTripList,
+              {
+                empId: userData.empId,
+                orgId: userData.orgId,
+                status: "WEEK",
+              }
+            );
+          }}
         />
         <Card
           title={"Start & End Time"}
@@ -373,6 +397,16 @@ const GeoLocationScreen = ({ route, navigation }) => {
           title={"Trips"}
           value={stats["This Month"].trips}
           icon={TRIP_ICON}
+          onPress={() => {
+            navigation.navigate(
+              GeolocationTopTabNavigatorIdentifiers.statsTripList,
+              {
+                empId: userData.empId,
+                orgId: userData.orgId,
+                status: "MONTH",
+              }
+            );
+          }}
         />
         <Card
           title={"Start & End Time"}

@@ -205,7 +205,7 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
     );
   };
 
-  const Card = ({ title, value, icon }) => {
+  const Card = ({ title, value, icon, onPress }) => {
     return (
       <View
         style={[
@@ -248,7 +248,7 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
           <Text style={{ color: Colors.BLACK, fontSize: 15 }}>{title}</Text>
           <Text
             disabled={title === "Trips" ? false : true}
-            onPress={() => {}}
+            onPress={onPress}
             style={{
               color: Colors.RED,
               fontSize: 14,
@@ -292,7 +292,19 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
           marginTop: 10,
         }}
       >
-        <Card title={"Trips"} value={stats["Today"].trips} icon={TRIP_ICON} />
+        <Card
+          title={"Trips"}
+          value={stats["Today"].trips}
+          icon={TRIP_ICON}
+          onPress={() => {
+            navigation.navigate(HomeStackIdentifiers.tripStats, {
+              empId: route.params.empId,
+              orgId: route.params.orgId,
+              date: currentDate,
+              status: "TODAY",
+            });
+          }}
+        />
         <Card
           title={"Start & End Time"}
           value={
@@ -339,6 +351,14 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
           title={"Trips"}
           value={stats["This Week"].trips}
           icon={TRIP_ICON}
+          onPress={() => {
+            navigation.navigate(HomeStackIdentifiers.tripStats, {
+              empId: route.params.empId,
+              orgId: route.params.orgId,
+              date: currentDate,
+              status: "WEEK",
+            });
+          }}
         />
         <Card
           title={"Start & End Time"}
@@ -386,6 +406,14 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
           title={"Trips"}
           value={stats["This Month"].trips}
           icon={TRIP_ICON}
+          onPress={() => {
+            navigation.navigate(HomeStackIdentifiers.tripStats, {
+              empId: route.params.empId,
+              orgId: route.params.orgId,
+              date: currentDate,
+              status: "MONTH",
+            });
+          }}
         />
         <Card
           title={"Start & End Time"}

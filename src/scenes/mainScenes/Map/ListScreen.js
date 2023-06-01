@@ -60,11 +60,6 @@ const TripListScreen = ({ route, navigation }) => {
           params.date || currentDate
         )
       );
-      console.log("",URL.GET_MAP_COORDINATES_BY_ID(
-          params.empId,
-          params.orgId,
-          params.date || currentDate
-        ));
       const json = await response.json();
 
       if (json.length > 0) {

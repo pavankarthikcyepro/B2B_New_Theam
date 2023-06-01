@@ -1066,6 +1066,12 @@ const URL = {
   GEOLOCATION_DETAILS: (empId, orgId) => {
     return sales_url + `/employeeTracking/getDetails/${empId}/${orgId}`;
   },
+  GEOLOCATION_TRIPS: (empId, orgId, offset, limit, status) => {
+    return (
+      sales_url +
+      `/employeeTracking/gettrips/${empId}/${orgId}/${offset}/${limit}/${status}`
+    );
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

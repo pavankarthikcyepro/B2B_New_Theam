@@ -7,6 +7,7 @@ import {
   Dimensions,
   Alert,
   FlatList,
+  View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { LoaderComponent } from "../../../components";
@@ -17,7 +18,8 @@ import moment from "moment";
 import _ from "lodash";
 import { GeolocationTopTabNavigatorIdentifiers } from "../../../navigations/geolocationNavigator";
 import { AppNavigator } from "../../../navigations";
-import { IconButton } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
+import AnimLoaderComp from "../../../components/AnimLoaderComp";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
@@ -27,7 +29,9 @@ const StatsTripListScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [paginationLoader, setPaginationLoader] = useState(false);
   const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
@@ -54,24 +58,12 @@ const StatsTripListScreen = ({ route, navigation }) => {
   const getLocation = async (params) => {
     try {
       const response = await client.get(
-        URL.GET_MAP_COORDINATES_BY_ID(
-          params.empId,
-          params.orgId,
-          params.date || currentDate
-        )
-      );
-      console.log(
-        "",
-        URL.GET_MAP_COORDINATES_BY_ID(
-          params.empId,
-          params.orgId,
-          params.date || currentDate
-        )
+        URL.GEOLOCATION_TRIPS(params.empId, params.orgId, 1, 25, params.status)
       );
       const json = await response.json();
 
-      if (json.length > 0) {
-        setData(json);
+      if (json?.dmsEntity?.geoLocationRes?.content?.length > 0) {
+        setData(json.dmsEntity.geoLocationRes.content);
         setLoading(false);
       } else {
         Alert.alert("No data are Available", "", [
@@ -142,12 +134,60 @@ const StatsTripListScreen = ({ route, navigation }) => {
       </TouchableOpacity>
     );
   };
+
+  const getLocationAppend = async (params) => {
+    try {
+      const response = await client.get(
+        URL.GEOLOCATION_TRIPS(
+          params.empId,
+          params.orgId,
+          page + 1,
+          25,
+          params.status
+        )
+      );
+      const json = await response.json();
+
+      if (json.dmsEntity.geoLocationRes.content.length > 0) {
+        setData((prevData) => [
+          ...prevData,
+          ...json.dmsEntity.geoLocationRes.content,
+        ]);
+        setPaginationLoader(false);
+      } else {
+      }
+    } catch (error) {
+      setData([]);
+      setPaginationLoader(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (!paginationLoader) {
+      setPage(page + 1);
+      getLocationAppend(route.params);
+    }
+  };
+
+  const renderFooter = () => {
+    return (
+      <View style={{ paddingVertical: 20 }}>
+        {
+          paginationLoader ? <AnimLoaderComp visible={true} /> : null
+          //   <Text style={{ textAlign: "center" }}>End of List</Text>
+        }
+      </View>
+    );
+  };
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={renderData}
+        ListFooterComponent={renderFooter}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
       />
       <LoaderComponent visible={loading} />
     </SafeAreaView>
