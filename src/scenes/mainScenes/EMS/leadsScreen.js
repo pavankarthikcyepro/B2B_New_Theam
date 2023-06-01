@@ -360,7 +360,7 @@ const LeadsScreen = ({ route, navigation }) => {
 
               if (route?.params?.screenName === "DEFAULT") {
                 setLeadsFilterData(newArr);
-                defualtCall(newArr, leadStage, leadStatus, false);
+                defualtCall(newArr, leadStage, leadStatus, true);
               }
             } else {
 
