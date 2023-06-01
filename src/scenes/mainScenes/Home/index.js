@@ -1370,13 +1370,13 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      <AttendanceFromSelf
+      {/* <AttendanceFromSelf
         visible={attendance}
         showReason={reason}
         inVisible={() => {
           setAttendance(false);
         }}
-      />
+      /> */}
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
