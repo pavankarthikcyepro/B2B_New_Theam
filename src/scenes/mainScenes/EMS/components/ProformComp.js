@@ -1234,7 +1234,7 @@ export const ProformaComp = ({
             if (error) {
               Alert.alert(
                 "Error",
-                "Could not send mail. Please send a mail to support@example.com"
+                "Could not send mail. Please try again later"
               );
             }
           }
