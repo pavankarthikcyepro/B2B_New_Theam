@@ -9,12 +9,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { MenuIcon } from "./appNavigator";
 import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
 import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
+import StatsTripListScreen from "../scenes/mainScenes/Map/StatsTripListScreen";
 
 export const GeolocationTopTabNavigatorIdentifiers = {
   mygeolocation: "MY_GEOLOCATION",
   geolocation: "GEOLOCATION_1",
   map: "MAP",
-  tripList :"TRIP_LIST"
+  tripList :"TRIP_LIST",
+  statsTripList : "STATS_TRIP_LIST"
 };
 
 const screeOptionStyle = {
@@ -86,6 +88,17 @@ const GeolocationTopTabNavigatorTwo = ({ navigation }) => {
           title: "Trip List",
           headerShown: true,
           headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerStyle: screeOptionStyle.headerStyle,
+          headerTitleStyle: screeOptionStyle.headerTitleStyle,
+          headerTintColor: screeOptionStyle.headerTintColor,
+          headerBackTitleVisible: screeOptionStyle.headerBackTitleVisible,
+        }}
+      />
+      <GeolocationTopTab.Screen
+        name={GeolocationTopTabNavigatorIdentifiers.statsTripList}
+        component={StatsTripListScreen}
+        options={{
+          headerShown: true,
           headerStyle: screeOptionStyle.headerStyle,
           headerTitleStyle: screeOptionStyle.headerTitleStyle,
           headerTintColor: screeOptionStyle.headerTintColor,
