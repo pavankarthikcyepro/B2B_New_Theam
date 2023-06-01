@@ -48,8 +48,8 @@ const layout = {
     trips: 0,
     travelDistance: 0,
     travelTime: 0,
-    startTime: "00:00:00 AM",
-    endTime: "00:00:00 PM",
+    startTime: "NA",
+    endTime: "NA",
   },
   "This Month": {
     trips: 0,
