@@ -1218,27 +1218,27 @@ export const ProformaComp = ({
       // downloadInLocal(file.filePath);
       if (from === "email") {
         await Mailer.mail(
-          {
-            subject: "Invoice",
-            //  recipients: ['radhadevi8958@gmail.com'],
-            body: "",
-            attachments: [
-              {
-                path: file.filePath, // The absolute path of the file from which to read data.
-                type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
-                name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
-              },
-            ],
-          },
-          (error, event) => {
-            if (error) {
-              Alert.alert(
-                "Error",
-                "Could not send mail. Please send a mail to support@example.com"
-              );
+            {
+              subject: "Invoice",
+              //  recipients: ['radhadevi8958@gmail.com'],
+              body: "",
+              attachments: [
+                {
+                  path: file.filePath, // The absolute path of the file from which to read data.
+                  type: "pdf", // Mime Type: jpg, png, doc, ppt, html, pdf
+                  name: "ProformaInvoice.pdf", // Optional: Custom filename for attachment
+                },
+              ],
+            },
+            (error, event) => {
+              if (error) {
+                Alert.alert(
+                  "Error",
+                  "Could not send mail. Please try again later"
+                );
+              }
             }
-          }
-        );
+          );
       }
 
       // alert(file.filePath);

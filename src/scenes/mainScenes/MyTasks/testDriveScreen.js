@@ -283,7 +283,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
               if (selector.drivers_list.length > 0 && tempData.driverId) {
                 const filterAry = selector.drivers_list.filter(
-                  (object) => object.id === tempData.driverId
+                  (object) => object.id == tempData.driverId
                 );
                 if (filterAry.length > 0) {
                   driverName = filterAry[0].name;
@@ -3125,7 +3125,10 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Submit"}
                 // disabled={selector.isLoading}
-                onPress={() => submitClicked("SENT_FOR_APPROVAL", "Test Drive")}
+                onPress={() => 
+                  // submitClicked("SENT_FOR_APPROVAL", "Test Drive") make it same as wef for live issues 
+                  submitClicked("APPROVED", "Test Drive")
+              }
               />
             </View>
           )}
@@ -3317,7 +3320,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
                 onPress={() => {
-                  submitClicked("SENT_FOR_APPROVAL", "Test Drive")
+                  // submitClicked("SENT_FOR_APPROVAL", "Test Drive") make it same as web for live issue
+                  submitClicked("APPROVED", "Test Drive")
                   setIsisReopenSubmitVisible(false)
                   // reSubmitClick("ASSIGNED","Test Drive Approval")
                   // closeTask("reopen");
