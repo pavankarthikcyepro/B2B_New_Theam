@@ -292,7 +292,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
-    approverId:""
+    approverId: "",
+    orgName: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -403,7 +404,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       employeeName: "",
       isSelfManager: "",
       isTracker: "",
-      approverId:""
+      approverId: "",
+      orgName: ""
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -555,7 +557,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
-        approverId: jsonObj.approverId
+        approverId: jsonObj.approverId,
+        orgName: jsonObj.orgName,
       });
       
       getCarMakeListFromServer(jsonObj.orgId);
@@ -5863,7 +5866,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                        userData?.isSelfManager == "N" ||
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Fuel Type"
+                          : "Range"
                       }
                       value={selector.c_fuel_type}
                       onPress={() =>
@@ -5875,7 +5881,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     />
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y"
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Transmission Type"
+                          : userData.isSelfManager == "Y"
                           ? "Battery Type"
                           : userData.isTracker == "Y"
                           ? "Clutch Type"
@@ -6296,7 +6304,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      userData?.isSelfManager == "N" ||
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Fuel Type"
+                        : "Range"
                     }
                     value={selector.r_fuel_type}
                     onPress={() =>
@@ -6308,7 +6319,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   />
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y"
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Transmission Type"
+                        : userData.isSelfManager == "Y"
                         ? "Battery Type"
                         : userData.isTracker == "Y"
                         ? "Clutch Type"
