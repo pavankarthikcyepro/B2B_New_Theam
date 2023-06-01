@@ -1025,8 +1025,8 @@ const LeadsScreen = ({ route, navigation }) => {
     setLoader(true);
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    if (employeeData) {
+      );
+      if (employeeData) {
       let newArray = item.filter((i) => i.checked === true);
       const jsonObj = JSON.parse(employeeData);
       let leadStage = [];
@@ -1107,15 +1107,16 @@ const LeadsScreen = ({ route, navigation }) => {
         route?.params?.param !== "Retail"
       ) {
         if (leadStages[0] === "INVOICECOMPLETED") {
-          leadStages[0] = "INVOICE";
-          return;
-        } else {
-          const invoiceIndex = leadStages.findIndex(
-            (x) => x === "INVOICECOMPLETED"
-          );
-
-          if (invoiceIndex !== -1) {
-            leadStages.splice(invoiceIndex, 1);
+          if (leadStages[0] === "INVOICE") {
+            setLoader(false);
+            return;
+          } else {
+            const invoiceIndex = leadStages.findIndex(
+              (x) => x === "INVOICECOMPLETED"
+            );
+            if (invoiceIndex !== -1) {
+              // leadStages.splice(invoiceIndex, 1);
+            }
           }
         }
       }
@@ -1142,6 +1143,7 @@ const LeadsScreen = ({ route, navigation }) => {
         leadStages.push(...tempEnquriyArr)
       }
 
+      
       let isLive = false;
       if (
         route?.params?.param &&
@@ -1168,6 +1170,7 @@ const LeadsScreen = ({ route, navigation }) => {
         }
       } else {
       }
+
       if (from) {
         setSelectedFromDate(from);
         setSelectedToDate(to);

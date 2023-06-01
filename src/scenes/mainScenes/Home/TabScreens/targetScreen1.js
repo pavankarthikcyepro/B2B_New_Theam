@@ -136,6 +136,8 @@ const TargetScreen = ({ route }) => {
     empName: "",
     hrmsRole: "",
     orgId: 0,
+    isSelfManager: "N",
+    orgName: "",
   });
   const scrollViewRef = useRef();
   const paramsMetadata = [
@@ -482,6 +484,8 @@ const TargetScreen = ({ route }) => {
         empName: jsonObj.empName,
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
+        isSelfManager: jsonObj.isSelfManager,
+        orgName: jsonObj.orgName,
       });
       if (jsonObj.hrmsRole == "CRM") {
         getReceptionManagerTeam(jsonObj);
@@ -1191,8 +1195,8 @@ const TargetScreen = ({ route }) => {
                          headerTitle: item.empName,
                          type: "TEAM",
                          moduleType: "home",
-                         isOpenner: item.isOpenInner,// added to manage source/model issue
-                         isFromHome: true// added to manage source/model issue
+                         isOpenner: item.isOpenInner, // added to manage source/model issue
+                         isFromHome: true, // added to manage source/model issue
                        }
                      );
                    }}
@@ -1217,7 +1221,9 @@ const TargetScreen = ({ route }) => {
                  item={item}
                  color={borderColor}
                  navigation={navigation}
-                 branchName={getBranchName(item.branchId)}
+                 branchName={
+                   checkIsSelfManager() ? "" : getBranchName(item.branchId)
+                 }
                  teamLoader={teamLoader}
                  teamMember={teamMember}
                  titleClick={async () => {
@@ -1243,6 +1249,15 @@ const TargetScreen = ({ route }) => {
      );
    };
 
+   const checkIsSelfManager = () => {
+     if (
+       userData?.orgName?.includes("BikeWo Corporation") &&
+       userData.isSelfManager == "Y"
+     ) {
+       return true;
+     }
+     return false;
+   };
 
   return (
     <React.Fragment>
@@ -1410,7 +1425,11 @@ const TargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={item.branch}
+                                        branchName={
+                                          checkIsSelfManager()
+                                            ? ""
+                                            : item.branch
+                                        }
                                         color={"#C62159"}
                                         teamLoader={teamLoader}
                                         teamMember={teamMember}
@@ -1875,9 +1894,11 @@ const TargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={getBranchName(
-                                          item.branchId
-                                        )}
+                                        branchName={
+                                          checkIsSelfManager()
+                                            ? ""
+                                            : getBranchName(item.branchId)
+                                        }
                                         color={"#C62159"}
                                         navigation={navigation}
                                         stopLocation={true}
@@ -2030,9 +2051,13 @@ const TargetScreen = ({ route }) => {
                                                       item={innerItem1}
                                                       color={Colors.CORAL}
                                                       navigation={navigation}
-                                                      branchName={getBranchName(
-                                                        innerItem1.branchId
-                                                      )}
+                                                      branchName={
+                                                        checkIsSelfManager()
+                                                          ? ""
+                                                          : getBranchName(
+                                                              innerItem1.branchId
+                                                            )
+                                                      }
                                                       teamLoader={teamLoader}
                                                       teamMember={teamMember}
                                                       titleClick={async () => {
@@ -2220,9 +2245,13 @@ const TargetScreen = ({ route }) => {
                                                               navigation={
                                                                 navigation
                                                               }
-                                                              branchName={getBranchName(
-                                                                innerItem2.branchId
-                                                              )}
+                                                              branchName={
+                                                                checkIsSelfManager()
+                                                                  ? ""
+                                                                  : getBranchName(
+                                                                      innerItem2.branchId
+                                                                    )
+                                                              }
                                                               teamLoader={
                                                                 teamLoader
                                                               }
@@ -2427,9 +2456,13 @@ const TargetScreen = ({ route }) => {
                                                                         navigation={
                                                                           navigation
                                                                         }
-                                                                        branchName={getBranchName(
-                                                                          innerItem3.branchId
-                                                                        )}
+                                                                        branchName={
+                                                                          checkIsSelfManager()
+                                                                            ? ""
+                                                                            : getBranchName(
+                                                                                innerItem3.branchId
+                                                                              )
+                                                                        }
                                                                         teamLoader={
                                                                           teamLoader
                                                                         }
@@ -2627,9 +2660,13 @@ const TargetScreen = ({ route }) => {
                                                                                   navigation={
                                                                                     navigation
                                                                                   }
-                                                                                  branchName={getBranchName(
-                                                                                    innerItem4.branchId
-                                                                                  )}
+                                                                                  branchName={
+                                                                                    checkIsSelfManager()
+                                                                                      ? ""
+                                                                                      : getBranchName(
+                                                                                          innerItem4.branchId
+                                                                                        )
+                                                                                  }
                                                                                   teamLoader={
                                                                                     teamLoader
                                                                                   }
@@ -2829,9 +2866,13 @@ const TargetScreen = ({ route }) => {
                                                                                             navigation={
                                                                                               navigation
                                                                                             }
-                                                                                            branchName={getBranchName(
-                                                                                              innerItem5.branchId
-                                                                                            )}
+                                                                                            branchName={
+                                                                                              checkIsSelfManager()
+                                                                                                ? ""
+                                                                                                : getBranchName(
+                                                                                                    innerItem5.branchId
+                                                                                                  )
+                                                                                            }
                                                                                             teamLoader={
                                                                                               teamLoader
                                                                                             }
@@ -2979,9 +3020,13 @@ const TargetScreen = ({ route }) => {
                                                                                                       navigation={
                                                                                                         navigation
                                                                                                       }
-                                                                                                      branchName={getBranchName(
-                                                                                                        innerItem6.branchId
-                                                                                                      )}
+                                                                                                      branchName={
+                                                                                                        checkIsSelfManager()
+                                                                                                          ? ""
+                                                                                                          : getBranchName(
+                                                                                                              innerItem6.branchId
+                                                                                                            )
+                                                                                                      }
                                                                                                       teamLoader={
                                                                                                         teamLoader
                                                                                                       }

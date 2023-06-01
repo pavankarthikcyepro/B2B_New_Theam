@@ -12,7 +12,7 @@
 		0F8C7DFC29C2F8D200393A1E /* libreact-native-maps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F8C7DFB29C2F8D200393A1E /* libreact-native-maps.a */; };
 		0F8C7E0A29C31B5A00393A1E /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8C7E0829C31B5A00393A1E /* icon.png */; };
 		0FD76F5B29E6C3BE0060C720 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0FD76F5A29E6C3BE0060C720 /* GoogleService-Info.plist */; };
-		11576CD99EA4FD2B34863751 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		11576CD99EA4FD2B34863751 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		12F93DCD831FE91A48FBF803 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6144485E80DD531E2857F8E2 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -89,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11576CD99EA4FD2B34863751 /* BuildFile in Frameworks */,
+				11576CD99EA4FD2B34863751 /* (null) in Frameworks */,
 				12F93DCD831FE91A48FBF803 /* libPods-B2B_NEW_THEME-B2B_NEW_THEMETests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,7 +260,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "B2B_NEW_THEME" */;
 			buildPhases = (
-				3D97063B0970BC13522C466E /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -421,28 +420,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests/Pods-B2B_NEW_THEME-B2B_NEW_THEMETests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3D97063B0970BC13522C466E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 8;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-B2B_NEW_THEME-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		593F43DDDD47524BECF5F7B6 /* [CP] Check Pods Manifest.lock */ = {
@@ -662,8 +639,8 @@
 				CODE_SIGN_ENTITLEMENTS = B2B_NEW_THEME/B2B_NEW_THEME.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.5;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 2.6;
+				DEVELOPMENT_TEAM = Z92J9VC4FS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = B2B_NEW_THEME/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -704,8 +681,8 @@
 				CODE_SIGN_ENTITLEMENTS = B2B_NEW_THEME/B2B_NEW_THEMERelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.5;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 2.6;
+				DEVELOPMENT_TEAM = Z92J9VC4FS;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = B2B_NEW_THEME/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

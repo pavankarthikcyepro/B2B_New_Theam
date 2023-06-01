@@ -86,6 +86,7 @@ const commonMenu = [
   "Download Report",
   // "Complaint Tracker",
   "Knowledge Center",
+  "EMI Calculator",
 ];
 
 const salesMenu = [
@@ -93,6 +94,19 @@ const salesMenu = [
   "Live Leads",
   "Target Planning",
   // "Event Dashboard",
+];
+
+const bikeWoMenu = [
+  "Home",
+  "Sign Out",
+  "Settings",
+  "Helpdesk",
+  "QR Code",
+  "Drop Analysis",
+  "My Stock",
+  "Download Report",
+  "Live Leads",
+  "Target Planning",
 ];
 
 const receptionTelCallerMenu = [
@@ -284,7 +298,11 @@ const SideMenuScreen = ({ navigation }) => {
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
     let newFilterData = [];
-    if (
+    if (jsonObj.orgName?.includes("BikeWo Corporation")) {
+      newFilterData = selector.tableData.filter((item) =>
+        bikeWoMenu.includes(item.title)
+      );
+    } else if (
       jsonObj.hrmsRole == "Reception" ||
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
@@ -302,6 +320,7 @@ const SideMenuScreen = ({ navigation }) => {
       );
     } else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("dealer head") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
       newFilterData = selector.tableData.filter((item) =>
@@ -488,6 +507,11 @@ const SideMenuScreen = ({ navigation }) => {
       case 123:
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.complaintTracker
+        );
+        break;
+      case 125:
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.emiCalculator
         );
         break;
       case 112:
