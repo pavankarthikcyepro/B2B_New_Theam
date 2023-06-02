@@ -18,6 +18,7 @@ import { Colors } from "../../../styles";
 import {
   delegateTask,
   getCRM_ManagerLiveLeads,
+  getCRM_Recp_LiveLeadsVol2,
   getEmployeesList,
   getReportingManagerList,
   getTargetReceptionistData,
@@ -109,6 +110,11 @@ const ParametersScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [teamLoader, setTeamLoader] = useState(false);
   const [teamMember, setTeamMember] = useState("");
+
+  const [receptionistVol2AlluserData, setReceptionistVol2AlluserData] = useState([])
+  const [receptionistVol2Level0, setReceptionistVol2Level0] = useState([])
+  const [receptionistVol2Level1, setReceptionistVol2Level1] = useState([])
+
   const color = [
     "#9f31bf",
     "#00b1ff",
@@ -364,7 +370,8 @@ const ParametersScreen = ({ route }) => {
             loggedInEmpId: jsonObj.empId,
             branchList: selector.saveLiveleadObject?.levelSelected,
           };
-          dispatch(getTargetReceptionistData(payload));
+          // dispatch(getTargetReceptionistData(payload));
+          dispatch(getCRM_Recp_LiveLeadsVol2(payload)); // new api for live leads recep/tele/cre/crm
         }
       }
     } else {
@@ -376,7 +383,8 @@ const ParametersScreen = ({ route }) => {
 
         if (receptionistRole.includes(jsonObj.hrmsRole)) {
           let payload = { orgId: jsonObj.orgId, loggedInEmpId: jsonObj.empId };
-          dispatch(getTargetReceptionistData(payload));
+          // dispatch(getTargetReceptionistData(payload));
+          dispatch(getCRM_Recp_LiveLeadsVol2(payload)); // new api for live leads recep/tele/cre/crm
         }
       }
     }
@@ -432,7 +440,8 @@ const ParametersScreen = ({ route }) => {
         loggedInEmpId: selector.saveLiveleadObjectCRM?.selectedempId[0],
         branchList: selector.saveLiveleadObjectCRM?.levelSelected,
       };
-      dispatch(getTargetReceptionistData(payload));
+      // dispatch(getTargetReceptionistData(payload));
+      dispatch(getCRM_Recp_LiveLeadsVol2(payload)); // new api for live leads recep/tele/cre/crm
     } else {
       setCRM_filterParameters([]);
       settotalOfTeamAfterFilter([]);
@@ -570,6 +579,36 @@ const ParametersScreen = ({ route }) => {
       setToggleParamsMetaData([...data]);
     }
   }, [selector.isTeam]);
+
+
+  useEffect(() => {
+    if (!_.isEmpty(selector.crm_recep_response_data_vol2.fullResponse))  {
+
+      let modified = selector.crm_recep_response_data_vol2?.fullResponse?.self?.allTreeData?.map(v => ({ ...v, isOpenInner: false, innerData: [] }))
+      setReceptionistVol2AlluserData(modified);
+      let tempFilterIds = selector.crm_recep_response_data_vol2?.fullResponse?.self?.level1?.map((item) => item.empId)
+
+      let tempArr = modified.filter((item) => tempFilterIds.includes(item.empId))
+
+
+      setReceptionistVol2Level1(tempArr);
+      setReceptionistVol2Level0([selector.crm_recep_response_data_vol2.fullResponse.self.selfUser]);
+
+      if (selector.crm_recep_response_data_vol2) {
+        let totalKey1 = selector?.crm_recep_response_data_vol2?.enquirysCount;
+        let totalKey2 = selector?.crm_recep_response_data_vol2?.bookingsCount;
+        let totalKey3 = selector?.crm_recep_response_data_vol2?.RetailCount;
+        let totalKey4 = selector?.crm_recep_response_data_vol2?.totalLostCount;
+
+        let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+        setTotalofTeam(total);
+      }
+
+    }
+  
+    
+  }, [selector.crm_recep_response_data_vol2])
+  
 
   useEffect(() => {
     setTogglePercentage(0);
@@ -2861,6 +2900,281 @@ const ParametersScreen = ({ route }) => {
         break;
     }
   };
+
+// todo manthan
+  const renderReceptionistFirstLevelVol2 = () => {
+    return (
+      <>
+        {CRM_filterParameters.length > 0 &&
+          CRM_filterParameters.map((item, index) => {
+            return (
+              <View
+                style={{
+                  borderColor: isFilterViewExapanded ? Colors.BLUE : "",
+                  borderWidth: isFilterViewExapanded ? 1 : 0,
+                  borderRadius: 10,
+                  margin: isFilterViewExapanded ? 5 : 0,
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item?.emp_name}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    if (isFilterViewExapanded) {
+                      handleSourceModalNavigation(item, item.emp_id, [
+                        item.emp_id,
+                      ]);
+                    } else {
+                      handleSourceModalNavigation(item, item.emp_id, []);
+                    }
+                    // handleSourceModalNavigation(item, item.emp_id, [])
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRM
+                        level={0}
+                        item={item}
+                        branchName={getBranchName(item?.branch)}
+                        color={Colors.CORAL}
+                        titleClick={async () => {
+                          setisFilterViewExapanded(!isFilterViewExapanded);
+                          return;
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {/* {[
+                          item.contactCount || 0,
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                        ]. */}
+                        {/* {[
+                          selector.receptionist_self_data?.contactsCount || 0,
+                          selector.receptionist_self_data?.enquirysCount || 0,
+                          selector.receptionist_self_data?.bookingsCount || 0,
+                          selector.receptionist_self_data?.RetailCount || 0,
+                        ]. */}
+                        {[
+                          isFilterViewExapanded
+                            ? item.contactCount
+                            : selector.receptionist_self_data?.contactsCount ||
+                            0,
+                          isFilterViewExapanded
+                            ? item.enquiryCount
+                            : selector.receptionist_self_data?.enquirysCount ||
+                            0,
+                          isFilterViewExapanded
+                            ? item.bookingCount
+                            : selector.receptionist_self_data?.bookingsCount ||
+                            0,
+                          isFilterViewExapanded
+                            ? item.retailCount
+                            : selector.receptionist_self_data?.RetailCount || 0,
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (isFilterViewExapanded) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    }
+                                  }
+                                }
+                                // // todo redirections logic filter UI
+                                // if (e > 0) {
+                                //   if (index === 0) {
+                                //     navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                                //   } else if (index === 1) {
+                                //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                //   } else if (index === 2) {
+                                //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                //   } else if (index === 3) {
+                                //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                //   }
+                                // }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isFilterViewExapanded && renderCRMFilterViewSecondLevel()}
+              </View>
+            );
+          })}
+      </>
+    );
+  };
+
+
 
   const renderCRMFilterView = () => {
     return (
@@ -7011,10 +7325,10 @@ const ParametersScreen = ({ route }) => {
                       ) : (
                         <>
                           {/* Employee params section */}
-                         
-                     
 
-                          
+
+
+
 
                           {/* Grand Total Section */}
                           {selector.totalParameters.length > 0 && (
@@ -7133,7 +7447,9 @@ const ParametersScreen = ({ route }) => {
                     </ScrollView>
                   )}
                 </View>
-              </>): null }
+              </>) : null}
+
+
             {!receptionistRole.includes(userData.hrmsRole) &&
             !crmRole.includes(userData.hrmsRole) ? (
               <>

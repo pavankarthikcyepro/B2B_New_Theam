@@ -218,9 +218,9 @@ export const getTargetParametersEmpData = createAsyncThunk("LIVE_LEADS/getTarget
     const response = await client.post(URL.GET_LIVE_LEADS_SELF(), payload);
     const json = await response.json();
     if (!response.ok) {
-    return rejectWithValue(json);
+        return rejectWithValue(json);
     }
- return json;
+    return json;
 })
 // self Receptionist/ tele caller / CRE
 export const getTargetReceptionistData = createAsyncThunk("LIVE_LEADS/getTargetReceptionistData", async (payload: any, { rejectWithValue }) => {
@@ -401,7 +401,7 @@ export const getBranchRanksList = createAsyncThunk("LIVE_LEADS/getBranchRanksLis
 })
 
 export const getSourceModelDataForSelf = createAsyncThunk("LIVE_LEADS/getSourceModelDataForSelf", async (data: any, { rejectWithValue }) => {
-    const {type, payload} = data;
+    const { type, payload } = data;
     const url = type === 'SELF' ? URL.MODEL_SOURCE_SELF() : type === 'INSIGHTS' ? URL.MODEL_SOURCE_INSIGHTS() : URL.MODEL_SOURCE_TEAM();
 
     const response = await client.post(url, payload);
@@ -430,8 +430,8 @@ export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS/getManagerLi
     return json;
 })
 
-// CRM live leads tree 
-export const getCRM_ManagerLiveLeadsVol2 = createAsyncThunk("LIVE_LEADS/getCRM_ManagerLiveLeadsVol2", async (payload, { rejectWithValue }) => {
+// CRM/recep/cre/telecaller live leads tree 
+export const getCRM_Recp_LiveLeadsVol2 = createAsyncThunk("LIVE_LEADS/getCRM_Recp_LiveLeadsVol2", async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.GET_LIVE_LEADS_MANAGERDATA_VOL2(), payload);
     const json = await response.json();
     if (!response.ok) {
@@ -518,12 +518,23 @@ export const liveLeadsSlice = createSlice({
         dealerFilter: {},
         filterPayload: {},
         filterSelectedData: {},
-        levelSelected:[],
-        saveLiveleadObject:{},
+        levelSelected: [],
+        saveLiveleadObject: {},
         saveLiveleadObjectCRM: {},
-        receptionist_self_data:[],
+        receptionist_self_data: [],
         crm_response_data: [],
         crm_employees_drop_down_data: {},
+        crm_recep_response_data_vol2: {
+            RetailCount: 0,
+            bookingsCount: 0,
+            consultantList: [],
+            totalAllocatedCount: 0,
+            totalDroppedCount: 0,
+            contactsCount: 0,
+            enquirysCount: 0,
+            totalLostCount: 0,
+            fullResponse: {},
+        }
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -570,8 +581,8 @@ export const liveLeadsSlice = createSlice({
             state.employees_drop_down_data = {};
         },
         updateEmployeeDropdownDataCRMLiVeLeads: (state, action) => {
-           
-            
+
+
             state.crm_employees_drop_down_data = {};
         },
         clearState: (state, action) => {
@@ -612,11 +623,22 @@ export const liveLeadsSlice = createSlice({
             state.isLoading = false
             state.leaderboard_list = []
             state.branchrank_list = []
-            state.self_target_parameters_data =empData
-            state.insights_target_parameters_data =empData
+            state.self_target_parameters_data = empData
+            state.insights_target_parameters_data = empData
             state.receptionist_self_data = [],
-            state.crm_response_data = [],
-                state.crm_employees_drop_down_data = {}
+                state.crm_response_data = [],
+                state.crm_employees_drop_down_data = {},
+                state.crm_recep_response_data_vol2 = {
+                    RetailCount: 0,
+                    bookingsCount: 0,
+                    consultantList: [],
+                    totalAllocatedCount: 0,
+                    totalDroppedCount: 0,
+                    contactsCount: 0,
+                    enquirysCount: 0,
+                    totalLostCount: 0,
+                    fullResponse: {},
+                }
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -784,8 +806,8 @@ export const liveLeadsSlice = createSlice({
                     state.target_parameters_data = [];
                     state.target_parameters_data = action.payload;
                     AsyncStore.storeData(
-                      "TARGET_DATA_LIVE_LEADS",
-                      JSON.stringify(action.payload)
+                        "TARGET_DATA_LIVE_LEADS",
+                        JSON.stringify(action.payload)
                     );
                 }
                 // state.isLoading = false;
@@ -807,12 +829,12 @@ export const liveLeadsSlice = createSlice({
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
                     AsyncStore.storeData(
-                      "TARGET_ALL_LIVE_LEADS",
-                      JSON.stringify(action.payload.overallTargetAchivements)
+                        "TARGET_ALL_LIVE_LEADS",
+                        JSON.stringify(action.payload.overallTargetAchivements)
                     );
                     AsyncStore.storeData(
-                      "TARGET_EMP_ALL_LIVE_LEADS",
-                      JSON.stringify(action.payload.employeeTargetAchievements)
+                        "TARGET_EMP_ALL_LIVE_LEADS",
+                        JSON.stringify(action.payload.employeeTargetAchievements)
                     );
                 }
             })
@@ -888,15 +910,15 @@ export const liveLeadsSlice = createSlice({
                 if (action.payload) {
                     const payloadData = [...action.payload];
                     payloadData.forEach(x => {
-                        const {data, ...rest} = x;
+                        const { data, ...rest } = x;
                         x = rest;
                     })
                     state.self_target_parameters_data = payloadData;
                     AsyncStore.storeData(
-                      "TARGET_EMP_LIVE_LEADS",
-                      JSON.stringify(payloadData)
+                        "TARGET_EMP_LIVE_LEADS",
+                        JSON.stringify(payloadData)
                     );
-                } else{
+                } else {
                     state.self_target_parameters_data = empData
                 }
                 state.isLoading = false;
@@ -930,15 +952,15 @@ export const liveLeadsSlice = createSlice({
                 if (action.payload) {
                     const payloadData = [...action.payload];
                     payloadData.forEach(x => {
-                        const {data, ...rest} = x;
+                        const { data, ...rest } = x;
                         x = rest;
                     })
-                   
-                    
+
+
                     state.insights_target_parameters_data = payloadData;
                     AsyncStore.storeData(
-                      "TARGET_EMP_LIVE_LEADS",
-                      JSON.stringify(payloadData)
+                        "TARGET_EMP_LIVE_LEADS",
+                        JSON.stringify(payloadData)
                     );
                 }
                 state.isLoading = false;
@@ -961,12 +983,12 @@ export const liveLeadsSlice = createSlice({
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
                     AsyncStore.storeData(
-                      "TARGET_ALL_LIVE_LEADS",
-                      JSON.stringify(action.payload.overallTargetAchivements)
+                        "TARGET_ALL_LIVE_LEADS",
+                        JSON.stringify(action.payload.overallTargetAchivements)
                     );
                     AsyncStore.storeData(
-                      "TARGET_EMP_ALL_LIVE_LEADS",
-                      JSON.stringify(action.payload.employeeTargetAchievements)
+                        "TARGET_EMP_ALL_LIVE_LEADS",
+                        JSON.stringify(action.payload.employeeTargetAchievements)
                     );
                 }
             })
@@ -976,10 +998,10 @@ export const liveLeadsSlice = createSlice({
             })
 
             .addCase(getTotalTargetParametersData.pending, (state, action) => {
-                 if (action.payload) {
+                if (action.payload) {
 
-                   state.totalParameters = action.payload;
-                 }
+                    state.totalParameters = action.payload;
+                }
             })
             .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
@@ -1026,8 +1048,8 @@ export const liveLeadsSlice = createSlice({
             })
             .addCase(updateEmployeeDataBasedOnDelegate.fulfilled, (state, action) => {
                 const dataObj = action.payload;
-                    // state.isLoading = false;
-                if (action.payload.success){
+                // state.isLoading = false;
+                if (action.payload.success) {
                     showToast("Successfully updated")
                 }
             })
@@ -1040,8 +1062,8 @@ export const liveLeadsSlice = createSlice({
             .addCase(getLeaderBoardList.fulfilled, (state, action) => {
                 const dataObj = action.payload;
                 state.leaderboard_list = dataObj ? dataObj : [];
-                if(!dataObj || dataObj.length === 0)
-                showToast('No data available')
+                if (!dataObj || dataObj.length === 0)
+                    showToast('No data available')
                 // state.isLoading = false;
             })
             .addCase(getLeaderBoardList.rejected, (state, action) => {
@@ -1108,12 +1130,12 @@ export const liveLeadsSlice = createSlice({
         // Get CRM Live leads Data
         builder.addCase(getCRM_ManagerLiveLeads.pending, (state, action) => {
             state.isLoading = true;
-            state.crm_response_data= [];
+            state.crm_response_data = [];
         })
         builder.addCase(getCRM_ManagerLiveLeads.fulfilled, (state, action) => {
             if (action.payload) {
-                
-                state.crm_response_data = action.payload; 
+
+                state.crm_response_data = action.payload;
             }
             state.isLoading = false;
         })
@@ -1124,20 +1146,40 @@ export const liveLeadsSlice = createSlice({
 
 
         // Get receptionist/CRM/Tele caller /CRE live leads api 
-        builder.addCase(getCRM_ManagerLiveLeadsVol2.pending, (state, action) => {
+        builder.addCase(getCRM_Recp_LiveLeadsVol2.pending, (state, action) => {
             state.isLoading = true;
-            state.crm_response_data = [];
+            state.crm_recep_response_data_vol2 = {
+                RetailCount: 0,
+                bookingsCount: 0,
+                consultantList: [],
+                totalAllocatedCount: 0,
+                totalDroppedCount: 0,
+                contactsCount: 0,
+                enquirysCount: 0,
+                totalLostCount: 0,
+                fullResponse: {},
+            };
         })
-        builder.addCase(getCRM_ManagerLiveLeadsVol2.fulfilled, (state, action) => {
+        builder.addCase(getCRM_Recp_LiveLeadsVol2.fulfilled, (state, action) => {
             if (action.payload) {
 
-                state.crm_response_data = action.payload;
+                state.crm_recep_response_data_vol2 = action.payload;
             }
             state.isLoading = false;
         })
-        builder.addCase(getCRM_ManagerLiveLeadsVol2.rejected, (state, action) => {
+        builder.addCase(getCRM_Recp_LiveLeadsVol2.rejected, (state, action) => {
             state.isLoading = false;
-            state.crm_response_data = [];
+            state.crm_recep_response_data_vol2 = {
+                RetailCount: 0,
+                bookingsCount: 0,
+                consultantList: [],
+                totalAllocatedCount: 0,
+                totalDroppedCount: 0,
+                contactsCount: 0,
+                enquirysCount: 0,
+                totalLostCount: 0,
+                fullResponse: {},
+            };
         })
 
             // Get  CRM Employees Drop Down Data
@@ -1157,6 +1199,6 @@ export const liveLeadsSlice = createSlice({
 
 export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData
     , updateDealerFilterData, updateFilterSelectedData, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM,
-    updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads  } = liveLeadsSlice.actions;
+    updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads } = liveLeadsSlice.actions;
 export default liveLeadsSlice.reducer;
 
