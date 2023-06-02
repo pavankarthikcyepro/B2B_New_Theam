@@ -273,7 +273,7 @@ const URL = {
     return dfGetAll + `/${orgId}/%22Active%22/${orgId}/enquerySegment`;
   },
   DROP_ENQUIRY: () => sales_url + "/lead-drop",
-  
+
   POST_FINANCE: () => sales_url + "/dms/finance",
   POST_EVALUTION: () => sales_url + "/dms/evaluation",
 
@@ -405,6 +405,10 @@ const URL = {
     return sales_url + `/callrecording/getCallHistory-urls?recordId=${taskId}`;
   },
 
+  EMI_CALCULATOR: () => {
+    return sales_url + `/booking-amount/emiCalculator`;
+  },
+
   SAVE_BOOKING_CANCEL_ATTACHMENT: () => {
     return sales_url + `/payment/saveReceiptdoc`;
   },
@@ -466,7 +470,9 @@ const URL = {
   },
 
   GET_RECHEDULE_REMARKS: (universalId) => {
-    return sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`;
+    return (
+      sales_url + `/task-history/getReScheduleRemark?customerId=${universalId}`
+    );
   },
 
   GET_WORKFLOW_TASKS: (entityId, taskName) => {
@@ -478,8 +484,6 @@ const URL = {
   GET_PUT_WORKFLOW_HISTORY: (recordid) => {
     return sales_url + `/dms/putWorkflowHistory/${recordid}`;
   },
-
-  
 
   UPDATELIST_TESTDRIVE_HISTORY: (recordid) => {
     return sales_url + `/task-history/updateList/${recordid}`;
@@ -1059,7 +1063,9 @@ const URL = {
     return `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GoogleMapKey}`;
   },
   KNOWLEGDE_CENTER: (orgId) => {
-    return vehicleInfoService_url + `/api/vehicle_details/?organizationId=${orgId}`;
+    return (
+      vehicleInfoService_url + `/api/vehicle_details/?organizationId=${orgId}`
+    );
   },
 };
 

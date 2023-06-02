@@ -86,6 +86,7 @@ const commonMenu = [
   "Download Report",
   // "Complaint Tracker",
   "Knowledge Center",
+  "EMI Calculator",
 ];
 
 const salesMenu = [
@@ -107,6 +108,7 @@ const bikeWoMenu = [
   "Live Leads",
   "Target Planning",
   "Digital Dashboard",
+  "EMI Calculator",
 ];
 
 const receptionTelCallerMenu = [
@@ -358,7 +360,7 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateFilterSelectedDataReceptionist({}));
         dispatch(updateFilterLevelSelectedDataReceptionist({}));
         dispatch(updateDealerFilterData_Recep({}));
-        dispatch(updateCrm_employees_drop_down_data({}))
+        dispatch(updateCrm_employees_drop_down_data({}));
         dispatch(
           updateFilterIds({
             startDate: "",
@@ -369,8 +371,8 @@ const SideMenuScreen = ({ navigation }) => {
             employeeName: [],
           })
         );
-        dispatch(updateEmpDropDown_Local({}))
-        
+        dispatch(updateEmpDropDown_Local({}));
+
         break;
       case 100:
         navigation.navigate(
@@ -410,7 +412,12 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
         break;
       case 124:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.knowledgeCenter);
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.knowledgeCenter
+        );
+        break;
+      case 125:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.emiCalculator);
         break;
       case 113:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, { emp_id: "", fromScreen: "" });
@@ -495,11 +502,13 @@ const SideMenuScreen = ({ navigation }) => {
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
         break;
       case 120:
-         dispatch(updateLocation({}));
-         dispatch(updateSelectedDealerCode({}));
-         dispatch(updateAgingFrom(null));
-         dispatch(updateAgingTo(null));
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock,{refresh:true});
+        dispatch(updateLocation({}));
+        dispatch(updateSelectedDealerCode({}));
+        dispatch(updateAgingFrom(null));
+        dispatch(updateAgingTo(null));
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock, {
+          refresh: true,
+        });
         break;
       case 121:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
