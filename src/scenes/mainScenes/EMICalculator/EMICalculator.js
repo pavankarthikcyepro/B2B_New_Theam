@@ -283,28 +283,28 @@ const EMICalculator = ({ route, navigation }) => {
 
           <View style={styles.emiAmtRow}>
             <Text style={styles.emiRowText}>EMI Amt:</Text>
-            <Text style={styles.emiRowText}>{`${rupeeSign}${
+            <Text style={styles.emiRowAmountText}>{`${rupeeSign}${
               selector.emiResponse?.emiPerMonth?.toLocaleString() ?? "0"
             }`}</Text>
           </View>
 
           <View style={styles.emiAmtRow}>
             <Text style={styles.emiRowText}>Principle Amt:</Text>
-            <Text style={styles.emiRowText}>{`${rupeeSign}${
+            <Text style={styles.emiRowAmountText}>{`${rupeeSign}${
               selector.emiResponse ? selector.loanAmount?.toLocaleString() : "0"
             }`}</Text>
           </View>
 
           <View style={styles.emiAmtRow}>
             <Text style={styles.emiRowText}>Total Interest:</Text>
-            <Text style={styles.emiRowText}>{`${rupeeSign}${
+            <Text style={styles.emiRowAmountText}>{`${rupeeSign}${
               selector.emiResponse?.totalInterest?.toLocaleString() ?? "0"
             }`}</Text>
           </View>
 
           <View style={styles.emiAmtRow}>
             <Text style={styles.emiRowText}>Total Amt Payble:</Text>
-            <Text style={styles.emiRowText}>{`${rupeeSign}${
+            <Text style={styles.emiRowAmountText}>{`${rupeeSign}${
               selector.emiResponse?.totalPayment?.toLocaleString() ?? "0"
             }`}</Text>
           </View>
@@ -392,6 +392,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.TARGET_GRAY,
   },
   emiRowText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 5,
+    color: Colors.GRAY,
+  },
+  emiRowAmountText: {
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 5,
