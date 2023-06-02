@@ -31,7 +31,7 @@ const StatsTripListScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [paginationLoader, setPaginationLoader] = useState(false);
   const [data, setData] = useState([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -65,7 +65,7 @@ const StatsTripListScreen = ({ route, navigation }) => {
   const getLocation = async (params) => {
     try {
       const response = await client.get(
-        URL.GEOLOCATION_TRIPS(params.empId, params.orgId, 1, 25, params.status)
+        URL.GEOLOCATION_TRIPS(params.empId, params.orgId, page, 25, params.status)
       );
       const json = await response.json();
 
