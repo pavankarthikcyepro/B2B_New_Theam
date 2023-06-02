@@ -943,6 +943,33 @@ export const getReceptionistModelLive = createAsyncThunk(
   }
 );
 
+
+
+// live receptinist/tele caller / cre
+export const getReceptionistSourceLiveVol2 = createAsyncThunk(
+  "HOME/getReceptionistSourceLiveVol2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_SOURCE_LIVE_Vol2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+// live receptinist/tele caller / cre
+export const getReceptionistModelLiveVol2 = createAsyncThunk(
+  "HOME/getReceptionistModelLiveVol2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.RECEPTIONIST_MODEL_LIVE_Vol2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 // xrole model
 export const getXroleModel = createAsyncThunk(
   "HOME/getXroleModel",
@@ -2265,6 +2292,24 @@ export const homeSlice = createSlice({
         state.receptionistSource = dataObj;
       })
       .addCase(getXroleSource.rejected, (state, action) => { })
+
+      // live receptinist/tele caller / cre
+      .addCase(getReceptionistModelLiveVol2.pending, (state) => { })
+      .addCase(getReceptionistModelLiveVol2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        console.log("manthan --> model ", dataObj);
+        
+        state.receptionistModel = dataObj;
+      })
+      .addCase(getReceptionistModelLiveVol2.rejected, (state, action) => { })
+      // live receptinist/tele caller / cre
+      .addCase(getReceptionistSourceLiveVol2.pending, (state) => { })
+      .addCase(getReceptionistSourceLiveVol2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        console.log("manthan --> source ", dataObj);
+        state.sourceModelData = dataObj;
+      })
+      .addCase(getReceptionistSourceLiveVol2.rejected, (state, action) => { })
 
 
       .addCase(getReceptionistManagerSource.pending, (state) => { })

@@ -1022,6 +1022,13 @@ const URL = {
     return dashboard + "/liveLeads/model";
   },
 
+  RECEPTIONIST_SOURCE_LIVE_Vol2: () => {
+    return dashboard + "/live/source";
+  },
+  RECEPTIONIST_MODEL_LIVE_Vol2: () => {
+    return dashboard + "/live/model";
+  },
+
   RECEPTIONIST_SOURCE_Vol2: () => {
     return dashboard + "/source";
   },

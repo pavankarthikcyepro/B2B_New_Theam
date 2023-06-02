@@ -446,6 +446,17 @@ const LeadsScreen = ({ route, navigation }) => {
 
         // setSearchedData([])
 
+        const liveLeadsStartDate =
+          route?.params?.moduleType === "live-leadsV2"
+            ? "2021-01-01"
+            : lastMonthFirstDate;
+        const liveLeadsEndDate =
+          route?.params?.moduleType === "live-leadsV2"
+            ? moment().format(dateFormat)
+            : currentDate;
+
+        setFromDateState(liveLeadsStartDate);
+        setToDateState(liveLeadsEndDate);
         
         let payloadReceptionist = {
           "leadIdList": route.params.dealerCodes,

@@ -20,8 +20,10 @@ import {
   getReceptionistManagerSource,
   getReceptionistModel,
   getReceptionistModelLive,
+  getReceptionistModelLiveVol2,
   getReceptionistSource,
   getReceptionistSourceLive,
+  getReceptionistSourceLiveVol2,
   getSourceModelDataForSelf,
 } from "../../../redux/homeReducer";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
@@ -215,31 +217,65 @@ const RecepSourceModelCRM = ({ route, navigation }) => {
         if (liveLeads_selector.saveLiveleadObject?.levelSelected !== "") {
           
           if (role === "CRM") {
-            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "self":self}
-            dispatch(getCRMModelLive(payloadCRM))
-            dispatch(getCRMSourceLive(payloadCRM))
+            // let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "self":self}
+            // dispatch(getCRMModelLive(payloadCRM))
+            // dispatch(getCRMSourceLive(payloadCRM))
+            let payloadReceptionist = {
+              "leadIdList": empList,
+              "orgId": orgId
+            }
+            dispatch(getReceptionistSourceLiveVol2(payloadReceptionist));
+            dispatch(getReceptionistModelLiveVol2(payloadReceptionist));
           } else {
             if (liveLeads_selector.saveLiveleadObjectCRM.levelSelected !== undefined){
-              let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObjectCRM?.levelSelected, "empList": empList ? empList : null }
-              dispatch(getReceptionistSourceLive(payloadReceptionist));
-              dispatch(getReceptionistModelLive(payloadReceptionist));
+              // let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObjectCRM?.levelSelected, "empList": empList ? empList : null }
+              // dispatch(getReceptionistSourceLive(payloadReceptionist));
+              // dispatch(getReceptionistModelLive(payloadReceptionist));
+
+              let payloadReceptionist = {
+                "leadIdList": empList,
+                "orgId": orgId
+              }
+              dispatch(getReceptionistSourceLiveVol2(payloadReceptionist));
+              dispatch(getReceptionistModelLiveVol2(payloadReceptionist));
             }else{
-              let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "empList": empList ? empList : null }
-              dispatch(getReceptionistSourceLive(payloadReceptionist));
-              dispatch(getReceptionistModelLive(payloadReceptionist));
+            //   let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "branchList": liveLeads_selector.saveLiveleadObject?.levelSelected, "empList": empList ? empList : null }
+            //   dispatch(getReceptionistSourceLive(payloadReceptionist));
+            //   dispatch(getReceptionistModelLive(payloadReceptionist));
+              let payloadReceptionist = {
+                "leadIdList": empList,
+                "orgId": orgId
+              }
+              dispatch(getReceptionistSourceLiveVol2(payloadReceptionist));
+              dispatch(getReceptionistModelLiveVol2(payloadReceptionist));
             }
+             
            
           }
         } else {
          
           if (role === "CRM") {
-            let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, }
-            dispatch(getCRMModelLive(payloadCRM))
-            dispatch(getCRMSourceLive(payloadCRM))
+            // let payloadCRM = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null, }
+            // dispatch(getCRMModelLive(payloadCRM))
+            // dispatch(getCRMSourceLive(payloadCRM))
+
+            let payloadReceptionist = {
+              "leadIdList": empList,
+              "orgId": orgId
+            }
+            dispatch(getReceptionistSourceLiveVol2(payloadReceptionist));
+            dispatch(getReceptionistModelLiveVol2(payloadReceptionist));
           } else {
-            let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null }
-            dispatch(getReceptionistSourceLive(payloadReceptionist));
-            dispatch(getReceptionistModelLive(payloadReceptionist));
+            // let payloadReceptionist = { "orgId": orgId, "loggedInEmpId": loggedInEmpId, "empList": empList ? empList : null }
+            // dispatch(getReceptionistSourceLive(payloadReceptionist));
+            // dispatch(getReceptionistModelLive(payloadReceptionist));
+
+            let payloadReceptionist = {
+              "leadIdList": empList,
+              "orgId": orgId
+            }
+            dispatch(getReceptionistSourceLiveVol2(payloadReceptionist));
+            dispatch(getReceptionistModelLiveVol2(payloadReceptionist));
           }
 
         }
