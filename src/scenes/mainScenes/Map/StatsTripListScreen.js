@@ -40,6 +40,13 @@ const StatsTripListScreen = ({ route, navigation }) => {
     }
   }, [route.params]);
 
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: route?.params?.title ? route?.params?.title : "Detail",
+    });
+  }, [navigation]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (

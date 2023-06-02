@@ -253,11 +253,15 @@ const GeoLocationScreen = ({ route, navigation }) => {
   };
 
   function formattedDate(params) {
-    if (params === "NA") {
-      return params;
+    if (params) {
+      if (params === "NA") {
+        return params;
+      } else {
+        const formattedTime = moment(params, "hh:mm:ss A").format("hh:mm a");
+        return formattedTime;
+      }
     } else {
-      const formattedTime = moment(params, "hh:mm:ss A").format("hh:mm a");
-      return formattedTime;
+      return "NA";
     }
   }
 
@@ -290,6 +294,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
                 empId: userData.empId,
                 orgId: userData.orgId,
                 status: "TODAY",
+                title: "Today's Trips"
               }
             );
           }}
@@ -314,7 +319,11 @@ const GeoLocationScreen = ({ route, navigation }) => {
       >
         <Card
           title={"Travel Distance"}
-          value={stats["Today"].travelDistance + " KM"}
+          value={
+            stats["Today"].travelDistance
+              ? stats["Today"].travelDistance + " KM"
+              : "0" + " KM"
+          }
           icon={DISTANCE}
         />
         <Card
@@ -347,6 +356,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
                 empId: userData.empId,
                 orgId: userData.orgId,
                 status: "WEEK",
+                title: "This Week Trips",
               }
             );
           }}
@@ -371,7 +381,11 @@ const GeoLocationScreen = ({ route, navigation }) => {
       >
         <Card
           title={"Travel Distance"}
-          value={stats["This Week"].travelDistance + " KM"}
+          value={
+            stats["This Week"].travelDistance
+              ? stats["This Week"].travelDistance + " KM"
+              : "0" + " KM"
+          }
           icon={DISTANCE}
         />
         <Card
@@ -404,6 +418,7 @@ const GeoLocationScreen = ({ route, navigation }) => {
                 empId: userData.empId,
                 orgId: userData.orgId,
                 status: "MONTH",
+                title: "This Month Trips",
               }
             );
           }}
@@ -428,7 +443,11 @@ const GeoLocationScreen = ({ route, navigation }) => {
       >
         <Card
           title={"Travel Distance"}
-          value={stats["This Month"].travelDistance + " KM"}
+          value={
+            stats["This Month"].travelDistance
+              ? stats["This Month"].travelDistance + " KM"
+              : "0" + " KM"
+          }
           icon={DISTANCE}
         />
         <Card

@@ -266,11 +266,15 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
   };
 
   function formattedDate(params) {
-    if (params === "NA") {
-      return params;
+    if (params) {
+      if (params === "NA") {
+        return params;
+      } else {
+        const formattedTime = moment(params, "hh:mm:ss A").format("hh:mm a");
+        return formattedTime;
+      }
     } else {
-      const formattedTime = moment(params, "hh:mm:ss A").format("hh:mm a");
-      return formattedTime;
+      return "NA";
     }
   }
 
@@ -302,6 +306,7 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
               orgId: route.params.orgId,
               date: currentDate,
               status: "TODAY",
+              title: "Today's Trips",
             });
           }}
         />
@@ -325,7 +330,11 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
       >
         <Card
           title={"Travel Distance"}
-          value={stats["Today"].travelDistance + " KM"}
+          value={
+            stats["Today"].travelDistance
+              ? stats["Today"].travelDistance + " KM"
+              : "0" + " KM"
+          }
           icon={DISTANCE}
         />
         <Card
@@ -357,6 +366,7 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
               orgId: route.params.orgId,
               date: currentDate,
               status: "WEEK",
+              title: "This Week Trips",
             });
           }}
         />
@@ -380,7 +390,11 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
       >
         <Card
           title={"Travel Distance"}
-          value={stats["This Week"].travelDistance + " KM"}
+          value={
+            stats["This Week"].travelDistance
+              ? stats["This Week"].travelDistance + " KM"
+              : "0" + " KM"
+          }
           icon={DISTANCE}
         />
         <Card
@@ -412,6 +426,7 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
               orgId: route.params.orgId,
               date: currentDate,
               status: "MONTH",
+              title: "This Month Trips",
             });
           }}
         />
@@ -435,7 +450,11 @@ const EmployeeLocationsScreen = ({ route, navigation }) => {
       >
         <Card
           title={"Travel Distance"}
-          value={stats["This Month"].travelDistance + " KM"}
+          value={
+            stats["This Month"].travelDistance
+              ? stats["This Month"].travelDistance + " KM"
+              : "0" + " KM"
+          }
           icon={DISTANCE}
         />
         <Card
