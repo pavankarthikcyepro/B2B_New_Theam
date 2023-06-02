@@ -114,7 +114,7 @@ const ParametersScreen = ({ route }) => {
   const [receptionistVol2AlluserData, setReceptionistVol2AlluserData] = useState([])
   const [receptionistVol2Level0, setReceptionistVol2Level0] = useState([])
   const [receptionistVol2Level1, setReceptionistVol2Level1] = useState([])
-
+  const [isRecepVol2Level0Expanded, setIsRecepVol2Level0Expanded] = useState(false);
   const color = [
     "#9f31bf",
     "#00b1ff",
@@ -583,7 +583,7 @@ const ParametersScreen = ({ route }) => {
 
   useEffect(() => {
     if (!_.isEmpty(selector.crm_recep_response_data_vol2.fullResponse))  {
-
+      console.log("manthan kk ", );
       let modified = selector.crm_recep_response_data_vol2?.fullResponse?.self?.allTreeData?.map(v => ({ ...v, isOpenInner: false, innerData: [] }))
       setReceptionistVol2AlluserData(modified);
       let tempFilterIds = selector.crm_recep_response_data_vol2?.fullResponse?.self?.level1?.map((item) => item.empId)
@@ -601,6 +601,7 @@ const ParametersScreen = ({ route }) => {
         let totalKey4 = selector?.crm_recep_response_data_vol2?.totalLostCount;
 
         let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+        
         setTotalofTeam(total);
       }
 
@@ -2905,15 +2906,15 @@ const ParametersScreen = ({ route }) => {
   const renderReceptionistFirstLevelVol2 = () => {
     return (
       <>
-        {CRM_filterParameters.length > 0 &&
-          CRM_filterParameters.map((item, index) => {
+        {receptionistVol2Level0.length > 0 &&
+          receptionistVol2Level0.map((item, index) => {
             return (
               <View
                 style={{
-                  borderColor: isFilterViewExapanded ? Colors.BLUE : "",
-                  borderWidth: isFilterViewExapanded ? 1 : 0,
+                  borderColor: isRecepVol2Level0Expanded ? Colors.BLUE : "",
+                  borderWidth: isRecepVol2Level0Expanded ? 1 : 0,
                   borderRadius: 10,
-                  margin: isFilterViewExapanded ? 5 : 0,
+                  margin: isRecepVol2Level0Expanded ? 5 : 0,
                 }}
               >
                 <View
@@ -2939,7 +2940,7 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    if (isFilterViewExapanded) {
+                    if (isRecepVol2Level0Expanded) {
                       handleSourceModalNavigation(item, item.emp_id, [
                         item.emp_id,
                       ]);
@@ -2988,7 +2989,7 @@ const ParametersScreen = ({ route }) => {
                         branchName={getBranchName(item?.branch)}
                         color={Colors.CORAL}
                         titleClick={async () => {
-                          setisFilterViewExapanded(!isFilterViewExapanded);
+                          setIsRecepVol2Level0Expanded(!isRecepVol2Level0Expanded);
                           return;
                         }}
                       />
@@ -3013,19 +3014,19 @@ const ParametersScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                         {[
-                          isFilterViewExapanded
+                          isRecepVol2Level0Expanded
                             ? item.contactCount
                             : selector.receptionist_self_data?.contactsCount ||
                             0,
-                          isFilterViewExapanded
+                          isRecepVol2Level0Expanded
                             ? item.enquiryCount
                             : selector.receptionist_self_data?.enquirysCount ||
                             0,
-                          isFilterViewExapanded
+                          isRecepVol2Level0Expanded
                             ? item.bookingCount
                             : selector.receptionist_self_data?.bookingsCount ||
                             0,
-                          isFilterViewExapanded
+                          isRecepVol2Level0Expanded
                             ? item.retailCount
                             : selector.receptionist_self_data?.RetailCount || 0,
                         ].map((e, index) => {
@@ -3033,7 +3034,7 @@ const ParametersScreen = ({ route }) => {
                             <Pressable
                               onPress={() => {
                                 if (e > 0) {
-                                  if (isFilterViewExapanded) {
+                                  if (isRecepVol2Level0Expanded) {
                                     if (index === 0) {
                                       navigateToEMS(
                                         "Contact",
@@ -3166,7 +3167,7 @@ const ParametersScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {isFilterViewExapanded && renderCRMFilterViewSecondLevel()}
+                {isRecepVol2Level0Expanded && renderCRMFilterViewSecondLevel()}
               </View>
             );
           })}
@@ -7331,117 +7332,226 @@ const ParametersScreen = ({ route }) => {
 
 
                           {/* Grand Total Section */}
-                          {selector.totalParameters.length > 0 && (
+                          {selector.totalParameters.length > 0 && receptionistRole.includes(userData.hrmsRole) ? (
                             <View>
-                              <Pressable
-                                style={{ alignSelf: "flex-end" }}
-                                onPress={() => {
-                                  navigation.navigate(
-                                    AppNavigator.HomeStackIdentifiers.sourceModel,
-                                    {
-                                      empId: !_.isEmpty(
-                                        selector.saveLiveleadObject?.selectedempId
-                                      )
-                                        ? selector.saveLiveleadObject
-                                          ?.selectedempId[0]
-                                        : selector.login_employee_details.empId,
-                                      headerTitle: "Grand Total",
-                                      loggedInEmpId: !_.isEmpty(
-                                        selector.saveLiveleadObject?.selectedempId
-                                      )
-                                        ? selector.saveLiveleadObject
-                                          ?.selectedempId[0]
-                                        : selector.login_employee_details.empId,
-                                      type: "TEAM",
-                                      moduleType: "live-leads",
-                                    }
-                                  );
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontSize: 12,
-                                    fontWeight: "600",
-                                    color: Colors.BLUE,
-                                    marginLeft: 8,
-                                    paddingRight: 12,
-                                  }}
-                                >
-                                  Source/Model
-                                </Text>
-                              </Pressable>
+                                  {totalOfTeam && CRM_filterParameters.length == 0 && (
+                                    <View>
+                                      <Pressable
+                                        style={{ alignSelf: "flex-end" }}
+                                        onPress={() => {
+                                          navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                                            empId: selector.login_employee_details.empId,
+                                            headerTitle: "Grand Total",
+                                            loggedInEmpId:
+                                              selector.login_employee_details.empId,
+                                            type: "TEAM",
+                                            moduleType: "live-leads",
+                                            orgId: userData.orgId,
+                                            role: userData.hrmsRole,
+                                            branchList: userData.branchs.map(
+                                              (a) => a.branchId
+                                            ),
+                                            self: false,
+                                          });
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 12,
+                                            fontWeight: "600",
+                                            color: Colors.BLUE,
+                                            marginLeft: 8,
+                                            paddingRight: 12,
+                                          }}
+                                        >
+                                          Source/Model
+                                        </Text>
+                                      </Pressable>
 
-                              <View style={{ flexDirection: "row", height: 40 }}>
-                                <View
-                                  style={{
-                                    width: 70,
-                                    minHeight: 40,
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    flexDirection: "row",
-                                    backgroundColor: Colors.RED,
-                                  }}
-                                >
-                                  <View
-                                    style={{
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      marginLeft: 6,
+                                      <View style={{ flexDirection: "row", height: 40 }}>
+                                        <View
+                                          style={{
+                                            width: 70,
+                                            minHeight: 40,
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            flexDirection: "row",
+                                            backgroundColor: Colors.RED,
+                                          }}
+                                        >
+                                          <View
+                                            style={{
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                              marginLeft: 6,
+                                            }}
+                                          >
+                                            <Text
+                                              style={[
+                                                styles.grandTotalText,
+                                                {
+                                                  color: Colors.WHITE,
+                                                  fontSize: 12,
+                                                },
+                                              ]}
+                                            >
+                                              Total
+                                            </Text>
+                                          </View>
+                                        </View>
+                                        <View
+                                          style={{
+                                            minHeight: 40,
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <View
+                                            style={{
+                                              // minHeight: 40,
+                                              flexDirection: "row",
+                                              // backgroundColor:"yellow"
+                                            }}
+                                          >
+                                            {totalOfTeam.map((e) => {
+                                              return (
+                                                <View
+                                                  style={{
+                                                    width: 70,
+                                                    height: 40,
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    backgroundColor: Colors.RED,
+                                                  }}
+                                                >
+                                                  <Text
+                                                    style={{
+                                                      fontSize: 16,
+                                                      fontWeight: "700",
+                                                      color: Colors.WHITE,
+                                                    }}
+                                                  >
+                                                    {e || 0}
+                                                  </Text>
+                                                </View>
+                                              );
+                                            })}
+                                          </View>
+                                        </View>
+                                      </View>
+                                    </View>
+                                  )}
+                            </View>
+                              ) : (
+                                <View>
+                                  <Pressable
+                                    style={{ alignSelf: "flex-end" }}
+                                    onPress={() => {
+                                      navigation.navigate(
+                                        AppNavigator.HomeStackIdentifiers.sourceModel,
+                                        {
+                                          empId: !_.isEmpty(
+                                            selector.saveLiveleadObject?.selectedempId
+                                          )
+                                            ? selector.saveLiveleadObject
+                                              ?.selectedempId[0]
+                                            : selector.login_employee_details.empId,
+                                          headerTitle: "Grand Total",
+                                          loggedInEmpId: !_.isEmpty(
+                                            selector.saveLiveleadObject?.selectedempId
+                                          )
+                                            ? selector.saveLiveleadObject
+                                              ?.selectedempId[0]
+                                            : selector.login_employee_details.empId,
+                                          type: "TEAM",
+                                          moduleType: "live-leads",
+                                        }
+                                      );
                                     }}
                                   >
                                     <Text
-                                      style={[
-                                        styles.grandTotalText,
-                                        {
-                                          color: Colors.WHITE,
-                                          fontSize: 12,
-                                        },
-                                      ]}
+                                      style={{
+                                        fontSize: 12,
+                                        fontWeight: "600",
+                                        color: Colors.BLUE,
+                                        marginLeft: 8,
+                                        paddingRight: 12,
+                                      }}
                                     >
-                                      Total
+                                      Source/Model
                                     </Text>
+                                  </Pressable>
+
+                                  <View style={{ flexDirection: "row", height: 40 }}>
+                                    <View
+                                      style={{
+                                        width: 70,
+                                        minHeight: 40,
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        flexDirection: "row",
+                                        backgroundColor: Colors.RED,
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          marginLeft: 6,
+                                        }}
+                                      >
+                                        <Text
+                                          style={[
+                                            styles.grandTotalText,
+                                            {
+                                              color: Colors.WHITE,
+                                              fontSize: 12,
+                                            },
+                                          ]}
+                                        >
+                                          Total
+                                        </Text>
+                                      </View>
+                                      {/*<View>*/}
+                                      {/*    <Text style={{*/}
+                                      {/*        fontSize: 6,*/}
+                                      {/*        fontWeight: 'bold',*/}
+                                      {/*        paddingVertical: 6,*/}
+                                      {/*        paddingRight: 2,*/}
+                                      {/*        height: 20,*/}
+                                      {/*        color: Colors.WHITE*/}
+                                      {/*    }}>CNT</Text>*/}
+                                      {/*    <Text style={{*/}
+                                      {/*        fontSize: 6,*/}
+                                      {/*        fontWeight: 'bold',*/}
+                                      {/*        paddingVertical: 6,*/}
+                                      {/*        height: 20,*/}
+                                      {/*        color: Colors.WHITE*/}
+                                      {/*    }}>TGT</Text>*/}
+                                      {/*</View>*/}
+                                    </View>
+                                    <View
+                                      style={{
+                                        minHeight: 40,
+                                        flexDirection: "column",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 40,
+                                          flexDirection: "row",
+                                        }}
+                                      >
+                                        <RenderGrandTotal
+                                          totalParams={selector.totalParameters}
+                                          displayType={togglePercentage}
+                                          params={toggleParamsMetaData}
+                                          moduleType={"live-leads"}
+                                        />
+                                      </View>
+                                    </View>
                                   </View>
-                                  {/*<View>*/}
-                                  {/*    <Text style={{*/}
-                                  {/*        fontSize: 6,*/}
-                                  {/*        fontWeight: 'bold',*/}
-                                  {/*        paddingVertical: 6,*/}
-                                  {/*        paddingRight: 2,*/}
-                                  {/*        height: 20,*/}
-                                  {/*        color: Colors.WHITE*/}
-                                  {/*    }}>CNT</Text>*/}
-                                  {/*    <Text style={{*/}
-                                  {/*        fontSize: 6,*/}
-                                  {/*        fontWeight: 'bold',*/}
-                                  {/*        paddingVertical: 6,*/}
-                                  {/*        height: 20,*/}
-                                  {/*        color: Colors.WHITE*/}
-                                  {/*    }}>TGT</Text>*/}
-                                  {/*</View>*/}
                                 </View>
-                                <View
-                                  style={{
-                                    minHeight: 40,
-                                    flexDirection: "column",
-                                  }}
-                                >
-                                  <View
-                                    style={{
-                                      minHeight: 40,
-                                      flexDirection: "row",
-                                    }}
-                                  >
-                                    <RenderGrandTotal
-                                      totalParams={selector.totalParameters}
-                                      displayType={togglePercentage}
-                                      params={toggleParamsMetaData}
-                                      moduleType={"live-leads"}
-                                    />
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          )}
+                              ) }
                         </>
                       )}
                     </ScrollView>

@@ -1162,8 +1162,18 @@ export const liveLeadsSlice = createSlice({
         })
         builder.addCase(getCRM_Recp_LiveLeadsVol2.fulfilled, (state, action) => {
             if (action.payload) {
-
-                state.crm_recep_response_data_vol2 = action.payload;
+                const dataObj = action.payload;
+                state.crm_recep_response_data_vol2 = {
+                    RetailCount: dataObj.totalRetailCount,
+                    bookingsCount: dataObj.totalBookingCount,
+                    consultantList: dataObj.consultantList,
+                    totalAllocatedCount: dataObj.totalAllocatedCount,
+                    totalDroppedCount: dataObj.totalDroppedCount,
+                    contactsCount: dataObj.totalContactCount,
+                    enquirysCount: dataObj.totalEnquiryCount,
+                    totalLostCount: dataObj.totalLostCount,
+                    fullResponse: dataObj
+                };
             }
             state.isLoading = false;
         })
