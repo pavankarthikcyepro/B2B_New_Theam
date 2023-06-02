@@ -2911,10 +2911,10 @@ const ParametersScreen = ({ route }) => {
             return (
               <View
                 style={{
-                  borderColor: isRecepVol2Level0Expanded ? Colors.BLUE : "",
-                  borderWidth: isRecepVol2Level0Expanded ? 1 : 0,
                   borderRadius: 10,
-                  margin: isRecepVol2Level0Expanded ? 5 : 0,
+                  borderWidth: isRecepVol2Level0Expanded ? 2 : 0,
+                  borderColor: "#C62159",
+                  backgroundColor: "#FFFFFF",
                 }}
               >
                 <View
@@ -2934,7 +2934,7 @@ const ParametersScreen = ({ route }) => {
                       textTransform: "capitalize",
                     }}
                   >
-                    {item?.emp_name}
+                    {item?.empName}
                   </Text>
                 </View>
                 <Pressable
@@ -2983,10 +2983,10 @@ const ParametersScreen = ({ route }) => {
                       }}
                     >
                       {/* todo */}
-                      <RenderLevel1NameViewCRM
+                      <RenderLevel1NameViewCRMVol2
                         level={0}
                         item={item}
-                        branchName={getBranchName(item?.branch)}
+                        branchName={getBranchName(item?.branchName)}
                         color={Colors.CORAL}
                         titleClick={async () => {
                           setIsRecepVol2Level0Expanded(!isRecepVol2Level0Expanded);
@@ -3014,21 +3014,12 @@ const ParametersScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                         {[
-                          isRecepVol2Level0Expanded
-                            ? item.contactCount
-                            : selector.receptionist_self_data?.contactsCount ||
-                            0,
-                          isRecepVol2Level0Expanded
-                            ? item.enquiryCount
-                            : selector.receptionist_self_data?.enquirysCount ||
-                            0,
-                          isRecepVol2Level0Expanded
-                            ? item.bookingCount
-                            : selector.receptionist_self_data?.bookingsCount ||
-                            0,
-                          isRecepVol2Level0Expanded
-                            ? item.retailCount
-                            : selector.receptionist_self_data?.RetailCount || 0,
+                          isRecepVol2Level0Expanded ? item.self.contactCount : item.total.contactCount || 0,
+                          isRecepVol2Level0Expanded ? item.self.enquiryCount : item.total.enquiryCount || 0,
+
+                          isRecepVol2Level0Expanded ? item.self.bookingCount : item.total.bookingCount || 0,
+                          isRecepVol2Level0Expanded ? item.self.retailCount : item.total.retailCount || 0,
+                          
                         ].map((e, index) => {
                           return (
                             <Pressable
@@ -3167,11 +3158,31 @@ const ParametersScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {isRecepVol2Level0Expanded && renderCRMFilterViewSecondLevel()}
+                {isRecepVol2Level0Expanded && renderReceptionistNewTreeLevel1()}
               </View>
             );
           })}
       </>
+    );
+  };
+
+
+  const renderReceptionistNewTreeLevel1 = () => {
+    // todo manthan
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {receptionistVol2Level1.length > 0 &&
+          receptionistVol2Level1.map((item, index) => {
+            return renderDynamicTree(item, index, receptionistVol2Level1,
+              color,
+              0)
+
+          })}
+        {/* {renderCRMReportingUserTreeVol2()} */}
+      </View>
     );
   };
 
@@ -7325,123 +7336,120 @@ const ParametersScreen = ({ route }) => {
                         </>
                       ) : (
                         <>
-                          {/* Employee params section */}
-
-
-
-
-
+                            
+                            {renderReceptionistFirstLevelVol2()}
                           {/* Grand Total Section */}
-                          {selector.totalParameters.length > 0 && receptionistRole.includes(userData.hrmsRole) ? (
-                            <View>
-                                  {totalOfTeam && CRM_filterParameters.length == 0 && (
-                                    <View>
-                                      <Pressable
-                                        style={{ alignSelf: "flex-end" }}
-                                        onPress={() => {
-                                          navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
-                                            empId: selector.login_employee_details.empId,
-                                            headerTitle: "Grand Total",
-                                            loggedInEmpId:
-                                              selector.login_employee_details.empId,
-                                            type: "TEAM",
-                                            moduleType: "live-leads",
-                                            orgId: userData.orgId,
-                                            role: userData.hrmsRole,
-                                            branchList: userData.branchs.map(
-                                              (a) => a.branchId
-                                            ),
-                                            self: false,
-                                          });
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 12,
-                                            fontWeight: "600",
-                                            color: Colors.BLUE,
-                                            marginLeft: 8,
-                                            paddingRight: 12,
+                              {selector.totalParameters.length > 0 ? 
+                                receptionistRole.includes(userData.hrmsRole) ? (
+                                  <View>
+                                    {totalOfTeam && (
+                                      <View>
+                                        <Pressable
+                                          style={{ alignSelf: "flex-end" }}
+                                          onPress={() => {
+                                            navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                                              empId: selector.login_employee_details.empId,
+                                              headerTitle: "Grand Total",
+                                              loggedInEmpId:
+                                                selector.login_employee_details.empId,
+                                              type: "TEAM",
+                                              moduleType: "live-leads",
+                                              orgId: userData.orgId,
+                                              role: userData.hrmsRole,
+                                              branchList: userData.branchs.map(
+                                                (a) => a.branchId
+                                              ),
+                                              self: false,
+                                            });
                                           }}
                                         >
-                                          Source/Model
-                                        </Text>
-                                      </Pressable>
+                                          <Text
+                                            style={{
+                                              fontSize: 12,
+                                              fontWeight: "600",
+                                              color: Colors.BLUE,
+                                              marginLeft: 8,
+                                              paddingRight: 12,
+                                            }}
+                                          >
+                                            Source/Model
+                                          </Text>
+                                        </Pressable>
 
-                                      <View style={{ flexDirection: "row", height: 40 }}>
-                                        <View
-                                          style={{
-                                            width: 70,
-                                            minHeight: 40,
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                            flexDirection: "row",
-                                            backgroundColor: Colors.RED,
-                                          }}
-                                        >
+                                        <View style={{ flexDirection: "row", height: 40 }}>
                                           <View
                                             style={{
-                                              justifyContent: "center",
+                                              width: 70,
+                                              minHeight: 40,
+                                              justifyContent: "space-between",
                                               alignItems: "center",
-                                              marginLeft: 6,
+                                              flexDirection: "row",
+                                              backgroundColor: Colors.RED,
                                             }}
                                           >
-                                            <Text
-                                              style={[
-                                                styles.grandTotalText,
-                                                {
-                                                  color: Colors.WHITE,
-                                                  fontSize: 12,
-                                                },
-                                              ]}
+                                            <View
+                                              style={{
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                marginLeft: 6,
+                                              }}
                                             >
-                                              Total
-                                            </Text>
+                                              <Text
+                                                style={[
+                                                  styles.grandTotalText,
+                                                  {
+                                                    color: Colors.WHITE,
+                                                    fontSize: 12,
+                                                  },
+                                                ]}
+                                              >
+                                                Total
+                                              </Text>
+                                            </View>
                                           </View>
-                                        </View>
-                                        <View
-                                          style={{
-                                            minHeight: 40,
-                                            flexDirection: "column",
-                                          }}
-                                        >
                                           <View
                                             style={{
-                                              // minHeight: 40,
-                                              flexDirection: "row",
-                                              // backgroundColor:"yellow"
+                                              minHeight: 40,
+                                              flexDirection: "column",
                                             }}
                                           >
-                                            {totalOfTeam.map((e) => {
-                                              return (
-                                                <View
-                                                  style={{
-                                                    width: 70,
-                                                    height: 40,
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    backgroundColor: Colors.RED,
-                                                  }}
-                                                >
-                                                  <Text
+                                            <View
+                                              style={{
+                                                // minHeight: 40,
+                                                flexDirection: "row",
+                                                // backgroundColor:"yellow"
+                                              }}
+                                            >
+                                              {totalOfTeam.map((e) => {
+                                                return (
+                                                  <View
                                                     style={{
-                                                      fontSize: 16,
-                                                      fontWeight: "700",
-                                                      color: Colors.WHITE,
+                                                      width: 70,
+                                                      height: 40,
+                                                      justifyContent: "center",
+                                                      alignItems: "center",
+                                                      backgroundColor: Colors.RED,
                                                     }}
                                                   >
-                                                    {e || 0}
-                                                  </Text>
-                                                </View>
-                                              );
-                                            })}
+                                                    <Text
+                                                      style={{
+                                                        fontSize: 16,
+                                                        fontWeight: "700",
+                                                        color: Colors.WHITE,
+                                                      }}
+                                                    >
+                                                      {e || 0}
+                                                    </Text>
+                                                  </View>
+                                                );
+                                              })}
+                                            </View>
                                           </View>
                                         </View>
                                       </View>
-                                    </View>
-                                  )}
-                            </View>
-                              ) : (
+                                    )}
+                                  </View>
+                                ) : (
                                 <View>
                                   <Pressable
                                     style={{ alignSelf: "flex-end" }}
@@ -7551,7 +7559,7 @@ const ParametersScreen = ({ route }) => {
                                     </View>
                                   </View>
                                 </View>
-                              ) }
+                              ):null  }
                         </>
                       )}
                     </ScrollView>
@@ -7851,6 +7859,88 @@ export const RenderLevel1NameView = ({
             />
             <Text style={{ fontSize: 8, width: "70%" }} numberOfLines={1}>
               {branchName}
+            </Text>
+          </View>
+        )}
+      </View>
+      {/* <View
+        style={{
+          width: "35%",
+          justifyContent: "center",
+          textAlign: "center",
+          alignItems: "flex-end",
+          display: "flex",
+          flexDirection: "column",
+          marginRight: 5,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 6,
+            fontWeight: "bold",
+            paddingVertical: 6,
+            height: 25,
+          }}
+        >
+          CNT
+        </Text>
+      </View> */}
+    </View>
+  );
+};
+
+export const RenderLevel1NameViewCRMVol2 = ({
+  level,
+  item,
+  branchName = "",
+  color,
+  titleClick,
+  disable = false,
+}) => {
+  return (
+    <View
+      style={{
+        width: 70,
+        justifyContent: "center",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity
+          disabled={disable}
+          style={{
+            width: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: color,
+            borderRadius: 20,
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+          onPress={titleClick}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#fff",
+            }}
+          >
+            {item?.empName?.charAt(0)}
+          </Text>
+        </TouchableOpacity>
+        {level === 0 && !!item.branch && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8, width: "70%" }} numberOfLines={1}>
+              {item.branchName}
             </Text>
           </View>
         )}
