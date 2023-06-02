@@ -492,6 +492,19 @@ export const getOrgTags = createAsyncThunk(
   }
 );
 
+export const getOrgTagsById = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOrgTagsById",
+  async (leadId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS_BY_ID(leadId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -588,6 +601,7 @@ const initialState = {
   gender: "",
   salutation: "",
   orgTagList: [],
+  orgTagListById: [],
   // Communication Address
   pincode: "",
   urban_or_rural: 0, // 1: urban, 2:
@@ -798,6 +812,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.event_list_response_Config_status = "";
       state.otherPricesDropDown= [];
       state.orgTagList= [];
+      state.orgTagListById = [];
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -870,6 +885,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.foc_accessoriesFromServer = "";
       state.otherPricesDropDown= [];
       state.orgTagList= [];
+      state.orgTagListById = [];
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -2663,6 +2679,24 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     });
     builder.addCase(getOrgTags.rejected, (state, action) => { });
+    
+    //Get Organisation Tags By Id
+    builder.addCase(getOrgTagsById.pending, (state, action) => { });
+    builder.addCase(getOrgTagsById.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tagName,
+          };
+          data.push(obj);
+        }
+        state.orgTagListById = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTagsById.rejected, (state, action) => { });
   },
 });
 

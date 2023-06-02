@@ -278,6 +278,8 @@ const URL = {
   POST_EVALUTION: () => sales_url + "/dms/evaluation",
 
   POST_ORG_TAGS: () => sales_url + "/orgTagConfiguration/addDmsOrgTagDetails",
+  GET_ORG_TAGS_BY_ID: (leadId) =>
+    sales_url + `/orgTagConfiguration/getDmsOrgTagConfigurationById/${leadId}`,
 
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",

@@ -255,7 +255,7 @@ const dmsAttachmentsObj = {
   tinNumber: null,
 };
 
-const orgTagDateFormate = "YYYY-MM-DD hh:mm:ss"
+const orgTagDateFormate = "YYYY-MM-DD hh:mm:ss";
 
 const AddNewEnquiryScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -422,7 +422,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     serInsurenceCompanyList([]);
     setFinanceBanksList([]);
     setSelectedBranchId("");
-
+    setIsMultipleSelection(false);
+    setSelectedTags("");
+    setTagList([]);
+    
     // drop section
     setDropData([]);
     setDropReason("");
