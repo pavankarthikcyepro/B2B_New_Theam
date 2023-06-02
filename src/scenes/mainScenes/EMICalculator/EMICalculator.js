@@ -12,7 +12,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearEmiCalculatorData, sentEmiCalculate, setInputDetails } from '../../../redux/emiCalculatorReducer';
-import Slider from "@react-native-community/slider";
+import Slider from "react-native-slider";
 import { ButtonComp, LoaderComponent } from '../../../components';
 import { showToast } from '../../../utils/toast';
 
@@ -141,12 +141,14 @@ const EMICalculator = ({ route, navigation }) => {
                 minimumValue={minLoanAmount}
                 maximumValue={maxLoanAmount}
                 thumbImage={require("./../../../assets/images/cy2.png")}
+                thumbStyle={styles.thumbStyle}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
                 step={1}
                 onValueChange={(value) =>
                   onSliderValueChange(value, "loanAmount")
                 }
+                thumbTouchSize={styles.thumbTouchSize}
               />
               <View style={styles.sliderMinMaxRow}>
                 <Text>{`${rupeeSign}10K`}</Text>
@@ -194,12 +196,14 @@ const EMICalculator = ({ route, navigation }) => {
                 minimumValue={minInterestRate}
                 maximumValue={maxInterestRate}
                 thumbImage={require("./../../../assets/images/cy2.png")}
+                thumbStyle={styles.thumbStyle}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
                 step={0.1}
                 onValueChange={(value) =>
                   onSliderValueChange(value, "interestRate")
                 }
+                thumbTouchSize={styles.thumbTouchSize}
               />
               <View style={styles.sliderMinMaxRow}>
                 <Text>{`${minInterestRate}%`}</Text>
@@ -241,12 +245,14 @@ const EMICalculator = ({ route, navigation }) => {
                 minimumValue={minLoanTenure}
                 maximumValue={maxLoanTenure}
                 thumbImage={require("./../../../assets/images/cy2.png")}
+                thumbStyle={styles.thumbStyle}
                 minimumTrackTintColor={Colors.PINK}
                 maximumTrackTintColor={Colors.LIGHT_GRAY2}
                 step={1}
                 onValueChange={(value) =>
                   onSliderValueChange(value, "loanTenure")
                 }
+                thumbTouchSize={styles.thumbTouchSize}
               />
               <View style={styles.sliderMinMaxRow}>
                 <Text>{`${minLoanTenure} Months`}</Text>
@@ -375,7 +381,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
     paddingHorizontal: 10,
     paddingVertical: 15,
-    marginBottom: 10
+    marginBottom: 10,
   },
   emiResultRow: {
     flexDirection: "row",
@@ -414,6 +420,15 @@ const styles = StyleSheet.create({
     height: 50,
     width: "45%",
     borderRadius: 5,
+  },
+  thumbStyle: {
+    width: 30,
+    height: 30,
+    backgroundColor: "transparent",
+  },
+  thumbTouchSize: {
+    width: 30,
+    height: 30,
   },
 });
 
