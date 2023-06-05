@@ -182,6 +182,7 @@ const ParametersScreen = ({ route }) => {
       shortFallPerc: "0%",
       achivementPerc: "0%",
       paramShortName: "Con",
+      leadsList:[]
     },
     {
       target: "0",
@@ -191,6 +192,7 @@ const ParametersScreen = ({ route }) => {
       shortFallPerc: "0%",
       achivementPerc: "0%",
       paramShortName: "Enq",
+      leadsList: []
     },
     {
       target: "0",
@@ -200,6 +202,7 @@ const ParametersScreen = ({ route }) => {
       shortFallPerc: "0%",
       achivementPerc: "0%",
       paramShortName: "Bkg",
+      leadsList: []
     },
     {
       target: "0",
@@ -209,6 +212,7 @@ const ParametersScreen = ({ route }) => {
       shortFallPerc: "0%",
       achivementPerc: "0%",
       paramShortName: "Ret",
+      leadsList: []
     },
   ];
   const getEmployeeListFromServer = async (user) => {
@@ -269,21 +273,22 @@ const ParametersScreen = ({ route }) => {
         //   dispatch(getCRM_ManagerLiveLeads(tempPayload));
         // }
 
+       
         // vol2 crm api call 
-        if (
-          crmRole.includes(jsonObj.hrmsRole) &&
-          _.isEmpty(selector.saveLiveleadObjectCRM)
-        ) {
-          let tempPayload = {
-            orgId: jsonObj.orgId,
-            loggedInEmpId: jsonObj.empId,
-          };
-          dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(tempPayload));
-        }
+        // if (
+        //   crmRole.includes(jsonObj.hrmsRole) &&
+        //   _.isEmpty(selector.saveLiveleadObjectCRM)
+        // ) {
+        //   let tempPayload = {
+        //     orgId: jsonObj.orgId,
+        //     loggedInEmpId: jsonObj.empId,
+        //   };
+        //   dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(tempPayload));
+        // }
       }
     });
   }, [navigation]);
-
+  
   useEffect(() => {
     if (
       !_.isEmpty(selector.crm_response_data) &&
@@ -473,12 +478,17 @@ const ParametersScreen = ({ route }) => {
         loggedInEmpId: selector.saveLiveleadObjectCRM?.selectedempId[0],
         levelSelected: selector.saveLiveleadObjectCRM?.levelSelected,
       };
-      dispatch(getCRM_Recp_LiveLeadsVol2(payload)); // new api for live leads recep/tele/cre/crm
+      dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(payload)); // new api for live leads recep/tele/cre/crm
     } else {
+      let tempPayload = {
+        orgId: userData.orgId,
+        loggedInEmpId: userData.empId,
+      };
+      dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(tempPayload));
       setCRM_filterParameters([]);
       settotalOfTeamAfterFilter([]);
     }
-  }, [selector.saveLiveleadObjectCRM]);
+  }, [selector.saveLiveleadObjectCRM,userData]);
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -671,6 +681,25 @@ const ParametersScreen = ({ route }) => {
 
         let total = [totalKey4, totalKey1, totalKey2, totalKey3];
         setTotalofTeam(total);
+
+
+        let updateReceptinistData = LocalDataForReceptionist.map((item) => {
+          if (item.paramName === "PreEnquiry") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalContactCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalContactLeads;
+          } else if (item.paramName === "Enquiry") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalEnquiryCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalEnquiryLeads;
+          } else if (item.paramName === "Booking") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalBookingCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalBookingLeads;
+          } else if (item.paramName === "INVOICE") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalRetailCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalRetailLeads;
+          }
+        });
+
+        setSelfInsightsData([...LocalDataForReceptionist]);
       }
     }
 
@@ -1429,6 +1458,78 @@ const ParametersScreen = ({ route }) => {
             ? navigateToEmsScreen(item)
             : null
         }
+        style={[
+          styles.paramCard,
+          {
+            borderColor: color[index % color.length],
+          },
+        ]}
+      >
+        <View style={styles.insightParamsContainer}>
+          <Text style={styles.insightParamsLabel}>
+            {convertParamNameLabels(item?.paramName)}
+          </Text>
+          <Text
+            style={[
+              styles.achievementCountView,
+              {
+                textDecorationLine:
+                  item?.achievment && item?.achievment > 0
+                    ? "underline"
+                    : "none",
+              },
+            ]}
+          >
+            {item?.achievment && item?.achievment > 0 ? item?.achievment : 0}
+          </Text>
+          <View></View>
+        </View>
+      </Card>
+      // <View
+      //     style={{flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8, marginHorizontal: 8, alignItems: 'center'}}>
+      //     <Text
+      //         style={{width: '40%'}}>{convertParamNameLabels(item?.paramName)}</Text>
+      //     <Text style={{ minWidth: 45,
+      //         height: 25,
+      //         borderColor: color[index % color.length],
+      //         borderWidth: 1,
+      //         borderRadius: 8,
+      //         justifyContent: "center",
+      //         alignItems: "center",
+      //         textAlign: 'center',
+      //         paddingTop: 4}} onPress={() => navigateToEmsScreen(item)}>{item?.achievment}</Text>
+      //     <View></View>
+      // </View>
+    );
+  };
+
+  const renderSelfInsightsViewRecepToCRMVol2 = (item, index) => {
+    return (
+      <Card
+        onPress={() => {
+          console.log("manthan item ",item);
+          if (item?.achievment && item?.achievment > 0) {
+            if (crmRole.includes(userData.hrmsRole)) {
+              if (index === 0) {
+                navigateToContactVol2(item.leadsList)
+                // navigateToEmsVol2(item.);
+              } else {
+                navigateToEmsVol2(item.leadsList);
+              }
+            } else {
+              if (index === 0) {
+                navigateToContactVol2(item.leadsList)
+                // navigateToEmsVol2(item.);
+              } else {
+                navigateToEmsVol2(item.leadsList);
+              }
+            }
+          }
+
+          // item?.achievment && item?.achievment > 0
+          //   ? navigateToEMS("","","","","","",item)
+          //   : null
+        }}
         style={[
           styles.paramCard,
           {
@@ -3152,7 +3253,7 @@ const ParametersScreen = ({ route }) => {
                       Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
                       Array.prototype.push.apply(tempArry, item.total.bookingLeads)
                       Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.total.lostLeads)
+                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
 
 
                       // handleSourcrModelNavigationVol2(item, tempArry,)
@@ -3162,7 +3263,7 @@ const ParametersScreen = ({ route }) => {
                       Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
                       Array.prototype.push.apply(tempArry, item.self.bookingLeads)
                       Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.self.lostLeads)
+                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
 
                       handleNavigationTOSourcrModelVol2(item, tempArry)
                     }
@@ -3397,25 +3498,25 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    if (!isRecepVol2Level0Expanded) {
+                    if (!item.selfUser.isOpenInner) {
                       let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
-                      Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.total.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.total.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.contactLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
 
 
 
                       // handleSourcrModelNavigationVol2(item, tempArry,)
-                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
                     } else {
                       let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.self.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.contactLeads)
 
-                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
                     }
                     // handleSourceModalNavigation(item, item.emp_id, [])
                   }}
@@ -3457,7 +3558,7 @@ const ParametersScreen = ({ route }) => {
                         level={0}
                         item={item.selfUser}
                         branchName={getBranchName(item?.selfUser.branchName)}
-                        color={Colors.CORAL}
+                        color={borderColor}
                         titleClick={async () => {
                           formateNonReportingUserData(item.selfUser, index, crmVol2NonReportingData, 0);
                         }}
@@ -5724,6 +5825,9 @@ const ParametersScreen = ({ route }) => {
                   horizontal={true}
                   directionalLockEnabled={true}
                 >
+                    <View style={styles.titleDashboardContainer}>
+                      <Text style={styles.dashboardText}>Dashboard</Text>
+                    </View>
                   {/* TOP Header view */}
                   <View
                     key={"headers"}
@@ -8875,6 +8979,9 @@ const ParametersScreen = ({ route }) => {
         ) : (
           // IF Self or insights
           <>
+              <View style={styles.titleDashboardContainer}>
+                <Text style={styles.dashboardText}>Dashboard</Text>
+              </View>
               {receptionistRole.includes(userData.hrmsRole) ? (<>
                 <View>
                   <View
@@ -9594,39 +9701,54 @@ const ParametersScreen = ({ route }) => {
                   <Pressable
                     style={{ alignSelf: "flex-end" }}
                     onPress={() => {
-                      if (CRM_filterParameters.length > 0) {
-                        handleSourceModalNavigation(
-                          CRM_filterParameters[0],
-                          CRM_filterParameters[0].emp_id
-                        );
-                        // navigation.navigate(
-                        //   "RECEP_SOURCE_MODEL_CRM",
-                        //   {
-                        //     empId: CRM_filterParameters[0].emp_id,
-                        //     headerTitle: "Source/Model",
-                        //     loggedInEmpId: CRM_filterParameters[0].emp_id,
-                        //     type: "TEAM",
-                        //     moduleType: "live-leads",
-                        //     orgId: userData.orgId,
-                        //     role: CRM_filterParameters[0].roleName,
-                        //     branchList: userData.branchs.map(
-                        //       (a) => a.branchId
-                        //     ),
-                        //   }
-                        // );
-                      } else {
-                        navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
-                          empId: selector.login_employee_details.empId,
-                          headerTitle: "Source/Model",
-                          loggedInEmpId: selector.login_employee_details.empId,
-                          type: "TEAM",
-                          moduleType: "live-leads",
-                          orgId: userData.orgId,
-                          role: userData.hrmsRole,
-                          branchList: userData.branchs.map((a) => a.branchId),
-                          self: false,
-                        });
+
+                      let tempArry = [];
+
+                      Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalEnquiryLeads)
+                      Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalBookingLeads)
+                      Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalRetailLeads)
+                      Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalContactLeads)
+
+
+                      let item = {
+                        empName: "Grand Total",
+                        roleName: ""
                       }
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+
+                      // if (CRM_filterParameters.length > 0) {
+                      //   handleSourceModalNavigation(
+                      //     CRM_filterParameters[0],
+                      //     CRM_filterParameters[0].emp_id
+                      //   );
+                      //   // navigation.navigate(
+                      //   //   "RECEP_SOURCE_MODEL_CRM",
+                      //   //   {
+                      //   //     empId: CRM_filterParameters[0].emp_id,
+                      //   //     headerTitle: "Source/Model",
+                      //   //     loggedInEmpId: CRM_filterParameters[0].emp_id,
+                      //   //     type: "TEAM",
+                      //   //     moduleType: "live-leads",
+                      //   //     orgId: userData.orgId,
+                      //   //     role: CRM_filterParameters[0].roleName,
+                      //   //     branchList: userData.branchs.map(
+                      //   //       (a) => a.branchId
+                      //   //     ),
+                      //   //   }
+                      //   // );
+                      // } else {
+                      //   navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                      //     empId: selector.login_employee_details.empId,
+                      //     headerTitle: "Source/Model",
+                      //     loggedInEmpId: selector.login_employee_details.empId,
+                      //     type: "TEAM",
+                      //     moduleType: "live-leads",
+                      //     orgId: userData.orgId,
+                      //     role: userData.hrmsRole,
+                      //     branchList: userData.branchs.map((a) => a.branchId),
+                      //     self: false,
+                      //   });
+                      // }
 
                       // navigation.navigate(
                       //   AppNavigator.HomeStackIdentifiers.sourceModel,
@@ -9663,7 +9785,8 @@ const ParametersScreen = ({ route }) => {
                         data={selfInsightsData}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item, index }) =>
-                          renderSelfInsightsViewRecepToCRM(item, index)
+                          renderSelfInsightsViewRecepToCRMVol2(item,index)
+                          // renderSelfInsightsViewRecepToCRM(item, index)
                         }
                       />
                     )}
@@ -10056,5 +10179,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     // height: '75%',
     width: "90%",
+  },
+  titleDashboardContainer: {
+    paddingVertical: 5,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 45,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
   },
 });

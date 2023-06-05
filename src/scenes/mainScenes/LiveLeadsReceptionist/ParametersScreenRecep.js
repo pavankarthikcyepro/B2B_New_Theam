@@ -18,6 +18,7 @@ import { Colors } from "../../../styles";
 import {
   delegateTask,
   getCRM_ManagerLiveLeads,
+  getCRM_ManagerLiveLeads_Vol2,
   getEmployeesList,
   getReportingManagerList,
   getTargetReceptionistData,
@@ -100,6 +101,14 @@ const ParametersScreenRecep = ({ route }) => {
   const [toggleParamsIndex, setToggleParamsIndex] = useState(0);
   const [toggleParamsMetaData, setToggleParamsMetaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [crmVol2Level0, setCrmVol2Level0] = useState([])
+  const [crmVol2Level1, setCrmVol2Level1] = useState([])
+  const [crmVol2AlluserData, setCrmVol2AlluserData] = useState([])
+  const [crmVol2ReportingData, setCrmVol2ReportingData] = useState([])
+  const [crmVol2ReportingAllTree, setCrmVol2ReportingAllTree] = useState([])
+  const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
+  const [isCRM_Non_reportingVol2Level0Expanded, seIsCRM_Non_reportingVol2Level0Expanded] = useState(false);
 
   const color = [
     "#9f31bf",
@@ -229,23 +238,88 @@ const ParametersScreenRecep = ({ route }) => {
           orgId: jsonObj.orgId,
           branchs: jsonObj.branchs,
         })
-        
-        if (crmRole.includes(jsonObj.hrmsRole) && _.isEmpty(selector.saveLiveleadObjectCRM)) {
+        // vol1 code
+        // if (crmRole.includes(jsonObj.hrmsRole) && _.isEmpty(selector.saveLiveleadObjectCRM)) {
          
+        //   let tempPayload = {
+        //     "orgId": jsonObj.orgId,
+        //     "loggedInEmpId": jsonObj.empId,
+        //     "dashboardType": "reception"
+        //   }
+        //   dispatch(getCRM_ManagerLiveLeads(tempPayload))
+        // }
+         
+      // vol2 code
+        if (crmRole.includes(jsonObj.hrmsRole) && _.isEmpty(selector.saveLiveleadObjectCRM)) {
+
           let tempPayload = {
             "orgId": jsonObj.orgId,
             "loggedInEmpId": jsonObj.empId,
             "dashboardType": "reception"
           }
-          dispatch(getCRM_ManagerLiveLeads(tempPayload))
+          dispatch(getCRM_ManagerLiveLeads_Vol2(tempPayload))
         }
-         
-      
        
       }
 
     });
   }, [navigation]);
+
+
+  useEffect(() => {
+
+    // findDataFromObject(selector.receptionistDataV3.fullResponse);
+    if (!_.isEmpty(selector.crm_recep_response_data_vol2_CRM_ROLE?.fullResponse)) {
+
+      let modified = selector.crm_recep_response_data_vol2_CRM_ROLE?.fullResponse?.self?.allTreeData?.map(v => ({ ...v, isOpenInner: false, innerData: [] }))
+
+      setCrmVol2AlluserData(modified);
+      let tempFilterIds = selector.crm_recep_response_data_vol2_CRM_ROLE?.fullResponse?.self?.level1?.map((item) => item.empId)
+
+      let tempArr = modified?.filter((item) => tempFilterIds.includes(item.empId))
+
+
+      setCrmVol2Level1(tempArr);
+      setCrmVol2Level0([selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.self?.selfUser]);
+
+      setCrmVol2ReportingData(selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.reportingUser)
+
+      setCrmVol2NonReportingData(selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.nonReportingUser)
+
+
+      if (selector.crm_recep_response_data_vol2_CRM_ROLE) {
+        let totalKey1 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.enquirysCount;
+        let totalKey2 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.bookingsCount;
+        let totalKey3 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.RetailCount;
+        let totalKey4 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.contactsCount;
+
+        let total = [totalKey4, totalKey1, totalKey2, totalKey3];
+        setTotalofTeam(total);
+
+
+        let updateReceptinistData = LocalDataForReceptionist.map((item) => {
+          if (item.paramName === "PreEnquiry") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalContactCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalContactLeads;
+          } else if (item.paramName === "Enquiry") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalEnquiryCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalEnquiryLeads;
+          } else if (item.paramName === "Booking") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalBookingCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalBookingLeads;
+          } else if (item.paramName === "INVOICE") {
+            item.achievment = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalRetailCount;
+            item.leadsList = selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.totalRetailLeads;
+          }
+        });
+
+        setSelfInsightsData([...LocalDataForReceptionist]);
+      }
+    }
+
+
+
+  }, [selector.crm_recep_response_data_vol2_CRM_ROLE])
 
   useEffect(() => {
     

@@ -430,6 +430,16 @@ export const getCRM_ManagerLiveLeads = createAsyncThunk("LIVE_LEADS_RECEP/getMan
     return json;
 })
 
+// CRM live leads tree
+export const getCRM_ManagerLiveLeads_Vol2 = createAsyncThunk("LIVE_LEADS_RECEP/getCRM_ManagerLiveLeads_Vol2", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LIVE_LEADS_MANAGERDATA_VOL2(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getCRMEmployeesDropDownData = createAsyncThunk(
     "HOME/getCRMEmployeesDropDownData",
     async (payload: any, { rejectWithValue }) => {
@@ -530,7 +540,18 @@ export const liveLeadsSlice_recep = createSlice({
         receptionist_self_data:[],
         crm_response_data: [],
         crm_employees_drop_down_data: {},
-        crm_employees_drop_down_data_recepLiveleads:{}
+        crm_employees_drop_down_data_recepLiveleads:{},
+        crm_recep_response_data_vol2_CRM_ROLE: {
+            RetailCount: 0,
+            bookingsCount: 0,
+            consultantList: [],
+            totalAllocatedCount: 0,
+            totalDroppedCount: 0,
+            contactsCount: 0,
+            enquirysCount: 0,
+            totalLostCount: 0,
+            fullResponse: {},
+        }
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -619,7 +640,18 @@ export const liveLeadsSlice_recep = createSlice({
             state.receptionist_self_data = [],
             state.crm_response_data = [],
                 state.crm_employees_drop_down_data = {},
-                state.crm_employees_drop_down_data_recepLiveleads = {}
+                state.crm_employees_drop_down_data_recepLiveleads = {},
+                state.crm_recep_response_data_vol2_CRM_ROLE = {
+                    RetailCount: 0,
+                    bookingsCount: 0,
+                    consultantList: [],
+                    totalAllocatedCount: 0,
+                    totalDroppedCount: 0,
+                    contactsCount: 0,
+                    enquirysCount: 0,
+                    totalLostCount: 0,
+                    fullResponse: {},
+                }
             // state.dealerFilter= { }
             // state.filterPayload= { }
             // state.filterSelectedData ={ }
@@ -1123,6 +1155,53 @@ export const liveLeadsSlice_recep = createSlice({
         builder.addCase(getCRM_ManagerLiveLeads.rejected, (state, action) => {
             state.isLoading = false;
             state.crm_response_data = [];
+        })
+
+        // Get CRM Live leads Data
+        builder.addCase(getCRM_ManagerLiveLeads_Vol2.pending, (state, action) => {
+            state.isLoading = true;
+            state.crm_recep_response_data_vol2_CRM_ROLE = {
+                RetailCount: 0,
+                bookingsCount: 0,
+                consultantList: [],
+                totalAllocatedCount: 0,
+                totalDroppedCount: 0,
+                contactsCount: 0,
+                enquirysCount: 0,
+                totalLostCount: 0,
+                fullResponse: {},
+            };
+        })
+        builder.addCase(getCRM_ManagerLiveLeads_Vol2.fulfilled, (state, action) => {
+            if (action.payload) {
+                const dataObj = action.payload;
+                state.crm_recep_response_data_vol2_CRM_ROLE = {
+                    RetailCount: dataObj.totalRetailCount,
+                    bookingsCount: dataObj.totalBookingCount,
+                    consultantList: dataObj.consultantList,
+                    totalAllocatedCount: dataObj.totalAllocatedCount,
+                    totalDroppedCount: dataObj.totalDroppedCount,
+                    contactsCount: dataObj.totalContactCount,
+                    enquirysCount: dataObj.totalEnquiryCount,
+                    totalLostCount: dataObj.totalLostCount,
+                    fullResponse: dataObj
+                };
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getCRM_ManagerLiveLeads_Vol2.rejected, (state, action) => {
+            state.isLoading = false;
+            state.crm_recep_response_data_vol2_CRM_ROLE = {
+                RetailCount: 0,
+                bookingsCount: 0,
+                consultantList: [],
+                totalAllocatedCount: 0,
+                totalDroppedCount: 0,
+                contactsCount: 0,
+                enquirysCount: 0,
+                totalLostCount: 0,
+                fullResponse: {},
+            };
         })
 
             // Get  CRM Employees Drop Down Data
