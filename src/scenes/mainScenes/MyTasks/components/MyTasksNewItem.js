@@ -129,6 +129,7 @@ export const MyTaskNewItem = ({
   updatedOn,
   IsVip = false,
   IsHni = false,
+  orgTags = [],
 }) => {
   let date = "";
   if (from == "MY_TASKS") {
@@ -180,6 +181,21 @@ export const MyTaskNewItem = ({
     return color;
   }
 
+  let vip = false;
+  let hni = false;
+  let spl = false;
+
+  for (let i = 0; i < orgTags.length; i++) {
+    const element = orgTags[i];
+    if (element == "VIP") {
+      vip = true;
+    } else if (element == "HNI") {
+      hni = true;
+    } else if (element == "SPL") {
+      spl = true;
+    }
+  }
+
   const cannotEditLead = () => {
     const leadStages = ["INVOICE", "DELIVERY", "PREDELIVERY"];
     return leadStages.includes(leadStage);
@@ -190,7 +206,7 @@ export const MyTaskNewItem = ({
       onPress={onItemPress}
       style={{
         ...styles.section,
-        borderLeftWidth: IsVip || IsHni ? 3 : 0,
+        borderLeftWidth: vip || hni || spl ? 3 : 0,
         borderLeftColor: Colors.RED,
       }}
     >
@@ -363,11 +379,13 @@ export const MyTaskNewItem = ({
           )}
         </View>
         <View style={{ width: "35%", alignItems: "center", paddingTop: 10 }}>
-          {(IsVip || IsHni) && (
+          {(vip || hni || spl) && (
             <View style={styles.vipHniRow}>
-              {IsVip && <Text style={styles.badgeText}>{"VIP"}</Text>}
-              {IsVip && IsHni && <View style={styles.vipHniDivider} />}
-              {IsHni && <Text style={styles.badgeText}>{"HNI"}</Text>}
+              {vip && <Text style={styles.badgeText}>{"VIP"}</Text>}
+              {vip && hni && <View style={styles.vipHniDivider} />}
+              {hni && <Text style={styles.badgeText}>{"HNI"}</Text>}
+              {spl && (vip || hni) && <View style={styles.vipHniDivider} />}
+              {spl && <Text style={styles.badgeText}>{"SPL"}</Text>}
             </View>
           )}
           {uniqueId ? (
