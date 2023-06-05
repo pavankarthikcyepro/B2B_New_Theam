@@ -448,6 +448,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     serInsurenceCompanyList([]);
     setFinanceBanksList([]);
     setSelectedBranchId("");
+    setSelectedTags("");
+    setTagList([]);
 
     // drop section
     setDropData([]);

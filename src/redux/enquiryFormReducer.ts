@@ -2660,7 +2660,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     //Post Organisation Tags
     builder.addCase(postOrgTags.pending, (state, action) => {});
     builder.addCase(postOrgTags.fulfilled, (state, action) => {});
-    builder.addCase(postOrgTags.rejected, (state, action) => { });
+    builder.addCase(postOrgTags.rejected, (state, action) => {});
     
     //Get Organisation Tags
     builder.addCase(getOrgTags.pending, (state, action) => { });
