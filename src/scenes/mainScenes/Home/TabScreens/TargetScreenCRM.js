@@ -3286,7 +3286,7 @@ const TargetScreenCRM = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item.selfUser}
-                        branchName={item.selfUser.branch}
+                        branchName={item.selfUser.branchName}
                         color={borderColor}
                         receptionManager={true}
                         navigation={navigation}

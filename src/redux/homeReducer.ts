@@ -2297,8 +2297,6 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistModelLiveVol2.pending, (state) => { })
       .addCase(getReceptionistModelLiveVol2.fulfilled, (state, action) => {
         const dataObj = action.payload;
-        console.log("manthan --> model ", dataObj);
-        
         state.receptionistModel = dataObj;
       })
       .addCase(getReceptionistModelLiveVol2.rejected, (state, action) => { })
@@ -2306,8 +2304,7 @@ export const homeSlice = createSlice({
       .addCase(getReceptionistSourceLiveVol2.pending, (state) => { })
       .addCase(getReceptionistSourceLiveVol2.fulfilled, (state, action) => {
         const dataObj = action.payload;
-        console.log("manthan --> source ", dataObj);
-        state.sourceModelData = dataObj;
+        state.receptionistSource = dataObj;
       })
       .addCase(getReceptionistSourceLiveVol2.rejected, (state, action) => { })
 

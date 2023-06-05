@@ -19,6 +19,7 @@ import {
   delegateTask,
   getCRM_ManagerLiveLeads,
   getCRM_Recp_LiveLeadsVol2,
+  getCRM_Recp_LiveLeadsVol2_CRM_ROLE,
   getEmployeesList,
   getReportingManagerList,
   getTargetReceptionistData,
@@ -115,6 +116,13 @@ const ParametersScreen = ({ route }) => {
   const [receptionistVol2Level0, setReceptionistVol2Level0] = useState([])
   const [receptionistVol2Level1, setReceptionistVol2Level1] = useState([])
   const [isRecepVol2Level0Expanded, setIsRecepVol2Level0Expanded] = useState(false);
+  const [crmVol2Level0, setCrmVol2Level0] = useState([])
+  const [crmVol2Level1, setCrmVol2Level1] = useState([])
+  const [crmVol2AlluserData, setCrmVol2AlluserData] = useState([])
+  const [crmVol2ReportingData, setCrmVol2ReportingData] = useState([])
+  const [crmVol2ReportingAllTree, setCrmVol2ReportingAllTree] = useState([])
+  const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
+  const [isCRM_Non_reportingVol2Level0Expanded, seIsCRM_Non_reportingVol2Level0Expanded] = useState(false);
   const color = [
     "#9f31bf",
     "#00b1ff",
@@ -249,6 +257,19 @@ const ParametersScreen = ({ route }) => {
           orgName: jsonObj.orgName,
         });
 
+        // CRM vol1 api call
+        // if (
+        //   crmRole.includes(jsonObj.hrmsRole) &&
+        //   _.isEmpty(selector.saveLiveleadObjectCRM)
+        // ) {
+        //   let tempPayload = {
+        //     orgId: jsonObj.orgId,
+        //     loggedInEmpId: jsonObj.empId,
+        //   };
+        //   dispatch(getCRM_ManagerLiveLeads(tempPayload));
+        // }
+
+        // vol2 crm api call 
         if (
           crmRole.includes(jsonObj.hrmsRole) &&
           _.isEmpty(selector.saveLiveleadObjectCRM)
@@ -257,7 +278,7 @@ const ParametersScreen = ({ route }) => {
             orgId: jsonObj.orgId,
             loggedInEmpId: jsonObj.empId,
           };
-          dispatch(getCRM_ManagerLiveLeads(tempPayload));
+          dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(tempPayload));
         }
       }
     });
@@ -621,6 +642,41 @@ const ParametersScreen = ({ route }) => {
     
   }, [selector.crm_recep_response_data_vol2])
   
+  useEffect(() => {
+
+    // findDataFromObject(selector.receptionistDataV3.fullResponse);
+    if (!_.isEmpty(selector.crm_recep_response_data_vol2_CRM_ROLE?.fullResponse)) {
+
+      let modified = selector.crm_recep_response_data_vol2_CRM_ROLE?.fullResponse?.self?.allTreeData?.map(v => ({ ...v, isOpenInner: false, innerData: [] }))
+
+      setCrmVol2AlluserData(modified);
+      let tempFilterIds = selector.crm_recep_response_data_vol2_CRM_ROLE?.fullResponse?.self?.level1?.map((item) => item.empId)
+
+      let tempArr = modified.filter((item) => tempFilterIds.includes(item.empId))
+
+
+      setCrmVol2Level1(tempArr);
+      setCrmVol2Level0([selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.self.selfUser]);
+
+      setCrmVol2ReportingData(selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.reportingUser)
+
+      setCrmVol2NonReportingData(selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse.nonReportingUser)
+
+
+      if (selector.crm_recep_response_data_vol2_CRM_ROLE) {
+        let totalKey1 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.enquirysCount;
+        let totalKey2 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.bookingsCount;
+        let totalKey3 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.RetailCount;
+        let totalKey4 = selector?.crm_recep_response_data_vol2_CRM_ROLE?.contactsCount;
+
+        let total = [totalKey4, totalKey1, totalKey2, totalKey3];
+        setTotalofTeam(total);
+      }
+    }
+
+   
+
+  }, [selector.crm_recep_response_data_vol2_CRM_ROLE])
 
   useEffect(() => {
     setTogglePercentage(0);
@@ -2820,7 +2876,7 @@ const ParametersScreen = ({ route }) => {
       loggedInEmpId: "",
       type: "TEAM",
       moduleType: "live-leads",
-      headerTitle: "Source/Model",
+      // headerTitle: "Source/Model",
       orgId: userData.orgId,
       role: item.roleName,
       branchList: userData.branchs.map((a) => a.branchId),
@@ -2928,6 +2984,55 @@ const ParametersScreen = ({ route }) => {
     }
   };
 
+  const oncllickOfEmployeeForCRm = async (item = [], index, allData, herirarchyLevel) => {
+
+    let modifeidArray = [...crmVol2AlluserData];
+    let storeTemp = [...crmVol2Level1];
+
+    let tempNewArray = await modifeidArray.filter(i => i.managerId != i.empId && i.managerId == item.empId)
+
+    await item.isOpenInner ? (item.isOpenInner = false,
+      item.innerData = []) : (item.isOpenInner = true, item.innerData.push(...tempNewArray))
+
+    await setCrmVol2Level1(storeTemp);
+  }
+
+  const formateNonReportingUserData = async (item, index, originalData, heirarchyLevel) => {
+
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+    // let modifiedData =  [...crmVol2ReportingData];
+    let modifiedData = _.cloneDeep(originalData);
+    let id = "";
+    let data = [];
+    let findLevel1Id = modifiedData.map((itemInner, indexInner) => {
+
+      if (itemInner.selfUser.empId == item.empId) {
+        id = itemInner.level1[0].empId;
+        data = itemInner.allTreeData;
+      }
+    })
+    setCrmVol2ReportingAllTree(data);
+
+    let findInnderDataLevel1 = data.filter((item2, index2) => item2.empId == id);
+
+
+    for (let index = 0; index < modifiedData.length; index++) {
+      const element = modifiedData[index];
+      if (element.selfUser.empId == item.empId) {
+
+        element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+        element.selfUser.innerData = findInnderDataLevel1;
+      } else {
+        element.selfUser.isOpenInner = false;
+        element.selfUser.innerData = [];
+      }
+
+    }
+
+    setCrmVol2NonReportingData(modifiedData)
+
+
+  }
 
   const oncllickOfEmployee = async (item = [], index, allData, herirarchyLevel) => {
 
@@ -3002,6 +3107,996 @@ const ParametersScreen = ({ route }) => {
     });
   }
 
+  // todo manthan
+  const renderCRMFirstLevelVol2 = () => {
+    return (
+      <>
+        {crmVol2Level0.length > 0 &&
+          crmVol2Level0.map((item, index) => {
+            return (
+              <View
+                style={{
+                  borderRadius: 10,
+                  borderWidth: isRecepVol2Level0Expanded ? 2 : 0,
+                  borderColor: "#C62159",
+                  backgroundColor: "#FFFFFF",
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item?.empName}
+                    {"  "}
+                    {"-   " + item?.roleName}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    if (!isRecepVol2Level0Expanded) {
+                      let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.total.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.total.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.total.lostLeads)
+
+
+                      // handleSourcrModelNavigationVol2(item, tempArry,)
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                    } else {
+                      let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.self.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.self.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.self.lostLeads)
+
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                    }
+                    // handleSourceModalNavigation(item, item.emp_id, [])
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRMVol2
+                        level={0}
+                        item={item}
+                        branchName={getBranchName(item?.branchName)}
+                        color={Colors.CORAL}
+                        titleClick={async () => {
+                          
+                          seIsCRM_Non_reportingVol2Level0Expanded(false)
+                          setIsRecepVol2Level0Expanded(!isRecepVol2Level0Expanded);
+                          return;
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {/* {[
+                          item.contactCount || 0,
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                        ]. */}
+                        {/* {[
+                          selector.receptionist_self_data?.contactsCount || 0,
+                          selector.receptionist_self_data?.enquirysCount || 0,
+                          selector.receptionist_self_data?.bookingsCount || 0,
+                          selector.receptionist_self_data?.RetailCount || 0,
+                        ]. */}
+                        {[
+                          isRecepVol2Level0Expanded ? item.self.contactCount : item.total.contactCount || 0,
+                          isRecepVol2Level0Expanded ? item.self.enquiryCount : item.total.enquiryCount || 0,
+
+                          isRecepVol2Level0Expanded ? item.self.bookingCount : item.total.bookingCount || 0,
+                          isRecepVol2Level0Expanded ? item.self.retailCount : item.total.retailCount || 0,
+
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (isRecepVol2Level0Expanded) {
+                                    if (index === 0) {
+                                      navigateToContactVol2(item.self.contactLeads)
+
+                                    } else if (index === 1) {
+                                      navigateToEmsVol2(item.self.enquiryLeads)
+                                    } else if (index === 2) {
+                                      navigateToEmsVol2(item.self.bookingLeads)
+                                    } else if (index === 3) {
+                                      navigateToEmsVol2(item.self.retailLeads)
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToContactVol2(item.total.contactLeads)
+
+                                    } else if (index === 1) {
+                                      navigateToEmsVol2(item.total.enquiryLeads)
+                                    } else if (index === 2) {
+                                      navigateToEmsVol2(item.total.bookingLeads)
+                                    } else if (index === 3) {
+                                      navigateToEmsVol2(item.total.retailLeads)
+                                    }
+                                  }
+                                }
+                                // // todo redirections logic filter UI
+                                // if (e > 0) {
+                                //   if (index === 0) {
+                                //     navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                                //   } else if (index === 1) {
+                                //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                //   } else if (index === 2) {
+                                //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                //   } else if (index === 3) {
+                                //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                //   }
+                                // }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {isRecepVol2Level0Expanded && renderCRMNewTreeLevel1()}
+              </View>
+            );
+          })}
+        {renderCRMNonReportingUserTreeVol2()}
+      </>
+    );
+  };
+
+  const renderCRMNewTreeLevel1 = () => {
+    // todo manthan
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {crmVol2Level1.length > 0 &&
+          crmVol2Level1.map((item, index) => {
+            return renderDynamicTree(item, index, receptionistVol2Level1,
+              color,
+              0)
+
+          })}
+        {renderCRMReportingUserTreeVol2()}
+      </View>
+    );
+  };
+
+  const renderCRMNonReportingUserTreeVol2 = () => {
+    // todo manthan
+    const borderColor = color[4 % color.length];
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {crmVol2NonReportingData?.length > 0 &&
+          crmVol2NonReportingData?.map((item, index) => {
+            // if (item.empId === userData.empId) {
+            return (
+              <View
+                style={{
+                  borderRadius: 10,
+                  borderWidth: item.selfUser.isOpenInner ? 2 : 0,
+                  borderColor: borderColor,
+                  backgroundColor: "#FFFFFF",
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item.selfUser.empName}
+                    {"  "}
+                       {"-   " + item.selfUser?.roleName}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    if (!isRecepVol2Level0Expanded) {
+                      let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
+                      Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.total.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.total.retailLeads)
+
+
+
+                      // handleSourcrModelNavigationVol2(item, tempArry,)
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                    } else {
+                      let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.self.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.self.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
+
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                    }
+                    // handleSourceModalNavigation(item, item.emp_id, [])
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRMVol2
+                        level={0}
+                        item={item.selfUser}
+                        branchName={getBranchName(item?.selfUser.branchName)}
+                        color={Colors.CORAL}
+                        titleClick={async () => {
+                          formateNonReportingUserData(item.selfUser, index, crmVol2NonReportingData, 0);
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {/* {[
+                          item.contactCount || 0,
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                        ]. */}
+                        {/* {[
+                          selector.receptionist_self_data?.contactsCount || 0,
+                          selector.receptionist_self_data?.enquirysCount || 0,
+                          selector.receptionist_self_data?.bookingsCount || 0,
+                          selector.receptionist_self_data?.RetailCount || 0,
+                        ]. */}
+                        {[
+                          item.selfUser.isOpenInner ? item.selfUser.self.contactCount : item.selfUser.total.contactCount || 0,
+                          item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
+
+                          item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
+                          item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
+
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (item.selfUser.isOpenInner) {
+                                    if (index === 0) {
+                                      navigateToContactVol2(item.selfUser.self.contactLeads)
+
+                                    } else if (index === 1) {
+                                      navigateToEmsVol2(item.selfUser.self.enquiryLeads)
+                                    } else if (index === 2) {
+                                      navigateToEmsVol2(item.selfUser.self.bookingLeads)
+                                    } else if (index === 3) {
+                                      navigateToEmsVol2(item.selfUser.self.retailLeads)
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToContactVol2(item.selfUser.total.contactLeads)
+
+                                    } else if (index === 1) {
+                                      navigateToEmsVol2(item.selfUser.total.enquiryLeads)
+                                    } else if (index === 2) {
+                                      navigateToEmsVol2(item.selfUser.total.bookingLeads)
+                                    } else if (index === 3) {
+                                      navigateToEmsVol2(item.selfUser.total.retailLeads)
+                                    }
+                                  }
+                                }
+                                // // todo redirections logic filter UI
+                                // if (e > 0) {
+                                //   if (index === 0) {
+                                //     navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                                //   } else if (index === 1) {
+                                //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                //   } else if (index === 2) {
+                                //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                //   } else if (index === 3) {
+                                //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                //   }
+                                // }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
+              </View>
+              // <View
+              //   key={`${item.selfUser.empName} ${index}`}
+              //   style={{
+              //     borderRadius: 10,
+              //     borderWidth: item.selfUser.isOpenInner ? 2 : 0,
+              //     borderColor: borderColor,
+              //     backgroundColor: "#FFFFFF",
+              //   }}
+              // >
+              //   <View
+              //     style={{
+              //       paddingHorizontal: 8,
+              //       display: "flex",
+              //       flexDirection: "row",
+              //       justifyContent: "space-between",
+              //       marginTop: 12,
+              //       width: Dimensions.get("screen").width - 28,
+              //     }}
+              //   >
+              //     <View style={{ flexDirection: "row" }}>
+              //       <Text
+              //         style={{
+              //           fontSize: 12,
+              //           fontWeight: "600",
+              //           textTransform: "capitalize",
+              //         }}
+              //       >
+              //         {item.selfUser.empName}
+              //         {"  "}
+              //         {"-   " + item.selfUser?.roleName}
+              //       </Text>
+              //     </View>
+              //     <View style={{ flexDirection: "row" }}></View>
+              //     <View style={{ flexDirection: "row" }}>
+              //       {/* {selector.receptionistData?.fullResponse?.childUserCount >
+              //         0 && (
+              //           <Animated.View
+              //             style={{
+              //               transform: [{ translateX: translation }],
+              //             }}
+              //           >
+              //             <View
+              //               style={{
+              //                 backgroundColor: "lightgrey",
+              //                 flexDirection: "row",
+              //                 paddingHorizontal: 7,
+              //                 borderRadius: 10,
+              //                 alignItems: "center",
+              //                 justifyContent: "space-between",
+              //                 marginBottom: 5,
+              //                 alignSelf: "flex-start",
+              //                 marginLeft: 7,
+              //                 // transform: [{ translateX: translation }],
+              //               }}
+              //             >
+              //               <MaterialIcons
+              //                 name="person"
+              //                 size={15}
+              //                 color={Colors.BLACK}
+              //               />
+              //               <Text>
+              //                 {
+              //                   selector.receptionistData?.fullResponse
+              //                     ?.childUserCount
+              //                 }
+              //               </Text>
+              //             </View>
+              //           </Animated.View>
+              //         )} */}
+              //       <SourceModelView
+              //         onClick={() => {
+
+
+              //           if (!item.selfUser.isOpenInner) {
+
+              //             let tempArry = [];
+              //             Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
+              //             Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
+              //             Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
+              //             Array.prototype.push.apply(tempArry, item.selfUser.total.lostLeads)
+
+
+              //             handleSourcrModelNavigationVol2(tempArry, item.roleName)
+              //           } else {
+              //             let tempArry = [];
+              //             Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
+              //             Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
+              //             Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
+              //             Array.prototype.push.apply(tempArry, item.selfUser.self.lostLeads)
+
+              //             handleSourcrModelNavigationVol2(tempArry, item.selfUser.roleName)
+              //           }
+
+              //           // navigation.navigate(
+              //           //   "RECEP_SOURCE_MODEL",
+              //           //   {
+              //           //     empId: item?.emp_id,
+              //           //     headerTitle: item?.emp_name,
+              //           //     loggedInEmpId: item.emp_id,
+              //           //     type: "TEAM",
+              //           //     moduleType: "home",
+              //           //     headerTitle: "Source/Model",
+              //           //     orgId: userData.orgId,
+              //           //     role: userData.hrmsRole,
+              //           //     branchList: userData.branchs.map(
+              //           //       (a) => a.branchId
+              //           //     ),
+              //           //   }
+              //           // );
+              //         }}
+              //         style={{
+              //           // transform: [{ translateX: translation }],
+              //         }}
+              //       />
+              //     </View>
+              //   </View>
+
+              //   {/*Source/Model View END */}
+              //   <View
+              //     style={[
+              //       { flexDirection: "row" },
+              //       item.isOpenInner && {
+              //         borderRadius: 10,
+              //         borderWidth: 2,
+              //         borderColor: "#C62159",
+              //         marginHorizontal: 6,
+              //         overflow: "hidden",
+              //       },
+              //     ]}
+              //   >
+              //     {/*RIGHT SIDE VIEW*/}
+              //     <View style={[styles.view6]}>
+              //       <View style={styles.view7}>
+              //         <RenderLevel1NameViewCRM
+              //           level={0}
+              //           item={item.selfUser}
+              //           branchName={item.selfUser.branchName}
+              //           color={borderColor}
+              //           receptionManager={true}
+              //           navigation={navigation}
+              //           titleClick={async (e) => {
+
+              //             formateNonReportingUserData(item.selfUser, index, crmVol2NonReportingData, 0);
+              //           }}
+              //           roleName={item.selfUser.roleName}
+              //           stopLocation={true}
+              //         />
+              //         <View
+              //           style={{
+              //             flex: 1,
+              //             backgroundColor: "rgba(223,228,231,0.67)",
+              //             alignItems: "center",
+              //             flexDirection: "row",
+              //           }}
+              //         >
+              //           {[
+              //             item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
+
+              //             item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
+              //             item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
+              //             item.selfUser.isOpenInner ? item.selfUser.self.lostCount : item.selfUser.total.lostCount || 0
+              //           ].map((e, indexss) => {
+              //             return (
+              //               <Pressable
+              //                 onPress={() => {
+              //                   // todo redirections logic  first level
+              //                   if (e > 0) {
+
+
+              //                     if (item.selfUser.isOpenInner) {
+              //                       if (indexss === 0) {
+              //                         navigateToEmsVol2(item.selfUser.self.enquiryLeads)
+
+              //                       } else if (indexss === 1) {
+              //                         navigateToEmsVol2(item.selfUser.self.bookingLeads)
+              //                       } else if (indexss === 2) {
+              //                         navigateToEmsVol2(item.selfUser.self.retailLeads)
+              //                       } else if (indexss === 3) {
+              //                         navigateToDropAnalysisVol2(item.selfUser.self.lostLeads)
+              //                       }
+              //                     } else {
+              //                       if (indexss === 0) {
+              //                         navigateToEmsVol2(item.selfUser.total.enquiryLeads)
+
+              //                       } else if (indexss === 1) {
+              //                         navigateToEmsVol2(item.selfUser.total.bookingLeads)
+              //                       } else if (indexss === 2) {
+              //                         navigateToEmsVol2(item.selfUser.total.retailLeads)
+              //                       } else if (indexss === 3) {
+              //                         // todo navigate to lost
+
+              //                         navigateToDropAnalysisVol2(item.selfUser.total.lostLeads)
+              //                       }
+              //                     }
+              //                   }
+              //                 }}
+              //               >
+              //                 <View
+              //                   style={{
+              //                     width: 55,
+              //                     height: 30,
+              //                     justifyContent: "center",
+              //                     alignItems: "center",
+              //                   }}
+              //                 >
+              //                   <Text
+              //                     style={{
+              //                       fontSize: 16,
+              //                       fontWeight: "700",
+              //                       textDecorationLine:
+              //                         e > 0 ? "underline" : "none",
+              //                       // marginLeft: 50,
+              //                     }}
+              //                   >
+              //                     {e || 0}
+              //                   </Text>
+              //                 </View>
+              //               </Pressable>
+              //             );
+              //           })}
+              //         </View>
+              //       </View>
+              //       {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+              //     </View>
+              //   </View>
+              //   {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
+              // </View>
+            );
+            // }
+          })}
+        {/* {renderCREFirstLevel()} */}
+      </View>
+    );
+  };
+
+
+  const formateReportingUserData = async (item, index, originalData, heirarchyLevel) => {
+
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+    // let modifiedData =  [...crmVol2ReportingData];
+    let modifiedData = _.cloneDeep(originalData);
+    let id = "";
+    let data = [];
+    let findLevel1Id = modifiedData.map((itemInner, indexInner) => {
+
+      if (itemInner.selfUser.empId == item.empId) {
+        id = itemInner.level1[0].empId;
+        data = itemInner.allTreeData;
+      }
+    })
+    setCrmVol2ReportingAllTree(data);
+
+    let findInnderDataLevel1 = data.filter((item2, index2) => item2.empId == id);
+
+
+    for (let index = 0; index < modifiedData.length; index++) {
+      const element = modifiedData[index];
+      if (element.selfUser.empId == item.empId) {
+
+        element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+        element.selfUser.innerData = findInnderDataLevel1;
+      } else {
+        element.selfUser.isOpenInner = false;
+        element.selfUser.innerData = [];
+      }
+
+    }
+
+    setCrmVol2ReportingData(modifiedData)
+
+
+  }
+
+
+  const renderCRMReportingUserTreeVol2 = () => {
+    // todo manthan
+    const borderColor = color[4 % color.length];
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {crmVol2ReportingData?.length > 0 &&
+          crmVol2ReportingData?.map((item, index) => {
+            // if (item.empId === userData.empId) {
+            return (
+              <View
+                style={{
+                  borderRadius: 10,
+                  borderWidth: item.selfUser.isOpenInner ? 2 : 0,
+                  borderColor: "#C62159",
+                  backgroundColor: "#FFFFFF",
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item.selfUser.empName}
+                       {"  "}
+                       {"-   " + item.selfUser?.roleName}
+                  </Text>
+                </View>
+                <Pressable
+                  style={{ alignSelf: "flex-end" }}
+                  onPress={() => {
+                    if (!isRecepVol2Level0Expanded) {
+                      let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
+                      Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.total.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.total.retailLeads)
+
+
+
+                      // handleSourcrModelNavigationVol2(item, tempArry,)
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                    } else {
+                      let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.self.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.self.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
+
+                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                    }
+                    // handleSourceModalNavigation(item, item.emp_id, [])
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "600",
+                      color: Colors.BLUE,
+                      marginLeft: 8,
+                      paddingRight: 12,
+                    }}
+                  >
+                    Source/Model
+                  </Text>
+                </Pressable>
+                {/*Source/Model View END */}
+                <View style={[{ flexDirection: "row" }]}>
+                  {/*RIGHT SIDE VIEW*/}
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "column",
+                        paddingHorizontal: 2,
+                      },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        width: "100%",
+                        minHeight: 40,
+                        flexDirection: "row",
+                      }}
+                    >
+                      {/* todo */}
+                      <RenderLevel1NameViewCRMVol2
+                        level={0}
+                        item={item.selfUser}
+                        branchName={getBranchName(item?.selfUser.branchName)}
+                        color={Colors.CORAL}
+                        titleClick={async () => {
+                          formateReportingUserData(item.selfUser, index, crmVol2ReportingData, 0);
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {/* {[
+                          item.contactCount || 0,
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                        ]. */}
+                        {/* {[
+                          selector.receptionist_self_data?.contactsCount || 0,
+                          selector.receptionist_self_data?.enquirysCount || 0,
+                          selector.receptionist_self_data?.bookingsCount || 0,
+                          selector.receptionist_self_data?.RetailCount || 0,
+                        ]. */}
+                        {[
+                          item.selfUser.isOpenInner ? item.selfUser.self.contactCount : item.selfUser.total.contactCount || 0,
+                          item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
+
+                          item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
+                          item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
+
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (item.selfUser.isOpenInner) {
+                                    if (index === 0) {
+                                      navigateToContactVol2(item.selfUser.self.contactLeads)
+
+                                    } else if (index === 1) {
+                                      navigateToEmsVol2(item.selfUser.self.enquiryLeads)
+                                    } else if (index === 2) {
+                                      navigateToEmsVol2(item.selfUser.self.bookingLeads)
+                                    } else if (index === 3) {
+                                      navigateToEmsVol2(item.selfUser.self.retailLeads)
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToContactVol2(item.selfUser.total.contactLeads)
+
+                                    } else if (index === 1) {
+                                      navigateToEmsVol2(item.selfUser.total.enquiryLeads)
+                                    } else if (index === 2) {
+                                      navigateToEmsVol2(item.selfUser.total.bookingLeads)
+                                    } else if (index === 3) {
+                                      navigateToEmsVol2(item.selfUser.total.retailLeads)
+                                    }
+                                  }
+                                }
+                                // // todo redirections logic filter UI
+                                // if (e > 0) {
+                                //   if (index === 0) {
+                                //     navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                                //   } else if (index === 1) {
+                                //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                                //   } else if (index === 2) {
+                                //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                                //   } else if (index === 3) {
+                                //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                                //   }
+                                // }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+                    </View>
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+                {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
+              </View>
+            );
+            // }
+          })}
+        {/* {renderCREFirstLevel()} */}
+      </View>
+    );
+  };
+
+  const renderReportingUserTree = (item) => {
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {item.innerData.length > 0 &&
+          item.innerData.map((item, index) => {
+            return renderDynamicTreeReportingUser(item, index, item,
+              color,
+              1)
+
+          })}
+
+      </View>
+    );
+  }
+
 // todo manthan
   const renderReceptionistFirstLevelVol2 = () => {
     return (
@@ -3034,7 +4129,9 @@ const ParametersScreen = ({ route }) => {
                       textTransform: "capitalize",
                     }}
                   >
-                    {item?.empName}
+                    {item?.empName} 
+                    {"  "}
+                    {"-   " + item?.roleName}
                   </Text>
                 </View>
                 <Pressable
@@ -3042,10 +4139,11 @@ const ParametersScreen = ({ route }) => {
                   onPress={() => {
                     if (!isRecepVol2Level0Expanded) {
                       let tempArry = [];
+                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
                       Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
                       Array.prototype.push.apply(tempArry, item.total.bookingLeads)
                       Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.total.lostLeads)
+                    
 
 
                       // handleSourcrModelNavigationVol2(item, tempArry,)
@@ -3055,7 +4153,7 @@ const ParametersScreen = ({ route }) => {
                       Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
                       Array.prototype.push.apply(tempArry, item.self.bookingLeads)
                       Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.self.lostLeads)
+                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
 
                       handleNavigationTOSourcrModelVol2(item, tempArry)
                     }
@@ -3244,6 +4342,315 @@ const ParametersScreen = ({ route }) => {
     );
   };
 
+  const formateReportingUserDataForLevelN = async (item, index, originalData, heirarchyLevel) => {
+
+
+    let modifiedData = _.cloneDeep(originalData);
+
+    let filtrData = modifiedData.filter((itemInn) => itemInn.managerId != itemInn.empId && itemInn.managerId == item.empId)
+
+    await item.isOpenInner ? (item.isOpenInner = false,
+      item.innerData = []) : (item.isOpenInner = true, item.innerData.push(...filtrData))
+
+    setCrmVol2ReportingData([...crmVol2ReportingData])
+
+
+  }
+
+  const renderDynamicTreeReportingUser = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+
+    return (
+      <View
+        key={`${item.empName} ${index}`}
+        style={[
+          {
+            // borderColor: item.isOpenInner ? borderColor : "",
+            // borderWidth: item.isOpenInner ? 2 : 0,
+            // borderRadius: 10,
+            // margin: item.isOpenInner ? 10 : 0,
+          },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: borderColor,
+            backgroundColor: "#FFFFFF",
+          },
+        ]}
+      // style={{
+      //   borderColor: item.isOpenInner ? borderColor : "",
+      //   borderWidth: item.isOpenInner ? 2 : 0,
+      //   borderRadius: 10,
+      //   margin: item.isOpenInner ? 10 : 0,
+      // }}
+      >
+        <View
+          style={{
+            paddingHorizontal: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 12,
+            width: Dimensions.get("screen").width - 28,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "capitalize",
+              }}
+            >
+              {item.empName}
+              {"  "}
+              {"-   " + item?.roleName}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}></View>
+          <View style={{ flexDirection: "row" }}>
+            {selector.receptionistData?.fullResponse?.childUserCount >
+              0 && (
+                <Animated.View
+                  style={{
+                    // transform: [{ translateX: translation }],
+                  }}
+                >
+                  {/* <View
+                    style={{
+                      backgroundColor: "lightgrey",
+                      flexDirection: "row",
+                      paddingHorizontal: 7,
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 5,
+                      alignSelf: "flex-start",
+                      marginLeft: 7,
+                      // transform: [{ translateX: translation }],
+                    }}
+                  >
+                    <MaterialIcons
+                      name="person"
+                      size={15}
+                      color={Colors.BLACK}
+                    />
+                    <Text>
+                      {
+                        selector.receptionistData?.fullResponse
+                          ?.childUserCount
+                      }
+                    </Text>
+                  </View> */}
+                </Animated.View>
+              )}
+            <SourceModelView
+              onClick={() => {
+                if (!item.isOpenInner) {
+
+                  let tempArry = [];
+                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
+                  Array.prototype.push.apply(tempArry, item.total.bookingLeads)
+                  Array.prototype.push.apply(tempArry, item.total.retailLeads)
+                  Array.prototype.push.apply(tempArry, item.total.contactLeads)
+
+
+                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                } else {
+                  let tempArry = [];
+                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
+                  Array.prototype.push.apply(tempArry, item.self.bookingLeads)
+                  Array.prototype.push.apply(tempArry, item.self.retailLeads)
+                  Array.prototype.push.apply(tempArry, item.self.contactLeads)
+
+                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                }
+
+
+                // navigation.navigate(
+                //   "RECEP_SOURCE_MODEL",
+                //   {
+                //     empId: item?.emp_id,
+                //     headerTitle: item?.emp_name,
+                //     loggedInEmpId: item.emp_id,
+                //     type: "TEAM",
+                //     moduleType: "home",
+                //     headerTitle: "Source/Model",
+                //     orgId: userData.orgId,
+                //     role: userData.hrmsRole,
+                //     branchList: userData.branchs.map(
+                //       (a) => a.branchId
+                //     ),
+                //   }
+                // );
+              }}
+              style={{
+                // transform: [{ translateX: translation }],
+              }}
+            />
+          </View>
+        </View>
+
+        {/*Source/Model View END */}
+        <View style={[{ flexDirection: "row" }]}>
+          {/*RIGHT SIDE VIEW*/}
+          <View
+            style={[
+              {
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "column",
+                paddingHorizontal: 2,
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: "100%",
+                minHeight: 40,
+                flexDirection: "row",
+              }}
+            >
+              {/* todo */}
+              <RenderLevel1NameViewCRMVol2
+                level={0}
+                item={item}
+                branchName={getBranchName(item?.branchId)}
+                color={borderColor}
+                titleClick={async () => {
+                  formateReportingUserDataForLevelN(item, index, crmVol2ReportingAllTree, hierarchyLevel)
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "rgba(223,228,231,0.67)",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                {/* {[
+                          item.contactCount || 0,
+                          item.enquiryCount || 0,
+                          item.bookingCount || 0,
+                          item.retailCount || 0,
+                        ]. */}
+                {/* {[
+                          selector.receptionist_self_data?.contactsCount || 0,
+                          selector.receptionist_self_data?.enquirysCount || 0,
+                          selector.receptionist_self_data?.bookingsCount || 0,
+                          selector.receptionist_self_data?.RetailCount || 0,
+                        ]. */}
+                {[
+                  item.isOpenInner ? item.self.contactCount : item.total.contactCount || 0,
+                  item.isOpenInner ? item.self.enquiryCount : item.total.enquiryCount || 0,
+
+                  item.isOpenInner ? item.self.bookingCount : item.total.bookingCount || 0,
+                  item.isOpenInner ? item.self.retailCount : item.total.retailCount || 0,
+
+                ].map((e, index) => {
+                  return (
+                    <Pressable
+                      onPress={() => {
+                        if (e > 0) {
+                          if (item.isOpenInner) {
+                            if (index === 0) {
+                              navigateToContactVol2(item.self.contactLeads)
+
+                            } else if (index === 1) {
+                              navigateToEmsVol2(item.self.enquiryLeads)
+                            } else if (index === 2) {
+                              navigateToEmsVol2(item.self.bookingLeads)
+                            } else if (index === 3) {
+                              navigateToEmsVol2(item.total.retailLeads)
+                            }
+                          } else {
+                            if (index === 0) {
+                              navigateToContactVol2(item.total.contactLeads)
+
+                            } else if (index === 1) {
+                              navigateToEmsVol2(item.total.enquiryLeads)
+                            } else if (index === 2) {
+                              navigateToEmsVol2(item.total.bookingLeads)
+                            } else if (index === 3) {
+                              navigateToEmsVol2(item.total.retailLeads)
+
+                            }
+                          }
+                        }
+                        // // todo redirections logic filter UI
+                        // if (e > 0) {
+                        //   if (index === 0) {
+                        //     navigateToEMS("Contact", "", [], false, userData.empId, true);
+
+                        //   } else if (index === 1) {
+                        //     navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
+                        //   } else if (index === 2) {
+                        //     navigateToEMS("BOOKING", "", [], false, userData.empId, true);
+                        //   } else if (index === 3) {
+                        //     navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                        //   }
+                        // }
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 55,
+                          height: 30,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginLeft: 10,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            textDecorationLine:
+                              e > 0 ? "underline" : "none",
+                            // marginLeft: 50,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {/* <View
+                      style={{
+                        width: "100%",
+                        height: boxHeight,
+                        flexDirection: "row",
+                        alignSelf: "center",
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      {renderFilterData(item, "#C62159")}
+                    </View> */}
+            </View>
+            {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+          </View>
+        </View>
+        {/* {item.isOpenInner && renderCRMTreeChild()} */}
+
+        {item.isOpenInner &&
+          item.innerData.length > 0 &&
+          item.innerData.map((innerItem1, innerIndex1) => {
+            return renderDynamicTreeReportingUser(
+              item.innerData[innerIndex1],
+              innerIndex1,
+              item.innerData,
+              levelColors,
+              hierarchyLevel + 1
+            );
+          })}
+      </View>
+    );
+  }
+
   const renderDynamicTree = (item, index, allData, levelColors, newLevel) => {
     const hierarchyLevel = newLevel;
     const borderColor = levelColors[hierarchyLevel % levelColors.length];
@@ -3340,7 +4747,7 @@ const ParametersScreen = ({ route }) => {
                   Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
                   Array.prototype.push.apply(tempArry, item.total.bookingLeads)
                   Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                  Array.prototype.push.apply(tempArry, item.total.lostLeads)
+                  Array.prototype.push.apply(tempArry, item.total.contactLeads)
 
 
                   handleNavigationTOSourcrModelVol2( item,tempArry)
@@ -3349,7 +4756,7 @@ const ParametersScreen = ({ route }) => {
                   Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
                   Array.prototype.push.apply(tempArry, item.self.bookingLeads)
                   Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                  Array.prototype.push.apply(tempArry, item.self.lostLeads)
+                  Array.prototype.push.apply(tempArry, item.self.contactLeads)
 
                   handleNavigationTOSourcrModelVol2(item, tempArry)
                 }
@@ -3406,7 +4813,11 @@ const ParametersScreen = ({ route }) => {
                 branchName={getBranchName(item?.branchId)}
                 color={borderColor}
                 titleClick={async () => {
-                  oncllickOfEmployee(item, index, allData, newLevel);
+                  if (userData.hrmsRole == "CRM") {
+                    oncllickOfEmployeeForCRm(item, index, allData, newLevel);
+                  } else {
+                    oncllickOfEmployee(item, index, allData, newLevel);
+                  }
                 }}
               />
               <View
@@ -4393,7 +5804,135 @@ const ParametersScreen = ({ route }) => {
 
                   {crmRole.includes(userData.hrmsRole) ? (
                     <>
-                      {CRM_filterParameters.length > 0
+                      {/*  vol2 new code  */}
+                        {renderCRMFirstLevelVol2()}
+                        
+                        {/* Grand Total Section */}
+
+                        {totalOfTeam && CRM_filterParameters.length == 0 && (
+                          <View>
+                            <Pressable
+                              style={{ alignSelf: "flex-end" }}
+                              onPress={() => {
+                                let tempArry = [];
+
+                                Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalEnquiryLeads)
+                                Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalBookingLeads)
+                                Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalRetailLeads)
+                                Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2_CRM_ROLE.fullResponse?.totalContactLeads)
+
+
+                                let item = {
+                                  empName: "Grand Total",
+                                  roleName: ""
+                                }
+                                handleNavigationTOSourcrModelVol2(item, tempArry)
+                                // navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                                //   empId: selector.login_employee_details.empId,
+                                //   headerTitle: "Grand Total",
+                                //   loggedInEmpId:
+                                //     selector.login_employee_details.empId,
+                                //   type: "TEAM",
+                                //   moduleType: "live-leads",
+                                //   orgId: userData.orgId,
+                                //   role: userData.hrmsRole,
+                                //   branchList: userData.branchs.map(
+                                //     (a) => a.branchId
+                                //   ),
+                                //   self: false,
+                                // });
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: "600",
+                                  color: Colors.BLUE,
+                                  marginLeft: 8,
+                                  paddingRight: 12,
+                                }}
+                              >
+                                Source/Model
+                              </Text>
+                            </Pressable>
+
+                            <View style={{ flexDirection: "row", height: 40 }}>
+                              <View
+                                style={{
+                                  width: 70,
+                                  minHeight: 40,
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  flexDirection: "row",
+                                  backgroundColor: Colors.RED,
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginLeft: 6,
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.grandTotalText,
+                                      {
+                                        color: Colors.WHITE,
+                                        fontSize: 12,
+                                      },
+                                    ]}
+                                  >
+                                    Total
+                                  </Text>
+                                </View>
+                              </View>
+                              <View
+                                style={{
+                                  minHeight: 40,
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    // minHeight: 40,
+                                    flexDirection: "row",
+                                    // backgroundColor:"yellow"
+                                  }}
+                                >
+                                  {totalOfTeam.map((e) => {
+                                    return (
+                                      <View
+                                        style={{
+                                          width: 70,
+                                          height: 40,
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          backgroundColor: Colors.RED,
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 16,
+                                            fontWeight: "700",
+                                            color: Colors.WHITE,
+                                          }}
+                                        >
+                                          {e || 0}
+                                        </Text>
+                                      </View>
+                                    );
+                                  })}
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        )}
+
+
+                    {/* CRM vol1 working code  start */}
+                    
+                      {/* {CRM_filterParameters.length > 0
                         ? renderCRMFilterView()
                         : null}
                       {CRM_filterParameters.length > 0
@@ -4406,12 +5945,8 @@ const ParametersScreen = ({ route }) => {
                         ? renderCREtreeFirstLevel()
                         : null}
                       {/* Grand Total Section */}
-                      {/* isViewExpanded ? item.contactCount : selector.crm_response_data.totalPreInquiryCount || 0,
-                      isViewExpanded ? item.enquiryCount : selector.crm_response_data.totalEnquiryCount || 0,
-                      isViewExpanded ? item.bookingCount : selector.crm_response_data.totalBookingCount || 0,
-                      isViewExpanded ? item.retailCount : selector.crm_response_data.totalRetailCount || 0, */}
 
-                      {totalOfTeam && CRM_filterParameters.length == 0 && (
+                      {/* {totalOfTeam && CRM_filterParameters.length == 0 && (
                         <View>
                           <Pressable
                             style={{ alignSelf: "flex-end" }}
@@ -4516,7 +6051,9 @@ const ParametersScreen = ({ route }) => {
                             </View>
                           </View>
                         </View>
-                      )}
+                      )}  */}
+                        {/* CRM vol1 working code  end */}
+
                       {/* {selector.totalParameters.length > 0 && (
                         <View>
                           <Pressable
@@ -7698,20 +9235,33 @@ const ParametersScreen = ({ route }) => {
                                         <Pressable
                                           style={{ alignSelf: "flex-end" }}
                                           onPress={() => {
-                                            navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
-                                              empId: selector.login_employee_details.empId,
-                                              headerTitle: "Grand Total",
-                                              loggedInEmpId:
-                                                selector.login_employee_details.empId,
-                                              type: "TEAM",
-                                              moduleType: "live-leads",
-                                              orgId: userData.orgId,
-                                              role: userData.hrmsRole,
-                                              branchList: userData.branchs.map(
-                                                (a) => a.branchId
-                                              ),
-                                              self: false,
-                                            });
+                                            let tempArry = [];
+                                            
+                                            Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2.fullResponse?.totalEnquiryLeads)
+                                            Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2.fullResponse?.totalBookingLeads)
+                                            Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2.fullResponse?.totalRetailLeads)
+                                            Array.prototype.push.apply(tempArry, selector.crm_recep_response_data_vol2.fullResponse?.totalContactLeads)
+                                            
+                                           
+                                            let item = {
+                                              empName:"Grand Total",
+                                              roleName:""
+                                            }
+                                            handleNavigationTOSourcrModelVol2(item, tempArry)
+                                            // navigation.navigate("RECEP_SOURCE_MODEL_CRM", {
+                                            //   empId: selector.login_employee_details.empId,
+                                            //   headerTitle: "Grand Total",
+                                            //   loggedInEmpId:
+                                            //     selector.login_employee_details.empId,
+                                            //   type: "TEAM",
+                                            //   moduleType: "live-leads",
+                                            //   orgId: userData.orgId,
+                                            //   role: userData.hrmsRole,
+                                            //   branchList: userData.branchs.map(
+                                            //     (a) => a.branchId
+                                            //   ),
+                                            //   self: false,
+                                            // });
                                           }}
                                         >
                                           <Text
