@@ -3994,25 +3994,25 @@ const ParametersScreen = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    if (!isRecepVol2Level0Expanded) {
+                    if (!item.selfUser.isOpenInner) {
                       let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
-                      Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.total.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.total.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.contactLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
 
 
 
                       // handleSourcrModelNavigationVol2(item, tempArry,)
-                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
                     } else {
                       let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.self.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
+                      Array.prototype.push.apply(tempArry, item.selfUser.self.contactLeads)
 
-                      handleNavigationTOSourcrModelVol2(item, tempArry)
+                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
                     }
                     // handleSourceModalNavigation(item, item.emp_id, [])
                   }}
@@ -5909,7 +5909,7 @@ const ParametersScreen = ({ route }) => {
                   {crmRole.includes(userData.hrmsRole) ? (
                     <>
                       {/*  vol2 new code  */}
-                        {renderCRMFirstLevelVol2()}
+                        {renderCRMFirstLevelVol2()} 
                         
                         {/* Grand Total Section */}
 
