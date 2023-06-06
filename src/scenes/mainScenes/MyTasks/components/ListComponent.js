@@ -232,7 +232,6 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal, fromClick) => {
-    console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -352,8 +351,6 @@ const ListComponent = ({ route, navigation }) => {
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                console.log("todaysData", filteredData);
-
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
@@ -365,7 +362,6 @@ const ListComponent = ({ route, navigation }) => {
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
-                      console.log("sss");
                       setMyTeamsData(tempData);
                     }
                   }

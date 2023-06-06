@@ -434,15 +434,33 @@ export const MyTaskNewItem = ({
             <View style={{ padding: 5 }} />
             <IconComp
               iconName={"phone-outline"}
-              onPress={() => {
+              onPress={async () => {
                 if (from == "MY_TASKS") {
-                  navigator.navigate(
-                    AppNavigator.MyTasksStackIdentifiers.webCallScreen,
-                    {
-                      phone,
-                      uniqueId,
-                    }
+                  const employeeData = await AsyncStore.getData(
+                    AsyncStore.Keys.LOGIN_EMPLOYEE
                   );
+                  if (employeeData) {
+                    const jsonObj = JSON.parse(employeeData);
+                    if (jsonObj.orgName.includes("BikeWo Corporation")) {
+                      callNumber(phone);
+                    } else {
+                      navigator.navigate(
+                        AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                        {
+                          phone,
+                          uniqueId,
+                        }
+                      );
+                    }
+                  } else {
+                    navigator.navigate(
+                      AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                      {
+                        phone,
+                        uniqueId,
+                      }
+                    );
+                  }
                 } else {
                   callWebViewRecord({
                     navigator,
