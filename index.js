@@ -13,6 +13,7 @@ import TrackPlayer from "react-native-track-player";
 import ReactNativeForegroundService from "@supersami/rn-foreground-service";
 import RNLocation from "react-native-location";
 import EvaluationForm from "./src/scenes/mainScenes/Evaluation";
+import CheckListScreen from "./src/scenes/mainScenes/Evaluation/CheckList";
 
 if (__DEV__) {
   import("./config/ReactotronConfig").then(() => {});
@@ -44,5 +45,5 @@ RNLocation.configure({
   showsBackgroundLocationIndicator: true,
 });
 
-AppRegistry.registerComponent(appName, () => EvaluationForm);
+AppRegistry.registerComponent(appName, () => CheckListScreen);
 TrackPlayer.registerPlaybackService(() => require("./trackServices"));

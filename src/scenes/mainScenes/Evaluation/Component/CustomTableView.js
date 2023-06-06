@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
+import { RadioTextItem2 } from "../../../../pureComponents";
 
 const TableView = () => {
   return (
@@ -25,8 +26,25 @@ const TableView = () => {
         <TextInput style={[styles.column, styles.input]} />
       </View>
       <View style={styles.row}>
-        <Text style={styles.cell}>Item 5</Text>
-        <TextInput style={[styles.column, styles.input]} />
+        <View style={{ justifyContent: "center" }}>
+          <View>
+            <Text style={styles.cell}>Item 5</Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <RadioTextItem2
+            label={"Option 1"}
+            value={"75"}
+            status={true}
+            onPress={() => {}}
+          />
+          <RadioTextItem2
+            label={"Option 2"}
+            value={"50"}
+            status={false}
+            onPress={() => {}}
+          />
+        </View>
       </View>
     </View>
   );
@@ -42,7 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
-    alignItems:'center'
+    alignItems: "center",
   },
   columnHeader: {
     fontWeight: "bold",
