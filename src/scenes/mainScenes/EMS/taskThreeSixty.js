@@ -10,6 +10,7 @@ import * as AsyncStore from "../../../asyncStore";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { IconButton } from "react-native-paper";
+import { callNumber } from "../../../utils/helperFunctions";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -408,13 +409,17 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             <TouchableOpacity
               activeOpacity={0.6}
               onPress={() => {
-                navigation.navigate(
-                  AppNavigator.MyTasksStackIdentifiers.webCallScreen,
-                  {
-                    phone: mobileNo,
-                    uniqueId: item.taskId,
-                  }
-                );
+                if (userData.orgName.includes("BikeWo Corporation")) {
+                  callNumber(mobileNo);
+                } else {
+                  navigation.navigate(
+                    AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                    {
+                      phone: mobileNo,
+                      uniqueId: item.taskId,
+                    }
+                  );
+                }
               }}
               style={styles.iconBoxView}
             >
