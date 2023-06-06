@@ -7477,7 +7477,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 onPress={() => {
                   setReceiptDocModel(false);
                   setIsEdit(true);
-                  setShowApproveRejectBtn(true);
+                  setShowApproveRejectBtn(false);
                   // new conditions
                   setIsEditButtonShow(false);
                   setIsSubmitCancelButtonShow(true);
