@@ -50,6 +50,7 @@ import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { EventRegister } from "react-native-event-listeners";
+import { OrgTagsFilter } from "../../../components/OrgTagsFilter";
 const EmployeesRoles = [
   "Reception".toLowerCase(),
   "Tele Caller".toLowerCase(),
@@ -107,6 +108,7 @@ const LeadsScreen = ({ route, navigation }) => {
   const [orgId, setOrgId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [leadsFilterVisible, setLeadsFilterVisible] = useState(false);
+  const [leadsOrgTagsVisible, setLeadsOrgTagsVisible] = useState(false);
   const [leadsFilterData, setLeadsFilterData] = useState([]);
   const [leadsFilterDropDownText, setLeadsFilterDropDownText] = useState("All");
   const [leadsList, setLeadsList] = useState([]);
@@ -133,6 +135,7 @@ const LeadsScreen = ({ route, navigation }) => {
   const [AssignToMe, setAssignToMe] = useState(false);
   const [isVip, setIsVip] = useState(false);
   const [isHni, setIsHni] = useState(false);
+  const [isSpl, setIsSpl] = useState(false);
 
   const orgIdStateRef = React.useRef(orgId);
   const empIdStateRef = React.useRef(employeeId);
@@ -1461,6 +1464,9 @@ const LeadsScreen = ({ route, navigation }) => {
   const onRefresh = async () => {
     // setSelectedFromDate(lastMonthFirstDate);
     // setSelectedToDate(lastMonthLastDate)
+    setIsVip(false);
+    setIsHni(false);
+    setIsSpl(false);
     Promise.all([dispatch(getMenu()), dispatch(getStatus())])
       .then(async ([res, res2]) => {
         let path = res.payload;
@@ -1501,6 +1507,7 @@ const LeadsScreen = ({ route, navigation }) => {
           <MyTaskNewItem
             IsVip={item.isVip === "Y" ? true : false}
             IsHni={item.isHni === "Y" ? true : false}
+            orgTags={item.tags}
             tdflage={item?.tdflage ? item.tdflage : ""}
             hvflage={item?.hvflage ? item.hvflage : ""}
             showTdHvHighLight={true}
@@ -1598,12 +1605,40 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMeLength(data) {
     if (data.length > 0) {
-      if (isVip && isHni) {
+      if (isVip && isHni && isSpl) {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.isVip === "Y" &&
-            i.isHni === "Y" &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
+      } else if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
+      } else if (isVip && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("SPL") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
+      } else if (isHni && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1611,7 +1646,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.isVip === "Y" &&
+            i.tags.indexOf("VIP") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1619,7 +1654,15 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.isHni === "Y" &&
+            i.tags.indexOf("HNI") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        return newData.length;
+      } else if (isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1638,22 +1681,55 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMeLength(data) {
     if (data.length > 0) {
-      if (isVip && isHni) {
+      if (isVip && isHni && isSpl) {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.isVip === "Y" &&
-            i.isHni === "Y"
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1
+        );
+        return newData.length;
+      } else if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1
+        );
+        return newData.length;
+      } else if (isVip && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("SPL") > -1
+        );
+        return newData.length;
+      } else if (isHni && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1
         );
         return newData.length;
       } else if (isVip) {
         let newData = data.filter(
-          (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+          (i) =>
+            userData.empName === i.salesConsultant && i.tags.indexOf("VIP") > -1
         );
         return newData.length;
       } else if (isHni) {
         let newData = data.filter(
-          (i) => userData.empName === i.salesConsultant && i.isHni === "Y"
+          (i) =>
+            userData.empName === i.salesConsultant && i.tags.indexOf("HNI") > -1
+        );
+        return newData.length;
+      } else if (isSpl) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant && i.tags.indexOf("SPL") > -1
         );
         return newData.length;
       } else {
@@ -1669,12 +1745,43 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignByMe(data) {
     if (data.length > 0) {
-      if (isVip && isHni) {
+      if (isVip && isHni && isSpl) {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.isVip === "Y" &&
-            i.isHni === "Y" &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("SPL") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1683,7 +1790,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.isVip === "Y" &&
+            i.tags.indexOf("VIP") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1692,7 +1799,16 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.isHni === "Y" &&
+            i.tags.indexOf("HNI") > -1 &&
+            userData.empName !== i.salesConsultant
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.createdBy === userData.empName &&
+            i.tags.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1702,8 +1818,6 @@ const LeadsScreen = ({ route, navigation }) => {
           (i) =>
             i.createdBy === userData.empName &&
             userData.empName !== i.salesConsultant
-          // &&
-          // userData.empName === i.salesConsultant
         );
         dispatch(updateTheCount(""));
         return newData;
@@ -1716,24 +1830,61 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function onAssignToMe(data) {
     if (data.length > 0) {
-      if (isVip && isHni) {
+      if (isVip && isHni && isSpl) {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.isVip === "Y" &&
-            i.isHni === "Y"
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip && isHni) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("SPL") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isVip) {
         let newData = data.filter(
-          (i) => userData.empName === i.salesConsultant && i.isVip === "Y"
+          (i) =>
+            userData.empName === i.salesConsultant && i.tags.indexOf("VIP") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isHni) {
         let newData = data.filter(
-          (i) => userData.empName === i.salesConsultant && i.isHni === "Y"
+          (i) =>
+            userData.empName === i.salesConsultant && i.tags.indexOf("HNI") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isSpl) {
+        let newData = data.filter(
+          (i) =>
+            userData.empName === i.salesConsultant && i.tags.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1752,21 +1903,47 @@ const LeadsScreen = ({ route, navigation }) => {
 
   function OnVip(data) {
     if (data.length > 0) {
-      if (isVip && isHni) {
-        let newData = data.filter((i) => i.isVip === "Y" && i.isHni === "Y");
+      if (isVip && isHni && isSpl) {
+        let newData = data.filter(
+          (i) =>
+            i.tags.indexOf("VIP") > -1 &&
+            i.tags.indexOf("HNI") > -1 &&
+            i.tags.indexOf("SPL") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip && isHni) {
+        let newData = data.filter(
+          (i) => i.tags.indexOf("VIP") > -1 && i.tags.indexOf("HNI") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isVip && isSpl) {
+        let newData = data.filter(
+          (i) => i.tags.indexOf("VIP") > -1 && i.tags.indexOf("SPL") > -1
+        );
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isHni && isSpl) {
+        let newData = data.filter(
+          (i) => i.tags.indexOf("HNI") > -1 && i.tags.indexOf("SPL") > -1
+        );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isVip) {
-        let newData = data.filter((i) => i.isVip === "Y");
+        let newData = data.filter((i) => i.tags.indexOf("VIP") > -1);
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isHni) {
-        let newData = data.filter((i) => i.isHni === "Y");
+        let newData = data.filter((i) => i.tags.indexOf("HNI") > -1);
+        dispatch(updateTheCount(newData.length));
+        return newData;
+      } else if (isSpl) {
+        let newData = data.filter((i) => i.tags.indexOf("SPL") > -1);
         dispatch(updateTheCount(newData.length));
         return newData;
       } else {
         let newData = data;
-        // dispatch(updateTheCount(newData.length));
         dispatch(updateTheCount(""));
         return newData;
       }
@@ -1775,6 +1952,46 @@ const LeadsScreen = ({ route, navigation }) => {
       return [];
     }
   }
+
+  const applyOrgTags = (data) => {
+    let vip = false;
+    let hni = false;
+    let spl = false;
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
+      if (element.name == "VIP" && element.checked) {
+        vip = true;
+      } else if (element.name == "HNI" && element.checked) {
+        hni = true;
+      } else if (element.name == "SPL" && element.checked) {
+        spl = true;
+      }
+    }
+    setIsVip(vip);
+    setIsHni(hni);
+    setIsSpl(spl);
+  };
+
+  const getCategoryText = () => {
+    if (isVip && isHni && isSpl) {
+      return "VIP, HNI, SPL";
+    } else if (isVip && isHni) {
+      return "VIP, HNI";
+    } else if (isVip && isSpl) {
+      return "VIP, SPL";
+    } else if (isHni && isHni) {
+      return "HNI, SPL";
+    } else if (isVip) {
+      return "VIP";
+    } else if (isHni) {
+      return "HNI";
+    } else if (isSpl) {
+      return "SPL";
+    } else {
+      return "Category";
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <DatePickerComponent
@@ -1793,6 +2010,16 @@ const LeadsScreen = ({ route, navigation }) => {
           }
         }}
         onRequestClose={() => setShowDatePicker(false)}
+      />
+      <OrgTagsFilter
+        visible={leadsOrgTagsVisible}
+        onRequestClose={() => setLeadsOrgTagsVisible(false)}
+        onApplyTags={(data) => applyOrgTags(data)}
+        selectedTags={[
+          { name: "VIP", checked: isVip },
+          { name: "HNI", checked: isHni },
+          { name: "SPL", checked: isSpl },
+        ]}
       />
       <View>
         <SingleLeadSelectComp
@@ -1847,7 +2074,7 @@ const LeadsScreen = ({ route, navigation }) => {
           cancelClicked={() => {
             setLeadsSubMenuFilterVisible(false);
           }}
-          onChange={(x) => { }}
+          onChange={(x) => {}}
         />
       </View>
 
@@ -1876,13 +2103,13 @@ const LeadsScreen = ({ route, navigation }) => {
         </View>
         <Pressable onPress={() => setSortAndFilterVisible(true)}>
           {/* <View style={styles.filterView}> */}
-            {/* <Text style={styles.text1}>{"Filter"}</Text> */}
-            <IconButton
-              icon={"filter-outline"}
-              size={23}
-              color={Colors.RED}
-              style={{ margin: 0, padding: 0 }}
-            />
+          {/* <Text style={styles.text1}>{"Filter"}</Text> */}
+          <IconButton
+            icon={"filter-outline"}
+            size={23}
+            color={Colors.RED}
+            style={{ margin: 0, padding: 0 }}
+          />
           {/* </View> */}
         </Pressable>
       </View>
@@ -1957,7 +2184,28 @@ const LeadsScreen = ({ route, navigation }) => {
             </Pressable>
           </View>
         )}
-        <View style={{ alignItems: "center", flexDirection: "row" }}>
+
+        <View style={{ width: "45%" }}>
+          <Pressable
+            onPress={() => {
+              setLeadsOrgTagsVisible(true);
+            }}
+          >
+            <View style={styles.view4}>
+              <Text style={styles.txt1} numberOfLines={2}>
+                {getCategoryText()}
+              </Text>
+              <IconButton
+                icon={leadsOrgTagsVisible ? "chevron-up" : "chevron-down"}
+                size={20}
+                color={Colors.RED}
+                style={{ margin: 0, padding: 0 }}
+              />
+            </View>
+          </Pressable>
+        </View>
+
+        {/* <View style={{ alignItems: "center", flexDirection: "row" }}>
           <View
             style={{
               alignItems: "center",
@@ -1998,7 +2246,7 @@ const LeadsScreen = ({ route, navigation }) => {
               onValueChange={setIsHni}
             />
           </View>
-        </View>
+        </View> */}
       </View>
       <View style={styles.AssignView}>
         <View style={styles.AssignView1}>
@@ -2064,8 +2312,8 @@ const LeadsScreen = ({ route, navigation }) => {
               searchedData.length > 0 && AssignByMe
                 ? onAssignByMe(searchedData)
                 : AssignToMe
-                  ? onAssignToMe(searchedData)
-                  : OnVip(searchedData)
+                ? onAssignToMe(searchedData)
+                : OnVip(searchedData)
             }
             extraData={searchedData}
             keyExtractor={(item, index) => index.toString()}
@@ -2085,6 +2333,11 @@ const LeadsScreen = ({ route, navigation }) => {
             }}
             ListFooterComponent={renderFooter}
             renderItem={renderItem}
+            ListEmptyComponent={
+              <View style={{ marginTop: 150 }}>
+                <EmptyListView title={"No Data Found"} />
+              </View>
+            }
           />
         </View>
       )}

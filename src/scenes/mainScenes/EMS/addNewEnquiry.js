@@ -85,6 +85,8 @@ import {
   getEnquiryTypesApi,
   postEvalutionApi,
   postFinanaceApi,
+  getOrgTags,
+  postOrgTags,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -253,6 +255,8 @@ const dmsAttachmentsObj = {
   tinNumber: null,
 };
 
+const orgTagDateFormate = "YYYY-MM-DD hh:mm:ss";
+
 const AddNewEnquiryScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
@@ -338,8 +342,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
-  const [isVip, setIsVip] = useState(false);
-  const [isHni, setIsHni] = useState(false);
+  const [isMultipleSelection, setIsMultipleSelection] = useState(false);
+  const [selectedTags, setSelectedTags] = useState("");
+  const [tagList, setTagList] = useState([]);
+
   const [duplicateMobileErrorData, setDuplicateMobileErrorData] = useState("");
   const [duplicateMobileModelVisible, setDuplicateMobileModelVisible] =
     useState(false);
@@ -416,7 +422,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     serInsurenceCompanyList([]);
     setFinanceBanksList([]);
     setSelectedBranchId("");
-
+    setIsMultipleSelection(false);
+    setSelectedTags("");
+    setTagList([]);
+    
     // drop section
     setDropData([]);
     setDropReason("");
@@ -460,7 +469,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerEnquiryType();
-
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
     //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
@@ -474,6 +482,22 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   );
     // };
   }, []);
+
+  useEffect(() => {
+    if (selector.orgTagList.length > 0) {
+      let newArr = [];
+      for (let i = 0; i < selector.orgTagList.length; i++) {
+        const element = selector.orgTagList[i];
+        let obj = {
+          ...element,
+          selected: false,
+        };
+        newArr.push(obj);
+      }
+      setTagList(Object.assign([], newArr));
+    }
+    return () => {};
+  }, [selector.orgTagList]);
 
   useEffect(() => {
     if (
@@ -560,7 +584,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         approverId: jsonObj.approverId,
         orgName: jsonObj.orgName,
       });
-      
+      dispatch(getOrgTags(jsonObj.orgId));
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
@@ -1088,14 +1112,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("Please fill Sub Source Of Enquiry");
       return;
     }
-    if (isVip === null) {
-      showToast("Please select VIP");
-      return;
-    }
-    if (isHni === null) {
-      showToast("Please select HNI");
-      return;
-    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1433,8 +1449,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             companyName: selector.company_name,
           },
           dmsLeadDto: {
-            isVip: isVip ? "Y" : "N",
-            isHni: isHni ? "Y" : "N",
             branchId: jsonObj.branchs[0]?.branchId,
             createdBy: jsonObj.empName,
             enquirySegment: selector.enquiry_segment,
@@ -1716,6 +1730,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
             const json = await response.json();
             if (json.success) {
+              submitOrgTags(json);
               displayCreateEnquiryLeadAlert(
                 json?.dmsEntity?.leadCustomerReference?.referencenumber
               );
@@ -1734,6 +1749,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
             const json1 = await response1.json();
             if (json1.success) {
+              submitOrgTags(json1);
               displayCreateEnquiryLeadAlert(
                 json1?.dmsEntity?.leadCustomerReference?.referencenumber
               );
@@ -1785,6 +1801,36 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //     dispatch(updateRef(payload));
     //   });
     // }
+  };
+
+  const submitOrgTags = (json) => {
+    const { dmsLeadDto, task } = json.dmsEntity;
+    const { id } = dmsLeadDto;
+    const { universalId } = task;
+    let defaultObj = {
+      leadId: id,
+      universalId: universalId,
+      isActive: "N",
+      createdDatetime: moment().format(orgTagDateFormate),
+      updatedDatetime: moment().format(orgTagDateFormate),
+    };
+
+    let payloadArr = [
+      { ...defaultObj, tagName: "VIP" },
+      { ...defaultObj, tagName: "HNI" },
+      { ...defaultObj, tagName: "SPL" },
+    ];
+
+    if (selectedTags.includes("VIP")) {
+      payloadArr[0].isActive = "Y";
+    }
+    if (selectedTags.includes("HNI")) {
+      payloadArr[1].isActive = "Y";
+    }
+    if (selectedTags.includes("SPL")) {
+      payloadArr[2].isActive = "Y";
+    }
+    dispatch(postOrgTags(payloadArr));
   };
 
   const DuplicateErrorModal = (data) => {
@@ -2623,6 +2669,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setIsMultipleSelection(false);
     switch (key) {
       case "ENQUIRY_SEGMENT":
         if (selector.enquiry_type_list?.length === 0) {
@@ -2745,6 +2792,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         break;
       case "R_INSURENCE_COMPANY_NAME":
         setDataForDropDown([...insurenceCompayList]);
+        break;
+      case "SELECT_TAG":
+        setIsMultipleSelection(true);
+        setDataForDropDown(tagList);
         break;
     }
     setDropDownKey(key);
@@ -3452,66 +3503,88 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       />
 
       <DropDownComponant
+        multiple={isMultipleSelection}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name, false);
-          } else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(
-              item.name,
-              selectedCarVarientsData.varientList
-            );
-          } else if (
-            dropDownKey === "C_MAKE" ||
-            dropDownKey === "R_MAKE" ||
-            dropDownKey === "A_MAKE"
-          ) {
-            updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
-          }
+          if (isMultipleSelection) {
+            setTagList([...item]);
+            let names = [];
+            let selectedNames = [];
 
-          if (
-            dropDownKey === "RETAIL_FINANCE" &&
-            selector.retail_finance !== item.name
-          ) {
-            dispatch(
-              setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
-            );
-            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
-            dispatch(
-              setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
-            );
-          }
-          if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-            setSelectedEventData([]);
-            if (item.name === "Events") {
-              const startOfMonth = moment()
-                .startOf("month")
-                .format("YYYY-MM-DD");
-              const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
-              getEventConfigListFromServer(startOfMonth, endOfMonth);
+            if (item.length > 0) {
+              setIsSubmitPress(false);
+              item.forEach((obj) => {
+                if (obj.selected != undefined && obj.selected == true) {
+                  names.push(obj.name);
+                }
+              });
+              selectedNames = names?.join(", ");
+            } else {
+              setIsSubmitPress(true);
             }
-            if (item.name === "Event") {
-              getEventListFromServer();
+
+            setSelectedTags(selectedNames);
+            setShowDropDownModel(false);
+          } else {
+            if (dropDownKey === "MODEL") {
+              updateVariantModelsData(item.name, false);
+            } else if (dropDownKey === "VARIENT") {
+              updateColorsDataForSelectedVarient(
+                item.name,
+                selectedCarVarientsData.varientList
+              );
+            } else if (
+              dropDownKey === "C_MAKE" ||
+              dropDownKey === "R_MAKE" ||
+              dropDownKey === "A_MAKE"
+            ) {
+              updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
             }
-            getEmployeeListFromServer(item.id);
-            setSourceData(item.id);
-            updateSubSourceData(item);
+
+            if (
+              dropDownKey === "RETAIL_FINANCE" &&
+              selector.retail_finance !== item.name
+            ) {
+              dispatch(
+                setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+              );
+              dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+              dispatch(
+                setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+              );
+            }
+            if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+              setSelectedEventData([]);
+              if (item.name === "Events") {
+                const startOfMonth = moment()
+                  .startOf("month")
+                  .format("YYYY-MM-DD");
+                const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+                getEventConfigListFromServer(startOfMonth, endOfMonth);
+              }
+              if (item.name === "Event") {
+                getEventListFromServer();
+              }
+              getEmployeeListFromServer(item.id);
+              setSourceData(item.id);
+              updateSubSourceData(item);
+            }
+            if (dropDownKey === "SUB_SOURCE_OF_ENQUIRY") {
+              setSubSourceId(item.id);
+            }
+            setShowDropDownModel(false);
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+                orgId: userData.orgId,
+              })
+            );
           }
-          if (dropDownKey === "SUB_SOURCE_OF_ENQUIRY") {
-            setSubSourceId(item.id);
-          }
-          setShowDropDownModel(false);
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-              orgId: userData.orgId,
-            })
-          );
         }}
       />
 
@@ -4185,87 +4258,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
-                  isDropDownIconShow={false}
                 />
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is VIP?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isVip}
-                    onPress={() => setIsVip(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    status={isVip === null ? false : !isVip}
-                    onPress={() => setIsVip(false)}
-                  />
-                </View>
                 <Text style={GlobalStyle.underline}></Text>
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
+                <DropDownSelectionItem
+                  label={"Select Tag"}
+                  value={selectedTags}
+                  onPress={() => {
+                    showDropDownModelMethod("SELECT_TAG", "Select Tag");
                   }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is HNI?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isHni}
-                    onPress={() => setIsHni(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    status={isHni === null ? false : !isHni}
-                    onPress={() => setIsHni(false)}
-                  />
-                </View>
+                />
                 <Text style={GlobalStyle.underline}></Text>
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
