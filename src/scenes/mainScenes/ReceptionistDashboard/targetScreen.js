@@ -5396,10 +5396,13 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
               )}
         </View>
       ) : (
-        <LoaderComponent
-          visible={selector.isLoading}
-          onRequestClose={() => {}}
-        />
+        <View style={{ flex: 1 }}>
+          <AnimLoaderComp visible={selector.isLoading} />
+        </View>
+        // <LoaderComponent
+        //   visible={selector.isLoading}
+        //   onRequestClose={() => {}}
+        // />
       )}
     </React.Fragment>
   );
