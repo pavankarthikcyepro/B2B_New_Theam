@@ -299,7 +299,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     isSelfManager: "",
     isTracker: "",
     branchId: 0,
-    approverId: ""
+    approverId: "",
+    orgName: ""
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -680,7 +681,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       isSelfManager: "",
       isTracker: "",
       branchId: 0,
-      approverId: ""
+      approverId: "",
+      orgName: "",
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -1112,7 +1114,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
         branchId: jsonObj.branchId,
-        approverId: jsonObj.approverId
+        approverId: jsonObj.approverId,
+        orgName: jsonObj.orgName
       });
 
       const payload = {
@@ -7351,7 +7354,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   labelStyle={{ textTransform: "none", fontSize: 10 }}
                   onPress={() => {
                     setIsEdit(true);
-                    setShowApproveRejectBtn(true);
+                    if (userData.orgName !== "BikeWo Corporation") {
+                      setShowApproveRejectBtn(true);
+                    }
                     setIsEditButtonShow(false);
                     setIsSubmitCancelButtonShow(true);
                   }}
@@ -7378,7 +7383,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => {
                     setIsEdit(true);
-                    setShowApproveRejectBtn(true);
+                    if (userData.orgName !== "BikeWo Corporation") {
+                      setShowApproveRejectBtn(true);
+                    }
                     // new conditions
                     setIsEditButtonShow(false);
                     setIsSubmitCancelButtonShow(true);
