@@ -466,6 +466,44 @@ export const postEvalutionApi = createAsyncThunk(
   }
 );
 
+export const postOrgTags = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postOrgTags",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_ORG_TAGS(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getOrgTags = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOrgTags",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getOrgTagsById = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOrgTagsById",
+  async (leadId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS_BY_ID(leadId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 interface PersonalIntroModel {
   key: string;
@@ -562,6 +600,8 @@ const initialState = {
   relation: "",
   gender: "",
   salutation: "",
+  orgTagList: [],
+  orgTagListById: [],
   // Communication Address
   pincode: "",
   urban_or_rural: 0, // 1: urban, 2:
@@ -771,6 +811,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         (state.event_list_Config = []);
       state.event_list_response_Config_status = "";
       state.otherPricesDropDown= [];
+      state.orgTagList= [];
+      state.orgTagListById = [];
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -842,6 +884,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_2 = "";
       state.foc_accessoriesFromServer = "";
       state.otherPricesDropDown= [];
+      state.orgTagList= [];
+      state.orgTagListById = [];
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -2596,7 +2640,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.event_list_Config = [];
     });
 
-
     //Get Other prices drop down data
     builder.addCase(getOtherPricesDropDown.pending, (state, action) => { });
     builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
@@ -2613,6 +2656,47 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     });
     builder.addCase(getOtherPricesDropDown.rejected, (state, action) => { });
+
+    //Post Organisation Tags
+    builder.addCase(postOrgTags.pending, (state, action) => {});
+    builder.addCase(postOrgTags.fulfilled, (state, action) => {});
+    builder.addCase(postOrgTags.rejected, (state, action) => {});
+    
+    //Get Organisation Tags
+    builder.addCase(getOrgTags.pending, (state, action) => { });
+    builder.addCase(getOrgTags.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tag,
+          };
+          data.push(obj);
+        }
+        state.orgTagList = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTags.rejected, (state, action) => { });
+    
+    //Get Organisation Tags By Id
+    builder.addCase(getOrgTagsById.pending, (state, action) => { });
+    builder.addCase(getOrgTagsById.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tagName,
+          };
+          data.push(obj);
+        }
+        state.orgTagListById = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTagsById.rejected, (state, action) => { });
   },
 });
 
