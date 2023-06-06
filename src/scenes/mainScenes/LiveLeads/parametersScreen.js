@@ -14,7 +14,7 @@ import moment from "moment";
 import * as AsyncStore from "../../../asyncStore";
 import { ScrollView } from "react-native-gesture-handler";
 import { Colors } from "../../../styles";
-
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   delegateTask,
   getCRM_ManagerLiveLeads,
@@ -39,7 +39,8 @@ import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import _ from "lodash";
 import Lottie from "lottie-react-native";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const crmRole = ["CRM"];
 const screenWidth = Dimensions.get("window").width;
@@ -480,11 +481,14 @@ const ParametersScreen = ({ route }) => {
       };
       dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(payload)); // new api for live leads recep/tele/cre/crm
     } else {
-      let tempPayload = {
-        orgId: userData.orgId,
-        loggedInEmpId: userData.empId,
-      };
-      dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(tempPayload));
+      if (userData.orgId != 0){
+        let tempPayload = {
+          orgId: userData.orgId,
+          loggedInEmpId: userData.empId,
+        };
+        dispatch(getCRM_Recp_LiveLeadsVol2_CRM_ROLE(tempPayload));
+      }
+     
       setCRM_filterParameters([]);
       settotalOfTeamAfterFilter([]);
     }
@@ -3223,65 +3227,105 @@ const ParametersScreen = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-                <View
-                  style={{
-                    paddingHorizontal: 8,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 12,
-                    width: Dimensions.get("screen").width - 28,
-                  }}
-                >
-                  <Text
+              
+                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                  <View
                     style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      textTransform: "capitalize",
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      // width: Dimensions.get("screen").width - 28,
                     }}
                   >
-                    {item?.empName}
-                    {"  "}
-                    {"-   " + item?.roleName}
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item?.empName}
+                      {"  "}
+                      {"-   " + item?.roleName}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", marginTop: 12, }}>
+                    {item?.childCount >
+                      0 && (
+                        // <Animated.View
+                        //   style={{
+                        //     transform: [{ translateX: translation }],
+                        //   }}
+                        // >
+                        <View
+                          style={{
+                            backgroundColor: "lightgrey",
+                            flexDirection: "row",
+                            paddingHorizontal: 7,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            // marginBottom: 5,
+                            alignSelf: "center",
+                            marginLeft: 7,
+                            // transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <MaterialIcons
+                            name="person"
+                            size={15}
+                            color={Colors.BLACK}
+                          />
+                          <Text>
+                            {
+                              item?.childCount
+                            }
+                          </Text>
+                        </View>
+                        // </Animated.View>
+                      )}
+                    <Pressable
+                      style={{ alignSelf: "center" }}
+                      onPress={() => {
+                        if (!isRecepVol2Level0Expanded) {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.total.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.total.retailLeads)
+                          Array.prototype.push.apply(tempArry, item.total.contactLeads)
+
+
+                          // handleSourcrModelNavigationVol2(item, tempArry,)
+                          handleNavigationTOSourcrModelVol2(item, tempArry)
+                        } else {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.self.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.self.retailLeads)
+                          Array.prototype.push.apply(tempArry, item.self.contactLeads)
+
+                          handleNavigationTOSourcrModelVol2(item, tempArry)
+                        }
+                        // handleSourceModalNavigation(item, item.emp_id, [])
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          color: Colors.BLUE,
+                          marginLeft: 8,
+                          paddingRight: 12,
+                        }}
+                      >
+                        Source/Model
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
-                <Pressable
-                  style={{ alignSelf: "flex-end" }}
-                  onPress={() => {
-                    if (!isRecepVol2Level0Expanded) {
-                      let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.total.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.total.contactLeads)
-
-
-                      // handleSourcrModelNavigationVol2(item, tempArry,)
-                      handleNavigationTOSourcrModelVol2(item, tempArry)
-                    } else {
-                      let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.self.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.self.contactLeads)
-
-                      handleNavigationTOSourcrModelVol2(item, tempArry)
-                    }
-                    // handleSourceModalNavigation(item, item.emp_id, [])
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: Colors.BLUE,
-                      marginLeft: 8,
-                      paddingRight: 12,
-                    }}
-                  >
-                    Source/Model
-                  </Text>
-                </Pressable>
+          
                 {/*Source/Model View END */}
                 <View style={[{ flexDirection: "row" }]}>
                   {/*RIGHT SIDE VIEW*/}
@@ -3473,66 +3517,106 @@ const ParametersScreen = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-                <View
-                  style={{
-                    paddingHorizontal: 8,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 12,
-                    width: Dimensions.get("screen").width - 28,
-                  }}
-                >
-                  <Text
+                
+                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                  <View
                     style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      textTransform: "capitalize",
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      // width: Dimensions.get("screen").width - 28,
                     }}
                   >
-                    {item.selfUser.empName}
-                    {"  "}
-                       {"-   " + item.selfUser?.roleName}
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item.selfUser?.empName}
+                      {"  "}
+                      {"-   " + item.selfUser?.roleName}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", marginTop: 12, }}>
+                    {item.selfUser?.childCount >
+                      0 && (
+                        // <Animated.View
+                        //   style={{
+                        //     transform: [{ translateX: translation }],
+                        //   }}
+                        // >
+                        <View
+                          style={{
+                            backgroundColor: "lightgrey",
+                            flexDirection: "row",
+                            paddingHorizontal: 7,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            // marginBottom: 5,
+                            alignSelf: "center",
+                            marginLeft: 7,
+                            // transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <MaterialIcons
+                            name="person"
+                            size={15}
+                            color={Colors.BLACK}
+                          />
+                          <Text>
+                            {
+                            item.selfUser?.childCount
+                            }
+                          </Text>
+                        </View>
+                        // </Animated.View>
+                      )}
+                    <Pressable
+                      style={{ alignSelf: "center" }}
+                      onPress={() => {
+                        if (!item.selfUser.isOpenInner) {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.contactLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
+
+
+
+                          // handleSourcrModelNavigationVol2(item, tempArry,)
+                          handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
+                        } else {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.contactLeads)
+
+                          handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
+                        }
+                        // handleSourceModalNavigation(item, item.emp_id, [])
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          color: Colors.BLUE,
+                          marginLeft: 8,
+                          paddingRight: 12,
+                        }}
+                      >
+                        Source/Model
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
-                <Pressable
-                  style={{ alignSelf: "flex-end" }}
-                  onPress={() => {
-                    if (!item.selfUser.isOpenInner) {
-                      let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.contactLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
 
-
-
-                      // handleSourcrModelNavigationVol2(item, tempArry,)
-                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
-                    } else {
-                      let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.contactLeads)
-
-                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
-                    }
-                    // handleSourceModalNavigation(item, item.emp_id, [])
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: Colors.BLUE,
-                      marginLeft: 8,
-                      paddingRight: 12,
-                    }}
-                  >
-                    Source/Model
-                  </Text>
-                </Pressable>
                 {/*Source/Model View END */}
                 <View style={[{ flexDirection: "row" }]}>
                   {/*RIGHT SIDE VIEW*/}
@@ -3676,233 +3760,7 @@ const ParametersScreen = ({ route }) => {
                 </View>
                 {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
               </View>
-              // <View
-              //   key={`${item.selfUser.empName} ${index}`}
-              //   style={{
-              //     borderRadius: 10,
-              //     borderWidth: item.selfUser.isOpenInner ? 2 : 0,
-              //     borderColor: borderColor,
-              //     backgroundColor: "#FFFFFF",
-              //   }}
-              // >
-              //   <View
-              //     style={{
-              //       paddingHorizontal: 8,
-              //       display: "flex",
-              //       flexDirection: "row",
-              //       justifyContent: "space-between",
-              //       marginTop: 12,
-              //       width: Dimensions.get("screen").width - 28,
-              //     }}
-              //   >
-              //     <View style={{ flexDirection: "row" }}>
-              //       <Text
-              //         style={{
-              //           fontSize: 12,
-              //           fontWeight: "600",
-              //           textTransform: "capitalize",
-              //         }}
-              //       >
-              //         {item.selfUser.empName}
-              //         {"  "}
-              //         {"-   " + item.selfUser?.roleName}
-              //       </Text>
-              //     </View>
-              //     <View style={{ flexDirection: "row" }}></View>
-              //     <View style={{ flexDirection: "row" }}>
-              //       {/* {selector.receptionistData?.fullResponse?.childUserCount >
-              //         0 && (
-              //           <Animated.View
-              //             style={{
-              //               transform: [{ translateX: translation }],
-              //             }}
-              //           >
-              //             <View
-              //               style={{
-              //                 backgroundColor: "lightgrey",
-              //                 flexDirection: "row",
-              //                 paddingHorizontal: 7,
-              //                 borderRadius: 10,
-              //                 alignItems: "center",
-              //                 justifyContent: "space-between",
-              //                 marginBottom: 5,
-              //                 alignSelf: "flex-start",
-              //                 marginLeft: 7,
-              //                 // transform: [{ translateX: translation }],
-              //               }}
-              //             >
-              //               <MaterialIcons
-              //                 name="person"
-              //                 size={15}
-              //                 color={Colors.BLACK}
-              //               />
-              //               <Text>
-              //                 {
-              //                   selector.receptionistData?.fullResponse
-              //                     ?.childUserCount
-              //                 }
-              //               </Text>
-              //             </View>
-              //           </Animated.View>
-              //         )} */}
-              //       <SourceModelView
-              //         onClick={() => {
-
-
-              //           if (!item.selfUser.isOpenInner) {
-
-              //             let tempArry = [];
-              //             Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
-              //             Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
-              //             Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
-              //             Array.prototype.push.apply(tempArry, item.selfUser.total.lostLeads)
-
-
-              //             handleSourcrModelNavigationVol2(tempArry, item.roleName)
-              //           } else {
-              //             let tempArry = [];
-              //             Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
-              //             Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
-              //             Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
-              //             Array.prototype.push.apply(tempArry, item.selfUser.self.lostLeads)
-
-              //             handleSourcrModelNavigationVol2(tempArry, item.selfUser.roleName)
-              //           }
-
-              //           // navigation.navigate(
-              //           //   "RECEP_SOURCE_MODEL",
-              //           //   {
-              //           //     empId: item?.emp_id,
-              //           //     headerTitle: item?.emp_name,
-              //           //     loggedInEmpId: item.emp_id,
-              //           //     type: "TEAM",
-              //           //     moduleType: "home",
-              //           //     headerTitle: "Source/Model",
-              //           //     orgId: userData.orgId,
-              //           //     role: userData.hrmsRole,
-              //           //     branchList: userData.branchs.map(
-              //           //       (a) => a.branchId
-              //           //     ),
-              //           //   }
-              //           // );
-              //         }}
-              //         style={{
-              //           // transform: [{ translateX: translation }],
-              //         }}
-              //       />
-              //     </View>
-              //   </View>
-
-              //   {/*Source/Model View END */}
-              //   <View
-              //     style={[
-              //       { flexDirection: "row" },
-              //       item.isOpenInner && {
-              //         borderRadius: 10,
-              //         borderWidth: 2,
-              //         borderColor: "#C62159",
-              //         marginHorizontal: 6,
-              //         overflow: "hidden",
-              //       },
-              //     ]}
-              //   >
-              //     {/*RIGHT SIDE VIEW*/}
-              //     <View style={[styles.view6]}>
-              //       <View style={styles.view7}>
-              //         <RenderLevel1NameViewCRM
-              //           level={0}
-              //           item={item.selfUser}
-              //           branchName={item.selfUser.branchName}
-              //           color={borderColor}
-              //           receptionManager={true}
-              //           navigation={navigation}
-              //           titleClick={async (e) => {
-
-              //             formateNonReportingUserData(item.selfUser, index, crmVol2NonReportingData, 0);
-              //           }}
-              //           roleName={item.selfUser.roleName}
-              //           stopLocation={true}
-              //         />
-              //         <View
-              //           style={{
-              //             flex: 1,
-              //             backgroundColor: "rgba(223,228,231,0.67)",
-              //             alignItems: "center",
-              //             flexDirection: "row",
-              //           }}
-              //         >
-              //           {[
-              //             item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
-
-              //             item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
-              //             item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
-              //             item.selfUser.isOpenInner ? item.selfUser.self.lostCount : item.selfUser.total.lostCount || 0
-              //           ].map((e, indexss) => {
-              //             return (
-              //               <Pressable
-              //                 onPress={() => {
-              //                   // todo redirections logic  first level
-              //                   if (e > 0) {
-
-
-              //                     if (item.selfUser.isOpenInner) {
-              //                       if (indexss === 0) {
-              //                         navigateToEmsVol2(item.selfUser.self.enquiryLeads)
-
-              //                       } else if (indexss === 1) {
-              //                         navigateToEmsVol2(item.selfUser.self.bookingLeads)
-              //                       } else if (indexss === 2) {
-              //                         navigateToEmsVol2(item.selfUser.self.retailLeads)
-              //                       } else if (indexss === 3) {
-              //                         navigateToDropAnalysisVol2(item.selfUser.self.lostLeads)
-              //                       }
-              //                     } else {
-              //                       if (indexss === 0) {
-              //                         navigateToEmsVol2(item.selfUser.total.enquiryLeads)
-
-              //                       } else if (indexss === 1) {
-              //                         navigateToEmsVol2(item.selfUser.total.bookingLeads)
-              //                       } else if (indexss === 2) {
-              //                         navigateToEmsVol2(item.selfUser.total.retailLeads)
-              //                       } else if (indexss === 3) {
-              //                         // todo navigate to lost
-
-              //                         navigateToDropAnalysisVol2(item.selfUser.total.lostLeads)
-              //                       }
-              //                     }
-              //                   }
-              //                 }}
-              //               >
-              //                 <View
-              //                   style={{
-              //                     width: 55,
-              //                     height: 30,
-              //                     justifyContent: "center",
-              //                     alignItems: "center",
-              //                   }}
-              //                 >
-              //                   <Text
-              //                     style={{
-              //                       fontSize: 16,
-              //                       fontWeight: "700",
-              //                       textDecorationLine:
-              //                         e > 0 ? "underline" : "none",
-              //                       // marginLeft: 50,
-              //                     }}
-              //                   >
-              //                     {e || 0}
-              //                   </Text>
-              //                 </View>
-              //               </Pressable>
-              //             );
-              //           })}
-              //         </View>
-              //       </View>
-              //       {/* GET EMPLOYEE TOTAL MAIN ITEM */}
-              //     </View>
-              //   </View>
-              //   {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
-              // </View>
+              
             );
             // }
           })}
@@ -3969,66 +3827,105 @@ const ParametersScreen = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-                <View
-                  style={{
-                    paddingHorizontal: 8,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 12,
-                    width: Dimensions.get("screen").width - 28,
-                  }}
-                >
-                  <Text
+                
+                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                  <View
                     style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      textTransform: "capitalize",
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      // width: Dimensions.get("screen").width - 28,
                     }}
                   >
-                    {item.selfUser.empName}
-                       {"  "}
-                       {"-   " + item.selfUser?.roleName}
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item.selfUser?.empName}
+                      {"  "}
+                      {"-   " + item.selfUser?.roleName}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", marginTop: 12, }}>
+                    {item.selfUser?.childCount >
+                      0 && (
+                        // <Animated.View
+                        //   style={{
+                        //     transform: [{ translateX: translation }],
+                        //   }}
+                        // >
+                        <View
+                          style={{
+                            backgroundColor: "lightgrey",
+                            flexDirection: "row",
+                            paddingHorizontal: 7,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            // marginBottom: 5,
+                            alignSelf: "center",
+                            marginLeft: 7,
+                            // transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <MaterialIcons
+                            name="person"
+                            size={15}
+                            color={Colors.BLACK}
+                          />
+                          <Text>
+                            {
+                            item.selfUser?.childCount
+                            }
+                          </Text>
+                        </View>
+                        // </Animated.View>
+                      )}
+                    <Pressable
+                      style={{ alignSelf: "flex-end" }}
+                      onPress={() => {
+                        if (!item.selfUser.isOpenInner) {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.contactLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
+
+
+
+                          // handleSourcrModelNavigationVol2(item, tempArry,)
+                          handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
+                        } else {
+                          let tempArry = [];
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
+                          Array.prototype.push.apply(tempArry, item.selfUser.self.contactLeads)
+
+                          handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
+                        }
+                        // handleSourceModalNavigation(item, item.emp_id, [])
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          color: Colors.BLUE,
+                          marginLeft: 8,
+                          paddingRight: 12,
+                        }}
+                      >
+                        Source/Model
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
-                <Pressable
-                  style={{ alignSelf: "flex-end" }}
-                  onPress={() => {
-                    if (!item.selfUser.isOpenInner) {
-                      let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.contactLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
-
-
-
-                      // handleSourcrModelNavigationVol2(item, tempArry,)
-                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
-                    } else {
-                      let tempArry = [];
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
-                      Array.prototype.push.apply(tempArry, item.selfUser.self.contactLeads)
-
-                      handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
-                    }
-                    // handleSourceModalNavigation(item, item.emp_id, [])
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: Colors.BLUE,
-                      marginLeft: 8,
-                      paddingRight: 12,
-                    }}
-                  >
-                    Source/Model
-                  </Text>
-                </Pressable>
                 {/*Source/Model View END */}
                 <View style={[{ flexDirection: "row" }]}>
                   {/*RIGHT SIDE VIEW*/}
@@ -4486,17 +4383,17 @@ const ParametersScreen = ({ route }) => {
       //   margin: item.isOpenInner ? 10 : 0,
       // }}
       >
-        <View
-          style={{
-            paddingHorizontal: 8,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 12,
-            width: Dimensions.get("screen").width - 28,
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+          <View
+            style={{
+              paddingHorizontal: 8,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 12,
+              // width: Dimensions.get("screen").width - 28,
+            }}
+          >
             <Text
               style={{
                 fontSize: 12,
@@ -4504,50 +4401,49 @@ const ParametersScreen = ({ route }) => {
                 textTransform: "capitalize",
               }}
             >
-              {item.empName}
+              {item?.empName}
               {"  "}
               {"-   " + item?.roleName}
             </Text>
           </View>
-          <View style={{ flexDirection: "row" }}></View>
-          <View style={{ flexDirection: "row" }}>
-            {selector.receptionistData?.fullResponse?.childUserCount >
+          <View style={{ flexDirection: "row", marginTop: 12, }}>
+            {item?.childCount >
               0 && (
-                <Animated.View
+                // <Animated.View
+                //   style={{
+                //     transform: [{ translateX: translation }],
+                //   }}
+                // >
+                <View
                   style={{
+                    backgroundColor: "lightgrey",
+                    flexDirection: "row",
+                    paddingHorizontal: 7,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    // marginBottom: 5,
+                    alignSelf: "center",
+                    marginLeft: 7,
                     // transform: [{ translateX: translation }],
                   }}
                 >
-                  {/* <View
-                    style={{
-                      backgroundColor: "lightgrey",
-                      flexDirection: "row",
-                      paddingHorizontal: 7,
-                      borderRadius: 10,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: 5,
-                      alignSelf: "flex-start",
-                      marginLeft: 7,
-                      // transform: [{ translateX: translation }],
-                    }}
-                  >
-                    <MaterialIcons
-                      name="person"
-                      size={15}
-                      color={Colors.BLACK}
-                    />
-                    <Text>
-                      {
-                        selector.receptionistData?.fullResponse
-                          ?.childUserCount
-                      }
-                    </Text>
-                  </View> */}
-                </Animated.View>
+                  <MaterialIcons
+                    name="person"
+                    size={15}
+                    color={Colors.BLACK}
+                  />
+                  <Text>
+                    {
+                      item?.childCount
+                    }
+                  </Text>
+                </View>
+                // </Animated.View>
               )}
-            <SourceModelView
-              onClick={() => {
+            <Pressable
+              style={{ alignSelf: "center" }}
+              onPress={() => {
                 if (!item.isOpenInner) {
 
                   let tempArry = [];
@@ -4567,29 +4463,21 @@ const ParametersScreen = ({ route }) => {
 
                   handleNavigationTOSourcrModelVol2(item, tempArry)
                 }
-
-
-                // navigation.navigate(
-                //   "RECEP_SOURCE_MODEL",
-                //   {
-                //     empId: item?.emp_id,
-                //     headerTitle: item?.emp_name,
-                //     loggedInEmpId: item.emp_id,
-                //     type: "TEAM",
-                //     moduleType: "home",
-                //     headerTitle: "Source/Model",
-                //     orgId: userData.orgId,
-                //     role: userData.hrmsRole,
-                //     branchList: userData.branchs.map(
-                //       (a) => a.branchId
-                //     ),
-                //   }
-                // );
+                // handleSourceModalNavigation(item, item.emp_id, [])
               }}
-              style={{
-                // transform: [{ translateX: translation }],
-              }}
-            />
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: Colors.BLUE,
+                  marginLeft: 8,
+                  paddingRight: 12,
+                }}
+              >
+                Source/Model
+              </Text>
+            </Pressable>
           </View>
         </View>
 
@@ -4780,17 +4668,19 @@ const ParametersScreen = ({ route }) => {
       //   margin: item.isOpenInner ? 10 : 0,
       // }}
       >
-        <View
-          style={{
-            paddingHorizontal: 8,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 12,
-            width: Dimensions.get("screen").width - 28,
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
+       
+
+        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+          <View
+            style={{
+              paddingHorizontal: 8,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 12,
+              // width: Dimensions.get("screen").width - 28,
+            }}
+          >
             <Text
               style={{
                 fontSize: 12,
@@ -4798,50 +4688,49 @@ const ParametersScreen = ({ route }) => {
                 textTransform: "capitalize",
               }}
             >
-              {item.empName}
+              {item?.empName}
               {"  "}
               {"-   " + item?.roleName}
             </Text>
           </View>
-          <View style={{ flexDirection: "row" }}></View>
-          <View style={{ flexDirection: "row" }}>
-            {selector.receptionistData?.fullResponse?.childUserCount >
+          <View style={{ flexDirection: "row", marginTop: 12, }}>
+            {item?.childCount >
               0 && (
-                <Animated.View
+                // <Animated.View
+                //   style={{
+                //     transform: [{ translateX: translation }],
+                //   }}
+                // >
+                <View
                   style={{
+                    backgroundColor: "lightgrey",
+                    flexDirection: "row",
+                    paddingHorizontal: 7,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    // marginBottom: 5,
+                    alignSelf: "center",
+                    marginLeft: 7,
                     // transform: [{ translateX: translation }],
                   }}
                 >
-                  {/* <View
-                    style={{
-                      backgroundColor: "lightgrey",
-                      flexDirection: "row",
-                      paddingHorizontal: 7,
-                      borderRadius: 10,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: 5,
-                      alignSelf: "flex-start",
-                      marginLeft: 7,
-                      // transform: [{ translateX: translation }],
-                    }}
-                  >
-                    <MaterialIcons
-                      name="person"
-                      size={15}
-                      color={Colors.BLACK}
-                    />
-                    <Text>
-                      {
-                        selector.receptionistData?.fullResponse
-                          ?.childUserCount
-                      }
-                    </Text>
-                  </View> */}
-                </Animated.View>
+                  <MaterialIcons
+                    name="person"
+                    size={15}
+                    color={Colors.BLACK}
+                  />
+                  <Text>
+                    {
+                      item?.childCount
+                    }
+                  </Text>
+                </View>
+                // </Animated.View>
               )}
-            <SourceModelView
-              onClick={() => {
+            <Pressable
+              style={{ alignSelf: "center" }}
+              onPress={() => {
                 if (!item.isOpenInner) {
 
                   let tempArry = [];
@@ -4851,7 +4740,7 @@ const ParametersScreen = ({ route }) => {
                   Array.prototype.push.apply(tempArry, item.total.contactLeads)
 
 
-                  handleNavigationTOSourcrModelVol2( item,tempArry)
+                  handleNavigationTOSourcrModelVol2(item, tempArry)
                 } else {
                   let tempArry = [];
                   Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
@@ -4861,29 +4750,21 @@ const ParametersScreen = ({ route }) => {
 
                   handleNavigationTOSourcrModelVol2(item, tempArry)
                 }
-
-
-                // navigation.navigate(
-                //   "RECEP_SOURCE_MODEL",
-                //   {
-                //     empId: item?.emp_id,
-                //     headerTitle: item?.emp_name,
-                //     loggedInEmpId: item.emp_id,
-                //     type: "TEAM",
-                //     moduleType: "home",
-                //     headerTitle: "Source/Model",
-                //     orgId: userData.orgId,
-                //     role: userData.hrmsRole,
-                //     branchList: userData.branchs.map(
-                //       (a) => a.branchId
-                //     ),
-                //   }
-                // );
+                // handleSourceModalNavigation(item, item.emp_id, [])
               }}
-              style={{
-                // transform: [{ translateX: translation }],
-              }}
-            />
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: Colors.BLUE,
+                  marginLeft: 8,
+                  paddingRight: 12,
+                }}
+              >
+                Source/Model
+              </Text>
+            </Pressable>
           </View>
         </View>
 
@@ -5815,7 +5696,8 @@ const ParametersScreen = ({ route }) => {
                 {/*</View>*/}
               </View>
               {isLoading ? (
-                <AnimLoaderComp visible={true} />
+                <></>
+                // <AnimLoaderComp visible={false} />
               ) : (
                 <ScrollView
                   contentContainerStyle={{
@@ -9028,7 +8910,7 @@ const ParametersScreen = ({ route }) => {
                     {/*</View>*/}
                   </View>
                   {isLoading ? (
-                    <AnimLoaderComp visible={true} />
+                    <AnimLoaderComp visible={false} />
                   ) : (
                     <ScrollView
                       contentContainerStyle={{
@@ -9797,10 +9679,13 @@ const ParametersScreen = ({ route }) => {
         )}
       </View>
       {!selector.isLoading ? null : (
-        <LoaderComponent
-          visible={selector.isLoading}
-          onRequestClose={() => {}}
-        />
+        <View style={{ flex: 1 }}>
+          <AnimLoaderComp visible={selector.isLoading} />
+        </View>
+        // <LoaderComponent
+        //   visible={selector.isLoading}
+        //   onRequestClose={() => {}}
+        // />
       )}
     </>
   );
@@ -9932,29 +9817,59 @@ export const RenderLevel1NameViewCRMVol2 = ({
       }}
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity
-          disabled={disable}
-          style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-          onPress={titleClick}
-        >
-          <Text
+        <View style={{flexDirection:"row" ,alignContent:"center",alignItems:"center"}}>
+          <TouchableOpacity
+            disabled={disable}
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
+            onPress={titleClick}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+
+          </TouchableOpacity>
+          {item.isExpand ? 
+            // <AntDesign 
+            // style = {{
+            //   marginTop: 5,
+            //   marginBottom: 5,
+            //   marginStart: 5,
+            // // tinitColor:color  
+            // }}
+            // size={16}
+            // color={color}
+            //   name="team"
+            // />
+            <Ionicons
+            style={{
+              marginTop: 5,
+              marginBottom: 5,
+              marginStart: 5
+            }}
+            size={18}
+            color={color}
+              name="md-people-sharp" />
+            
+            : null}
+          
+            
+        </View>
+        
+
         {level === 0 && !!item.branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton

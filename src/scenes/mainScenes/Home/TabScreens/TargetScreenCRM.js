@@ -2911,17 +2911,17 @@ const TargetScreenCRM = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-                <View
-                  style={{
-                    paddingHorizontal: 8,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 12,
-                    width: Dimensions.get("screen").width - 28,
-                  }}
-                >
-                  <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      // width: Dimensions.get("screen").width - 28,
+                    }}
+                  >
                     <Text
                       style={{
                         fontSize: 12,
@@ -2929,48 +2929,46 @@ const TargetScreenCRM = ({ route }) => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {item.empName}
+                      {item?.empName}
                       {"  "}
                       {"-   " + item?.roleName}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: "row" }}></View>
-                  <View style={{ flexDirection: "row" }}>
-                    {/* {selector.receptionistData?.fullResponse?.childUserCount >
+                  <View style={{ flexDirection: "row", marginTop: 12, }}>
+                    {item?.childCount >
                       0 && (
                         <Animated.View
                           style={{
                             transform: [{ translateX: translation }],
                           }}
                         >
-                          <View
-                            style={{
-                              backgroundColor: "lightgrey",
-                              flexDirection: "row",
-                              paddingHorizontal: 7,
-                              borderRadius: 10,
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              marginBottom: 5,
-                              alignSelf: "flex-start",
-                              marginLeft: 7,
-                              // transform: [{ translateX: translation }],
-                            }}
-                          >
-                            <MaterialIcons
-                              name="person"
-                              size={15}
-                              color={Colors.BLACK}
-                            />
-                            <Text>
-                              {
-                                selector.receptionistData?.fullResponse
-                                  ?.childUserCount
-                              }
-                            </Text>
-                          </View>
+                        <View
+                          style={{
+                            backgroundColor: "lightgrey",
+                            flexDirection: "row",
+                            paddingHorizontal: 7,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            // marginBottom: 5,
+                            alignSelf: "center",
+                            marginLeft: 7,
+                            // transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <MaterialIcons
+                            name="person"
+                            size={15}
+                            color={Colors.BLACK}
+                          />
+                          <Text>
+                            {
+                              item?.childCount
+                            }
+                          </Text>
+                        </View>
                         </Animated.View>
-                      )} */}
+                      )}
                     <SourceModelView
                       onClick={() => {
 
@@ -3406,17 +3404,18 @@ const TargetScreenCRM = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-                <View
-                  style={{
-                    paddingHorizontal: 8,
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 12,
-                    width: Dimensions.get("screen").width - 28,
-                  }}
-                >
-                  <View style={{ flexDirection: "row" }}>
+                
+                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      // width: Dimensions.get("screen").width - 28,
+                    }}
+                  >
                     <Text
                       style={{
                         fontSize: 12,
@@ -3424,48 +3423,46 @@ const TargetScreenCRM = ({ route }) => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {item.selfUser.empName}
+                      {item?.selfUser?.empName}
                       {"  "}
-                      {"-   " + item.selfUser?.roleName}
+                      {"-   " + item?.selfUser?.roleName}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: "row" }}></View>
-                  <View style={{ flexDirection: "row" }}>
-                    {/* {selector.receptionistData?.fullResponse?.childUserCount >
+                  <View style={{ flexDirection: "row", marginTop: 12, }}>
+                    {item?.selfUser?.childCount >
                       0 && (
-                        <Animated.View
+                        // <Animated.View
+                        //   style={{
+                        //     transform: [{ translateX: translation }],
+                        //   }}
+                        // >
+                        <View
                           style={{
-                            transform: [{ translateX: translation }],
+                            backgroundColor: "lightgrey",
+                            flexDirection: "row",
+                            paddingHorizontal: 7,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            // marginBottom: 5,
+                            alignSelf: "center",
+                            marginLeft: 7,
+                            // transform: [{ translateX: translation }],
                           }}
                         >
-                          <View
-                            style={{
-                              backgroundColor: "lightgrey",
-                              flexDirection: "row",
-                              paddingHorizontal: 7,
-                              borderRadius: 10,
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              marginBottom: 5,
-                              alignSelf: "flex-start",
-                              marginLeft: 7,
-                              // transform: [{ translateX: translation }],
-                            }}
-                          >
-                            <MaterialIcons
-                              name="person"
-                              size={15}
-                              color={Colors.BLACK}
-                            />
-                            <Text>
-                              {
-                                selector.receptionistData?.fullResponse
-                                  ?.childUserCount
-                              }
-                            </Text>
-                          </View>
-                        </Animated.View>
-                      )} */}
+                          <MaterialIcons
+                            name="person"
+                            size={15}
+                            color={Colors.BLACK}
+                          />
+                          <Text>
+                            {
+                            item?.selfUser?.childCount
+                            }
+                          </Text>
+                        </View>
+                        // </Animated.View>
+                      )}
                     <SourceModelView
                       onClick={() => {
 
@@ -3653,17 +3650,18 @@ const TargetScreenCRM = ({ route }) => {
                     backgroundColor: "#FFFFFF",
                   }}
                 >
-                  <View
-                    style={{
-                      paddingHorizontal: 8,
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      marginTop: 12,
-                      width: Dimensions.get("screen").width - 28,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row" }}>
+                 
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                    <View
+                      style={{
+                        paddingHorizontal: 8,
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginTop: 12,
+                        // width: Dimensions.get("screen").width - 28,
+                      }}
+                    >
                       <Text
                         style={{
                           fontSize: 12,
@@ -3671,51 +3669,49 @@ const TargetScreenCRM = ({ route }) => {
                           textTransform: "capitalize",
                         }}
                       >
-                        {item.empName}
+                        {item?.empName}
                         {"  "}
                         {"-   " + item?.roleName}
                       </Text>
                     </View>
-                    <View style={{ flexDirection: "row" }}></View>
-                    <View style={{ flexDirection: "row" }}>
-                      {/* {selector.receptionistData?.fullResponse?.childUserCount >
+                    <View style={{ flexDirection: "row", marginTop: 12, }}>
+                      {item?.childCount >
                         0 && (
                           <Animated.View
                             style={{
                               transform: [{ translateX: translation }],
                             }}
                           >
-                            <View
-                              style={{
-                                backgroundColor: "lightgrey",
-                                flexDirection: "row",
-                                paddingHorizontal: 7,
-                                borderRadius: 10,
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                marginBottom: 5,
-                                alignSelf: "flex-start",
-                                marginLeft: 7,
-                                // transform: [{ translateX: translation }],
-                              }}
-                            >
-                              <MaterialIcons
-                                name="person"
-                                size={15}
-                                color={Colors.BLACK}
-                              />
-                              <Text>
-                                {
-                                  selector.receptionistData?.fullResponse
-                                    ?.childUserCount
-                                }
-                              </Text>
-                            </View>
-                          </Animated.View>
-                        )} */}
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              // marginBottom: 5,
+                              alignSelf: "center",
+                              marginLeft: 7,
+                              transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>
+                              {
+                                item?.childCount
+                              }
+                            </Text>
+                          </View>
+                           </Animated.View>
+                        )}
                       <SourceModelView
                         onClick={() => {
-                          
+
 
                           if (!isViewExpanded) {
 
@@ -3760,6 +3756,7 @@ const TargetScreenCRM = ({ route }) => {
                       />
                     </View>
                   </View>
+
 
                   {/*Source/Model View END */}
                   <View
@@ -3987,17 +3984,19 @@ const TargetScreenCRM = ({ route }) => {
       //   margin: item.isOpenInner ? 10 : 0,
       // }}
       >
-        <View
-          style={{
-            paddingHorizontal: 8,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 12,
-            width: Dimensions.get("screen").width - 28,
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
+        
+
+        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+          <View
+            style={{
+              paddingHorizontal: 8,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 12,
+              // width: Dimensions.get("screen").width - 28,
+            }}
+          >
             <Text
               style={{
                 fontSize: 12,
@@ -4005,46 +4004,44 @@ const TargetScreenCRM = ({ route }) => {
                 textTransform: "capitalize",
               }}
             >
-              {item.empName}
+              {item?.empName}
               {"  "}
               {"-   " + item?.roleName}
             </Text>
           </View>
-          <View style={{ flexDirection: "row" }}></View>
-          <View style={{ flexDirection: "row" }}>
-            {selector.receptionistData?.fullResponse?.childUserCount >
+          <View style={{ flexDirection: "row", marginTop: 12, }}>
+            {item?.childCount >
               0 && (
                 <Animated.View
                   style={{
                     transform: [{ translateX: translation }],
                   }}
                 >
-                  <View
-                    style={{
-                      backgroundColor: "lightgrey",
-                      flexDirection: "row",
-                      paddingHorizontal: 7,
-                      borderRadius: 10,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: 5,
-                      alignSelf: "flex-start",
-                      marginLeft: 7,
-                      // transform: [{ translateX: translation }],
-                    }}
-                  >
-                    <MaterialIcons
-                      name="person"
-                      size={15}
-                      color={Colors.BLACK}
-                    />
-                    <Text>
-                      {
-                        selector.receptionistData?.fullResponse
-                          ?.childUserCount
-                      }
-                    </Text>
-                  </View>
+                <View
+                  style={{
+                    backgroundColor: "lightgrey",
+                    flexDirection: "row",
+                    paddingHorizontal: 7,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    // marginBottom: 5,
+                    alignSelf: "center",
+                    marginLeft: 7,
+                    // transform: [{ translateX: translation }],
+                  }}
+                >
+                  <MaterialIcons
+                    name="person"
+                    size={15}
+                    color={Colors.BLACK}
+                  />
+                  <Text>
+                    {
+                      item?.childCount
+                    }
+                  </Text>
+                </View>
                 </Animated.View>
               )}
             <SourceModelView
@@ -4247,17 +4244,17 @@ const TargetScreenCRM = ({ route }) => {
         //   margin: item.isOpenInner ? 10 : 0,
         // }}
       >
-        <View
-          style={{
-            paddingHorizontal: 8,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 12,
-            width: Dimensions.get("screen").width - 28,
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+          <View
+            style={{
+              paddingHorizontal: 8,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 12,
+              // width: Dimensions.get("screen").width - 28,
+            }}
+          >
             <Text
               style={{
                 fontSize: 12,
@@ -4265,93 +4262,86 @@ const TargetScreenCRM = ({ route }) => {
                 textTransform: "capitalize",
               }}
             >
-              {item.empName}
+              {item?.empName}
               {"  "}
               {"-   " + item?.roleName}
             </Text>
           </View>
-          <View style={{ flexDirection: "row" }}></View>
-          <View style={{ flexDirection: "row" }}>
-            {selector.receptionistData?.fullResponse?.childUserCount >
+          <View style={{ flexDirection: "row", marginTop: 12, }}>
+            {item?.childCount >
               0 && (
-                <Animated.View
+                // <Animated.View
+                //   style={{
+                //     transform: [{ translateX: translation }],
+                //   }}
+                // >
+                <View
                   style={{
-                    transform: [{ translateX: translation }],
+                    backgroundColor: "lightgrey",
+                    flexDirection: "row",
+                    paddingHorizontal: 7,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    // marginBottom: 5,
+                    alignSelf: "center",
+                    marginLeft: 7,
+                    // transform: [{ translateX: translation }],
                   }}
                 >
-                  <View
-                    style={{
-                      backgroundColor: "lightgrey",
-                      flexDirection: "row",
-                      paddingHorizontal: 7,
-                      borderRadius: 10,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: 5,
-                      alignSelf: "flex-start",
-                      marginLeft: 7,
-                      // transform: [{ translateX: translation }],
-                    }}
-                  >
-                    <MaterialIcons
-                      name="person"
-                      size={15}
-                      color={Colors.BLACK}
-                    />
-                    <Text>
-                      {
-                        selector.receptionistData?.fullResponse
-                          ?.childUserCount
-                      }
-                    </Text>
-                  </View>
-                </Animated.View>
+                  <MaterialIcons
+                    name="person"
+                    size={15}
+                    color={Colors.BLACK}
+                  />
+                  <Text>
+                    {
+                      item?.childCount
+                    }
+                  </Text>
+                </View>
+                // </Animated.View>
               )}
-            <SourceModelView
-              onClick={() => {
+            <Pressable
+              style={{ alignSelf: "center" }}
+              onPress={() => {
                 if (!item.isOpenInner) {
-                  
+
                   let tempArry = [];
                   Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
                   Array.prototype.push.apply(tempArry, item.total.bookingLeads)
                   Array.prototype.push.apply(tempArry, item.total.retailLeads)
                   Array.prototype.push.apply(tempArry, item.total.lostLeads)
-                  
-                
-                  handleSourcrModelNavigationVol2(tempArry,item.roleName)
+
+
+                  handleSourcrModelNavigationVol2(tempArry, item.roleName)
                 } else {
                   let tempArry = [];
                   Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
                   Array.prototype.push.apply(tempArry, item.self.bookingLeads)
                   Array.prototype.push.apply(tempArry, item.self.retailLeads)
                   Array.prototype.push.apply(tempArry, item.self.lostLeads)
-                
-                  handleSourcrModelNavigationVol2(tempArry,item.roleName)
-                }
 
-                // navigation.navigate(
-                //   "RECEP_SOURCE_MODEL",
-                //   {
-                //     empId: item?.emp_id,
-                //     headerTitle: item?.emp_name,
-                //     loggedInEmpId: item.emp_id,
-                //     type: "TEAM",
-                //     moduleType: "home",
-                //     headerTitle: "Source/Model",
-                //     orgId: userData.orgId,
-                //     role: userData.hrmsRole,
-                //     branchList: userData.branchs.map(
-                //       (a) => a.branchId
-                //     ),
-                //   }
-                // );
+                  handleSourcrModelNavigationVol2(tempArry, item.roleName)
+                }
+                // handleSourceModalNavigation(item, item.emp_id, [])
               }}
-              style={{
-                transform: [{ translateX: translation }],
-              }}
-            />
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: Colors.BLUE,
+                  marginLeft: 8,
+                  paddingRight: 12,
+                }}
+              >
+                Source/Model
+              </Text>
+            </Pressable>
           </View>
         </View>
+        
 
         {/*Source/Model View END */}
         <View
@@ -8512,10 +8502,13 @@ const TargetScreenCRM = ({ route }) => {
           )}
         </ScrollView>
       ) : (
-        <LoaderComponent
-          visible={selector.isLoading}
-          onRequestClose={() => {}}
-        />
+          <View style={{ flex: 1 }}>
+            <AnimLoaderComp visible={selector.isLoading} />
+          </View>
+        // <LoaderComponent
+        //   visible={selector.isLoading}
+        //   onRequestClose={() => {}}
+        // />
       )}
     </React.Fragment>
   );
