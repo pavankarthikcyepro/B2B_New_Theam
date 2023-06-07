@@ -3752,14 +3752,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     }
   }
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-      screen: "EMS",
-      params: {
-        screen: "LEADS",
-      },
-    });
-  }
+  // function navigateToEMS(params) {
+  //   navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+  //     screen: "EMS",
+  //     params: {
+  //       screen: "LEADS",
+  //     },
+  //   });
+  // }
 
   const checkIsSelfManager = () => {
     if (
