@@ -1121,7 +1121,7 @@ const LeadsScreen = ({ route, navigation }) => {
         // !isRefresh
       ) {
         leadStages = []
-        let tempEnquriyArr = ["BOOKING"]
+        let tempEnquriyArr = ["BOOKING","INVOICE"]
         leadStages.push(...tempEnquriyArr)
       }
 
