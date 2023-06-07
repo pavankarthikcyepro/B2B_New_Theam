@@ -1609,9 +1609,9 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1619,8 +1619,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1628,8 +1628,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1637,8 +1637,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1646,7 +1646,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1654,7 +1654,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1662,7 +1662,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         return newData.length;
@@ -1685,51 +1685,51 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         return newData.length;
       } else if (isVip && isHni) {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1
         );
         return newData.length;
       } else if (isVip && isSpl) {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         return newData.length;
       } else if (isHni && isSpl) {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         return newData.length;
       } else if (isVip) {
         let newData = data.filter(
           (i) =>
-            userData.empName === i.salesConsultant && i.tags.indexOf("VIP") > -1
+            userData.empName === i.salesConsultant && i.tags?.indexOf("VIP") > -1
         );
         return newData.length;
       } else if (isHni) {
         let newData = data.filter(
           (i) =>
-            userData.empName === i.salesConsultant && i.tags.indexOf("HNI") > -1
+            userData.empName === i.salesConsultant && i.tags?.indexOf("HNI") > -1
         );
         return newData.length;
       } else if (isSpl) {
         let newData = data.filter(
           (i) =>
-            userData.empName === i.salesConsultant && i.tags.indexOf("SPL") > -1
+            userData.empName === i.salesConsultant && i.tags?.indexOf("SPL") > -1
         );
         return newData.length;
       } else {
@@ -1749,9 +1749,9 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1760,8 +1760,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1770,8 +1770,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1780,8 +1780,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1790,7 +1790,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("VIP") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1799,7 +1799,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1808,7 +1808,7 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             i.createdBy === userData.empName &&
-            i.tags.indexOf("SPL") > -1 &&
+            i.tags?.indexOf("SPL") > -1 &&
             userData.empName !== i.salesConsultant
         );
         dispatch(updateTheCount(newData.length));
@@ -1834,9 +1834,9 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1844,8 +1844,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1853,8 +1853,8 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1862,29 +1862,29 @@ const LeadsScreen = ({ route, navigation }) => {
         let newData = data.filter(
           (i) =>
             userData.empName === i.salesConsultant &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isVip) {
         let newData = data.filter(
           (i) =>
-            userData.empName === i.salesConsultant && i.tags.indexOf("VIP") > -1
+            userData.empName === i.salesConsultant && i.tags?.indexOf("VIP") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isHni) {
         let newData = data.filter(
           (i) =>
-            userData.empName === i.salesConsultant && i.tags.indexOf("HNI") > -1
+            userData.empName === i.salesConsultant && i.tags?.indexOf("HNI") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isSpl) {
         let newData = data.filter(
           (i) =>
-            userData.empName === i.salesConsultant && i.tags.indexOf("SPL") > -1
+            userData.empName === i.salesConsultant && i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
@@ -1906,40 +1906,40 @@ const LeadsScreen = ({ route, navigation }) => {
       if (isVip && isHni && isSpl) {
         let newData = data.filter(
           (i) =>
-            i.tags.indexOf("VIP") > -1 &&
-            i.tags.indexOf("HNI") > -1 &&
-            i.tags.indexOf("SPL") > -1
+            i.tags?.indexOf("VIP") > -1 &&
+            i.tags?.indexOf("HNI") > -1 &&
+            i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isVip && isHni) {
         let newData = data.filter(
-          (i) => i.tags.indexOf("VIP") > -1 && i.tags.indexOf("HNI") > -1
+          (i) => i.tags?.indexOf("VIP") > -1 && i.tags?.indexOf("HNI") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isVip && isSpl) {
         let newData = data.filter(
-          (i) => i.tags.indexOf("VIP") > -1 && i.tags.indexOf("SPL") > -1
+          (i) => i.tags?.indexOf("VIP") > -1 && i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isHni && isSpl) {
         let newData = data.filter(
-          (i) => i.tags.indexOf("HNI") > -1 && i.tags.indexOf("SPL") > -1
+          (i) => i.tags?.indexOf("HNI") > -1 && i.tags?.indexOf("SPL") > -1
         );
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isVip) {
-        let newData = data.filter((i) => i.tags.indexOf("VIP") > -1);
+        let newData = data.filter((i) => i.tags?.indexOf("VIP") > -1);
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isHni) {
-        let newData = data.filter((i) => i.tags.indexOf("HNI") > -1);
+        let newData = data.filter((i) => i.tags?.indexOf("HNI") > -1);
         dispatch(updateTheCount(newData.length));
         return newData;
       } else if (isSpl) {
-        let newData = data.filter((i) => i.tags.indexOf("SPL") > -1);
+        let newData = data.filter((i) => i.tags?.indexOf("SPL") > -1);
         dispatch(updateTheCount(newData.length));
         return newData;
       } else {
