@@ -185,7 +185,7 @@ export const MyTaskNewItem = ({
   let hni = false;
   let spl = false;
 
-  for (let i = 0; i < orgTags.length; i++) {
+  for (let i = 0; i < orgTags?.length; i++) {
     const element = orgTags[i];
     if (element == "VIP") {
       vip = true;
