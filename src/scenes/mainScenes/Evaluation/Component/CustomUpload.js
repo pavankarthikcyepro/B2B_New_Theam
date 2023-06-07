@@ -2,10 +2,35 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Colors } from "../../../../styles";
+import { IconButton } from "react-native-paper";
 
 const CustomUpload = (props) => {
-  const { label, buttonText, onPress, mandatory=false } = props;
+  const {
+    label,
+    buttonText,
+    onPress,
+    mandatory = false,
+    value,
+    onShowImage,
+    onDeleteImage,
+  } = props;
 
+  const DisplaySelectedImage = ({ fileName, from }) => {
+    return (
+      <View style={styles.selectedImageBckVw}>
+        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
+          {fileName}
+        </Text>
+        <IconButton
+          icon="close-circle-outline"
+          color={Colors.RED}
+          style={{ padding: 0, margin: 0 }}
+          size={15}
+          onPress={onDeleteImage}
+        />
+      </View>
+    );
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.label}>
@@ -16,6 +41,14 @@ const CustomUpload = (props) => {
         <Text style={styles.buttonText}>{buttonText}</Text>
         <AntDesign size={17} name="upload" color={Colors.RED} />
       </TouchableOpacity>
+      <View style={{ flexDirection: "row", marginTop: 5 }}>
+        <TouchableOpacity style={styles.preViewBtn} onPress={onShowImage}>
+          <Text style={styles.previewTxt}>Preview</Text>
+        </TouchableOpacity>
+        <View style={{ width: "80%" }}>
+          <DisplaySelectedImage fileName={label} from={"PAN"} />
+        </View>
+      </View>
     </View>
   );
 };
@@ -52,6 +85,34 @@ const styles = StyleSheet.create({
   },
   mandatory: {
     color: Colors.RED,
+  },
+  selectedImageBckVw: {
+    paddingLeft: 12,
+    paddingRight: 10,
+    paddingBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: Colors.WHITE,
+  },
+  selectedImageTextStyle: {
+    fontSize: 12,
+    fontWeight: "400",
+    width: "80%",
+    color: Colors.DARK_GRAY,
+  },
+  preViewBtn: {
+    width: "20%",
+    height: 30,
+    backgroundColor: Colors.SKY_BLUE,
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewTxt: {
+    color: Colors.WHITE,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

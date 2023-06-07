@@ -4,7 +4,7 @@ import { View, TextInput, StyleSheet } from "react-native";
 import { Colors } from "../../../../styles";
 
 const CustomTextInput = (props) => {
-  const { label, mandatory = false, placeholder, ...textInputProps } = props;
+  const { label, value, mandatory = false, placeholder, ...textInputProps } = props;
 
   return (
     <View style={styles.container}>
@@ -13,6 +13,7 @@ const CustomTextInput = (props) => {
         <Text style={styles.mandatory}>{mandatory ? " *" : ""}</Text>
       </Text>
       <TextInput
+        value={value}
         placeholder={placeholder}
         placeholderTextColor="#8b8680"
         style={styles.input}

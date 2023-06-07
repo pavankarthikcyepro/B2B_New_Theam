@@ -16,26 +16,26 @@ const CustomRadioButton = (props) => {
         <RadioTextItem2
           label={"75%"}
           value={"75"}
-          status={true}
-          onPress={() => {}}
+          status={value == "75" ? true : false}
+          onPress={() => onPress("75")}
         />
         <RadioTextItem2
           label={"50%"}
           value={"50"}
-          status={false}
-          onPress={() => {}}
+          status={value == "50" ? true : false}
+          onPress={() => onPress("50")}
         />
         <RadioTextItem2
           label={"25%"}
           value={"25"}
-          status={false}
-          onPress={() => {}}
+          status={value == "25" ? true : false}
+          onPress={() => onPress("25")}
         />
         <RadioTextItem2
           label={"Below 25%"}
           value={">25"}
-          status={false}
-          onPress={() => {}}
+          status={value == ">25" ? true : false}
+          onPress={() => onPress(">25")}
         />
       </View>
     </View>

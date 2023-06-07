@@ -30,6 +30,8 @@ import CustomRadioButton from "./Component/RadioComponent";
 import CustomSelection from "./Component/CustomSelection";
 import CustomUpload from "./Component/CustomUpload";
 import Table from "./Component/CustomTable";
+import { Modal } from "react-native";
+import { Image } from "react-native";
 
 const LocalButtonComp = ({ title, onPress, disabled, color }) => {
   return (
@@ -50,6 +52,7 @@ const LocalButtonComp = ({ title, onPress, disabled, color }) => {
     </Button>
   );
 };
+
 const SAMPLELIST = [
   {
     Name: "Product A",
@@ -77,67 +80,322 @@ const SAMPLELIST = [
   },
 ];
 
+const Payload = {
+  id: 0,
+  nameOnRC: "susmitha one",
+  registrationNumber: "AAAAAA1234",
+  mobileNum: "7675656640",
+  customerId: "18-286-ca9d9470-478b-43df-9ffa-4a57b6644470",
+  regValidity: "2023-06-08",
+  regDistrict: "Khammam",
+  regCity: "khammam",
+  pincode: "507001",
+  regState: "Telangana",
+  imageDocuments: [
+    {
+      documentName: "frontside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxEBR .png",
+    },
+    {
+      documentName: "backside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+    },
+    {
+      documentName: "leftside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+    },
+    {
+      documentName: "rightside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxETBR.png",
+    },
+    {
+      documentName: "speedometer",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Group Lvl.png",
+    },
+    {
+      documentName: "chassis",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Team Lvl.png",
+    },
+    {
+      documentName: "interiorfront",
+    },
+    {
+      documentName: "interiorback",
+    },
+    {
+      documentName: "rc front",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+    },
+    {
+      documentName: "rc back",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+    },
+    {
+      documentName: "insurance",
+    },
+    {
+      documentName: "invoice",
+    },
+    {
+      documentName: "extra fitment",
+    },
+    {
+      documentName: "scrach damage",
+    },
+    {
+      documentName: "dent damage",
+    },
+    {
+      documentName: "functions",
+    },
+    {
+      documentName: "break damage",
+    },
+    {
+      documentName: "number plate",
+    },
+    {
+      documentName: "bank finance old car/noc",
+    },
+  ],
+  otherImages: [],
+  model: "Grand i10",
+  varient: "i10 grand",
+  yearMonthOfManufacturing: "05-2022",
+  vehicleType: "Personal",
+  typeOfBody: "Sedan",
+  kmDriven: "56",
+  frontWheelRight: "75",
+  frontWheelLeft: "75",
+  rearWheelRight: "75",
+  rearWheelLeft: "75",
+  spareDiskWheel: "75",
+  spareAlliWheel: "75",
+  anyMajorAccident: "No",
+  anyMajorAccidentRemark: "",
+  anyMinorAccident: "No",
+  anyMinorAccidentRemark: "",
+  updatedDate: "",
+  make: "Hyundai",
+  fuelType: "Petrol",
+  chassisNum: "78hb",
+  noOfOwners: "1",
+  colour: "pink",
+  transmission: "DR5",
+  data: [],
+  role: "Evaluator",
+  totalRefurbishmentCost: null,
+  evalutionStatus: "EvalutionSubmitted",
+  evalutorId: 955,
+  VehicleExterior: "",
+  DrivingYourTestDrive: "",
+  InTheDiversseat: "",
+  UnderneathVehicle: "",
+  Trunk: "",
+  Engine: "",
+  Exterior: "",
+  Interior: "",
+  engineNumber: "9877",
+  nocclearance: null,
+  challenamount: null,
+  oilChangesCost: null,
+  regDate: "2023-06-06T18:30:00.000Z",
+  emission: "free",
+  challanPending: "0",
+  hypothecation: "freehyp",
+  hypothecatedBranch: "hyd",
+  hypothecatedCompletedDate: "2023-06-01",
+  insuranceType: "Nil dip",
+  loanAmountDue: "7000000",
+  insuranceCompanyName: "sbi",
+  policyNumber: "hgh7576gfgf6r6r",
+  insFromDate: "2023-06-01",
+  insToDate: "2023-06-08",
+  periodicService: "no",
+  periodicServiceCost: null,
+  EngineandtransmissionCost: null,
+  spareKey: "no",
+  spareKeyCost: null,
+  rubbingPolishing: "no",
+  rubbingPolishingCost: null,
+  insurance: "no",
+  insuranceCost: null,
+  regDocument: "no",
+  regDocumentCharges: null,
+  pollutionCertificate: "no",
+  pollutionCertificateCost: null,
+  oilChanges: "no",
+  powerbrakefluidchange: "no",
+  powerBrakeFluidChangeCost: null,
+  coolantFilterChange: "no",
+  coolantFilterChangeCost: null,
+  removalStainMarksStickers: "no",
+  removalStainMarksStickersCost: null,
+  carpetCleaning: "no",
+  carpetCleaningCost: null,
+  engineRoom: "no",
+  engineRoomCost: null,
+  vehicleTransfer: "no",
+  vehicleTransferCharges: null,
+  nocClearanceExpense: "no",
+  nocClearanceExpenseCost: null,
+  challanAmount: "no",
+  challanAmountCost: null,
+  ccClearanceExpense: "no",
+  ccClearanceExpenseCost: null,
+  otherCharges: [],
+  custExpectedPrice: 500000,
+  evaluatorOfferPrice: 400000,
+  managerId: 942,
+  carExchangeEvalutionCosts: [],
+};
 const EvaluationForm = () => {
   const [showDropDown, setShowDropDown] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [imagePath, setImagePath] = useState("");
 
-  const [eventNumber, setEventNumber] = useState("");
-  const [eventName, setEventName] = useState("");
-  const [eventOrganiser, setEventOrganiser] = useState("");
-  const [eventPlannerLocation, setEventPlannerLocation] = useState("");
-  const [eventPlannerCode, setEventPlannerCode] = useState("");
-  const [pinCode, setPinCode] = useState("");
-  const [eventType, setEventType] = useState("");
-  const [eventCategory, setEventCategory] = useState("");
-  const [eventArea, setEventArea] = useState("");
-  const [eventLocation, setEventLocation] = useState("");
-  const [district, setDistrict] = useState("");
-  const [state, setState] = useState("");
-  const [eventStartDate, setEventStartDate] = useState("");
-  const [eventEndDate, setEventEndDate] = useState("");
+  const [salutation, setSalutation] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [gender, setGender] = useState("");
+  const [relationName, setRelationName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("17/05/1995");
+  const [age, setAge] = useState("");
+  const [anniversaryDate, setAnniversaryDate] = useState("17/05/1995");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [alternateMobileNumber, setAlternateMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [eventNumberError, setEventNumberError] = useState(null);
-  const [eventNameError, setEventNameError] = useState(null);
-  const [eventOrganiserError, setEventOrganiserError] = useState(null);
-  const [eventPlannerLocationError, setEventPlannerLocationError] =
-    useState(null);
-  const [eventPlannerDealerCodeError, setEventPlannerDealerCodeError] =
-    useState(null);
-  const [pincodeError, setPincodeError] = useState(null);
-  const [eventTypeError, setEventTypeError] = useState(null);
-  const [eventCategoryError, setEventCategoryError] = useState(null);
-  const [eventAreaError, setEventAreaError] = useState(null);
-  const [eventLocationError, setEventLocationError] = useState(null);
-  const [districtError, setDistrictError] = useState(null);
-  const [stateError, setStateError] = useState(null);
-  const [eventStartDateError, setEventStartDateError] = useState(null);
-  const [eventEndDateError, setEventEndDateError] = useState(null);
+  const [salutationError, setSalutationError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [genderError, setGenderError] = useState("");
+  const [mobileNumberError, setMobileNumberError] = useState("");
 
   const [rcNumber, setRcNumber] = useState("");
+  const [nameOnRc, setNameOnRc] = useState("");
+  //  const [mobileNumber, setMobileNumber] = useState("");
+  const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
+  const [make, setMake] = useState("");
   const [variant, setVariant] = useState("");
-  const [color, setColor] = useState("");
+  const [colour, setColour] = useState("");
   const [fuelType, setFuelType] = useState("");
+  const [transmission, setTransmission] = useState("");
+  const [vinNumber, setVinNumber] = useState("");
+  const [engineNumber, setEngineNumber] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [yearMonthOfManufacturing, setYearMonthOfManufacturing] = useState("");
+  const [dateOfRegistration, setDateOfRegistration] = useState("");
+  const [regnValidUpto, setRegnValidUpto] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [registrationState, setRegistrationState] = useState("");
+  const [registrationDistrict, setRegistrationDistrict] = useState("");
+  const [registrationCity, setRegistrationCity] = useState("");
+  const [emission, setEmission] = useState("");
+  const [vehicleType, setVehicleType] = useState("");
+  const [typeOfBody, setTypeOfBody] = useState("");
+  const [kmsDriven, setKmsDriven] = useState("");
+  const [cubicCapacity, setCubicCapacity] = useState("");
+  const [noOwners, setNoOwners] = useState("");
+  const [noOfChallanPending, setNoOfChallanPending] = useState("");
 
-  const [rcNumberError, setRcNumberError] = useState(null);
-  const [modelError, setModelError] = useState(null);
-  const [variantError, setVariantError] = useState(null);
-  const [colorError, setColorError] = useState(null);
-  const [fuelTypeError, setFuelTypeError] = useState(null);
+  const [frontRightSelected, setFrontRightSelected] = useState("75");
+  const [frontLeftSelected, setFrontLeftSelected] = useState("75");
+  const [rearRightSelected, setRearRightSelected] = useState("75");
+  const [rearLeftSelected, setRearLeftSelected] = useState("75");
+  const [spareDiskWheelSelected, setSpareDiskWheelSelected] = useState("75");
+  const [spareAlliWheelSelected, setSpareAlliWheelSelected] = useState("75");
+  const [anyMinorAccidentSelected, setAnyMinorAccidentSelected] =
+    useState("yes");
+  const [anyMajorAccidentSelected, setAnyMajorAccidentSelected] =
+    useState("No");
 
-  const [manager, setManager] = useState("");
-  const [managerError, setManagerError] = useState(null);
-  const [tl, setTl] = useState("");
-  const [tlError, setTlError] = useState(null);
-  const [consultant, setConsultant] = useState("");
-  const [consultantError, setConsultantError] = useState(null);
-  const [driver, setDriver] = useState("");
-  const [driverError, setDriverError] = useState(null);
-  const [financeExecutive, setFinanceExecutive] = useState("");
-  const [financeExecutiveError, setFinanceExecutiveError] = useState(null);
-  const [evaluator, setEvaluator] = useState("");
-  const [evaluatorError, setEvaluatorError] = useState(null);
+  const [ImageDocuments, setImageDocuments] = useState([
+    {
+      documentName: "frontside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxEBR .png",
+    },
+    {
+      documentName: "backside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+    },
+    {
+      documentName: "leftside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+    },
+    {
+      documentName: "rightside",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxETBR.png",
+    },
+    {
+      documentName: "speedometer",
+      url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Group Lvl.png",
+    },
+    {
+      documentName: "chassis",
+    },
+    {
+      documentName: "interiorfront",
+    },
+    {
+      documentName: "interiorback",
+    },
+    {
+      documentName: "rc front",
+    },
+    {
+      documentName: "rc back",
+    },
+    {
+      documentName: "insurance",
+    },
+    {
+      documentName: "invoice",
+    },
+    {
+      documentName: "extra fitment",
+    },
+    {
+      documentName: "scrach damage",
+    },
+    {
+      documentName: "dent damage",
+    },
+    {
+      documentName: "functions",
+    },
+    {
+      documentName: "break damage",
+    },
+    {
+      documentName: "number plate",
+    },
+    {
+      documentName: "bank finance old car/noc",
+    },
+  ]);
+
+  const [customerExpectedPrice, setCustomerExpectedPrice] = useState("");
+  const [evaluatorOfferedPrice, setEvaluatorOfferedPrice] = useState("");
+  const [managerApprovedPrice, setManagerApprovedPrice] = useState("");
+  const [priceGap, setPriceGap] = useState("");
+  const [approvalExpiryDate, setApprovalExpiryDate] = useState("");
+
+  const [insuranceType, setInsuranceType] = useState("");
+  const [insuranceCompanyName, setInsuranceCompanyName] = useState("");
+  const [policyNumber, setPolicyNumber] = useState("");
+  const [insuranceFromDate, setInsuranceFromDate] = useState("");
+  const [insuranceToDate, setInsuranceToDate] = useState("");
+
+  const [hypothecatedTo, setHypothecatedTo] = useState("");
+  const [hypothecatedBranch, setHypothecatedBranch] = useState("");
+  const [loanAmountDue, setLoanAmountDue] = useState("");
+  const [hypothicationCompletedDate, setHypothicationCompletedDate] =
+    useState("");
+
   const [openAccordian, setOpenAccordian] = useState("1");
   const [openAccordian2, setOpenAccordian2] = useState("1");
   const [openAccordianError, setOpenAccordianError] = useState(null);
@@ -166,153 +424,308 @@ const EvaluationForm = () => {
     // Handle login logic here
   };
 
-  const validation = () => {
-    let isValid = true;
-    if (!eventNumber || isNaN(eventNumber)) {
-      setEventNumberError("Please enter a valid event number.");
-      isValid = false;
-    }
-    if (!eventName || eventName.length < 3) {
-      setEventNameError(
-        "Please enter a valid event name (at least 3 characters)."
-      );
-      isValid = false;
-    }
-    if (!eventOrganiser || eventOrganiser.length < 3) {
-      setEventOrganiserError(
-        "Please enter a valid event organiser (at least 3 characters)."
-      );
-      isValid = false;
-    }
-    if (!eventPlannerLocation) {
-      setEventPlannerLocationError("Please select an event planner location.");
-      isValid = false;
-    }
-    if (!eventPlannerCode) {
-      setEventPlannerDealerCodeError(
-        "Please select an event planner dealer code."
-      );
-      isValid = false;
-    }
-    if (!pinCode || pinCode.length !== 6) {
-      setPincodeError("Please enter a valid pincode (6 digits).");
-      isValid = false;
-    }
-    if (!eventType) {
-      setEventTypeError("Please select an event type.");
-      isValid = false;
-    }
-    if (!eventCategory) {
-      setEventCategoryError("Please select an event category.");
-      isValid = false;
-    }
-    if (!eventArea) {
-      setEventAreaError("Please enter an event area.");
-      isValid = false;
-    }
-    if (!eventLocation) {
-      setEventLocationError("Please enter an event location.");
-      isValid = false;
-    }
-    if (!district) {
-      setDistrictError("Please enter a district.");
-      isValid = false;
-    }
-    if (!state) {
-      setStateError("Please enter a state.");
-      isValid = false;
-    }
-    if (!eventStartDate) {
-      setEventStartDateError("Please select a start date.");
-      isValid = false;
-    }
-    if (!eventEndDate) {
-      setEventEndDateError("Please select an end date.");
-      isValid = false;
-    }
+  // const validation = () => {
+  //   let isValid = true;
+  //   if (!eventNumber || isNaN(eventNumber)) {
+  //     setEventNumberError("Please enter a valid event number.");
+  //     isValid = false;
+  //   }
+  //   if (!eventName || eventName.length < 3) {
+  //     setEventNameError(
+  //       "Please enter a valid event name (at least 3 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!eventOrganiser || eventOrganiser.length < 3) {
+  //     setEventOrganiserError(
+  //       "Please enter a valid event organiser (at least 3 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!eventPlannerLocation) {
+  //     setEventPlannerLocationError("Please select an event planner location.");
+  //     isValid = false;
+  //   }
+  //   if (!eventPlannerCode) {
+  //     setEventPlannerDealerCodeError(
+  //       "Please select an event planner dealer code."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!pinCode || pinCode.length !== 6) {
+  //     setPincodeError("Please enter a valid pincode (6 digits).");
+  //     isValid = false;
+  //   }
+  //   if (!eventType) {
+  //     setEventTypeError("Please select an event type.");
+  //     isValid = false;
+  //   }
+  //   if (!eventCategory) {
+  //     setEventCategoryError("Please select an event category.");
+  //     isValid = false;
+  //   }
+  //   if (!eventArea) {
+  //     setEventAreaError("Please enter an event area.");
+  //     isValid = false;
+  //   }
+  //   if (!eventLocation) {
+  //     setEventLocationError("Please enter an event location.");
+  //     isValid = false;
+  //   }
+  //   if (!district) {
+  //     setDistrictError("Please enter a district.");
+  //     isValid = false;
+  //   }
+  //   if (!state) {
+  //     setStateError("Please enter a state.");
+  //     isValid = false;
+  //   }
+  //   if (!eventStartDate) {
+  //     setEventStartDateError("Please select a start date.");
+  //     isValid = false;
+  //   }
+  //   if (!eventEndDate) {
+  //     setEventEndDateError("Please select an end date.");
+  //     isValid = false;
+  //   }
 
-    if (!rcNumber || rcNumber.length !== 12) {
-      setRcNumberError("Please enter a valid RC number (12 characters).");
-      isValid = false;
-    }
-    if (!model || model.length < 2) {
-      setModelError("Please enter a valid model name (at least 2 characters).");
-      isValid = false;
-    }
-    if (!variant || variant.length < 2) {
-      setVariantError(
-        "Please enter a valid variant name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!color || color.length < 2) {
-      setColorError("Please enter a valid color name (at least 2 characters).");
-      isValid = false;
-    }
-    if (!fuelType || fuelType.length < 2) {
-      setFuelTypeError(
-        "Please enter a valid fuel type (at least 2 characters)."
-      );
-      isValid = false;
-    }
+  //   if (!rcNumber || rcNumber.length !== 12) {
+  //     setRcNumberError("Please enter a valid RC number (12 characters).");
+  //     isValid = false;
+  //   }
+  //   if (!model || model.length < 2) {
+  //     setModelError("Please enter a valid model name (at least 2 characters).");
+  //     isValid = false;
+  //   }
+  //   if (!variant || variant.length < 2) {
+  //     setVariantError(
+  //       "Please enter a valid variant name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!color || color.length < 2) {
+  //     setColorError("Please enter a valid color name (at least 2 characters).");
+  //     isValid = false;
+  //   }
+  //   if (!fuelType || fuelType.length < 2) {
+  //     setFuelTypeError(
+  //       "Please enter a valid fuel type (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
 
-    if (!manager || manager.length < 2) {
-      setManagerError(
-        "Please enter a valid manager name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!tl || tl.length < 2) {
-      setTlError(
-        "Please enter a valid team leader name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!consultant || consultant.length < 2) {
-      setConsultantError(
-        "Please enter a valid consultant name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!driver || driver.length < 2) {
-      setDriverError(
-        "Please enter a valid driver name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!financeExecutive || financeExecutive.length < 2) {
-      setFinanceExecutiveError(
-        "Please enter a valid finance executive name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!evaluator || evaluator.length < 2) {
-      setEvaluatorError(
-        "Please enter a valid evaluator name (at least 2 characters)."
-      );
-      isValid = false;
-    }
+  //   if (!manager || manager.length < 2) {
+  //     setManagerError(
+  //       "Please enter a valid manager name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!tl || tl.length < 2) {
+  //     setTlError(
+  //       "Please enter a valid team leader name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!consultant || consultant.length < 2) {
+  //     setConsultantError(
+  //       "Please enter a valid consultant name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!driver || driver.length < 2) {
+  //     setDriverError(
+  //       "Please enter a valid driver name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!financeExecutive || financeExecutive.length < 2) {
+  //     setFinanceExecutiveError(
+  //       "Please enter a valid finance executive name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
+  //   if (!evaluator || evaluator.length < 2) {
+  //     setEvaluatorError(
+  //       "Please enter a valid evaluator name (at least 2 characters)."
+  //     );
+  //     isValid = false;
+  //   }
 
-    if (!openAccordian) {
-      setOpenAccordianError("Please select an accordion panel.");
-      isValid = false;
-    }
+  //   if (!openAccordian) {
+  //     setOpenAccordianError("Please select an accordion panel.");
+  //     isValid = false;
+  //   }
 
-    if (!showDatePicker) {
-      setShowDatePickerError("Please select a date.");
-      isValid = false;
-    }
+  //   if (!showDatePicker) {
+  //     setShowDatePickerError("Please select a date.");
+  //     isValid = false;
+  //   }
 
-    return isValid;
-  };
+  //   return isValid;
+  // };
 
   const handleSubmit = () => {
-    if (!validation()) {
-    }
+    // if (!validation()) {
+    // }
     // handle form submission logic
     scrollToPos(0);
     setOpenAccordian("2");
   };
+
+  // const handleValidation = () => {
+  //   const newErrors = {};
+
+  //   // Validate First Name
+  //   if (firstName.trim() === "") {
+  //     newErrors.firstName = "First Name is required";
+  //   }
+
+  //   // Validate Last Name
+  //   if (lastName.trim() === "") {
+  //     newErrors.lastName = "Last Name is required";
+  //   }
+
+  //   // Validate Date of Birth
+  //   if (dateOfBirth.trim() === "") {
+  //     newErrors.dateOfBirth = "Date of Birth is required";
+  //   } else {
+  //     // Add additional validation logic for date format or range if needed
+  //   }
+
+  //   // Validate Mobile Number
+  //   if (mobileNumber.trim() === "") {
+  //     newErrors.mobileNumber = "Mobile Number is required";
+  //   } else {
+  //     // Add additional validation logic for mobile number format if needed
+  //   }
+  //   // Validate RC Number
+  //   if (rcNumber.trim() === "") {
+  //     newErrors.rcNumber = "RC Number is required";
+  //   }
+
+  //   // Validate Name On RC
+  //   if (nameOnRC.trim() === "") {
+  //     newErrors.nameOnRC = "Name On RC is required";
+  //   }
+
+  //   // Validate Mobile Number
+  //   if (mobileNumber.trim() === "") {
+  //     newErrors.mobileNumber = "Mobile Number is required";
+  //   }
+
+  //   // Validate Variant
+  //   // if (variant.trim() === "") {
+  //   //   newErrors.variant = "Variant is required";
+  //   // }
+
+  //   // // Validate Colour
+  //   // if (colour.trim() === "") {
+  //   //   newErrors.colour = "Colour is required";
+  //   // }
+
+  //   // // Validate Transmission
+  //   // if (transmission.trim() === "") {
+  //   //   newErrors.transmission = "Transmission is required";
+  //   // }
+
+  //   // // Validate Vin Number
+  //   // if (vinNumber.trim() === "") {
+  //   //   newErrors.vinNumber = "Vin Number is required";
+  //   // }
+
+  //   // // Validate Engine Number
+  //   // if (engineNumber.trim() === "") {
+  //   //   newErrors.engineNumber = "Engine Number is required";
+  //   // }
+
+  //   // // Validate Month
+  //   // if (month.trim() === "") {
+  //   //   newErrors.month = "Month is required";
+  //   // }
+
+  //   // // Validate Year
+  //   // if (year.trim() === "") {
+  //   //   newErrors.year = "Year is required";
+  //   // }
+
+  //   // // Validate Pincode
+  //   // if (pincode.trim() === "") {
+  //   //   newErrors.pincode = "Pincode is required";
+  //   // }
+
+  //   // // Validate Registration State
+  //   // if (registrationState.trim() === "") {
+  //   //   newErrors.registrationState = "Registration State is required";
+  //   // }
+
+  //   // // Validate Registration District
+  //   // if (registrationDistrict.trim() === "") {
+  //   //   newErrors.registrationDistrict = "Registration District is required";
+  //   // }
+
+  //   // // Validate Registration City
+  //   // if (registrationCity.trim() === "") {
+  //   //   newErrors.registrationCity = "Registration City is required";
+  //   // }
+
+  //   // // Validate Emission
+  //   // if (emission.trim() === "") {
+  //   //   newErrors.emission = "Emission is required";
+  //   // }
+
+  //   // // Validate Vehicle Type
+  //   // if (vehicleType.trim() === "") {
+  //   //   newErrors.vehicleType = "Vehicle Type is required";
+  //   // }
+
+  //   // // Validate Type of Body
+  //   // if (typeOfBody.trim() === "") {
+  //   //   newErrors.typeOfBody = "Type of Body is required";
+  //   // }
+
+  //   // // Validate KM's driven
+  //   // if (kmsDriven.trim() === "") {
+  //   //   newErrors.kmsDriven = "KM's driven is required";
+  //   // }
+
+  //   // // Validate Cubic Capacity
+  //   // if (cubicCapacity.trim() === "") {
+  //   //   newErrors.cubicCapacity = "Cubic Capacity is required";
+  //   // }
+
+  //   // // Validate No Owners
+  //   // if (noOwners.trim() === "") {
+  //   //   newErrors.noOwners = "No Owners is required";
+  //   // }
+
+  //   // // Validate No. of Challan Pending
+  //   // if (challanPending.trim() === "") {
+  //   //   newErrors.challanPending = "No. of Challan Pending is required";
+  //   // }
+
+  //   // if (hypothecatedTo.trim() === "") {
+  //   //   newErrors.hypothecatedTo = "Hypothecated To is required";
+  //   // }
+
+  //   // // Validate Hypothecated Branch
+  //   // if (hypothecatedBranch.trim() === "") {
+  //   //   newErrors.hypothecatedBranch = "Hypothecated Branch is required";
+  //   // }
+
+  //   // // Validate Loan amount due
+  //   // if (loanAmountDue.trim() === "") {
+  //   //   newErrors.loanAmountDue = "Loan amount due is required";
+  //   // }
+
+  //   // // Validate Hypothication Completed Date
+  //   // if (hypothicationCompletedDate.trim() === "") {
+  //   //   newErrors.hypothicationCompletedDate =
+  //   //     "Hypothication Completed Date is required";
+  //   // }
+
+  //   // Update the errors state
+  //   // setErrors(newErrors);
+  // };
 
   const updateAccordian = (selectedIndex) => {
     // Keyboard.dismiss();
@@ -343,8 +756,257 @@ const EvaluationForm = () => {
     { label: "Item 8", value: "8" },
   ];
 
+  const showDropDownModelMethod = (item) => {
+    switch (item) {
+      case "Salutation":
+        break;
+      case "Gender":
+        break;
+      case "Village/Town":
+        break;
+      case "PerVillage/Town":
+        break;
+      case "Brand":
+        break;
+      case "Model":
+        break;
+      case "Fuel Type":
+        break;
+      case "Month":
+        break;
+      case "Year":
+        break;
+      case "Vehicle Type":
+        break;
+      case "YearType of Body":
+        break;
+      case "Insurance Type":
+        break;
+      default:
+        break;
+    }
+    setDropDownTitle();
+    setShowDropDown(true);
+  };
+
+  const update = () => {
+    const Payload = {
+      id: 0,
+      nameOnRC: nameOnRc,
+      registrationNumber: "AAAAAA1234",
+      mobileNum: mobileNumber,
+      customerId: "18-286-ca9d9470-478b-43df-9ffa-4a57b6644470",
+      regValidity: regnValidUpto,
+      regDistrict: registrationDistrict,
+      regCity: registrationCity,
+      pincode: pincode,
+      regState: registrationState,
+      imageDocuments: [
+        {
+          documentName: "frontside",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxEBR .png",
+        },
+        {
+          documentName: "backside",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+        },
+        {
+          documentName: "leftside",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+        },
+        {
+          documentName: "rightside",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxETBR.png",
+        },
+        {
+          documentName: "speedometer",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Group Lvl.png",
+        },
+        {
+          documentName: "chassis",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Team Lvl.png",
+        },
+        {
+          documentName: "interiorfront",
+        },
+        {
+          documentName: "interiorback",
+        },
+        {
+          documentName: "rc front",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+        },
+        {
+          documentName: "rc back",
+          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+        },
+        {
+          documentName: "insurance",
+        },
+        {
+          documentName: "invoice",
+        },
+        {
+          documentName: "extra fitment",
+        },
+        {
+          documentName: "scrach damage",
+        },
+        {
+          documentName: "dent damage",
+        },
+        {
+          documentName: "functions",
+        },
+        {
+          documentName: "break damage",
+        },
+        {
+          documentName: "number plate",
+        },
+        {
+          documentName: "bank finance old car/noc",
+        },
+      ],
+      otherImages: [],
+      model: model,
+      varient: variant,
+      yearMonthOfManufacturing: yearMonthOfManufacturing,
+      vehicleType: vehicleType,
+      typeOfBody: typeOfBody,
+      kmDriven: kmsDriven,
+      frontWheelRight: frontRightSelected,
+      frontWheelLeft: frontLeftSelected,
+      rearWheelRight: rearRightSelected,
+      rearWheelLeft: rearLeftSelected,
+      spareDiskWheel: spareDiskWheelSelected,
+      spareAlliWheel: spareAlliWheelSelected,
+      anyMajorAccident: anyMajorAccidentSelected,
+      anyMajorAccidentRemark: "",
+      anyMinorAccident: anyMinorAccidentSelected,
+      anyMinorAccidentRemark: "",
+      updatedDate: "",
+      make: make,
+      fuelType: fuelType,
+      chassisNum: "78hb",
+      noOfOwners: noOwners,
+      colour: colour,
+      transmission: transmission,
+      data: [],
+      role: "Evaluator",
+      totalRefurbishmentCost: null,
+      evalutionStatus: "EvalutionSubmitted",
+      evalutorId: 955,
+      VehicleExterior: "",
+      DrivingYourTestDrive: "",
+      InTheDiversseat: "",
+      UnderneathVehicle: "",
+      Trunk: "",
+      Engine: "",
+      Exterior: "",
+      Interior: "",
+      engineNumber: engineNumber,
+      nocclearance: null,
+      challenamount: null,
+      oilChangesCost: null,
+      regDate: dateOfRegistration,
+      emission: emission,
+      challanPending: noOfChallanPending,
+      hypothecation: hypothecatedTo,
+      hypothecatedBranch: hypothecatedBranch,
+      hypothecatedCompletedDate: hypothicationCompletedDate,
+      insuranceType: insuranceType,
+      loanAmountDue: loanAmountDue,
+      insuranceCompanyName: insuranceCompanyName,
+      policyNumber: policyNumber,
+      insFromDate: insuranceFromDate,
+      insToDate: insuranceToDate,
+      periodicService: "no",
+      periodicServiceCost: null,
+      EngineandtransmissionCost: null,
+      spareKey: "no",
+      spareKeyCost: null,
+      rubbingPolishing: "no",
+      rubbingPolishingCost: null,
+      insurance: "no",
+      insuranceCost: null,
+      regDocument: "no",
+      regDocumentCharges: null,
+      pollutionCertificate: "no",
+      pollutionCertificateCost: null,
+      oilChanges: "no",
+      powerbrakefluidchange: "no",
+      powerBrakeFluidChangeCost: null,
+      coolantFilterChange: "no",
+      coolantFilterChangeCost: null,
+      removalStainMarksStickers: "no",
+      removalStainMarksStickersCost: null,
+      carpetCleaning: "no",
+      carpetCleaningCost: null,
+      engineRoom: "no",
+      engineRoomCost: null,
+      vehicleTransfer: "no",
+      vehicleTransferCharges: null,
+      nocClearanceExpense: "no",
+      nocClearanceExpenseCost: null,
+      challanAmount: "no",
+      challanAmountCost: null,
+      ccClearanceExpense: "no",
+      ccClearanceExpenseCost: null,
+      otherCharges: [],
+      custExpectedPrice: customerExpectedPrice,
+      evaluatorOfferPrice: evaluatorOfferedPrice,
+      managerId: 942,
+      carExchangeEvalutionCosts: [],
+    };
+  };
   return (
     <SafeAreaView style={[{ flex: 1 }]}>
+      <Modal
+        animationType="fade"
+        visible={imagePath !== ""}
+        onRequestClose={() => {
+          setImagePath("");
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={{ width: "90%" }}>
+            <Image
+              style={{ width: "100%", height: 400, borderRadius: 4 }}
+              resizeMode="contain"
+              source={{ uri: imagePath }}
+            />
+          </View>
+          <TouchableOpacity
+            style={{
+              width: 100,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              left: "37%",
+              bottom: "15%",
+              borderRadius: 5,
+              backgroundColor: Colors.RED,
+            }}
+            onPress={() => setImagePath("")}
+          >
+            <Text
+              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+            >
+              Close
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
@@ -415,53 +1077,65 @@ const EvaluationForm = () => {
                     label="Salutation"
                     buttonText="Select Salutation"
                     onPress={() => {
-                      setShowDropDown(true);
+                      showDropDownModelMethod("Salutation");
                     }}
                   />
                   <CustomTextInput
                     placeholder="Enter First Name"
                     label="First Name"
                     mandatory={true}
+                    value={firstName}
                   />
                   <CustomTextInput
                     placeholder="Enter Last Name"
                     label="Last Name"
                     mandatory={true}
+                    value={lastName}
                   />
                   <CustomEvaluationDropDown
                     label="Gender"
                     buttonText="Select Gender"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Gender");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Relation Name"
                     label="Relation Name"
+                    value={relationName}
                   />
                   <CustomDatePicker
                     label="Date of Birth"
-                    value="17/05/1995"
+                    value={dateOfBirth}
                     onPress={() => {
                       setShowDatePicker(true);
                     }}
                   />
-                  <CustomTextInput placeholder="Enter Age" label="Age" />
+                  <CustomTextInput
+                    placeholder="Enter Age"
+                    label="Age"
+                    value={age}
+                  />
                   <CustomDatePicker
                     label="Anniversary Date"
-                    value="17/05/1995"
+                    value={anniversaryDate}
                     onPress={() => {}}
                   />
                   <CustomTextInput
                     placeholder="Enter Mobile Number"
                     label="Mobile Number"
                     mandatory={true}
+                    value={mobileNumber}
                   />
                   <CustomTextInput
                     placeholder="Enter Alternate Mobile Number"
                     label="Alternate Mobile Number"
+                    value={alternateMobileNumber}
                   />
                   <CustomTextInput
                     placeholder="Enter Email ID"
                     label="Email ID"
+                    value={email}
                   />
                 </View>
               </List.Accordion>
@@ -514,7 +1188,9 @@ const EvaluationForm = () => {
                   <CustomEvaluationDropDown
                     label="Village/Town"
                     buttonText="Select Village/Town"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Village/Town");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Mandal/Tahsil"
@@ -577,7 +1253,9 @@ const EvaluationForm = () => {
                   <CustomEvaluationDropDown
                     label="Village/Town"
                     buttonText="Select Village/Town"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("PerVillage/Town");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Mandal/Tahsil"
@@ -614,131 +1292,217 @@ const EvaluationForm = () => {
                     placeholder="Enter RC Number"
                     label="RC Number"
                     mandatory={true}
+                    value={rcNumber}
+                    onChangeText={(text) => {
+                      setRcNumber(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Name On RC"
                     label="Name On RC"
                     mandatory={true}
+                    value={nameOnRc}
+                    onChangeText={(text) => {
+                      setNameOnRc(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Mobile Number"
                     label="Mobile Number"
                     mandatory={true}
+                    value={mobileNumber}
+                    onChangeText={(text) => {
+                      setMobileNumber(text);
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Brand"
                     buttonText="Select Brand"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Brand");
+                    }}
+                    value={brand}
+                    onChangeText={(text) => {
+                      setBrand(text);
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Model"
                     buttonText="Select Model"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Model");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Variant"
                     label="Variant"
                     mandatory={true}
+                    value={insuranceCompanyName}
+                    onChangeText={(text) => {
+                      setInsuranceCompanyName(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Colour"
                     label="Colour"
                     mandatory={true}
+                    value={insuranceCompanyName}
+                    onChangeText={(text) => {
+                      setInsuranceCompanyName(text);
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Fuel Type"
                     buttonText="Select Fuel Type"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Fuel Type");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Transmission"
                     label="Transmission"
                     mandatory={true}
+                    value={transmission}
+                    onChangeText={(text) => {
+                      setTransmission(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Vin Number"
                     label="Vin Number"
                     mandatory={true}
+                    value={vinNumber}
+                    onChangeText={(text) => {
+                      setVinNumber(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Engine Number"
                     label="Engine Number"
                     mandatory={true}
+                    value={engineNumber}
+                    onChangeText={(text) => {
+                      setEngineNumber(text);
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Month"
                     buttonText="Select Month"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Month");
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Year"
                     buttonText="Select Year"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Year");
+                    }}
                   />
                   <CustomDatePicker
                     label="Date of Registration"
-                    value="17/05/1995"
+                    value={dateOfRegistration}
                     onPress={() => {}}
                   />
                   <CustomDatePicker
                     label="Regn. Valid Upto"
-                    value="17/05/1995"
+                    value={regnValidUpto}
                     onPress={() => {}}
                   />
                   <CustomTextInput
                     placeholder="Enter Pincode"
                     label="Pincode"
                     mandatory={true}
+                    value={pincode}
+                    onChangeText={(text) => {
+                      setPincode(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Registration State"
                     label="Registration State"
                     mandatory={true}
+                    value={registrationState}
+                    onChangeText={(text) => {
+                      setRegistrationState(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Registration District"
                     label="Registration District"
                     mandatory={true}
+                    value={registrationDistrict}
+                    onChangeText={(text) => {
+                      setRegistrationDistrict(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Registration City"
                     label="Registration City"
                     mandatory={true}
+                    value={registrationCity}
+                    onChangeText={(text) => {
+                      setRegistrationCity(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Emission"
                     label="Emission"
                     mandatory={true}
+                    value={emission}
+                    onChangeText={(text) => {
+                      setEmission(text);
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Vehicle Type"
                     buttonText="Select Vehicle Type"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Vehicle Type");
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Type of Body"
                     buttonText="Select Type of Body"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Type of Body");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter KM's driven"
                     label="KM's driven"
                     mandatory={true}
+                    value={kmsDriven}
+                    onChangeText={(text) => {
+                      setKmsDriven(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Cubic Capacity"
                     label="Cubic Capacity"
                     mandatory={true}
+                    value={cubicCapacity}
+                    onChangeText={(text) => {
+                      setCubicCapacity(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter No Owners"
                     label="No Owners"
                     mandatory={true}
+                    value={noOwners}
+                    onChangeText={(text) => {
+                      setNoOwners(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter No. of Challan Pending"
                     label="No. of Challan Pending"
                     mandatory={true}
+                    value={noOfChallanPending}
+                    onChangeText={(text) => {
+                      setNoOfChallanPending(text);
+                    }}
                   />
                 </View>
               </List.Accordion>
@@ -763,42 +1527,50 @@ const EvaluationForm = () => {
                 <View>
                   <CustomRadioButton
                     label="Front right"
-                    onPress={() => {}}
+                    value={frontRightSelected}
+                    onPress={setFrontRightSelected}
                     mandatory={true}
                   />
                   <CustomRadioButton
                     label="Front left"
-                    onPress={() => {}}
+                    value={frontLeftSelected}
+                    onPress={setFrontLeftSelected}
                     mandatory={true}
                   />
                   <CustomRadioButton
                     label="Rear right"
-                    onPress={() => {}}
+                    value={rearRightSelected}
+                    onPress={setRearRightSelected}
                     mandatory={true}
                   />
                   <CustomRadioButton
                     label="Rear left"
-                    onPress={() => {}}
+                    value={rearLeftSelected}
+                    onPress={setRearLeftSelected}
                     mandatory={true}
                   />
                   <CustomRadioButton
                     label="Spare Disk Wheel"
-                    onPress={() => {}}
+                    value={spareDiskWheelSelected}
+                    onPress={setSpareDiskWheelSelected}
                     mandatory={true}
                   />
                   <CustomRadioButton
                     label="Spare Alli Wheel"
-                    onPress={() => {}}
+                    value={spareAlliWheelSelected}
+                    onPress={setSpareAlliWheelSelected}
                     mandatory={true}
                   />
                   <CustomSelection
                     label="Any Minor Accident"
-                    onPress={() => {}}
+                    value={anyMinorAccidentSelected}
+                    onPress={setAnyMinorAccidentSelected}
                     mandatory={true}
                   />
                   <CustomSelection
                     label="Any Major Accident"
-                    onPress={() => {}}
+                    value={anyMajorAccidentSelected}
+                    onPress={setAnyMajorAccidentSelected}
                     mandatory={true}
                   />
                 </View>
@@ -834,20 +1606,32 @@ const EvaluationForm = () => {
                     placeholder="Enter Hypothecated To"
                     label="Hypothecated To"
                     mandatory={true}
+                    value={hypothecatedTo}
+                    onChangeText={(text) => {
+                      setHypothecatedTo(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Hypothecated Branch"
                     label="Hypothecated Branch"
                     mandatory={true}
+                    value={hypothecatedBranch}
+                    onChangeText={(text) => {
+                      setHypothecatedBranch(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Loan amount due"
                     label="Loan amount due"
                     mandatory={true}
+                    value={loanAmountDue}
+                    onChangeText={(text) => {
+                      setLoanAmountDue(text);
+                    }}
                   />
                   <CustomDatePicker
                     label="Hypothication Completed Date"
-                    value="17/05/1995"
+                    value={hypothicationCompletedDate}
                     onPress={() => {}}
                   />
                 </View>
@@ -882,26 +1666,36 @@ const EvaluationForm = () => {
                   <CustomEvaluationDropDown
                     label="Insurance Type"
                     buttonText="Choose your Insurance Type"
-                    onPress={() => {}}
+                    onPress={() => {
+                      showDropDownModelMethod("Insurance Type");
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Insurance Company Name"
                     label="Insurance Company Name"
                     mandatory={true}
+                    value={insuranceCompanyName}
+                    onChangeText={(text) => {
+                      setInsuranceCompanyName(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Policy Number"
                     label="Policy Number"
                     mandatory={true}
+                    value={policyNumber}
+                    onChangeText={(text) => {
+                      setPolicyNumber(text);
+                    }}
                   />
                   <CustomDatePicker
                     label="Insurance From Date"
-                    value="17/05/1995"
+                    value={insuranceFromDate}
                     onPress={() => {}}
                   />
                   <CustomDatePicker
                     label="Insurance To Date"
-                    value="17/05/1995"
+                    value={insuranceToDate}
                     onPress={() => {}}
                   />
                 </View>
@@ -930,52 +1724,70 @@ const EvaluationForm = () => {
                     buttonText="Upload Front Side Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Back Side"
                     buttonText="Upload Back Side Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Left Side"
                     buttonText="Upload Left Side Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Right Side"
                     buttonText="Upload Right Side Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Speedo meter"
                     buttonText="Upload Speedo meter Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Front Side"
                     buttonText="Upload Front Side Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Chassis"
                     buttonText="Upload Chassis Image"
                     mandatory={true}
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Interior Front"
                     buttonText="Upload Interior Front Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Interior Back"
                     buttonText="Upload Interior Back Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Extra Fitment"
@@ -987,26 +1799,36 @@ const EvaluationForm = () => {
                     label="Scratch Damage"
                     buttonText="Upload Scratch Damage Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Dent Damage"
                     buttonText="Upload Dent Damage Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Functions"
                     buttonText="Upload Functions Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Break Damage"
                     buttonText="Upload Break Damage Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <CustomUpload
                     label="Number Plate"
                     buttonText="Upload Number Plate Image"
                     onPress={() => {}}
+                    onShowImage={() => {}}
+                    onDeleteImage={() => {}}
                   />
                   <LocalButtonComp
                     title={"Add Other Image"}
@@ -1204,25 +2026,41 @@ const EvaluationForm = () => {
                     placeholder="Enter Customer Expected Price"
                     label="Customer Expected Price"
                     mandatory={true}
+                    value={customerExpectedPrice}
+                    onChangeText={(text) => {
+                      setCustomerExpectedPrice(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Evaluator Offered Price"
                     label="Evaluator Offered Price"
                     mandatory={true}
+                    value={evaluatorOfferedPrice}
+                    onChangeText={(text) => {
+                      setEvaluatorOfferedPrice(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Manager Approved Price"
                     label="Manager Approved Price"
                     mandatory={true}
+                    value={managerApprovedPrice}
+                    onChangeText={(text) => {
+                      setManagerApprovedPrice(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Price Gap"
                     label="Price Gap"
                     mandatory={true}
+                    value={priceGap}
+                    onChangeText={(text) => {
+                      setPriceGap(text);
+                    }}
                   />
                   <CustomDatePicker
                     label="Approval Expiry Date"
-                    value="17/05/1995"
+                    value={approvalExpiryDate}
                     onPress={() => {}}
                   />
                 </View>

@@ -16,14 +16,14 @@ const CustomSelection = (props) => {
         <RadioTextItem2
           label={"Yes"}
           value={"yes"}
-          status={true}
-          onPress={() => {}}
+          status={value === "Yes" ? true : false}
+          onPress={() => onPress("Yes")}
         />
         <RadioTextItem2
           label={"No"}
           value={"no"}
-          status={false}
-          onPress={() => {}}
+          status={value === "No" ? true : false}
+          onPress={() => onPress("No")}
         />
       </View>
     </View>
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 7,
     borderBottomColor: "#5A5A5A",
-    borderBottomWidth:0.5
+    borderBottomWidth: 0.5,
   },
   label: {
     color: "#5A5A5A",
