@@ -4,13 +4,15 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { Colors } from "../../../../styles";
 
 const CustomEvaluationDropDown = (props) => {
-  const { label, buttonText, onPress } = props;
+  const { label, buttonText, onPress, value = "" } = props;
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.buttonText}>{buttonText}</Text>
+        <Text style={styles.buttonText}>
+          {value !== "" ? value : buttonText}
+        </Text>
         <Entypo size={12} name="chevron-down" color={Colors.BLACK} />
       </TouchableOpacity>
     </View>

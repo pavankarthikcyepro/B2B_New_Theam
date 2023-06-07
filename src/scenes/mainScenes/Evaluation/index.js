@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -32,6 +32,15 @@ import CustomUpload from "./Component/CustomUpload";
 import Table from "./Component/CustomTable";
 import { Modal } from "react-native";
 import { Image } from "react-native";
+import { MyTasksStackIdentifiers } from "../../../navigations/appNavigator";
+import URL from "../../../networking/endpoints";
+import { client } from "../../../networking/client";
+import * as AsyncStore from "../../../asyncStore";
+import { PincodeDetailsNew } from "../../../utils/helperFunctions";
+import {
+  Gender_Types,
+  Salutation_Types,
+} from "../../../jsonData/enquiryFormScreenJsonData";
 
 const LocalButtonComp = ({ title, onPress, disabled, color }) => {
   return (
@@ -249,12 +258,12 @@ const Payload = {
   managerId: 942,
   carExchangeEvalutionCosts: [],
 };
-const EvaluationForm = () => {
+const EvaluationForm = ({ route, navigation }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imagePath, setImagePath] = useState("");
-
+  const [errors, setErrors] = useState({});
   const [salutation, setSalutation] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -401,6 +410,36 @@ const EvaluationForm = () => {
   const [openAccordianError, setOpenAccordianError] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDatePickerError, setShowDatePickerError] = useState(null);
+  const [permanentAddress, setPermanentAddress] = useState({
+    pincode: "",
+    isUrban: "",
+    isRural: null,
+    houseNo: "",
+    street: "",
+    village: "",
+    city: "",
+    district: "",
+    state: "",
+    mandal: "",
+    country: null,
+  });
+  const [communicationAddress, setCommunication] = useState({
+    pincode: "",
+    isUrban: "",
+    isRural: null,
+    houseNo: "",
+    street: "",
+    village: "",
+    city: "",
+    district: "",
+    state: "",
+    mandal: "",
+    country: null,
+  });
+  const [sameAsPermanent, setSameAsPermanent] = useState(false);
+  const [addressData, setAddressData] = useState([]);
+  const [addressData2, setAddressData2] = useState([]);
+  const [dataForDropDown, setDataForDropDown] = useState([]);
 
   const [budget, setBudget] = useState("");
 
@@ -408,6 +447,83 @@ const EvaluationForm = () => {
 
   const [ItemList, setItemList] = useState(SAMPLELIST);
   let scrollRef = useRef(null);
+
+  useEffect(() => {}, []);
+  const getOptions = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(
+          URL.GET_ALL_EVALUATION(jsonObj.orgId)
+        );
+        const json = await response.json();
+      }
+    } catch (error) {}
+  };
+
+  const getCheckList = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(
+          URL.MAKE_LIST_EVALATION(jsonObj.orgId)
+        );
+        const json = await response.json();
+      }
+    } catch (error) {}
+  };
+
+  const getModalList = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(URL.GET_CHECKLIST(1));
+        const json = await response.json();
+      }
+    } catch (error) {}
+  };
+
+  const updateAddressDetails = (pincode, Label) => {
+    if (pincode.length != 6) {
+      return;
+    }
+
+    PincodeDetailsNew(pincode).then(
+      (res) => {
+        // dispatch an action to update address
+        let tempAddr = [];
+        if (res) {
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              tempAddr.push({
+                label: res[i].Name,
+                value: res[i],
+                isSelected: false,
+              });
+              if (i === res.length - 1) {
+                if (Label == "Permanent") {
+                  setAddressData2([...tempAddr]);
+                } else {
+                  setAddressData([...tempAddr]);
+                }
+              }
+            }
+          }
+        }
+        // dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {}
+    );
+  };
 
   const handleSave = (item) => {
     // handle form submit here
@@ -572,160 +688,163 @@ const EvaluationForm = () => {
     setOpenAccordian("2");
   };
 
-  // const handleValidation = () => {
-  //   const newErrors = {};
+  const handleValidation = () => {
+    const newErrors = {};
 
-  //   // Validate First Name
-  //   if (firstName.trim() === "") {
-  //     newErrors.firstName = "First Name is required";
-  //   }
+    // Validate First Name
+    if (firstName.trim() === "") {
+      newErrors.firstName = "First Name is required";
+    }
 
-  //   // Validate Last Name
-  //   if (lastName.trim() === "") {
-  //     newErrors.lastName = "Last Name is required";
-  //   }
+    // Validate Last Name
+    if (lastName.trim() === "") {
+      newErrors.lastName = "Last Name is required";
+    }
 
-  //   // Validate Date of Birth
-  //   if (dateOfBirth.trim() === "") {
-  //     newErrors.dateOfBirth = "Date of Birth is required";
-  //   } else {
-  //     // Add additional validation logic for date format or range if needed
-  //   }
+    // Validate Date of Birth
+    if (dateOfBirth.trim() === "") {
+      newErrors.dateOfBirth = "Date of Birth is required";
+    } else {
+      // Add additional validation logic for date format or range if needed
+    }
 
-  //   // Validate Mobile Number
-  //   if (mobileNumber.trim() === "") {
-  //     newErrors.mobileNumber = "Mobile Number is required";
-  //   } else {
-  //     // Add additional validation logic for mobile number format if needed
-  //   }
-  //   // Validate RC Number
-  //   if (rcNumber.trim() === "") {
-  //     newErrors.rcNumber = "RC Number is required";
-  //   }
+    // Validate Mobile Number
+    if (mobileNumber.trim() === "") {
+      newErrors.mobileNumber = "Mobile Number is required";
+    } else {
+      if (mobileNumber.trim().length === 10) {
+        newErrors.mobileNumber = "Length of Mobile Number must be 10";
+      }
+      // Add additional validation logic for mobile number format if needed
+    }
+    // Validate RC Number
+    // if (rcNumber.trim() === "") {
+    //   newErrors.rcNumber = "RC Number is required";
+    // }
 
-  //   // Validate Name On RC
-  //   if (nameOnRC.trim() === "") {
-  //     newErrors.nameOnRC = "Name On RC is required";
-  //   }
+    // // Validate Name On RC
+    // if (nameOnRC.trim() === "") {
+    //   newErrors.nameOnRC = "Name On RC is required";
+    // }
 
-  //   // Validate Mobile Number
-  //   if (mobileNumber.trim() === "") {
-  //     newErrors.mobileNumber = "Mobile Number is required";
-  //   }
+    // // Validate Mobile Number
+    // if (mobileNumber.trim() === "") {
+    //   newErrors.mobileNumber = "Mobile Number is required";
+    // }
 
-  //   // Validate Variant
-  //   // if (variant.trim() === "") {
-  //   //   newErrors.variant = "Variant is required";
-  //   // }
+    // Validate Variant
+    // if (variant.trim() === "") {
+    //   newErrors.variant = "Variant is required";
+    // }
 
-  //   // // Validate Colour
-  //   // if (colour.trim() === "") {
-  //   //   newErrors.colour = "Colour is required";
-  //   // }
+    // // Validate Colour
+    // if (colour.trim() === "") {
+    //   newErrors.colour = "Colour is required";
+    // }
 
-  //   // // Validate Transmission
-  //   // if (transmission.trim() === "") {
-  //   //   newErrors.transmission = "Transmission is required";
-  //   // }
+    // // Validate Transmission
+    // if (transmission.trim() === "") {
+    //   newErrors.transmission = "Transmission is required";
+    // }
 
-  //   // // Validate Vin Number
-  //   // if (vinNumber.trim() === "") {
-  //   //   newErrors.vinNumber = "Vin Number is required";
-  //   // }
+    // // Validate Vin Number
+    // if (vinNumber.trim() === "") {
+    //   newErrors.vinNumber = "Vin Number is required";
+    // }
 
-  //   // // Validate Engine Number
-  //   // if (engineNumber.trim() === "") {
-  //   //   newErrors.engineNumber = "Engine Number is required";
-  //   // }
+    // // Validate Engine Number
+    // if (engineNumber.trim() === "") {
+    //   newErrors.engineNumber = "Engine Number is required";
+    // }
 
-  //   // // Validate Month
-  //   // if (month.trim() === "") {
-  //   //   newErrors.month = "Month is required";
-  //   // }
+    // // Validate Month
+    // if (month.trim() === "") {
+    //   newErrors.month = "Month is required";
+    // }
 
-  //   // // Validate Year
-  //   // if (year.trim() === "") {
-  //   //   newErrors.year = "Year is required";
-  //   // }
+    // // Validate Year
+    // if (year.trim() === "") {
+    //   newErrors.year = "Year is required";
+    // }
 
-  //   // // Validate Pincode
-  //   // if (pincode.trim() === "") {
-  //   //   newErrors.pincode = "Pincode is required";
-  //   // }
+    // // Validate Pincode
+    // if (pincode.trim() === "") {
+    //   newErrors.pincode = "Pincode is required";
+    // }
 
-  //   // // Validate Registration State
-  //   // if (registrationState.trim() === "") {
-  //   //   newErrors.registrationState = "Registration State is required";
-  //   // }
+    // // Validate Registration State
+    // if (registrationState.trim() === "") {
+    //   newErrors.registrationState = "Registration State is required";
+    // }
 
-  //   // // Validate Registration District
-  //   // if (registrationDistrict.trim() === "") {
-  //   //   newErrors.registrationDistrict = "Registration District is required";
-  //   // }
+    // // Validate Registration District
+    // if (registrationDistrict.trim() === "") {
+    //   newErrors.registrationDistrict = "Registration District is required";
+    // }
 
-  //   // // Validate Registration City
-  //   // if (registrationCity.trim() === "") {
-  //   //   newErrors.registrationCity = "Registration City is required";
-  //   // }
+    // // Validate Registration City
+    // if (registrationCity.trim() === "") {
+    //   newErrors.registrationCity = "Registration City is required";
+    // }
 
-  //   // // Validate Emission
-  //   // if (emission.trim() === "") {
-  //   //   newErrors.emission = "Emission is required";
-  //   // }
+    // // Validate Emission
+    // if (emission.trim() === "") {
+    //   newErrors.emission = "Emission is required";
+    // }
 
-  //   // // Validate Vehicle Type
-  //   // if (vehicleType.trim() === "") {
-  //   //   newErrors.vehicleType = "Vehicle Type is required";
-  //   // }
+    // // Validate Vehicle Type
+    // if (vehicleType.trim() === "") {
+    //   newErrors.vehicleType = "Vehicle Type is required";
+    // }
 
-  //   // // Validate Type of Body
-  //   // if (typeOfBody.trim() === "") {
-  //   //   newErrors.typeOfBody = "Type of Body is required";
-  //   // }
+    // // Validate Type of Body
+    // if (typeOfBody.trim() === "") {
+    //   newErrors.typeOfBody = "Type of Body is required";
+    // }
 
-  //   // // Validate KM's driven
-  //   // if (kmsDriven.trim() === "") {
-  //   //   newErrors.kmsDriven = "KM's driven is required";
-  //   // }
+    // // Validate KM's driven
+    // if (kmsDriven.trim() === "") {
+    //   newErrors.kmsDriven = "KM's driven is required";
+    // }
 
-  //   // // Validate Cubic Capacity
-  //   // if (cubicCapacity.trim() === "") {
-  //   //   newErrors.cubicCapacity = "Cubic Capacity is required";
-  //   // }
+    // // Validate Cubic Capacity
+    // if (cubicCapacity.trim() === "") {
+    //   newErrors.cubicCapacity = "Cubic Capacity is required";
+    // }
 
-  //   // // Validate No Owners
-  //   // if (noOwners.trim() === "") {
-  //   //   newErrors.noOwners = "No Owners is required";
-  //   // }
+    // // Validate No Owners
+    // if (noOwners.trim() === "") {
+    //   newErrors.noOwners = "No Owners is required";
+    // }
 
-  //   // // Validate No. of Challan Pending
-  //   // if (challanPending.trim() === "") {
-  //   //   newErrors.challanPending = "No. of Challan Pending is required";
-  //   // }
+    // // Validate No. of Challan Pending
+    // if (challanPending.trim() === "") {
+    //   newErrors.challanPending = "No. of Challan Pending is required";
+    // }
 
-  //   // if (hypothecatedTo.trim() === "") {
-  //   //   newErrors.hypothecatedTo = "Hypothecated To is required";
-  //   // }
+    // if (hypothecatedTo.trim() === "") {
+    //   newErrors.hypothecatedTo = "Hypothecated To is required";
+    // }
 
-  //   // // Validate Hypothecated Branch
-  //   // if (hypothecatedBranch.trim() === "") {
-  //   //   newErrors.hypothecatedBranch = "Hypothecated Branch is required";
-  //   // }
+    // // Validate Hypothecated Branch
+    // if (hypothecatedBranch.trim() === "") {
+    //   newErrors.hypothecatedBranch = "Hypothecated Branch is required";
+    // }
 
-  //   // // Validate Loan amount due
-  //   // if (loanAmountDue.trim() === "") {
-  //   //   newErrors.loanAmountDue = "Loan amount due is required";
-  //   // }
+    // // Validate Loan amount due
+    // if (loanAmountDue.trim() === "") {
+    //   newErrors.loanAmountDue = "Loan amount due is required";
+    // }
 
-  //   // // Validate Hypothication Completed Date
-  //   // if (hypothicationCompletedDate.trim() === "") {
-  //   //   newErrors.hypothicationCompletedDate =
-  //   //     "Hypothication Completed Date is required";
-  //   // }
+    // // Validate Hypothication Completed Date
+    // if (hypothicationCompletedDate.trim() === "") {
+    //   newErrors.hypothicationCompletedDate =
+    //     "Hypothication Completed Date is required";
+    // }
 
-  //   // Update the errors state
-  //   // setErrors(newErrors);
-  // };
+    // Update the errors state
+    // setErrors(newErrors);
+  };
 
   const updateAccordian = (selectedIndex) => {
     // Keyboard.dismiss();
@@ -759,8 +878,10 @@ const EvaluationForm = () => {
   const showDropDownModelMethod = (item) => {
     switch (item) {
       case "Salutation":
+        setDataForDropDown([...Salutation_Types]);
         break;
       case "Gender":
+        setDataForDropDown([...Gender_Types]);
         break;
       case "Village/Town":
         break;
@@ -785,7 +906,7 @@ const EvaluationForm = () => {
       default:
         break;
     }
-    setDropDownTitle();
+    setDropDownTitle(item);
     setShowDropDown(true);
   };
 
@@ -961,7 +1082,7 @@ const EvaluationForm = () => {
     };
   };
   return (
-    <SafeAreaView style={[{ flex: 1 }]}>
+    <View style={[{ flex: 1 }]}>
       <Modal
         animationType="fade"
         visible={imagePath !== ""}
@@ -1017,7 +1138,7 @@ const EvaluationForm = () => {
       <DropDownComponant
         visible={showDropDown}
         headerTitle={dropDownTitle}
-        data={[]}
+        data={dataForDropDown}
         onRequestClose={() => setShowDropDown(false)}
         selectedItems={(item) => {}}
       />
@@ -1076,6 +1197,7 @@ const EvaluationForm = () => {
                   <CustomEvaluationDropDown
                     label="Salutation"
                     buttonText="Select Salutation"
+                    value={salutation}
                     onPress={() => {
                       showDropDownModelMethod("Salutation");
                     }}
@@ -1085,12 +1207,18 @@ const EvaluationForm = () => {
                     label="First Name"
                     mandatory={true}
                     value={firstName}
+                    onChangeText={(text) => {
+                      setFirstName(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Last Name"
                     label="Last Name"
                     mandatory={true}
                     value={lastName}
+                    onChangeText={(text) => {
+                      setLastName(text);
+                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Gender"
@@ -1103,6 +1231,9 @@ const EvaluationForm = () => {
                     placeholder="Enter Relation Name"
                     label="Relation Name"
                     value={relationName}
+                    onChangeText={(text) => {
+                      setRelationName(text);
+                    }}
                   />
                   <CustomDatePicker
                     label="Date of Birth"
@@ -1115,6 +1246,10 @@ const EvaluationForm = () => {
                     placeholder="Enter Age"
                     label="Age"
                     value={age}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) => {
+                      setAge(text);
+                    }}
                   />
                   <CustomDatePicker
                     label="Anniversary Date"
@@ -1126,16 +1261,28 @@ const EvaluationForm = () => {
                     label="Mobile Number"
                     mandatory={true}
                     value={mobileNumber}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) => {
+                      setMobileNumber(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Alternate Mobile Number"
                     label="Alternate Mobile Number"
                     value={alternateMobileNumber}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) => {
+                      setAlternateMobileNumber(text);
+                    }}
                   />
                   <CustomTextInput
                     placeholder="Enter Email ID"
                     label="Email ID"
                     value={email}
+                    keyboardType={"email-address"}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                    }}
                   />
                 </View>
               </List.Accordion>
@@ -1168,6 +1315,22 @@ const EvaluationForm = () => {
                     placeholder="Enter Pincode"
                     label="Pincode"
                     mandatory={true}
+                    keyboardType={"number-pad"}
+                    value={communicationAddress.pincode}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.pincode = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.pincode = text),
+                        });
+                      if (text.length === 6) {
+                        updateAddressDetails(text, "Communication");
+                      }
+                    }}
                   />
                   <View style={{ flexDirection: "row" }}>
                     <RadioTextItem
@@ -1183,8 +1346,38 @@ const EvaluationForm = () => {
                       onPress={() => {}}
                     />
                   </View>
-                  <CustomTextInput placeholder="Enter H-No" label="H-No" />
-                  <CustomTextInput placeholder="Enter Street" label="Street" />
+                  <CustomTextInput
+                    placeholder="Enter H-No"
+                    label="H-No"
+                    value={communicationAddress.houseNo}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.houseNo = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.houseNo = text),
+                        });
+                    }}
+                  />
+                  <CustomTextInput
+                    placeholder="Enter Street"
+                    label="Street"
+                    value={communicationAddress.street}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.street = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.street = text),
+                        });
+                    }}
+                  />
                   <CustomEvaluationDropDown
                     label="Village/Town"
                     buttonText="Select Village/Town"
@@ -1195,13 +1388,67 @@ const EvaluationForm = () => {
                   <CustomTextInput
                     placeholder="Enter Mandal/Tahsil"
                     label="Mandal/Tahsil"
+                    value={communicationAddress.mandal}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.mandal = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.mandal = text),
+                        });
+                    }}
                   />
-                  <CustomTextInput placeholder="Enter City" label="City" />
+                  <CustomTextInput
+                    placeholder="Enter City"
+                    label="City"
+                    value={communicationAddress.city}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.city = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.city = text),
+                        });
+                    }}
+                  />
                   <CustomTextInput
                     placeholder="Enter District"
                     label="District"
+                    value={communicationAddress.district}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.district = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.district = text),
+                        });
+                    }}
                   />
-                  <CustomTextInput placeholder="Enter State" label="State" />
+                  <CustomTextInput
+                    placeholder="Enter State"
+                    label="State"
+                    value={communicationAddress.state}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.state = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.state = text),
+                        });
+                    }}
+                  />
                   <View style={{ flexDirection: "row", marginTop: 15 }}>
                     <Entypo size={17} name="home" color={Colors.RED} />
                     <Text style={{ fontSize: 17, fontWeight: "600" }}>
@@ -1219,20 +1466,49 @@ const EvaluationForm = () => {
                     <RadioTextItem
                       label={"Yes"}
                       value={"yes"}
-                      status={true}
-                      onPress={() => {}}
+                      status={sameAsPermanent}
+                      onPress={() => {
+                        setSameAsPermanent(true);
+                        setPermanentAddress(communicationAddress);
+                      }}
                     />
                     <RadioTextItem
                       label={"No"}
                       value={"no"}
-                      status={false}
-                      onPress={() => {}}
+                      status={!sameAsPermanent}
+                      onPress={() => {
+                        setSameAsPermanent(false);
+                        setPermanentAddress({
+                          pincode: "",
+                          isUrban: "",
+                          isRural: null,
+                          houseNo: "",
+                          street: "",
+                          village: "",
+                          city: "",
+                          district: "",
+                          state: "",
+                          mandal: "",
+                          country: null,
+                        });
+                      }}
                     />
                   </View>
                   <CustomTextInput
                     placeholder="Enter Pincode"
                     label="Pincode"
                     mandatory={true}
+                    keyboardType={"number-pad"}
+                    value={permanentAddress.pincode}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.pincode = text),
+                      });
+                      if (text.length === 6) {
+                        updateAddressDetails(text, "Permanent");
+                      }
+                    }}
                   />
                   <View style={{ flexDirection: "row" }}>
                     <RadioTextItem
@@ -1248,8 +1524,28 @@ const EvaluationForm = () => {
                       onPress={() => {}}
                     />
                   </View>
-                  <CustomTextInput placeholder="Enter H-No" label="H-No" />
-                  <CustomTextInput placeholder="Enter Street" label="Street" />
+                  <CustomTextInput
+                    placeholder="Enter H-No"
+                    label="H-No"
+                    value={permanentAddress.houseNo}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.houseNo = text),
+                      });
+                    }}
+                  />
+                  <CustomTextInput
+                    placeholder="Enter Street"
+                    label="Street"
+                    value={permanentAddress.street}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.street = text),
+                      });
+                    }}
+                  />
                   <CustomEvaluationDropDown
                     label="Village/Town"
                     buttonText="Select Village/Town"
@@ -1260,13 +1556,47 @@ const EvaluationForm = () => {
                   <CustomTextInput
                     placeholder="Enter Mandal/Tahsil"
                     label="Mandal/Tahsil"
+                    value={permanentAddress.mandal}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.mandal = text),
+                      });
+                    }}
                   />
-                  <CustomTextInput placeholder="Enter City" label="City" />
+                  <CustomTextInput
+                    placeholder="Enter City"
+                    label="City"
+                    value={permanentAddress.city}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.city = text),
+                      });
+                    }}
+                  />
                   <CustomTextInput
                     placeholder="Enter District"
                     label="District"
+                    value={permanentAddress.district}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.district = text),
+                      });
+                    }}
                   />
-                  <CustomTextInput placeholder="Enter State" label="State" />
+                  <CustomTextInput
+                    placeholder="Enter State"
+                    label="State"
+                    value={permanentAddress.state}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.state = text),
+                      });
+                    }}
+                  />
                 </View>
               </List.Accordion>
               <List.Accordion
@@ -1413,6 +1743,7 @@ const EvaluationForm = () => {
                     placeholder="Enter Pincode"
                     label="Pincode"
                     mandatory={true}
+                    keyboardType={"number-pad"}
                     value={pincode}
                     onChangeText={(text) => {
                       setPincode(text);
@@ -1939,6 +2270,13 @@ const EvaluationForm = () => {
                     marginHorizontal: 15,
                   }}
                 >
+                  <Button
+                    onPress={() =>
+                      navigation.navigate(MyTasksStackIdentifiers.checkList)
+                    }
+                  >
+                    {"NAV"}
+                  </Button>
                   <List.AccordionGroup
                     expandedId={openAccordian2}
                     onAccordionPress={(expandedId) =>
@@ -2084,7 +2422,7 @@ const EvaluationForm = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 

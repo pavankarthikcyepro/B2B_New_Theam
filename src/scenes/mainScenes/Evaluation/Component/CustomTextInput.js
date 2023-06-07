@@ -4,7 +4,14 @@ import { View, TextInput, StyleSheet } from "react-native";
 import { Colors } from "../../../../styles";
 
 const CustomTextInput = (props) => {
-  const { label, value, mandatory = false, placeholder, ...textInputProps } = props;
+  const {
+    label,
+    value,
+    mandatory = false,
+    placeholder,
+    errorMessage = "",
+    ...textInputProps
+  } = props;
 
   return (
     <View style={styles.container}>
@@ -19,6 +26,9 @@ const CustomTextInput = (props) => {
         style={styles.input}
         {...textInputProps}
       />
+      {errorMessage !== "" && errorMessage !== undefined ? (
+        <Text style={styles.error}>{errorMessage}</Text>
+      ) : null}
     </View>
   );
 };
@@ -36,6 +46,11 @@ const styles = StyleSheet.create({
   },
   mandatory: {
     color: Colors.RED,
+  },
+  error: {
+    color: "red",
+    marginLeft: 5,
+    marginBottom: 3,
   },
   input: {
     backgroundColor: "#D3D3D3",

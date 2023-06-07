@@ -1067,6 +1067,21 @@ const URL = {
       vehicleInfoService_url + `/api/vehicle_details/?organizationId=${orgId}`
     );
   },
+  MAKE_LIST_EVALATION: (orgId) => {
+    return baseUrl + "dfdg/Other_Maker_AllDetails?organizationId=" + orgId;
+  },
+  GET_ALL_EVALUATION: (orgId) => {
+    return baseUrl + "dfdg/get_All_evaluation?orgId=" + orgId;
+  },
+  GET_CHECKLIST: (id) => {
+    return baseUrl + "ops/checkList/fetchCategory/" + id;
+  },
+  GET_EVALUATION: (id) => {
+    return baseUrl + `dfdr/dynamic-reports/autosave-get-uid/` + id;
+  },
+  EVALUATION_AUTOSAVE: () => {
+    return baseUrl + "dfdr/dynamic-reports/autosave";
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

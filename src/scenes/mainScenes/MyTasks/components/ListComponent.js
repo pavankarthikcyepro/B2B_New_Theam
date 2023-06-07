@@ -38,8 +38,12 @@ import {
 import moment from "moment";
 import { showToast } from "../../../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
-import { setNotificationManager, setNotificationMyTaskAllFilter } from "../../../../redux/notificationReducer";
+import {
+  setNotificationManager,
+  setNotificationMyTaskAllFilter,
+} from "../../../../redux/notificationReducer";
 import { LoaderComponent } from "../../../../components";
+import { Button } from "react-native-paper";
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
@@ -205,8 +209,6 @@ const ListComponent = ({ route, navigation }) => {
       taskName: "Pre Enquiry Follow Up",
       myTaskList: [],
     },
-   
-   
   ];
 
   useEffect(() => {
@@ -314,9 +316,8 @@ const ListComponent = ({ route, navigation }) => {
                       setMyTasksData(tempData);
                     }
                   }
-                }
-                else{
-                    setMyTasksData([...defaultData]);
+                } else {
+                  setMyTasksData([...defaultData]);
                 }
               }
             );
@@ -1459,12 +1460,12 @@ const ListComponent = ({ route, navigation }) => {
     //   // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
     //   // itemClicked({ myTaskList: tempArr });
     // } else {
-      navigateToList(
-        filterAvailable.selectedFilterLocal,
-        filterAvailable.fromClick,
-        [item.taskName]
-      );
-      // itemClicked(item);
+    navigateToList(
+      filterAvailable.selectedFilterLocal,
+      filterAvailable.fromClick,
+      [item.taskName]
+    );
+    // itemClicked(item);
     // }
   };
 
@@ -1548,7 +1549,7 @@ const ListComponent = ({ route, navigation }) => {
     // } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
     //   return item.taskCnt + " / " + reHomeVisitCount;
     // } else {
-      return item.taskCnt;
+    return item.taskCnt;
     // }
   };
 
@@ -1558,7 +1559,7 @@ const ListComponent = ({ route, navigation }) => {
     // } else if (item.taskName === "Home Visit" && reHomeVisitCount > 0) {
     //   return checkForTaskNames(item.taskName) + " / " + "Re Home Visit";
     // } else {
-      return checkForTaskNames(item.taskName);
+    return checkForTaskNames(item.taskName);
     // }
   };
   const RenderModal = () => {
@@ -1708,6 +1709,11 @@ const ListComponent = ({ route, navigation }) => {
 
   return (
     <View style={styles.mainView}>
+      <Button
+        onPress={() => navigation.navigate(MyTasksStackIdentifiers.evaluation)}
+      >
+        {"NAV"}
+      </Button>
       <View style={styles.view2}>
         {/* <View style={{ width: "75%" }}>
                     <SegmentedControl
@@ -2086,9 +2092,7 @@ const ListComponent = ({ route, navigation }) => {
         <EmptyListView title={"No Data Found"} />
       )}
       {index === 1 && myTeamsData.length == 0 && (
-        <EmptyListView
-          title={"No Data Found"}
-        />
+        <EmptyListView title={"No Data Found"} />
       )}
       {/* Filter Modal Starts */}
       <RenderModal />

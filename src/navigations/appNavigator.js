@@ -10,9 +10,7 @@ import {
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import {
-  createDrawerNavigator,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { IconButton, Searchbar } from "react-native-paper";
 import { useRoute } from "@react-navigation/native";
@@ -25,7 +23,7 @@ import { Colors } from "../styles";
 //   SCHEDULE_FILL,
 //   SCHEDULE_LINE,
 // } from "../assets/svg";
-import { EventRegister } from 'react-native-event-listeners'
+import { EventRegister } from "react-native-event-listeners";
 import EMS_LINE from "../assets/images/ems_line.svg"; // import SVG
 import HOME_LINE from "../assets/images/home_line.svg"; // import SVG
 import HOME_FILL from "../assets/images/home_fill.svg"; // import SVG
@@ -114,11 +112,19 @@ import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
 import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
-import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
-import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
+import {
+  MyStockMainTopTabNavigator,
+  MyStockTopTabNavigator,
+} from "./myStockNavigator";
+import {
+  detectIsOrientationLock,
+  isReceptionist,
+} from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
-import ComplaintTrackerMain, { ComplaintsTrackerTopTabNavigator } from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
+import ComplaintTrackerMain, {
+  ComplaintsTrackerTopTabNavigator,
+} from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMain";
 import ComplaintList from "../scenes/mainScenes/ComplaintTracker/ComplaintList";
 import { ComplaintsTopTabNavigator } from "./complaintsTopTabNavigator";
 import AddEditComplaint from "../scenes/mainScenes/ComplaintTracker/AddEditComplaint";
@@ -138,7 +144,18 @@ import DigitalRecepSourceModel from "../scenes/mainScenes/DigitalDashboard/Digit
 import ReceptionistDashboardScreen from "../scenes/mainScenes/ReceptionistDashboard";
 import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashbordSourceModel";
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
-import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
+import {
+  updateCrm_employees_drop_down_data,
+  updateDealerFilterData,
+  updateDealerFilterData_Recep,
+  updateEmpDropDown_Local,
+  updateFilterIds,
+  updateFilterLevelSelectedDataReceptionist,
+  updateFilterSelectedData,
+  updateFilterSelectedDataReceptionist,
+  updateLiveLeadObjectData,
+  updateReceptionistObjectData,
+} from "../redux/homeReducer";
 import HomeVisitHistory from "../scenes/mainScenes/MyTasks/homeVisitHistory";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 import KnowledgeCenterScreen from "../scenes/mainScenes/KnowledgeCenter";
@@ -149,6 +166,8 @@ import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
 import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
 import EmployeeLocationsScreen from "../scenes/mainScenes/Geolocation/EmployeeLocations";
 import EMICalculator from "../scenes/mainScenes/EMICalculator/EMICalculator";
+import EvaluationForm from "../scenes/mainScenes/Evaluation";
+import CheckListScreen from "../scenes/mainScenes/Evaluation/CheckList";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -416,8 +435,8 @@ export const DrawerStackIdentifiers = {
   reportDownload: "REPORT_DOWNLOAD",
   complaintTracker: "COMPLAINT_TRACKER",
   myStock: "MY_STOCK",
-  reportDownload:"REPORT_DOWNLOAD",
-  complaintTracker:"COMPLAINT_TRACKER",
+  reportDownload: "REPORT_DOWNLOAD",
+  complaintTracker: "COMPLAINT_TRACKER",
   receptionistDashboard: "RECEPTIONIST_DASHBOARD",
   knowledgeCenter: "KNOWLEDGE_CENTER",
   emiCalculator: "EMI_CALCULATOR",
@@ -499,7 +518,9 @@ export const MyTasksStackIdentifiers = {
   myTaskFilterScreen: "MYTASK_FILTER",
   webCallScreen: "WEB_CALL",
   testDriveHistory: "TEST_HISTORY",
-  homevisitHistory :"HOME_VISIT_HISTORY"
+  homevisitHistory: "HOME_VISIT_HISTORY",
+  evaluation: "EVALUATION",
+  checkList: "CHECKLIST",
 };
 
 export const PriceStackIdentifiers = {
@@ -515,10 +536,9 @@ export const EventDashboardStackIdentifiers = {
 export const ComplainTrackerIdentifires = {
   complainTrackerDashboard: "COMPLAIN_TRACKER",
   complainTrackerList: "COMPLAINT_LIST",
-  complainTrackerTop:"COMPLAINT_TRACKER_TOP",
-  closedComplainTeackerList:"CLOCSED_LIST",
-  addEditComplaint:"ADD_EDIT_COMPLAINT"
-  
+  complainTrackerTop: "COMPLAINT_TRACKER_TOP",
+  closedComplainTeackerList: "CLOCSED_LIST",
+  addEditComplaint: "ADD_EDIT_COMPLAINT",
 };
 
 const HomeStack = createStackNavigator();
@@ -892,6 +912,16 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={ProceedToBookingScreen}
         options={{ title: "Proceed To Booking View" }}
       />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.evaluation}
+        component={EvaluationForm}
+        options={{ title: "Evaluation" }}
+      />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.checkList}
+        component={CheckListScreen}
+        options={{ title: "Check List" }}
+      />
     </MyTaskStack.Navigator>
   );
 };
@@ -981,27 +1011,26 @@ const TabNavigator = ({ navigation, route }) => {
         component={HomeStackNavigator}
         options={{ title: "Home" }}
         listeners={({ navigation, route }) => ({
-          tabPress: e => {
-            // todo manthan 
+          tabPress: (e) => {
+            // todo manthan
             let obj = {
               startDate: "",
               endDate: "",
               levelSelected: "",
               selectedempId: "",
               dealerCodes: "",
-            }
-            dispatch(updateDealerFilterData({}))
+            };
+            dispatch(updateDealerFilterData({}));
             // dispatch(updateFilterSelectedData({}))
-            dispatch(updateLiveLeadObjectData(obj))
+            dispatch(updateLiveLeadObjectData(obj));
             dispatch(updateFilterSelectedData({}));
             dispatch(updateReceptionistObjectData({}));
             dispatch(updateFilterSelectedDataReceptionist({}));
             dispatch(updateFilterLevelSelectedDataReceptionist({}));
             dispatch(updateDealerFilterData_Recep({}));
-            dispatch(updateCrm_employees_drop_down_data({}))
-            dispatch(updateFilterIds({}))
-            dispatch(updateEmpDropDown_Local({}))
-            
+            dispatch(updateCrm_employees_drop_down_data({}));
+            dispatch(updateFilterIds({}));
+            dispatch(updateEmpDropDown_Local({}));
           },
         })}
       />
@@ -1010,22 +1039,21 @@ const TabNavigator = ({ navigation, route }) => {
         component={EmsStackNavigator}
         options={{ title: "EMS" }}
         listeners={({ navigation, route }) => ({
-          tabPress: e => {
-            // todo manthan 
-            EventRegister.emit("EMSBOTTOMTAB_CLICKED", true)
-            navigation.setParams(
-              {
-                screenName: "DEFAULT",
-                params: "",
-                moduleType: "",
-                employeeDetail: "",
-                selectedEmpId: "",
-                startDate: "",
-                endDate: "",
-                dealerCodes: "",
-                fromScreen: "DEFAULT",
-                ignoreSelectedId: false
-              })
+          tabPress: (e) => {
+            // todo manthan
+            EventRegister.emit("EMSBOTTOMTAB_CLICKED", true);
+            navigation.setParams({
+              screenName: "DEFAULT",
+              params: "",
+              moduleType: "",
+              employeeDetail: "",
+              selectedEmpId: "",
+              startDate: "",
+              endDate: "",
+              dealerCodes: "",
+              fromScreen: "DEFAULT",
+              ignoreSelectedId: false,
+            });
           },
         })}
         // listeners={({ navigation, route }) => ({
@@ -1152,7 +1180,6 @@ const DigitalPaymentStackNavigator = ({ navigation }) => {
   );
 };
 
-
 const DigitalDashboardStack = createStackNavigator();
 
 const DigitalDashboardStackNavigator = ({ navigation }) => {
@@ -1162,7 +1189,7 @@ const DigitalDashboardStackNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.digitalDashboard}
         component={DigitalDashBoardScreen}
         options={{
-          headerShown:false
+          headerShown: false,
           // title: "QR Code",
           // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
@@ -1196,7 +1223,7 @@ const ReceptionistDashboardNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.receptionistDashboard}
         component={ReceptionistDashboardScreen}
         options={{
-          headerShown: false
+          headerShown: false,
           // title: "QR Code",
           // headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
@@ -1268,7 +1295,10 @@ const DropAnalysisStack = createStackNavigator();
 
 const DropAnalysisStackNavigator = ({ navigation }) => {
   return (
-    <DropAnalysisStack.Navigator screenOptions={screeOptionStyle} initialRouteName={"DROP_ANALYSIS"} >
+    <DropAnalysisStack.Navigator
+      screenOptions={screeOptionStyle}
+      initialRouteName={"DROP_ANALYSIS"}
+    >
       <DropAnalysisStack.Screen
         name={"DROP_ANALYSIS"}
         component={DropAnalysisScreen}
@@ -1351,7 +1381,6 @@ const LiveLeadsStackNavigator = ({ navigation }) => {
     </LiveLeadsStack.Navigator>
   );
 };
-
 
 const LiveLeadsStackReceptionist = createStackNavigator();
 
@@ -1589,7 +1618,7 @@ const MainStackDrawerNavigator = ({ navigation }) => {
   const isLock = detectIsOrientationLock(navigation);
   if (isLock) {
     Orientation.lockToPortrait();
-  } 
+  }
   return (
     <MainDrawerNavigator.Navigator
       drawerStyle={{

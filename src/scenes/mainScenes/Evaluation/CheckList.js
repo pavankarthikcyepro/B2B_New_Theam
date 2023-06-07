@@ -345,7 +345,7 @@ const CheckListScreen = () => {
   ];
 
   return (
-    <SafeAreaView style={[{ flex: 1 }]}>
+    <View style={[{ flex: 1 }]}>
       <DatePickerComponent
         visible={showDatePicker}
         mode={"date"}
@@ -718,7 +718,7 @@ const CheckListScreen = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
