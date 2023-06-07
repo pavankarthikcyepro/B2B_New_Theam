@@ -107,7 +107,7 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     setFilterAvailable({
-      selectedFilterLocal: "",
+      selectedFilterLocal: "MONTH",
       fromClick: false,
     });
     if (isFocused) {
@@ -911,12 +911,13 @@ const ListComponent = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const dateFormat = "YYYY-MM-DD";
-        const currentDate = moment().format(dateFormat);
+        // const currentDate = moment().format(dateFormat);
+        const currentDate = moment().add(0, "day").format(dateFormat)
         let startDate, endDate;
-        if (selectedFilterLocal === "TODAY") {
+        if (selectedFilterLocal == "TODAY") {
           startDate = currentDate;
           endDate = currentDate;
-        } else if (selectedFilterLocal === "MONTH") {
+        } else if (selectedFilterLocal == "MONTH") {
           startDate = moment(currentDate, dateFormat)
             .subtract(0, "months")
             .startOf("month")
@@ -925,7 +926,7 @@ const ListComponent = ({ route, navigation }) => {
             .subtract(0, "months")
             .endOf("month")
             .format(dateFormat);
-        } else if (selectedFilterLocal === "WEEK") {
+        } else if (selectedFilterLocal == "WEEK") {
           var curr = new Date(); // get current date
           var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
           var last = first + 6; // last day is the first day + 6
