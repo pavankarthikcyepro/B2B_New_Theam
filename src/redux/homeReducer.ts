@@ -835,6 +835,22 @@ export const getCRM_ReceptionistDashborad = createAsyncThunk(
   }
 );
 
+
+export const getCRM_ReceptionistDashboradVol2 = createAsyncThunk(
+  "HOME/getCRM_ReceptionistDashboradVol2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_LIVE_LEADS_MANAGERDATA_VOL2(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 // for digital dashboard
 export const getCRM_ReceptionistManagerDataDigital = createAsyncThunk(
   "HOME/getCRM_ReceptionistManagerDataDigital",
@@ -1257,6 +1273,17 @@ export const homeSlice = createSlice({
       totalLostCount: 0,
       fullResponse: {},
     },
+    receptionistData_CRM_vol2: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
     filter_drop_down_designations: {},
     filter_leadership_selectedDesignation: "",
     filter_leadership_selectedDesignation_name: "",
@@ -1489,6 +1516,17 @@ export const homeSlice = createSlice({
           fullResponse: {},
         },
         state.receptionistData_CRM = {
+          RetailCount: 0,
+          bookingsCount: 0,
+          consultantList: [],
+          totalAllocatedCount: 0,
+          totalDroppedCount: 0,
+          contactsCount: 0,
+          enquirysCount: 0,
+          totalLostCount: 0,
+          fullResponse: {},
+        },
+        state.receptionistData_CRM_vol2 = {
           RetailCount: 0,
           bookingsCount: 0,
           consultantList: [],
@@ -2212,6 +2250,27 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getCRM_ReceptionistDashborad.rejected, (state, action) => { state.isLoading = false; })
+
+
+      // CRM receptionist Dashboard
+      .addCase(getCRM_ReceptionistDashboradVol2.pending, (state) => { state.isLoading = true; })
+      .addCase(getCRM_ReceptionistDashboradVol2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.isLoading = false;
+        state.receptionistData_CRM_vol2 = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getCRM_ReceptionistDashboradVol2.rejected, (state, action) => { state.isLoading = false; })
+
 
       // for digital dashboard filter case
       .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => { })

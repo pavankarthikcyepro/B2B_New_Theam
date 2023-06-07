@@ -60,6 +60,7 @@ import {
   updatereceptionistDataObjectData,
   get_xrole_SalesManagerReceptinistTeam,
   getCRM_ReceptionistDashborad,
+  getCRM_ReceptionistDashboradVol2,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -480,7 +481,11 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
 
       if (jsonObj.hrmsRole === "CRM") {
         if (!selector.saveReceptionistfilterObj.selectedempId) {
-          dispatch(getCRM_ReceptionistDashborad(payloadXrole));
+          // vol2 receptionsit dashboard crm login 
+          dispatch(getCRM_ReceptionistDashboradVol2(payloadXrole))
+          
+          // old code vol1 receptionsit dashboard crm login 
+          // dispatch(getCRM_ReceptionistDashborad(payloadXrole));
         }
       } else {
         if (!selector.saveReceptionistfilterObj.selectedempId) {

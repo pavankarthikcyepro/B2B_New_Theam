@@ -161,6 +161,17 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
   const [indexLocalFirstLevel, setIndexLocalFirstLevel] = useState(-1);
 
+  const [crmVol2Level0, setCrmVol2Level0] = useState([])
+  const [crmVol2Level1, setCrmVol2Level1] = useState([])
+  const [crmVol2AlluserData, setCrmVol2AlluserData] = useState([])
+  // const [crmVol2ReportingData, setCrmVol2ReportingData] =useState(datav2.reportingUser)
+  const [crmVol2ReportingData, setCrmVol2ReportingData] = useState([])
+  const [crmVol2ReportingAllTree, setCrmVol2ReportingAllTree] = useState([])
+  const [crmVol2ReportingLevel1, setCrmVol2ReportingLevel1] = useState([])
+  const [isViewExpandedCRMReporting, setIsViewExpandedCRMReporting] = useState(false);
+  const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
+
+
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
@@ -713,6 +724,42 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
   useEffect(() => {
     getDataBasedOnfilter();
   }, [selector.saveReceptionistfilterObj, isFocused]);
+
+  useEffect(() => {
+
+    // findDataFromObject(selector.receptionistDataV3.fullResponse);
+    if (!_.isEmpty(selector.receptionistData_CRM_vol2?.fullResponse)) {
+
+      let modified = selector.receptionistData_CRM_vol2?.fullResponse?.self?.allTreeData?.map(v => ({ ...v, isOpenInner: false, innerData: [] }))
+
+      setCrmVol2AlluserData(modified);
+      let tempFilterIds = selector.receptionistData_CRM_vol2?.fullResponse?.self?.level1?.map((item) => item.empId)
+
+      let tempArr = modified?.filter((item) => tempFilterIds.includes(item.empId))
+
+
+      setCrmVol2Level1(tempArr);
+      setCrmVol2Level0([selector.receptionistData_CRM_vol2?.fullResponse?.self?.selfUser]);
+
+      setCrmVol2ReportingData(selector.receptionistData_CRM_vol2?.fullResponse?.reportingUser)
+
+      setCrmVol2NonReportingData(selector.receptionistData_CRM_vol2?.fullResponse?.nonReportingUser)
+
+
+      if (selector.receptionistData_CRM_vol2) {
+        let totalKey1 = selector?.receptionistData_CRM_vol2?.enquirysCount;
+        let totalKey2 = selector?.receptionistData_CRM_vol2?.bookingsCount;
+        let totalKey3 = selector?.receptionistData_CRM_vol2?.RetailCount;
+        let totalKey4 = selector?.receptionistData_CRM_vol2?.totalLostCount;
+
+        let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+        setTotalofTeam(total);
+        // setSelfInsightsData()
+      }
+    }
+
+
+  }, [selector.receptionistData_CRM_vol2])
 
   const getDataBasedOnfilter = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -3987,6 +4034,10 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
     }
   };
 
+  const renderReceptionistCRMVol2 = ()=>{
+
+  }
+
   return (
     <React.Fragment>
       {!selector.isLoading ? (
@@ -4625,18 +4676,196 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         })}
                     </ScrollView>
                   </View>
+                        {/* new code for vol2 CRM receptionsit dashboard start */}
+                          {renderReceptionistCRMVol2()}
+
+                        {totalOfTeam && (
+                        <View
+                          style={{
+                            width: Dimensions.get("screen").width - 35,
+                            marginTop: 20,
+                          }}
+                        >
+                          <View style={{ alignItems: "flex-end" }}>
+                            <SourceModelView
+                              onClick={() => {
+                                if (
+                                  selector.saveReceptionistfilterObj.selectedempId
+                                ) {
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                    {
+                                      empId:
+                                        selector.saveReceptionistfilterObj
+                                          .selectedempId[0],
+                                      loggedInEmpId:
+                                        selector.saveReceptionistfilterObj
+                                          .selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "ReceptionistDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: selector.saveReceptionistfilterObj
+                                        ?.selectedDesignation[0],
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true,
+                                    }
+                                  );
+                                } else {
+                                  if (userData.hrmsRole === "CRM") {
+                                    navigation.navigate(
+                                      "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                      {
+                                        empId: userData.empId,
+                                        headerTitle: "Source/Model",
+                                        loggedInEmpId: userData.empId,
+                                        orgId: userData.orgId,
+                                        role: "CRM",
+                                        moduleType: "ReceptionistDashboard",
+                                        dashboardType: "reception",
+                                        self: false,
+                                      }
+                                    );
+                                  } else {
+                                    navigation.navigate(
+                                      "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                      {
+                                        empId: userData.empId,
+                                        headerTitle: "Source/Model",
+                                        loggedInEmpId: userData.empId,
+                                        orgId: userData.orgId,
+                                        role: "xrole",
+                                        moduleType: "ReceptionistDashboard",
+                                      }
+                                    );
+                                  }
+                                }
+                              }}
+                              style={{
+                                transform: [{ translateX: translation }],
+                              }}
+                            />
+                          </View>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              height: 40,
+                              backgroundColor: Colors.RED,
+                            }}
+                          >
+                            <View
+                              style={{
+                                width: 100,
+                                justifyContent: "space-around",
+                                flexDirection: "row",
+                                backgroundColor: Colors.RED,
+                              }}
+                            >
+                              <View />
+                              <View
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Text
+                                  style={[
+                                    styles.grandTotalText,
+                                    {
+                                      color: Colors.WHITE,
+                                      fontSize: 12,
+                                    },
+                                  ]}
+                                >
+                                  Total
+                                </Text>
+                              </View>
+                              <View style={{ alignSelf: "flex-end" }}>
+                                <View
+                                  style={{
+                                    paddingRight: 2,
+                                    height: 20,
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Text style={styles.txt7}></Text>
+                                </View>
+
+                                <View
+                                  style={{
+                                    height: 20,
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Text style={styles.txt7}></Text>
+                                </View>
+                              </View>
+                            </View>
+                            <View
+                              style={{
+                                minHeight: 40,
+                                flexDirection: "column",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  minHeight: 40,
+                                  flexDirection: "row",
+                                }}
+                              >
+                                <View
+                                  style={{
+
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {totalOfTeam.map((e) => {
+                                    return (
+                                      <View
+                                        style={{
+                                          width: 55,
+                                          height: 30,
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 16,
+                                            fontWeight: "700",
+                                            color: Colors.WHITE,
+                                          }}
+                                        >
+                                          {e || 0}
+                                        </Text>
+                                      </View>
+                                    );
+                                  })}
+
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      )}
+                      {/* new code for vol2 CRM receptionsit dashboard end */}
+
                   {/* for CRM login Receptionist dashboard  */}
                   {/* {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null} */}
-                  {!selector.saveReceptionistfilterObj.selectedempId
+                  {/* {!selector.saveReceptionistfilterObj.selectedempId
                     ? renderCRM_receptionistFirstLevel()
                     : selector.saveReceptionistfilterObj?.selectedDesignation &&
                       selector.saveReceptionistfilterObj
                         ?.selectedDesignation[0] === "Reception"
                     ? renderCRMTreeFilter()
-                    : null}
+                    : null} */}
                   {/* // : renderCRMTreeFilterApplied()}  */}
                   {/* Grand Total Section */}
-                  {totalOfTeam && (
+                  {/* {totalOfTeam && (
                     <View
                       style={{
                         width: Dimensions.get("screen").width - 35,
@@ -4775,8 +5004,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           >
                             <View
                               style={{
-                                // alignContent: "center",
-                                // justifyContent: "center",
+                                
                                 flexDirection: "row",
                                 alignItems: "center",
                               }}
@@ -4803,22 +5031,13 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                                   </View>
                                 );
                               })}
-                              {/* <Text
-                                  style={{
-                                    fontSize: 16,
-                                    fontWeight: "700",
-                                    marginLeft: 50,
-                                    color: Colors.WHITE,
-                                  }}
-                                >
-                                  {totalOfTeam}
-                                </Text> */}
+                             
                             </View>
                           </View>
                         </View>
                       </View>
                     </View>
-                  )}
+                  )} */}
                 </ScrollView>
               )}
             </View>
