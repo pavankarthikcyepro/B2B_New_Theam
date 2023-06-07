@@ -313,7 +313,7 @@ const SideMenuScreen = ({ navigation }) => {
     getProfilePic(jsonObj);
     let newFilterData = [];
     if (jsonObj.orgName?.includes("BikeWo Corporation")) {
-      if (jsonObj.hrmsRole == "CRE" || jsonObj.hrmsRole == "CRM"){
+      if (jsonObj.hrmsRole == "CRE" || jsonObj.hrmsRole == "CRM" || jsonObj.hrmsRole == "Dealer Head"){
         newFilterData = selector.tableData.filter((item) =>
           bikeWoMenuForCRE_CRM.includes(item.title)
         );
