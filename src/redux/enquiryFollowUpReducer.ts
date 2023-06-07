@@ -210,11 +210,12 @@ const slice = createSlice({
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         const dmsLeadDto = action.payload.dmsEntity.dmsLeadDto;
-
         if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length > 0) {
           const selectedModelObj = dmsLeadDto.dmsLeadProducts[0];
           state.model = selectedModelObj.model;
           state.varient = selectedModelObj.variant;
+        } else if (dmsLeadDto.model){
+          state.model = dmsLeadDto.model;
         }
         state.enquiry_details_response = action.payload.dmsEntity;
       }

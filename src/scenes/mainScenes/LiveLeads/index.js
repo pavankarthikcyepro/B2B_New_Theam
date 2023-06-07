@@ -484,6 +484,7 @@ const LiveLeadsScreen = ({ route, navigation }) => {
 
       if (
         jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("dealer head") ||
         jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
       ) {
         dispatch(updateIsDSE(true));
@@ -575,12 +576,16 @@ const LiveLeadsScreen = ({ route, navigation }) => {
       endDate: selector.saveLiveleadObject.endDate
         ? selector.saveLiveleadObject.endDate
         : monthLastDate,
-      loggedInEmpId: empId,
+      loggedInEmpId: selector.saveLiveleadObject?.selectedempId
+        ? selector.saveLiveleadObject?.selectedempId[0]
+        : empId,
       startDate: selector.saveLiveleadObject.startDate
         ? selector.saveLiveleadObject.startDate
         : monthFirstDate,
       levelSelected: selector.saveLiveleadObject.levelSelected, // countey , zone etc ids active-levels API
-      empId: empId,
+      empId: selector.saveLiveleadObject?.selectedempId
+        ? selector.saveLiveleadObject?.selectedempId[0]
+        : empId,
       pageNo: 0,
       size: 5,
       empSelected: selector.saveLiveleadObject?.selectedempId
@@ -746,20 +751,26 @@ const LiveLeadsScreen = ({ route, navigation }) => {
         endDate: selector.saveLiveleadObject.endDate
           ? selector.saveLiveleadObject.endDate
           : monthLastDate,
-        loggedInEmpId: jsonObj.empId,
+        loggedInEmpId: selector.saveLiveleadObject?.selectedempId
+          ? selector.saveLiveleadObject?.selectedempId[0]
+          : jsonObj.empId,
         startDate: selector.saveLiveleadObject.startDate
           ? selector.saveLiveleadObject.startDate
           : monthFirstDate,
         levelSelected: selector.saveLiveleadObject.levelSelected
           ? selector.saveLiveleadObject.levelSelected
           : null, // countey , zone etc ids active-levels API
-        empId: jsonObj.empId,
+        empId: selector.saveLiveleadObject?.selectedempId
+          ? selector.saveLiveleadObject?.selectedempId[0]
+          : jsonObj.empId,
         pageNo: 0,
         size: 5000,
         empSelected: selector.saveLiveleadObject?.selectedempId
           ? selector.saveLiveleadObject?.selectedempId
           : null, // selected employes id active-dropdowns APi
-        selectedEmpId: jsonObj.empId,
+        selectedEmpId: selector.saveLiveleadObject?.selectedempId
+          ? selector.saveLiveleadObject?.selectedempId[0]
+          : jsonObj.empId,
       };
       // if (!selector.saveLiveleadObject?.selectedempId) {
       dispatch(getNewTargetParametersAllData(payload4)); // TEAM

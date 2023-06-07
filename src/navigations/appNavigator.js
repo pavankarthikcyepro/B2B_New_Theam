@@ -149,6 +149,7 @@ import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
 import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
 import EmployeeLocationsScreen from "../scenes/mainScenes/Geolocation/EmployeeLocations";
 import StatsTripListScreen from "../scenes/mainScenes/Map/StatsTripListScreen";
+import EMICalculator from "../scenes/mainScenes/EMICalculator/EMICalculator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -420,6 +421,7 @@ export const DrawerStackIdentifiers = {
   complaintTracker:"COMPLAINT_TRACKER",
   receptionistDashboard: "RECEPTIONIST_DASHBOARD",
   knowledgeCenter: "KNOWLEDGE_CENTER",
+  emiCalculator: "EMI_CALCULATOR",
 };
 
 export const TabStackIdentifiers = {
@@ -1715,6 +1717,11 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         component={DownloadReportNavigator}
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.emiCalculator}
+        component={EmiCalculatorNavigator}
+        options={{ unmountOnBlur: true }}
+      />
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.knowledgeCenter}
         component={KnowledgeCenterStackNavigator}
       />
@@ -1747,6 +1754,25 @@ const DownloadReportNavigator = ({ navigation }) => {
         }}
       />
     </DownloadReportStack.Navigator>
+  );
+};
+const EmiCalculatorStack = createStackNavigator();
+
+const EmiCalculatorNavigator = ({ navigation }) => {
+  return (
+    <EmiCalculatorStack.Navigator
+      initialRouteName={"EMI_CALCULATOR"}
+      screenOptions={screeOptionStyle}
+    >
+      <EmiCalculatorStack.Screen
+        name={"EMI_CALCULATOR"}
+        component={EMICalculator}
+        options={{
+          title: "EMI Calculator",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </EmiCalculatorStack.Navigator>
   );
 };
 

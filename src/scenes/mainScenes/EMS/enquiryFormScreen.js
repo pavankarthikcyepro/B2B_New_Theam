@@ -89,6 +89,9 @@ import {
   getEnquiryTypesApi,
   postFinanaceApi,
   postEvalutionApi,
+  getOrgTags,
+  getOrgTagsById,
+  postOrgTags,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -191,6 +194,8 @@ const theme = {
   },
 };
 
+const orgTagDateFormate = "YYYY-MM-DD hh:mm:ss";
+
 const dmsAttachmentsObj = {
   branchId: null,
   contentSize: 0,
@@ -292,7 +297,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
-    approverId:""
+    approverId: "",
+    orgName: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -331,8 +337,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [eventConfigRes, setEventConfigRes] = useState([]);
-  const [isVip, setIsVip] = useState(null);
-  const [isHni, setIsHni] = useState(null);
+  const [isMultipleSelection, setIsMultipleSelection] = useState(false);
+  const [selectedTags, setSelectedTags] = useState("");
+  const [tagList, setTagList] = useState([]);
 
   // todo
   useLayoutEffect(() => {
@@ -430,6 +437,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       employeeName: "",
       isSelfManager: "",
       isTracker: "",
+      orgName: "",
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -440,6 +448,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     serInsurenceCompanyList([]);
     setFinanceBanksList([]);
     setSelectedBranchId("");
+    setSelectedTags("");
+    setTagList([]);
 
     // drop section
     setDropData([]);
@@ -499,6 +509,40 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // };
   }, []);
 
+  useEffect(() => {
+    if (selector.orgTagListById.length > 0) {
+      let newArr = [];
+      let names = [];
+      let selectedNames = [];
+      for (let i = 0; i < selector.orgTagListById.length; i++) {
+        const element = selector.orgTagListById[i];
+        let obj = {
+          ...element,
+          selected: element.isActive == "Y" ? true : false,
+        };
+        if (obj.selected != undefined && obj.selected == true) {
+          names.push(obj.name);
+        }
+        selectedNames = names?.join(", ");
+        newArr.push(obj);
+      }
+      setTagList(Object.assign([], newArr));
+      setSelectedTags(selectedNames);
+    } else if (selector.orgTagList.length > 0) {
+      let newArr = [];
+      for (let i = 0; i < selector.orgTagList.length; i++) {
+        const element = selector.orgTagList[i];
+        let obj = {
+          ...element,
+          selected: false,
+        };
+        newArr.push(obj);
+      }
+      setTagList(Object.assign([], newArr));
+    }
+    return () => {};
+  }, [selector.orgTagList, selector.orgTagListById]);
+
   const getAuthToken = async () => {
     const token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
     if (token) {
@@ -556,8 +600,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
-        approverId: jsonObj.approverId
+        approverId: jsonObj.approverId,
+        orgName: jsonObj.orgName,
       });
+      dispatch(getOrgTags(jsonObj.orgId));
+      dispatch(getOrgTagsById(enqDetails.leadId));
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
@@ -761,16 +808,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.enquiry_details_response) {
       setShowPreBookingBtn(false);
-      setIsVip(
-        selector.enquiry_details_response.dmsLeadDto.isVip === "Y"
-          ? true
-          : false
-      );
-      setIsHni(
-        selector.enquiry_details_response.dmsLeadDto.isHni === "Y"
-          ? true
-          : false
-      );
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -1477,8 +1514,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.dmsLeadProducts = carModelsList;
-      dmsLeadDto.isVip = isVip ? "Y" : "N";
-      dmsLeadDto.isHni = isHni ? "Y" : "N";
       let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
       dmsLeadDto.model = primaryModel[0].model;
 
@@ -1618,6 +1653,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dispatch(updateEnquiryDetailsApi(formData)),
         // dispatch(customerLeadRef(refPayload)),// commented cust-ref api here 
       ]).then(async (res) => {
+        submitOrgTags(res[0].payload);
         // const payload = {
         //   refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
         //   orgId: jsonObj.orgId,
@@ -1626,6 +1662,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // dispatch(updateRef(payload));
       });
     }
+  };
+
+  const submitOrgTags = (json) => {
+    const { dmsLeadDto } = json.dmsEntity;
+    const { id } = dmsLeadDto;
+    let newArr = [];
+    if (selector.orgTagListById.length > 0) {
+      for (let i = 0; i < selector.orgTagListById.length; i++) {
+        const element = selector.orgTagListById[i];
+        let defaultObj = {
+          id: element.id,
+          leadId: id,
+          universalId: universalId,
+          isActive: selectedTags.includes(element.tagName) ? "Y" : "N",
+          tagName: element.tagName,
+          createdDatetime: element.createdDatetime,
+          updatedDatetime: moment().format(orgTagDateFormate),
+        };
+        newArr.push(defaultObj);
+      }
+    } else {
+      let defaultObj = {
+        leadId: id,
+        universalId: universalId,
+        isActive: "N",
+        createdDatetime: moment().format(orgTagDateFormate),
+        updatedDatetime: moment().format(orgTagDateFormate),
+      };
+
+      newArr = [
+        { ...defaultObj, tagName: "VIP" },
+        { ...defaultObj, tagName: "HNI" },
+        { ...defaultObj, tagName: "SPL" },
+      ];
+
+      if (selectedTags.includes("VIP")) {
+        payloadArr[0].isActive = "Y";
+      }
+      if (selectedTags.includes("HNI")) {
+        payloadArr[1].isActive = "Y";
+      }
+      if (selectedTags.includes("SPL")) {
+        payloadArr[2].isActive = "Y";
+      }
+    }
+    dispatch(postOrgTags(newArr));
   };
 
   const mapContactOrAccountDto = (prevData) => {
@@ -2048,15 +2130,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const taskStatus = dataObj.taskStatus;
 
         if (taskNames === "") {
-          navigation.navigate(
-            AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-            {
-              identifier: "PROCEED_TO_PRE_BOOKING",
-              taskId,
-              universalId,
-              taskStatus,
-            }
-          );
+          proceedToFinalPreBookingClicked(taskId);
+          // navigation.navigate(
+          //   AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+          //   {
+          //     identifier: "PROCEED_TO_PRE_BOOKING",
+          //     taskId,
+          //     universalId,
+          //     taskStatus,
+          //   }
+          // );
         } else {
           Alert.alert(
             "Below tasks are pending, do you want to continue to proceed",
@@ -2201,9 +2284,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
-        if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
-          displayCreateEnquiryAlert();
-        }
+        displayCreateEnquiryAlert();
       } else if (
         proceedToPreSelector.update_enquiry_details_response_status === "failed"
       ) {
@@ -2484,6 +2565,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setIsMultipleSelection(false);
     // const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
@@ -2602,6 +2684,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "R_INSURENCE_COMPANY_NAME":
         setDataForDropDown([...insurenceCompayList]);
+        break;
+      case "SELECT_TAG":
+        setIsMultipleSelection(true);
+        setDataForDropDown(tagList);
         break;
     }
     setDropDownKey(key);
@@ -3215,48 +3301,70 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       {addEventListModal()}
 
       <DropDownComponant
+        multiple={isMultipleSelection}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name, false);
-          } else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(
-              item.name,
-              selectedCarVarientsData.varientList
-            );
-          } else if (
-            dropDownKey === "C_MAKE" ||
-            dropDownKey === "R_MAKE" ||
-            dropDownKey === "A_MAKE"
-          ) {
-            updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
-          }
+          if (isMultipleSelection) {
+            setTagList([...item]);
+            let names = [];
+            let selectedNames = [];
 
-          if (
-            dropDownKey === "RETAIL_FINANCE" &&
-            selector.retail_finance !== item.name
-          ) {
+            if (item.length > 0) {
+              setIsSubmitPress(false);
+              item.forEach((obj) => {
+                if (obj.selected != undefined && obj.selected == true) {
+                  names.push(obj.name);
+                }
+              });
+              selectedNames = names?.join(", ");
+            } else {
+              setIsSubmitPress(true);
+            }
+
+            setSelectedTags(selectedNames);
+            setShowDropDownModel(false);
+          } else {
+            if (dropDownKey === "MODEL") {
+              updateVariantModelsData(item.name, false);
+            } else if (dropDownKey === "VARIENT") {
+              updateColorsDataForSelectedVarient(
+                item.name,
+                selectedCarVarientsData.varientList
+              );
+            } else if (
+              dropDownKey === "C_MAKE" ||
+              dropDownKey === "R_MAKE" ||
+              dropDownKey === "A_MAKE"
+            ) {
+              updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
+            }
+
+            if (
+              dropDownKey === "RETAIL_FINANCE" &&
+              selector.retail_finance !== item.name
+            ) {
+              dispatch(
+                setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+              );
+              dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+              dispatch(
+                setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+              );
+            }
+
+            setShowDropDownModel(false);
             dispatch(
-              setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
-            );
-            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
-            dispatch(
-              setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+                orgId: userData.orgId,
+              })
             );
           }
-
-          setShowDropDownModel(false);
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-              orgId: userData.orgId,
-            })
-          );
         }}
       />
 
@@ -3913,85 +4021,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                   isDropDownIconShow={false}
                 />
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is VIP?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isVip}
-                    onPress={() => setIsVip(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    status={isVip === null ? false : !isVip}
-                    onPress={() => setIsVip(false)}
-                  />
-                </View>
                 <Text style={GlobalStyle.underline}></Text>
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
+                <DropDownSelectionItem
+                  label={"Select Tag"}
+                  value={selectedTags}
+                  onPress={() => {
+                    showDropDownModelMethod("SELECT_TAG", "Select Tag");
                   }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is HNI?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isHni}
-                    onPress={() => setIsHni(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    status={isHni === null ? false : !isHni}
-                    onPress={() => setIsHni(false)}
-                  />
-                </View>
+                />
                 <Text style={GlobalStyle.underline}></Text>
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
@@ -5560,7 +5597,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                        userData?.isSelfManager == "N" ||
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Fuel Type"
+                          : "Range"
                       }
                       value={selector.c_fuel_type}
                       onPress={() =>
@@ -5572,7 +5612,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y"
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Transmission Type"
+                          : userData.isSelfManager == "Y"
                           ? "Battery Type"
                           : userData.isTracker == "Y"
                           ? "Clutch Type"
@@ -5996,7 +6038,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      userData?.isSelfManager == "N" ||
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Fuel Type"
+                        : "Range"
                     }
                     value={selector.r_fuel_type}
                     onPress={() =>
@@ -6008,7 +6053,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y"
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Transmission Type"
+                        : userData.isSelfManager == "Y"
                         ? "Battery Type"
                         : userData.isTracker == "Y"
                         ? "Clutch Type"

@@ -150,6 +150,7 @@ const HomeScreen = ({ route, navigation }) => {
     empName: "",
     hrmsRole: "",
     orgId: 0,
+    orgName:""
   });
 
   const isFocused = useIsFocused();
@@ -517,6 +518,7 @@ const HomeScreen = ({ route, navigation }) => {
         empName: jsonObj.empName,
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
+        orgName: jsonObj.orgName
       });
       const payload = {
         orgId: jsonObj.orgId,
@@ -661,6 +663,7 @@ const HomeScreen = ({ route, navigation }) => {
 
       if (
         jsonObj?.hrmsRole.toLowerCase().includes("dse") ||
+        jsonObj?.hrmsRole.toLowerCase().includes("dealer head") ||
         jsonObj?.hrmsRole.toLowerCase().includes("sales consultant")
       ) {
         dispatch(updateIsDSE(true));
@@ -1369,13 +1372,15 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      <AttendanceFromSelf
-        visible={attendance}
-        showReason={reason}
-        inVisible={() => {
-          setAttendance(false);
-        }}
-      />
+      {userData?.orgName?.includes("BikeWo Corporation") ? null
+        : <AttendanceFromSelf
+          visible={attendance}
+          showReason={reason}
+          inVisible={() => {
+            setAttendance(false);
+          }}
+        />}
+    
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}

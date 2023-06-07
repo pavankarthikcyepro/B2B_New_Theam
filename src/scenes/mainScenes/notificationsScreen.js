@@ -31,7 +31,7 @@ import {
   ACCESSORIES,
   LEAD_ALLOCATION,
 } from "../../assets/icon";
-import { getNotificationList, notificationReadClearState, readNotification, setNotificationMyTaskAllFilter } from "../../redux/notificationReducer";
+import { getNotificationList, notificationReadClearState, readNotification, setNotificationManager, setNotificationMyTaskAllFilter } from "../../redux/notificationReducer";
 import AnimLoaderComp from "../../components/AnimLoaderComp";
 
 const NotificationScreen = ({ navigation }) => {
@@ -41,11 +41,13 @@ const NotificationScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(selector.loading);
   const [isInitial, setIsInitial] = useState(true);
   const [empId, setEmpId] = useState("");
+  const [userData, setUserData] = useState("");
 
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData(jsonObj);
       if (selector.notificationList.length == 0) {
         dispatch(getNotificationList(jsonObj.empId));
       }
@@ -79,6 +81,9 @@ const NotificationScreen = ({ navigation }) => {
       }
       navigation.navigate(screenName);
       if (screenName != "Target Settings") {
+        if (userData?.hrmsRole.toLowerCase().includes("manager")) {
+          dispatch(setNotificationManager(true));
+        }
         setTimeout(() => {
           navigation.navigate("NEW_PENDING");
         }, 750);

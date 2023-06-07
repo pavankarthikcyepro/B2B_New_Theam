@@ -277,6 +277,10 @@ const URL = {
   POST_FINANCE: () => sales_url + "/dms/finance",
   POST_EVALUTION: () => sales_url + "/dms/evaluation",
 
+  POST_ORG_TAGS: () => sales_url + "/orgTagConfiguration/addDmsOrgTagDetails",
+  GET_ORG_TAGS_BY_ID: (leadId) =>
+    sales_url + `/orgTagConfiguration/getDmsOrgTagConfigurationById/${leadId}`,
+
   UPLOAD_DOCUMENT: () => sales_url + "/documents",
   UPLOAD_RANDOM_DOCUMENT: () => sales_url + "/documents/random-document",
   GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
@@ -303,6 +307,8 @@ const URL = {
   SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
   GET_OTHER_PRICES_DROP_DOWN: (orgId) =>
     decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/otherCharges`),
+  GET_ORG_TAGS: (orgId) =>
+    decodeURI(`${dfGetAll}/${orgId}/%22Active%22/${orgId}/organizationTags`),
   GET_ALL_OFFERS: (varientId, vehicleId) => {
     return (
       ops_url +
@@ -403,6 +409,10 @@ const URL = {
   },
   GET_RECORDED_CALLS: (taskId) => {
     return sales_url + `/callrecording/getCallHistory-urls?recordId=${taskId}`;
+  },
+
+  EMI_CALCULATOR: () => {
+    return sales_url + `/booking-amount/emiCalculator`;
   },
 
   SAVE_BOOKING_CANCEL_ATTACHMENT: () => {

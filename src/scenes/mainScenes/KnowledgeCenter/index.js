@@ -146,7 +146,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         setCarList(data);
         break;
       case "Brochures":
-        const data2 = getSelectedItems(DATA, "Vehicle_Sepcifications");
+        const data2 = getSelectedItems(DATA, "Vehicle_Specifications");
         setCarList(data2);
         break;
       case "Video":
@@ -177,7 +177,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         navigationToList(galleryImages);
         break;
       case "Brochures":
-        const data2 = getDocument(params, "Vehicle_Sepcifications");
+        const data2 = getDocument(params, "Vehicle_Specifications");
         checkPlatform(data2.doc);
         break;
       case "Video":
@@ -200,7 +200,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         _shareImage(galleryImages);
         break;
       case "Brochures":
-        const data2 = getDocument(params, "Vehicle_Sepcifications");
+        const data2 = getDocument(params, "Vehicle_Specifications");
         if (checkValidUrl(data2.doc)) {
           _shareImage([data2.doc]);
         } else {
@@ -368,8 +368,40 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
     }
   };
 
-  const ListItem = ({item, index}) => {
+  const ListItem = ({ item, index }) => {
     const [isImageAvailable, setIsImageAvailable] = useState(true);
+
+    let isGalleryAvailable = false;
+    switch (selectedOption) {
+      case "Images":
+        const galleryImages = getInteriorAndExteriorGalleryImages(item);
+        if (galleryImages.length > 0) {
+          isGalleryAvailable = true;
+        }
+        break;
+      case "Brochures":
+        const data2 = getDocument(item, "Vehicle_Specifications");
+        if (data2.length > 0) {
+          isGalleryAvailable = true;
+        }
+        break;
+      case "Video":
+        const data3 = getVideo(item);
+        if (data3.length > 0) {
+          isGalleryAvailable = true;
+        }
+        break;
+      case "Compare Doc":
+        const data4 = getDocument(item, "Comparison");
+        let newKeys = Object.keys(data4);
+        if (newKeys.length > 0) {
+          isGalleryAvailable = true;
+        }
+        break;
+      default:
+        isGalleryAvailable = false;
+        break;
+    }
 
     return (
       <View style={styles.ElementView}>
@@ -402,31 +434,35 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
             onPress={() => {
               onDownload(item);
             }}
+            disabled={!isGalleryAvailable}
             style={{ marginHorizontal: 10 }}
-          >
+            >
             <IconButton
               icon={"download"}
               size={24}
               color={Colors.RED}
               style={{ margin: 0, padding: 0 }}
+              disabled={!isGalleryAvailable}
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               onShare(item);
             }}
+            disabled={!isGalleryAvailable}
           >
             <IconButton
               icon={"share"}
               size={24}
               color={Colors.RED}
               style={{ margin: 0, padding: 0 }}
+              disabled={!isGalleryAvailable}
             />
           </TouchableOpacity>
         </View>
       </View>
     );
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>

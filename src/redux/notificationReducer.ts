@@ -33,10 +33,14 @@ export const notificationSlice = createSlice({
     loading: true,
     readNotificationResponseStatus: "",
     myTaskAllFilter: false,
+    isManager: false,
   },
   reducers: {
     setNotificationMyTaskAllFilter: (state, action) => {
       state.myTaskAllFilter = action.payload;
+    },
+    setNotificationManager: (state, action) => {
+      state.isManager = action.payload;
     },
     notificationClearState: (state, action) => {
       state.notificationList = [];
@@ -85,5 +89,6 @@ export const {
   setNotificationMyTaskAllFilter,
   notificationClearState,
   notificationReadClearState,
+  setNotificationManager,
 } = notificationSlice.actions;
 export default notificationSlice.reducer;

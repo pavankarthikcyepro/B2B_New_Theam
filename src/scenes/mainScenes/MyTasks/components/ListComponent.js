@@ -38,7 +38,7 @@ import {
 import moment from "moment";
 import { showToast } from "../../../../utils/toast";
 import { useIsFocused } from "@react-navigation/native";
-import { setNotificationMyTaskAllFilter } from "../../../../redux/notificationReducer";
+import { setNotificationManager, setNotificationMyTaskAllFilter } from "../../../../redux/notificationReducer";
 import { LoaderComponent } from "../../../../components";
 
 const screenWidth = Dimensions.get("window").width;
@@ -111,7 +111,27 @@ const ListComponent = ({ route, navigation }) => {
       fromClick: false,
     });
     if (isFocused) {
-      if (route.params) {
+      if (notificationSelector.isManager) {
+        setTimeout(() => {
+          setSelectedFilter(
+            notificationSelector.myTaskAllFilter ? "ALL" : "MONTH"
+          );
+          setIsOpenFilter(false);
+          if (route.params?.from) {
+            dispatch(updateCurrentScreen(route.params.from));
+          }
+          setIndex(1);
+          changeTab(1);
+          initialTask(
+            notificationSelector.myTaskAllFilter
+              ? "ALL"
+              : route.params.from
+              ? "MONTH"
+              : "TODAY"
+          );
+          dispatch(setNotificationManager(false));
+        }, 750);
+      } else if (route.params) {
         if (route.params?.from) {
           dispatch(updateCurrentScreen(route.params.from));
         }
@@ -212,7 +232,6 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal, fromClick) => {
-    console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -332,8 +351,6 @@ const ListComponent = ({ route, navigation }) => {
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                console.log("todaysData", filteredData);
-
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
@@ -345,7 +362,6 @@ const ListComponent = ({ route, navigation }) => {
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
-                      console.log("sss");
                       setMyTeamsData(tempData);
                     }
                   }

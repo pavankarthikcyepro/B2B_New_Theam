@@ -80,27 +80,42 @@ const commonMenu = [
   "Settings",
   "Helpdesk",
   "QR Code",
+  // "My Attendance",
   "Drop Analysis",
-  "My Attendance",
   "My Stock",
   "Download Report",
-  "Complaint Tracker",
+  // "Complaint Tracker",
   "Knowledge Center",
+  "EMI Calculator",
 ];
+
 const salesMenu = [
   ...commonMenu,
   "Live Leads",
   "Target Planning",
-  "Event Dashboard",
-  "Geolocation",
-  "Complaint Tracker",
+  // "Event Dashboard",
 ];
+
+const bikeWoMenu = [
+  "Home",
+  "Sign Out",
+  "Settings",
+  "Helpdesk",
+  "QR Code",
+  "Drop Analysis",
+  "My Stock",
+  "Download Report",
+  "Live Leads",
+  "Target Planning",
+  "Digital Dashboard",
+];
+
 const receptionTelCallerMenu = [
   ...commonMenu,
   "Live Leads",
   "Digital Payment",
-  "Geolocation",
 ];
+
 const CRMMenu = [
   ...commonMenu,
   "Live Leads",
@@ -109,28 +124,26 @@ const CRMMenu = [
   "Digital Payment",
   "Geolocation",
 ];
+
 const managerMenu = [
   ...commonMenu,
   "Live Leads",
-  "Event Dashboard",
+  // "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
   "Receptionist Dashboard",
   "Target Planning",
-  "Task Transfer",
+  // "Task Transfer",
   "Geolocation",
-  "Complaint Tracker",
 ];
-const mdMenu = [
+
+const tlMenu = [
   ...commonMenu,
   "Live Leads",
-  "Event Dashboard",
-  "Digital Payment",
-  "Digital Dashboard",
-  "Receptionist Dashboard",
+  // "Event Dashboard",
   "Target Planning",
-  "Task Transfer",
-  "Complaint Tracker",
+  // "Task Transfer",
+  "Geolocation",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -286,23 +299,29 @@ const SideMenuScreen = ({ navigation }) => {
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
     let newFilterData = [];
-    if (
+    if (jsonObj.orgName?.includes("BikeWo Corporation")) {
+      newFilterData = selector.tableData.filter((item) =>
+        bikeWoMenu.includes(item.title)
+      );
+    } else if (
       jsonObj.hrmsRole == "Reception" ||
-      
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)
       );
-    }
-    else if (jsonObj.hrmsRole == "CRM"){
+    } else if (jsonObj.hrmsRole == "TL") {
+      newFilterData = selector.tableData.filter((item) =>
+        tlMenu.includes(item.title)
+      );
+    } else if (jsonObj.hrmsRole == "CRM") {
       newFilterData = selector.tableData.filter((item) =>
         CRMMenu.includes(item.title)
       );
-    }
-    else if (
+    } else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("dealer head") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
       newFilterData = selector.tableData.filter((item) =>
@@ -311,12 +330,13 @@ const SideMenuScreen = ({ navigation }) => {
     } else if (
       jsonObj?.hrmsRole == "MD" ||
       jsonObj?.hrmsRole == "CEO" ||
-      jsonObj?.hrmsRole == "General Manager"
+      jsonObj?.hrmsRole == "CXO" ||
+      jsonObj?.hrmsRole == "COO" ||
+      jsonObj?.hrmsRole == "VP" ||
+      jsonObj?.hrmsRole == "General Manager" ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("manager") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("business head")
     ) {
-      newFilterData = selector.tableData.filter((item) =>
-        mdMenu.includes(item.title)
-      );
-    } else if (jsonObj?.hrmsRole?.toLowerCase().includes("manager")) {
       newFilterData = selector.tableData.filter((item) =>
         managerMenu.includes(item.title)
       );
@@ -488,6 +508,11 @@ const SideMenuScreen = ({ navigation }) => {
       case 123:
         navigation.navigate(
           AppNavigator.DrawerStackIdentifiers.complaintTracker
+        );
+        break;
+      case 125:
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.emiCalculator
         );
         break;
       case 112:
