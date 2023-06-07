@@ -18,6 +18,10 @@ const VIP_ICON2 = require("./Icons/crown.png");
 const VIP_ICON3 = require("./Icons/VIPGrey.png");
 const VIP_ICON4 = require("./Icons/VIPGold.png");
 const VIP_ICON5 = require("./Icons/VIPLogo.png");
+const DISTANCE = require("./Icons/distance.png");
+const TRAVEL_TIME = require("./Icons/travelTime.png");
+const FULL_TIME = require("./Icons/fullTime.png");
+const TRIP_ICON = require("./Icons/tripIcon.png");
 
 export {
   DOWN_ARROW,
@@ -40,4 +44,8 @@ export {
   VIP_ICON3,
   VIP_ICON4,
   VIP_ICON5,
+  FULL_TIME,
+  TRAVEL_TIME,
+  DISTANCE,
+  TRIP_ICON,
 };

@@ -68,8 +68,14 @@ const GeolocationMapScreen = ({ route }) => {
 
   useEffect(() => {
     setLoading(true);
+    const locations = route.params.item.location;
     if (route.params) {
-      const response = JSON.parse(JSON.parse(route.params.item.location));
+      const response =
+        typeof locations === "string"
+          ? typeof JSON.parse(locations) === "string"
+            ? JSON.parse(JSON.parse(locations))
+            : JSON.parse(locations)
+          : locations;
       setLatitude(response[response.length - 1].latitude);
       setLongitude(response[response.length - 1].longitude);
       setCoordinates(response);
