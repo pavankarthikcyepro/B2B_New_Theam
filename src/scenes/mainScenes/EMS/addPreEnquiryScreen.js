@@ -39,6 +39,7 @@ import {
   getPreEnquiryDetails,
   getCustomerTypesApi,
   getEnquiryTypesApi,
+  getBranchList,
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -397,6 +398,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       itemData.leadStage = dms.leadStage;
       itemData.universalId = dms.crmUniversalId;
       itemData.referencenumber = dms.referencenumber;
+      itemData.branchId = selector.selectedBranchId;
       if (selectedEventData.length > 0) {
         (itemData.eventId = selectedEventData[0].eventId),
           (itemData.eventName = selectedEventData[0].name),
@@ -515,6 +517,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
     if (selector.carModel.length == 0) {
       showToastRedAlert("Please select model");
+      return;
+    }
+    if (selector.selectedLocation == "") {
+      showToastRedAlert("Please select location");
+      return;
+    }
+    if (selector.selectedBranch == "") {
+      showToastRedAlert("Please select branch");
       return;
     }
     if (selector.sourceOfEnquiry.length == 0) {
@@ -671,9 +681,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const getReferenceNumber = async (addressObj) => {
     const bodyObj = {
-      branchid: Number(branchId),
+      branchid: Number(selector.selectedBranchId ?? branchId),
       leadstage: "PREENQUIRY",
-      orgid: userData.orgId,
+      orgid: selector.selectedOrgId ?? userData.orgId,
     };
 
     // await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
@@ -706,13 +716,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const makeCreatePreEnquiry = (refNumber, addressObj) => {
     const dmsContactDtoObj = {
-      branchId: Number(branchId),
+      branchId: Number(selector.selectedBranchId ?? branchId),
       createdBy: employeeName,
       customerType: selector.customerType,
       firstName: selector.firstName,
       lastName: selector.lastName,
       modifiedBy: employeeName,
-      orgId: organizationId,
+      orgId: selector.selectedOrgId ?? organizationId,
       phone: selector.mobile,
       company: selector.companyName ? selector.companyName : selector.other,
       otherCustomerType: selector.other,
@@ -740,14 +750,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const dmsLeadDtoObj = {
-      branchId: Number(branchId),
+      branchId: Number(selector.selectedBranchId ?? branchId),
       createdBy: employeeName,
       enquirySegment: selector.enquiryType,
       firstName: selector.firstName,
       lastName: selector.lastName,
       email: selector.email,
       leadStage: "PREENQUIRY",
-      organizationId: organizationId,
+      organizationId: selector.selectedOrgId ?? organizationId,
       phone: selector.mobile,
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
@@ -903,6 +913,110 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   }, [selector.event_list_response_Config_status]);
 
+  useEffect(() => {
+    if (
+      route.params &&
+      route.params.fromEdit &&
+      route.params.preEnquiryDetails &&
+      route.params.preEnquiryDetails.dmsLeadDto
+    ) {
+      const { branchId, organizationId, referencenumber } =
+        route.params.preEnquiryDetails.dmsLeadDto;
+      dispatch(setDropDownData({ key: "ORG_ID", value: organizationId }));
+      dispatch(setDropDownData({ key: "BRANCH_ID", value: branchId }));
+
+      if (
+        homeSelector.filter_drop_down_data?.["Dealer Code"]?.sublevels.length >
+        0
+      ) {
+        const { sublevels } = homeSelector.filter_drop_down_data["Dealer Code"];
+        let parentId = "";
+        let branchName = "";
+        for (let i = 0; i < sublevels.length; i++) {
+          const element = sublevels[i];
+          if (referencenumber.includes(element.name)) {
+            parentId = element.parentId;
+            branchName = element.name;
+            break;
+          }
+        }
+
+        if (parentId) {
+          if (
+            homeSelector.filter_drop_down_data?.Location?.sublevels.length > 0
+          ) {
+            const { sublevels } = homeSelector.filter_drop_down_data.Location;
+            for (let i = 0; i < sublevels.length; i++) {
+              const element = sublevels[i];
+              if (parentId == element.id) {
+                dispatch(
+                  setDropDownData({ key: "LOCATION", value: element.name })
+                );
+                dispatch(setDropDownData({ key: "BRANCH", value: branchName }));
+                break;
+              }
+            }
+          }
+        }
+      }
+    } else if (
+      homeSelector.filter_drop_down_data?.Location?.sublevels.length == 1
+    ) {
+      const { sublevels } = homeSelector.filter_drop_down_data.Location;
+      let payload = {
+        orgId: sublevels[0].orgId,
+        locationId: sublevels[0].id,
+      };
+      dispatch(setDropDownData({ key: "LOCATION", value: sublevels[0].name }));
+      dispatch(getBranchList(payload));
+    }
+  }, [homeSelector.filter_drop_down_data]);
+  
+  useEffect(() => {
+    if (homeSelector.filter_drop_down_data?.Location?.sublevels.length > 0) {
+      const { sublevels } = homeSelector.filter_drop_down_data.Location;
+      for (let i = 0; i < sublevels.length; i++) {
+        const element = sublevels[i];
+        if (element.name == selector.selectedLocation) {
+          let payload = {
+            orgId: element.orgId,
+            locationId: element.id,
+          };
+          dispatch(getBranchList(payload));
+          break;
+        }
+      }
+      setSubSourceData([]);
+    }
+  }, [selector.selectedLocation]);
+  
+  useEffect(() => {
+    if (selector.branchList.length == 1) {
+      const element = selector.branchList;
+      dispatch(setDropDownData({ key: "BRANCH", value: element[0].name }));
+      dispatch(setDropDownData({ key: "ORG_ID", value: element[0].orgId }));
+      dispatch(
+        setDropDownData({ key: "BRANCH_ID", value: element[0].branchId })
+      );
+    }
+  }, [selector.branchList]);
+  
+  useEffect(() => {
+    if (selector.selectedBranch) {
+      for (let i = 0; i < selector.branchList.length; i++) {
+        const element = selector.branchList[i];
+        if (element.name == selector.selectedBranch) {
+          dispatch(setDropDownData({ key: "ORG_ID", value: element.orgId }));
+          dispatch(
+            setDropDownData({ key: "BRANCH_ID", value: element.branchId })
+          );
+          break;
+        }
+      }
+      setSubSourceData([]);
+    }
+  }, [selector.selectedBranch]);
+
   const updatePreEneuquiryDetails = () => {
     const { dmsAddressList } = route.params.preEnquiryDetails;
     let url = sales_url;
@@ -1048,6 +1162,23 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         }
         setDataForDropDown([...selector.event_list]);
         break;
+      case "LOCATION":
+        if (
+          homeSelector?.filter_drop_down_data?.Location?.sublevels.length > 0
+        ) {
+          setDataForDropDown([...homeSelector.filter_drop_down_data.Location.sublevels]);
+        } else {
+          showToast("No Locations found");
+          return;
+        }
+        break;
+      case "BRANCH":
+        if (selector.branchList.length == 0){
+          showToast("No Branch found");
+          return;
+        }
+        setDataForDropDown([...selector.branchList]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -1073,8 +1204,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       startDate: startDate,
       endDate: endDate,
       empId: userData.employeeId,
-      branchId: branchId,
-      orgId: userData.orgId,
+      branchId: selector.selectedBranchId ?? branchId,
+      orgId: selector.selectedOrgId ?? userData.orgId,
     };
     dispatch(getEventListApi(payload));
   };
@@ -1093,8 +1224,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       startDate: startDate,
       endDate: endDate,
       empId: userData.employeeId,
-      branchId: branchId,
-      orgId: userData.orgId,
+      branchId: selector.selectedBranchId ?? branchId,
+      orgId: selector.selectedOrgId ?? userData.orgId,
     };
     dispatch(getEventConfigList(payload));
   };
@@ -1563,14 +1694,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             ></Text>
 
             <DropDownSelectionItem
-              label={"Source of Lead*"}
-              value={selector.sourceOfEnquiry}
+              label={"Location*"}
+              value={selector.selectedLocation}
               disabled={fromEdit}
               onPress={() =>
-                showDropDownModelMethod(
-                  "SOURCE_OF_ENQUIRY",
-                  "Select Source of Contact"
-                )
+                showDropDownModelMethod("LOCATION", "Select Location")
               }
             />
             <Text
@@ -1578,12 +1706,58 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 GlobalStyle.underline,
                 {
                   backgroundColor:
-                    isSubmitPress && selector.sourceOfEnquiry === ""
+                    isSubmitPress && selector.selectedLocation === ""
                       ? "red"
                       : "rgba(208, 212, 214, 0.7)",
                 },
               ]}
             ></Text>
+
+            <DropDownSelectionItem
+              label={"Branch*"}
+              value={selector.selectedBranch}
+              disabled={fromEdit}
+              onPress={() => showDropDownModelMethod("BRANCH", "Select Branch")}
+            />
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.selectedBranch === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
+
+            {selector.selectedBranch ? (
+              <>
+                <DropDownSelectionItem
+                  label={"Source of Lead*"}
+                  value={selector.sourceOfEnquiry}
+                  disabled={fromEdit}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "SOURCE_OF_ENQUIRY",
+                      "Select Source of Contact"
+                    )
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.sourceOfEnquiry === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+              </>
+            ) : null}
+
             {subSourceData.length > 0 || selector.subSourceOfEnquiry ? (
               <DropDownSelectionItem
                 label={"Sub Source of Lead*"}

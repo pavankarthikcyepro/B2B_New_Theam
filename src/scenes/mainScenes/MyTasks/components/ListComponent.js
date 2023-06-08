@@ -1457,7 +1457,9 @@ const ListComponent = ({ route, navigation }) => {
     //   // itemClicked({ myTaskList: tempArr });
     // } else {
       navigateToList(
-        filterAvailable.selectedFilterLocal,
+        notificationSelector.myTaskAllFilter
+          ? "ALL"
+          : filterAvailable.selectedFilterLocal,
         filterAvailable.fromClick,
         [item.taskName]
       );
