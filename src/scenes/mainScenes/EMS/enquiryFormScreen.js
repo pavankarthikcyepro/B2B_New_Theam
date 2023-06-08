@@ -267,6 +267,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const headNavigation = useNavigation();
   let scrollRef = useRef(null);
   const selector = useSelector((state) => state.enquiryFormReducer);
+  const homeSelector = useSelector((state) => state.homeReducer);
   const proceedToPreSelector = useSelector(
     (state) => state.proceedToPreBookingReducer
   );
@@ -410,6 +411,47 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //     }, 6000);
   //     return () => clearInterval(autoSaveInterval);
   // }, [])
+
+  useEffect(() => {
+    if (route.params && route.params.enqDetails) {
+      const { branchId, referencenumber } = route.params.enqDetails;
+      //   dispatch(setDropDownData({ key: "ORG_ID", value: organizationId }));
+      dispatch(setDropDownData({ key: "BRANCH_ID", value: branchId }));
+      if (
+        homeSelector.filter_drop_down_data?.["Dealer Code"]?.sublevels.length >
+        0
+      ) {
+        const { sublevels } = homeSelector.filter_drop_down_data["Dealer Code"];
+        let parentId = "";
+        let branchName = "";
+        for (let i = 0; i < sublevels.length; i++) {
+          const element = sublevels[i];
+          if (referencenumber.includes(element.name)) {
+            parentId = element.parentId;
+            branchName = element.name;
+            break;
+          }
+        }
+        if (parentId) {
+          if (
+            homeSelector.filter_drop_down_data?.Location?.sublevels.length > 0
+          ) {
+            const { sublevels } = homeSelector.filter_drop_down_data.Location;
+            for (let i = 0; i < sublevels.length; i++) {
+              const element = sublevels[i];
+              if (parentId == element.id) {
+                dispatch(
+                  setDropDownData({ key: "LOCATION", value: element.name })
+                );
+                dispatch(setDropDownData({ key: "BRANCH", value: branchName }));
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }, [homeSelector.filter_drop_down_data]);
 
   const clearLocalData = () => {
     setOpenAccordian("0");
@@ -3763,6 +3805,39 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               </List.Accordion>
               <View style={styles.space}></View>
 
+              {/* Select Location & Dealer Code */}
+              <List.Accordion
+                id={"11"}
+                title="Select Location & Dealer Code"
+                titleStyle={{
+                  color: openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "11" ? Colors.RED : Colors.WHITE,
+                    height: 60,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <DropDownSelectionItem
+                  label={"Location*"}
+                  value={selector.selectedLocation}
+                  disabled={true}
+                />
+                <Text style={GlobalStyle.underline} />
+                <DropDownSelectionItem
+                  label={"Branch*"}
+                  value={selector.selectedBranch}
+                  disabled={true}
+                />
+                <Text style={GlobalStyle.underline} />
+              </List.Accordion>
+              <View style={styles.space}></View>
+              
               {/* 2.Customer Profile */}
               <List.Accordion
                 id={"1"}

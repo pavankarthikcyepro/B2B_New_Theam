@@ -505,6 +505,19 @@ export const getOrgTagsById = createAsyncThunk(
   }
 );
 
+export const getBranchList = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getBranchList",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.DEALER_CODE_BRANCH_LIST(payload["orgId"], payload["locationId"])
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -730,6 +743,11 @@ const initialState = {
   foc_accessoriesFromServer: "",
   event_list_Config: [],
   event_list_response_Config_status: "",
+  selectedLocation: "",
+  selectedOrgId: "",
+  selectedBranch: "",
+  selectedBranchId: "",
+  branchList: [],
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -813,6 +831,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.otherPricesDropDown= [];
       state.orgTagList= [];
       state.orgTagListById = [];
+      state.selectedLocation = "";
+      state.selectedOrgId = "";
+      state.selectedBranch = "";
+      state.selectedBranchId = "";
+      state.branchList = [];
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -886,6 +909,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.otherPricesDropDown= [];
       state.orgTagList= [];
       state.orgTagListById = [];
+      state.selectedLocation = "";
+      state.selectedOrgId = "";
+      state.selectedBranch = "";
+      state.selectedBranchId = "";
+      state.branchList = [];
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -1040,6 +1068,25 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_INSURENCE_COMPANY_NAME":
           state.r_insurence_company_name = value;
+          break;
+        case "LOCATION":
+          state.selectedLocation = value;
+          state.branchList = [];
+          state.selectedBranch = "";
+          state.selectedBranchId = "";
+          state.source_of_enquiry = "";
+          state.sub_source_of_enquiry = "";
+          break;
+        case "ORG_ID":
+          state.selectedOrgId = value;
+          break;
+        case "BRANCH":
+          state.selectedBranch = value;
+          state.source_of_enquiry = "";
+          state.sub_source_of_enquiry = "";
+          break;
+        case "BRANCH_ID":
+          state.selectedBranchId = value;
           break;
       }
     },
@@ -2697,6 +2744,26 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     });
     builder.addCase(getOrgTagsById.rejected, (state, action) => { });
+
+    builder
+      .addCase(getBranchList.pending, (state, action) => {
+        state.branchList = [];
+      })
+      .addCase(getBranchList.fulfilled, (state, action) => {
+        let newArr = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let newObj = {
+            ...element,
+            name: element.branchName,
+          };
+          newArr.push(newObj);
+        }
+        state.branchList = [...newArr];
+      })
+      .addCase(getBranchList.rejected, (state, action) => {
+        state.branchList = [];
+      });
   },
 });
 
