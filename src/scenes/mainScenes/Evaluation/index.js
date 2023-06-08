@@ -22,6 +22,7 @@ import {
 import { Dropdown } from "react-native-element-dropdown";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import { SafeAreaView } from "react-native-safe-area-context";
+import uuid from "react-native-uuid";
 import CustomTextInput from "./Component/CustomTextInput";
 import Entypo from "react-native-vector-icons/Entypo";
 import CustomEvaluationDropDown from "./Component/CustomEvaluationDropDown";
@@ -38,10 +39,15 @@ import { client } from "../../../networking/client";
 import * as AsyncStore from "../../../asyncStore";
 import { PincodeDetailsNew } from "../../../utils/helperFunctions";
 import {
+  Fuel_Types,
   Gender_Types,
+  Insurence_Types,
   Salutation_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
-
+import { showToastRedAlert } from "../../../utils/toast";
+import moment from "moment";
+const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().format(dateFormat);
 const LocalButtonComp = ({ title, onPress, disabled, color }) => {
   return (
     <Button
@@ -61,33 +67,6 @@ const LocalButtonComp = ({ title, onPress, disabled, color }) => {
     </Button>
   );
 };
-
-const SAMPLELIST = [
-  {
-    Name: "Product A",
-    "Office Allocated": "Office 1",
-    Remarks: "Lorem ipsum dolor sit amet",
-    Quantity: 10,
-    Cost: 50,
-    Price: 70,
-  },
-  {
-    Name: "Product B",
-    "Office Allocated": "Office 2",
-    Remarks: "Consectetur adipiscing elit",
-    Quantity: 5,
-    Cost: 20,
-    Price: 30,
-  },
-  {
-    Name: "Product C",
-    "Office Allocated": "Office 1",
-    Remarks: "Sed do eiusmod tempor incididunt",
-    Quantity: 15,
-    Cost: 30,
-    Price: 40,
-  },
-];
 
 const Payload = {
   id: 0,
@@ -262,8 +241,14 @@ const EvaluationForm = ({ route, navigation }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [imageTitle, setImageTitle] = useState("");
+  const [datePickerTitle, setDatePickerTitle] = useState("");
   const [imagePath, setImagePath] = useState("");
   const [errors, setErrors] = useState({});
+
+  const [enterInsurance, setEnterInsurance] = useState(false);
+  const [enterHypothication, setEnterHypothication] = useState(false);
+
   const [salutation, setSalutation] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -284,7 +269,7 @@ const EvaluationForm = ({ route, navigation }) => {
 
   const [rcNumber, setRcNumber] = useState("");
   const [nameOnRc, setNameOnRc] = useState("");
-  //  const [mobileNumber, setMobileNumber] = useState("");
+  const [mobileNumber2, setMobileNumber2] = useState("");
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
   const [make, setMake] = useState("");
@@ -405,6 +390,34 @@ const EvaluationForm = ({ route, navigation }) => {
   const [hypothicationCompletedDate, setHypothicationCompletedDate] =
     useState("");
 
+  const [frontSideImage, setFrontSideImage] = useState(null);
+  const [backSideImage, setBackSideImage] = useState(null);
+  const [leftSideImage, setLeftSideImage] = useState(null);
+  const [rightSideImage, setRightSideImage] = useState(null);
+  const [speedometerImage, setSpeedometerImage] = useState(null);
+  const [chassisImage, setChassisImage] = useState(null);
+  const [interiorFrontImage, setInteriorFrontImage] = useState(null);
+  const [interiorBackImage, setInteriorBackImage] = useState(null);
+  const [extraFitmentImage, setExtraFitmentImage] = useState(null);
+  const [scratchDamageImage, setScratchDamageImage] = useState(null);
+  const [dentDamageImage, setDentDamageImage] = useState(null);
+  const [functionsImage, setFunctionsImage] = useState(null);
+  const [breakDamageImage, setBreakDamageImage] = useState(null);
+  const [numberPlateImage, setNumberPlateImage] = useState(null);
+
+  const [rcFrontImage, setRcFrontImage] = useState(null);
+  const [rcBackImage, setRcBackImage] = useState(null);
+  const [insuranceCopyImage, setInsuranceCopyImage] = useState(null);
+  const [invoiceImage, setInvoiceImage] = useState(null);
+  const [hypothicationDocumentImage, setHypothicationDocumentImage] =
+    useState(null);
+  const [oldCarNOCImage, setOldCarNOCImage] = useState(null);
+  const [ccImage, setCcImage] = useState(null);
+  const [pollutionImage, setPollutionImage] = useState(null);
+  const [idProofImage, setIdProofImage] = useState(null);
+  const [panCardImage, setPanCardImage] = useState(null);
+  const [otherImages, setOtherImages] = useState([]);
+
   const [openAccordian, setOpenAccordian] = useState("1");
   const [openAccordian2, setOpenAccordian2] = useState("1");
   const [openAccordianError, setOpenAccordianError] = useState(null);
@@ -440,15 +453,91 @@ const EvaluationForm = ({ route, navigation }) => {
   const [addressData, setAddressData] = useState([]);
   const [addressData2, setAddressData2] = useState([]);
   const [dataForDropDown, setDataForDropDown] = useState([]);
-
+  // const [Refurbishment, setRefurbishment] = useState({
+  //   Items: [],
+  //   AdditionalExpenses: [],
+  // });
+  const [Refurbishment, setRefurbishment] = useState({
+    Items: [
+      {
+        id: 16,
+        type: "Items",
+        items: "Testing Items",
+        status: "Active",
+        orgId: "18",
+        createdBy: null,
+        updatedBy: null,
+        createdAt: null,
+        updatedAt: null,
+        cost: 0,
+      },
+      {
+        id: 19,
+        type: "Items",
+        items: "TTTT",
+        status: "Active",
+        orgId: "18",
+        createdBy: null,
+        updatedBy: null,
+        createdAt: null,
+        updatedAt: null,
+        cost: 0,
+      },
+    ],
+    AdditionalExpenses: [
+      {
+        id: 15,
+        type: "Additional Expenses",
+        items: "Testing",
+        status: "Active",
+        orgId: "18",
+        createdBy: null,
+        updatedBy: null,
+        createdAt: null,
+        updatedAt: null,
+        cost: 0,
+      },
+      {
+        id: 18,
+        type: "Additional Expenses",
+        items: "Testing Items Evaluation Parameters ",
+        status: "Active",
+        orgId: "18",
+        createdBy: null,
+        updatedBy: null,
+        createdAt: null,
+        updatedAt: null,
+        cost: 0,
+      },
+      {
+        id: 20,
+        type: "Additional Expenses",
+        items: "hI",
+        status: "Active",
+        orgId: "18",
+        createdBy: null,
+        updatedBy: null,
+        createdAt: null,
+        updatedAt: null,
+        cost: 0,
+      },
+    ],
+  });
+  const [brandDropDown, setBrandDropDown] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState({});
+  const [modalDropdown, setModalDropdown] = useState([]);
+  const [maxDate, setMaxDate] = useState(new Date());
   const [budget, setBudget] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [ItemList, setItemList] = useState(SAMPLELIST);
   let scrollRef = useRef(null);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getOptions();
+    getCheckList();
+    getModalList();
+  }, []);
   const getOptions = async () => {
     try {
       let employeeData = await AsyncStore.getData(
@@ -460,8 +549,13 @@ const EvaluationForm = ({ route, navigation }) => {
           URL.GET_ALL_EVALUATION(jsonObj.orgId)
         );
         const json = await response.json();
+        if (response.ok) {
+          // setRefurbishment(json);
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      // setRefurbishment({ Items: [], AdditionalExpenses: [] });
+    }
   };
 
   const getCheckList = async () => {
@@ -475,9 +569,25 @@ const EvaluationForm = ({ route, navigation }) => {
           URL.MAKE_LIST_EVALATION(jsonObj.orgId)
         );
         const json = await response.json();
+        if (response.ok) {
+          const newArr = json.map(addIsActive);
+          setBrandDropDown(newArr);
+        }
       }
     } catch (error) {}
   };
+
+  function addIsActive(v) {
+    return { ...v, isSelected: false, name: v.otherMaker };
+  }
+  function addIsActive2(v) {
+    return { ...v, isSelected: false, name: v.otherModel };
+  }
+
+  function isValidInput(input) {
+    var regex = /^[a-zA-Z0-9_]+$/;
+    return regex.test(input);
+  }
 
   const getModalList = async () => {
     try {
@@ -528,7 +638,6 @@ const EvaluationForm = ({ route, navigation }) => {
   const handleSave = (item) => {
     // handle form submit here
     // Keyboard.dismiss();
-    setItemList([...ItemList, item]);
     setModalVisible(false);
   };
 
@@ -690,20 +799,24 @@ const EvaluationForm = ({ route, navigation }) => {
 
   const handleValidation = () => {
     const newErrors = {};
+    let isValid = true;
 
     // Validate First Name
     if (firstName.trim() === "") {
       newErrors.firstName = "First Name is required";
+      isValid = false;
     }
 
     // Validate Last Name
     if (lastName.trim() === "") {
       newErrors.lastName = "Last Name is required";
+      isValid = false;
     }
 
     // Validate Date of Birth
     if (dateOfBirth.trim() === "") {
       newErrors.dateOfBirth = "Date of Birth is required";
+      isValid = false;
     } else {
       // Add additional validation logic for date format or range if needed
     }
@@ -711,51 +824,72 @@ const EvaluationForm = ({ route, navigation }) => {
     // Validate Mobile Number
     if (mobileNumber.trim() === "") {
       newErrors.mobileNumber = "Mobile Number is required";
+      isValid = false;
     } else {
       if (mobileNumber.trim().length === 10) {
         newErrors.mobileNumber = "Length of Mobile Number must be 10";
+        isValid = false;
       }
       // Add additional validation logic for mobile number format if needed
     }
+
+    if (communicationAddress.pincode.trim() === "") {
+      newErrors.cpincode = "Pincode is required";
+      isValid = false;
+    }
+
+    if (pincode.trim() === "") {
+      newErrors.ppincode = "Pincode is required";
+      isValid = false;
+    }
+
     // Validate RC Number
-    // if (rcNumber.trim() === "") {
-    //   newErrors.rcNumber = "RC Number is required";
-    // }
+    if (rcNumber.trim() === "") {
+      newErrors.rcNumber = "RC Number is required";
+      isValid = false;
+    }
 
-    // // Validate Name On RC
-    // if (nameOnRC.trim() === "") {
-    //   newErrors.nameOnRC = "Name On RC is required";
-    // }
+    // Validate Name On RC
+    if (nameOnRc.trim() === "") {
+      newErrors.nameOnRc = "Name On RC is required";
+      isValid = false;
+    }
 
-    // // Validate Mobile Number
-    // if (mobileNumber.trim() === "") {
-    //   newErrors.mobileNumber = "Mobile Number is required";
-    // }
+    // Validate Mobile Number
+    if (mobileNumber2.trim() === "") {
+      newErrors.mobileNumber2 = "Mobile Number is required";
+      isValid = false;
+    }
 
     // Validate Variant
-    // if (variant.trim() === "") {
-    //   newErrors.variant = "Variant is required";
-    // }
+    if (variant.trim() === "") {
+      newErrors.variant = "Variant is required";
+      isValid = false;
+    }
 
-    // // Validate Colour
-    // if (colour.trim() === "") {
-    //   newErrors.colour = "Colour is required";
-    // }
+    // Validate Colour
+    if (colour.trim() === "") {
+      newErrors.colour = "Colour is required";
+      isValid = false;
+    }
 
-    // // Validate Transmission
-    // if (transmission.trim() === "") {
-    //   newErrors.transmission = "Transmission is required";
-    // }
+    // Validate Transmission
+    if (transmission.trim() === "") {
+      newErrors.transmission = "Transmission is required";
+      isValid = false;
+    }
 
-    // // Validate Vin Number
-    // if (vinNumber.trim() === "") {
-    //   newErrors.vinNumber = "Vin Number is required";
-    // }
+    // Validate Vin Number
+    if (vinNumber.trim() === "") {
+      newErrors.vinNumber = "Vin Number is required";
+      isValid = false;
+    }
 
-    // // Validate Engine Number
-    // if (engineNumber.trim() === "") {
-    //   newErrors.engineNumber = "Engine Number is required";
-    // }
+    // Validate Engine Number
+    if (engineNumber.trim() === "") {
+      newErrors.engineNumber = "Engine Number is required";
+      isValid = false;
+    }
 
     // // Validate Month
     // if (month.trim() === "") {
@@ -767,30 +901,30 @@ const EvaluationForm = ({ route, navigation }) => {
     //   newErrors.year = "Year is required";
     // }
 
-    // // Validate Pincode
-    // if (pincode.trim() === "") {
-    //   newErrors.pincode = "Pincode is required";
-    // }
+    // Validate Pincode
+    if (pincode.trim() === "") {
+      newErrors.pincode = "Pincode is required";
+    }
 
-    // // Validate Registration State
-    // if (registrationState.trim() === "") {
-    //   newErrors.registrationState = "Registration State is required";
-    // }
+    // Validate Registration State
+    if (registrationState.trim() === "") {
+      newErrors.registrationState = "Registration State is required";
+    }
 
-    // // Validate Registration District
-    // if (registrationDistrict.trim() === "") {
-    //   newErrors.registrationDistrict = "Registration District is required";
-    // }
+    // Validate Registration District
+    if (registrationDistrict.trim() === "") {
+      newErrors.registrationDistrict = "Registration District is required";
+    }
 
-    // // Validate Registration City
-    // if (registrationCity.trim() === "") {
-    //   newErrors.registrationCity = "Registration City is required";
-    // }
+    // Validate Registration City
+    if (registrationCity.trim() === "") {
+      newErrors.registrationCity = "Registration City is required";
+    }
 
-    // // Validate Emission
-    // if (emission.trim() === "") {
-    //   newErrors.emission = "Emission is required";
-    // }
+    // Validate Emission
+    if (emission.trim() === "") {
+      newErrors.emission = "Emission is required";
+    }
 
     // // Validate Vehicle Type
     // if (vehicleType.trim() === "") {
@@ -802,39 +936,43 @@ const EvaluationForm = ({ route, navigation }) => {
     //   newErrors.typeOfBody = "Type of Body is required";
     // }
 
-    // // Validate KM's driven
-    // if (kmsDriven.trim() === "") {
-    //   newErrors.kmsDriven = "KM's driven is required";
-    // }
+    // Validate KM's driven
+    if (kmsDriven.trim() === "") {
+      newErrors.kmsDriven = "KM's driven is required";
+    }
 
-    // // Validate Cubic Capacity
-    // if (cubicCapacity.trim() === "") {
-    //   newErrors.cubicCapacity = "Cubic Capacity is required";
-    // }
+    // Validate Cubic Capacity
+    if (cubicCapacity.trim() === "") {
+      newErrors.cubicCapacity = "Cubic Capacity is required";
+    }
 
-    // // Validate No Owners
-    // if (noOwners.trim() === "") {
-    //   newErrors.noOwners = "No Owners is required";
-    // }
+    // Validate No Owners
+    if (noOwners.trim() === "") {
+      newErrors.noOwners = "No Owners is required";
+    }
 
-    // // Validate No. of Challan Pending
-    // if (challanPending.trim() === "") {
-    //   newErrors.challanPending = "No. of Challan Pending is required";
-    // }
+    // Validate No. of Challan Pending
+    if (challanPending.trim() === "") {
+      newErrors.challanPending = "No. of Challan Pending is required";
+    }
 
-    // if (hypothecatedTo.trim() === "") {
-    //   newErrors.hypothecatedTo = "Hypothecated To is required";
-    // }
+    if (hypothecatedTo.trim() === "") {
+      newErrors.hypothecatedTo = "Hypothecated To is required";
+    }
 
-    // // Validate Hypothecated Branch
-    // if (hypothecatedBranch.trim() === "") {
-    //   newErrors.hypothecatedBranch = "Hypothecated Branch is required";
-    // }
+    // Validate Hypothecated Branch
+    if (hypothecatedBranch.trim() === "") {
+      newErrors.hypothecatedBranch = "Hypothecated Branch is required";
+    }
 
-    // // Validate Loan amount due
-    // if (loanAmountDue.trim() === "") {
-    //   newErrors.loanAmountDue = "Loan amount due is required";
-    // }
+    // Validate Loan amount due
+    if (loanAmountDue.trim() === "") {
+      newErrors.loanAmountDue = "Loan amount due is required";
+    }
+
+    if (customerExpectedPrice.trim() === "") {
+      newErrors.loanAmountDue = "Loan amount due is required";
+    }
 
     // // Validate Hypothication Completed Date
     // if (hypothicationCompletedDate.trim() === "") {
@@ -842,8 +980,33 @@ const EvaluationForm = ({ route, navigation }) => {
     //     "Hypothication Completed Date is required";
     // }
 
+    // Validate Customer Expected Price
+    if (customerExpectedPrice.trim() === "") {
+      newErrors.customerExpectedPrice = "Customer Expected Price is required";
+    }
+
+    // Validate Evaluator Offered Price
+    if (evaluatorOfferedPrice.trim() === "") {
+      newErrors.evaluatorOfferedPrice = "Evaluator Offered Price is required";
+    }
+
+    // Validate Manager Approved Price
+    if (managerApprovedPrice.trim() === "") {
+      newErrors.managerApprovedPrice = "Manager Approved Price is required";
+    }
+
+    // Validate Price Gap
+    if (priceGap.trim() === "") {
+      newErrors.priceGap = "Price Gap is required";
+    }
+
+    // Validate Approval Expiry Date
+    if (approvalExpiryDate.trim() === "") {
+      newErrors.approvalExpiryDate = "Approval Expiry Date is required";
+    }
+
     // Update the errors state
-    // setErrors(newErrors);
+    setErrors(newErrors);
   };
 
   const updateAccordian = (selectedIndex) => {
@@ -864,17 +1027,6 @@ const EvaluationForm = ({ route, navigation }) => {
     }
   };
 
-  const data = [
-    { label: "Item 1", value: "1" },
-    { label: "Item 2", value: "2" },
-    { label: "Item 3", value: "3" },
-    { label: "Item 4", value: "4" },
-    { label: "Item 5", value: "5" },
-    { label: "Item 6", value: "6" },
-    { label: "Item 7", value: "7" },
-    { label: "Item 8", value: "8" },
-  ];
-
   const showDropDownModelMethod = (item) => {
     switch (item) {
       case "Salutation":
@@ -888,10 +1040,13 @@ const EvaluationForm = ({ route, navigation }) => {
       case "PerVillage/Town":
         break;
       case "Brand":
+        setDataForDropDown([...brandDropDown]);
         break;
       case "Model":
+        setDataForDropDown([...modalDropdown]);
         break;
       case "Fuel Type":
+        setDataForDropDown([...Fuel_Types]);
         break;
       case "Month":
         break;
@@ -899,15 +1054,312 @@ const EvaluationForm = ({ route, navigation }) => {
         break;
       case "Vehicle Type":
         break;
-      case "YearType of Body":
+      case "Type of Body":
         break;
       case "Insurance Type":
+        setDataForDropDown([...Insurence_Types]);
         break;
       default:
         break;
     }
     setDropDownTitle(item);
     setShowDropDown(true);
+  };
+
+  const storeDropDown = (item) => {
+    switch (dropDownTitle) {
+      case "Salutation":
+        setSalutation(item.name);
+        break;
+      case "Gender":
+        setGender(item.name);
+        break;
+      case "Village/Town":
+        break;
+      case "PerVillage/Town":
+        break;
+      case "Brand":
+        setBrand(item.name);
+        const newArr = item.othermodels.map(addIsActive2);
+        setModalDropdown(newArr);
+        break;
+      case "Model":
+        setModel(item.name);
+        break;
+      case "Fuel Type":
+        setFuelType(item.name);
+        break;
+      case "Month":
+        setMonth(item.name);
+        break;
+      case "Year":
+        setYear(item.name);
+        break;
+      case "Vehicle Type":
+        setVehicleType(item.name);
+        break;
+      case "Type of Body":
+        setTypeOfBody(item.name);
+        break;
+      case "Insurance Type":
+        setInsuranceType(item.name);
+        break;
+      default:
+        break;
+    }
+    setDropDownTitle("");
+    setShowDropDown(false);
+  };
+
+  const showImagePickerMethod = (item) => {
+    switch (item) {
+      case "Front Side":
+        break;
+      case "Back Side":
+        break;
+      case "Left Side":
+        break;
+      case "Right Side":
+        break;
+      case "Speedo meter":
+        break;
+      case "Chassis":
+        break;
+      case "Interior Front":
+        break;
+      case "Interior Back":
+        break;
+      case "Extra Fitment":
+        break;
+      case "Scratch Damage":
+        break;
+      case "Dent Damage":
+        break;
+      case "Functions":
+        break;
+      case "Break Damage":
+        break;
+      case "Number Plate":
+        break;
+      case "Rc Front":
+        break;
+      case "Rc Back":
+        break;
+      case "Insurance Copy":
+        break;
+      case "Hypothication Document":
+        break;
+      case "Bank/Finance - old car NOC":
+        break;
+      case "CC":
+        break;
+      case "Pollution":
+        break;
+      case "ID Proof":
+        break;
+      case "PAN Card":
+        break;
+      default:
+        break;
+    }
+    setImageTitle(item);
+    setShowImagePicker(true);
+  };
+
+  const ShowDatePickerFunction = (item) => {
+    setShowDatePicker(true);
+    setDatePickerTitle(item);
+  };
+
+  const saveDate = (item) => {
+    switch (datePickerTitle) {
+      case "Approval Expiry Date":
+        setApprovalExpiryDate(item);
+        break;
+      case "Insurance To Date":
+        setInsuranceToDate(item);
+        break;
+      case "Insurance From Date":
+        setInsuranceToDate(item);
+        break;
+      case "Hypothication Completed Date":
+        setHypothicationCompletedDate(item);
+        break;
+      case "Regn. Valid Upto":
+        setRegnValidUpto(item);
+        break;
+      case "Date of Registration":
+        setDateOfRegistration(item);
+        break;
+      case "Date of Birth":
+        setDateOfBirth(item);
+        break;
+      case "Anniversary Date":
+        setAnniversaryDate(item);
+        break;
+      default:
+        break;
+    }
+    setShowDatePicker(false);
+    setDatePickerTitle("");
+  };
+
+  const saveImages = (payload) => {
+    switch (imageTitle) {
+      case "Front Side":
+        setFrontSideImage(payload);
+        break;
+      case "Back Side":
+        setBackSideImage(payload);
+        break;
+      case "Left Side":
+        setLeftSideImage(payload);
+        break;
+      case "Right Side":
+        setRightSideImage(payload);
+        break;
+      case "Speedo meter":
+        setSpeedometerImage(payload);
+        break;
+      case "Chassis":
+        setChassisImage(payload);
+        break;
+      case "Interior Front":
+        setInteriorFrontImage(payload);
+        break;
+      case "Interior Back":
+        setInteriorBackImage(payload);
+        break;
+      case "Extra Fitment":
+        setExtraFitmentImage(payload);
+        break;
+      case "Scratch Damage":
+        setScratchDamageImage(payload);
+        break;
+      case "Dent Damage":
+        setDentDamageImage(payload);
+        break;
+      case "Functions":
+        setFunctionsImage(payload);
+        break;
+      case "Break Damage":
+        setBreakDamageImage(payload);
+        break;
+      case "Number Plate":
+        setNumberPlateImage(payload);
+        break;
+      case "Rc Front":
+        setRcFrontImage(payload);
+        break;
+      case "Rc Back":
+        setRcBackImage(payload);
+        break;
+      case "Insurance Copy":
+        setInsuranceCopyImage(payload);
+        break;
+      case "Invoice":
+        setInvoiceImage(payload);
+        break;
+      case "Hypothication Document":
+        setHypothicationDocumentImage(payload);
+        break;
+      case "Bank/Finance - old car NOC":
+        setOldCarNOCImage(payload);
+        break;
+      case "CC":
+        setCcImage(payload);
+        break;
+      case "Pollution":
+        setPollutionImage(payload);
+        break;
+      case "ID Proof":
+        setIdProofImage(payload);
+        break;
+      case "PAN Card":
+        setPanCardImage(payload);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const deleteImages = (payload) => {
+    switch (payload) {
+      case "Front Side":
+        setFrontSideImage(null);
+        break;
+      case "Back Side":
+        setBackSideImage(null);
+        break;
+      case "Left Side":
+        setLeftSideImage(null);
+        break;
+      case "Right Side":
+        setRightSideImage(null);
+        break;
+      case "Speedo meter":
+        setSpeedometerImage(null);
+        break;
+      case "Chassis":
+        setChassisImage(null);
+        break;
+      case "Interior Front":
+        setInteriorFrontImage(null);
+        break;
+      case "Interior Back":
+        setInteriorBackImage(null);
+        break;
+      case "Extra Fitment":
+        setExtraFitmentImage(null);
+        break;
+      case "Scratch Damage":
+        setScratchDamageImage(null);
+        break;
+      case "Dent Damage":
+        setDentDamageImage(null);
+        break;
+      case "Functions":
+        setFunctionsImage(null);
+        break;
+      case "Break Damage":
+        setBreakDamageImage(null);
+        break;
+      case "Number Plate":
+        setNumberPlateImage(null);
+        break;
+      case "Rc Front":
+        setRcFrontImage(null);
+        break;
+      case "Rc Back":
+        setRcBackImage(null);
+        break;
+      case "Insurance Copy":
+        setInsuranceCopyImage(null);
+        break;
+      case "Invoice":
+        setInvoiceImage(null);
+        break;
+      case "Hypothication Document":
+        setHypothicationDocumentImage(null);
+        break;
+      case "Bank/Finance - old car NOC":
+        setOldCarNOCImage(null);
+        break;
+      case "CC":
+        setCcImage(null);
+        break;
+      case "Pollution":
+        setPollutionImage(null);
+        break;
+      case "ID Proof":
+        setIdProofImage(null);
+        break;
+      case "PAN Card":
+        setPanCardImage(null);
+        break;
+      default:
+        break;
+    }
   };
 
   const update = () => {
@@ -1081,6 +1533,216 @@ const EvaluationForm = ({ route, navigation }) => {
       carExchangeEvalutionCosts: [],
     };
   };
+
+  const getTotalCost = (data) => {
+    let totalCost = 0;
+
+    data.Items.forEach((item) => {
+      totalCost += parseFloat(item.cost);
+    });
+
+    data.AdditionalExpenses.forEach((expense) => {
+      totalCost += parseFloat(expense.cost);
+    });
+
+    return totalCost;
+  };
+
+  const uploadSelectedImage = async (selectedPhoto, keyId) => {
+    const photoUri = selectedPhoto.uri;
+    if (!photoUri) {
+      return;
+    }
+
+    const formData = new FormData();
+    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
+    // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    const fileName = uuid.v4();
+    formData.append("file", {
+      name: `${fileName}-.${fileType}`,
+      type: `image/${fileType}`,
+      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
+    });
+    formData.append(
+      "universalId",
+      "18-286-04109cec-776e-4e4f-986f-9d5b1246a0b0"
+    );
+    switch (imageTitle) {
+      case "Front Side":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Back Side":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Left Side":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Right Side":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Speedo meter":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Chassis":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Interior Front":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Interior Back":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Extra Fitment":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Scratch Damage":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Dent Damage":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Functions":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Break Damage":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Number Plate":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Rc Front":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Rc Back":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Insurance Copy":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Hypothication Document":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Bank/Finance - old car NOC":
+        formData.append("documentType", "pan");
+
+        break;
+      case "CC":
+        formData.append("documentType", "pan");
+
+        break;
+      case "Pollution":
+        formData.append("documentType", "pan");
+
+        break;
+      case "ID Proof":
+        formData.append("documentType", "pan");
+
+        break;
+      case "PAN Card":
+        formData.append("documentType", "pan");
+
+        break;
+      default:
+        break;
+    }
+
+    let tempToken1 = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+    await fetch(URL.UPLOAD_DOCUMENT(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + tempToken1,
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response) {
+          console.log("RESPS", response, keyId);
+          const payload = {
+            url: response.documentPath,
+            name: response.fileName,
+          };
+          saveImages(payload);
+          // if (keyId == "UPLOAD_CANCEL_LETTER") {
+          //   setCancelLetter(response);
+          // } else if (keyId == "UPLOAD_CANCEL_RECEIPT") {
+          //   setCancelReceipt(response);
+          // } else {
+          //   const dataObj = { ...uploadedImagesDataObj };
+          //   dataObj[response.documentType] = response;
+          //   setUploadedImagesDataObj({ ...dataObj });
+          // }
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(
+          error.message ? error.message : "Something went wrong"
+        );
+      });
+  };
+
+  const uploadSelectedImageAttachment = async (selectedPhoto, keyId) => {
+    const photoUri = selectedPhoto.uri;
+    if (!photoUri) {
+      return;
+    }
+
+    const formData = new FormData();
+    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
+    // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    const fileName = uuid.v4();
+
+    formData.append("uploadFiles", {
+      name: `${fileName}-.${fileType}`,
+      type: `image/${fileType}`,
+      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
+    });
+
+    let tempToken1 = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+    await fetch(URL.UPLOAD_ATTACHMENTS(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + tempToken1,
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response) {
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(
+          error.message ? error.message : "Something went wrong"
+        );
+      });
+  };
   return (
     <View style={[{ flex: 1 }]}>
       <Modal
@@ -1132,7 +1794,10 @@ const EvaluationForm = ({ route, navigation }) => {
         visible={showDatePicker}
         mode={"date"}
         value={new Date(Date.now())}
-        onChange={(event, selectedDate) => {}}
+        maximumDate={maxDate}
+        onChange={(event, selectedDate) => {
+          saveDate(moment(selectedDate).format(dateFormat));
+        }}
         onRequestClose={() => setShowDatePicker(false)}
       />
       <DropDownComponant
@@ -1140,11 +1805,19 @@ const EvaluationForm = ({ route, navigation }) => {
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         onRequestClose={() => setShowDropDown(false)}
-        selectedItems={(item) => {}}
+        selectedItems={(item) => {
+          storeDropDown(item);
+        }}
       />
       <ImagePickerComponent
         visible={showImagePicker}
-        selectedImage={(data, keyId) => {}}
+        selectedImage={(data, keyId) => {
+          if (keyId == "UPLOAD_ATTACHMENTS") {
+            uploadSelectedImageAttachment(data, keyId);
+          } else {
+            uploadSelectedImage(data, keyId);
+          }
+        }}
         onDismiss={() => {
           setShowImagePicker(false);
         }}
@@ -1223,6 +1896,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Gender"
                     buttonText="Select Gender"
+                    value={gender}
                     onPress={() => {
                       showDropDownModelMethod("Gender");
                     }}
@@ -1238,9 +1912,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Date of Birth"
                     value={dateOfBirth}
-                    onPress={() => {
-                      setShowDatePicker(true);
-                    }}
+                    onPress={ShowDatePickerFunction}
                   />
                   <CustomTextInput
                     placeholder="Enter Age"
@@ -1254,7 +1926,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Anniversary Date"
                     value={anniversaryDate}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                   <CustomTextInput
                     placeholder="Enter Mobile Number"
@@ -1336,14 +2008,38 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Urban"}
                       value={"urban"}
-                      status={true}
-                      onPress={() => {}}
+                      status={communicationAddress.isUrban ? true : false}
+                      onPress={() => {
+                        setCommunication({
+                          ...communicationAddress,
+                          ...((communicationAddress.isUrban = true),
+                          (communicationAddress.isRural = false)),
+                        });
+                        sameAsPermanent &&
+                          setPermanentAddress({
+                            ...permanentAddress,
+                            ...((permanentAddress.isRural = false),
+                            (permanentAddress.isUrban = true)),
+                          });
+                      }}
                     />
                     <RadioTextItem
                       label={"Rural"}
                       value={"rural"}
-                      status={false}
-                      onPress={() => {}}
+                      status={communicationAddress.isRural ? true : false}
+                      onPress={() => {
+                        setCommunication({
+                          ...communicationAddress,
+                          ...((communicationAddress.isRural = true),
+                          (communicationAddress.isUrban = false)),
+                        });
+                        sameAsPermanent &&
+                          setPermanentAddress({
+                            ...permanentAddress,
+                            ...((permanentAddress.isRural = true),
+                            (permanentAddress.isUrban = false)),
+                          });
+                      }}
                     />
                   </View>
                   <CustomTextInput
@@ -1378,11 +2074,20 @@ const EvaluationForm = ({ route, navigation }) => {
                         });
                     }}
                   />
-                  <CustomEvaluationDropDown
+                  <CustomTextInput
                     label="Village/Town"
-                    buttonText="Select Village/Town"
-                    onPress={() => {
-                      showDropDownModelMethod("Village/Town");
+                    placeholder="Enter Village/Town"
+                    value={communicationAddress.village}
+                    onChangeText={(text) => {
+                      setCommunication({
+                        ...communicationAddress,
+                        ...(communicationAddress.village = text),
+                      });
+                      sameAsPermanent &&
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...(permanentAddress.village = text),
+                        });
                     }}
                   />
                   <CustomTextInput
@@ -1514,14 +2219,26 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Urban"}
                       value={"urban"}
-                      status={true}
-                      onPress={() => {}}
+                      status={permanentAddress.isUrban ? true : false}
+                      onPress={() =>
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...((permanentAddress.isUrban = true),
+                          (permanentAddress.isRural = false)),
+                        })
+                      }
                     />
                     <RadioTextItem
                       label={"Rural"}
                       value={"rural"}
-                      status={false}
-                      onPress={() => {}}
+                      status={permanentAddress.isRural ? true : false}
+                      onPress={() =>
+                        setPermanentAddress({
+                          ...permanentAddress,
+                          ...((permanentAddress.isUrban = false),
+                          (permanentAddress.isRural = true)),
+                        })
+                      }
                     />
                   </View>
                   <CustomTextInput
@@ -1546,11 +2263,15 @@ const EvaluationForm = ({ route, navigation }) => {
                       });
                     }}
                   />
-                  <CustomEvaluationDropDown
+                  <CustomTextInput
                     label="Village/Town"
-                    buttonText="Select Village/Town"
-                    onPress={() => {
-                      showDropDownModelMethod("PerVillage/Town");
+                    placeholder="Enter Village/Town"
+                    value={permanentAddress.village}
+                    onChangeText={(text) => {
+                      setPermanentAddress({
+                        ...permanentAddress,
+                        ...(permanentAddress.village = text),
+                      });
                     }}
                   />
                   <CustomTextInput
@@ -1623,6 +2344,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="RC Number"
                     mandatory={true}
                     value={rcNumber}
+                    maxLength={15}
                     onChangeText={(text) => {
                       setRcNumber(text);
                     }}
@@ -1640,9 +2362,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Mobile Number"
                     label="Mobile Number"
                     mandatory={true}
-                    value={mobileNumber}
+                    keyboardType={"number-pad"}
+                    value={mobileNumber2}
                     onChangeText={(text) => {
-                      setMobileNumber(text);
+                      setMobileNumber2(text);
                     }}
                   />
                   <CustomEvaluationDropDown
@@ -1652,13 +2375,11 @@ const EvaluationForm = ({ route, navigation }) => {
                       showDropDownModelMethod("Brand");
                     }}
                     value={brand}
-                    onChangeText={(text) => {
-                      setBrand(text);
-                    }}
                   />
                   <CustomEvaluationDropDown
                     label="Model"
                     buttonText="Select Model"
+                    value={brand}
                     onPress={() => {
                       showDropDownModelMethod("Model");
                     }}
@@ -1684,6 +2405,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Fuel Type"
                     buttonText="Select Fuel Type"
+                    value={fuelType}
                     onPress={() => {
                       showDropDownModelMethod("Fuel Type");
                     }}
@@ -1702,6 +2424,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Vin Number"
                     mandatory={true}
                     value={vinNumber}
+                    maxLength={17}
                     onChangeText={(text) => {
                       setVinNumber(text);
                     }}
@@ -1711,6 +2434,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Engine Number"
                     mandatory={true}
                     value={engineNumber}
+                    maxLength={20}
                     onChangeText={(text) => {
                       setEngineNumber(text);
                     }}
@@ -1718,6 +2442,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Month"
                     buttonText="Select Month"
+                    value={month}
                     onPress={() => {
                       showDropDownModelMethod("Month");
                     }}
@@ -1725,6 +2450,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Year"
                     buttonText="Select Year"
+                    value={year}
                     onPress={() => {
                       showDropDownModelMethod("Year");
                     }}
@@ -1732,12 +2458,12 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Date of Registration"
                     value={dateOfRegistration}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                   <CustomDatePicker
                     label="Regn. Valid Upto"
                     value={regnValidUpto}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                   <CustomTextInput
                     placeholder="Enter Pincode"
@@ -1781,6 +2507,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Emission"
                     mandatory={true}
                     value={emission}
+                    maxLength={4}
                     onChangeText={(text) => {
                       setEmission(text);
                     }}
@@ -1788,6 +2515,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Vehicle Type"
                     buttonText="Select Vehicle Type"
+                    value={vehicleType}
                     onPress={() => {
                       showDropDownModelMethod("Vehicle Type");
                     }}
@@ -1795,6 +2523,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Type of Body"
                     buttonText="Select Type of Body"
+                    value={typeOfBody}
                     onPress={() => {
                       showDropDownModelMethod("Type of Body");
                     }}
@@ -1804,6 +2533,8 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="KM's driven"
                     mandatory={true}
                     value={kmsDriven}
+                    keyboardType={"number-pad"}
+                    maxLength={7}
                     onChangeText={(text) => {
                       setKmsDriven(text);
                     }}
@@ -1822,6 +2553,8 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="No Owners"
                     mandatory={true}
                     value={noOwners}
+                    maxLength={2}
+                    keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setNoOwners(text);
                     }}
@@ -1830,6 +2563,8 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter No. of Challan Pending"
                     label="No. of Challan Pending"
                     mandatory={true}
+                    maxLength={2}
+                    keyboardType={"number-pad"}
                     value={noOfChallanPending}
                     onChangeText={(text) => {
                       setNoOfChallanPending(text);
@@ -1927,9 +2662,11 @@ const EvaluationForm = ({ route, navigation }) => {
                 <View>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Checkbox.Android
-                      status={true ? "checked" : "unchecked"}
+                      status={enterHypothication ? "checked" : "unchecked"}
                       color={Colors.RED}
-                      onPress={() => {}}
+                      onPress={() => {
+                        setEnterHypothication(!enterHypothication);
+                      }}
                     />
                     <Text>{"* Agree to enter Hypothication details"}</Text>
                   </View>
@@ -1937,6 +2674,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Hypothecated To"
                     label="Hypothecated To"
                     mandatory={true}
+                    maxLength={50}
                     value={hypothecatedTo}
                     onChangeText={(text) => {
                       setHypothecatedTo(text);
@@ -1946,9 +2684,15 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Hypothecated Branch"
                     label="Hypothecated Branch"
                     mandatory={true}
+                    maxLength={30}
                     value={hypothecatedBranch}
                     onChangeText={(text) => {
-                      setHypothecatedBranch(text);
+                      if (text.trim() !== "" && isValidInput(text)) {
+                        setHypothecatedBranch(text);
+                      }
+                      if (text.trim() === "") {
+                        setHypothecatedBranch(text);
+                      }
                     }}
                   />
                   <CustomTextInput
@@ -1956,6 +2700,8 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Loan amount due"
                     mandatory={true}
                     value={loanAmountDue}
+                    keyboardType={"number-pad"}
+                    maxLength={7}
                     onChangeText={(text) => {
                       setLoanAmountDue(text);
                     }}
@@ -1963,7 +2709,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Hypothication Completed Date"
                     value={hypothicationCompletedDate}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                 </View>
               </List.Accordion>
@@ -1988,15 +2734,18 @@ const EvaluationForm = ({ route, navigation }) => {
                 <View>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Checkbox.Android
-                      status={true ? "checked" : "unchecked"}
+                      status={enterInsurance ? "checked" : "unchecked"}
                       color={Colors.RED}
-                      onPress={() => {}}
+                      onPress={() => {
+                        setEnterInsurance(!enterInsurance);
+                      }}
                     />
                     <Text>{"* Agree to enter Insurance details"}</Text>
                   </View>
                   <CustomEvaluationDropDown
                     label="Insurance Type"
                     buttonText="Choose your Insurance Type"
+                    value={insuranceType}
                     onPress={() => {
                       showDropDownModelMethod("Insurance Type");
                     }}
@@ -2022,12 +2771,12 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Insurance From Date"
                     value={insuranceFromDate}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                   <CustomDatePicker
                     label="Insurance To Date"
                     value={insuranceToDate}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                 </View>
               </List.Accordion>
@@ -2054,112 +2803,120 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Front Side"
                     buttonText="Upload Front Side Image"
                     mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={frontSideImage}
                   />
                   <CustomUpload
                     label="Back Side"
                     buttonText="Upload Back Side Image"
                     mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={backSideImage}
                   />
                   <CustomUpload
                     label="Left Side"
                     buttonText="Upload Left Side Image"
                     mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={leftSideImage}
                   />
                   <CustomUpload
                     label="Right Side"
                     buttonText="Upload Right Side Image"
                     mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={rightSideImage}
                   />
                   <CustomUpload
                     label="Speedo meter"
                     buttonText="Upload Speedo meter Image"
                     mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
-                  />
-                  <CustomUpload
-                    label="Front Side"
-                    buttonText="Upload Front Side Image"
-                    mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={speedometerImage}
                   />
                   <CustomUpload
                     label="Chassis"
                     buttonText="Upload Chassis Image"
                     mandatory={true}
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={chassisImage}
                   />
                   <CustomUpload
                     label="Interior Front"
                     buttonText="Upload Interior Front Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={interiorFrontImage}
                   />
                   <CustomUpload
                     label="Interior Back"
                     buttonText="Upload Interior Back Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={interiorBackImage}
                   />
                   <CustomUpload
                     label="Extra Fitment"
                     buttonText="Upload Extra Fitment Image"
                     mandatory={true}
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={extraFitmentImage}
                   />
                   <CustomUpload
                     label="Scratch Damage"
                     buttonText="Upload Scratch Damage Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={scratchDamageImage}
                   />
                   <CustomUpload
                     label="Dent Damage"
                     buttonText="Upload Dent Damage Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={dentDamageImage}
                   />
                   <CustomUpload
                     label="Functions"
                     buttonText="Upload Functions Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={functionsImage}
                   />
                   <CustomUpload
                     label="Break Damage"
                     buttonText="Upload Break Damage Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={breakDamageImage}
                   />
                   <CustomUpload
                     label="Number Plate"
                     buttonText="Upload Number Plate Image"
-                    onPress={() => {}}
-                    onShowImage={() => {}}
-                    onDeleteImage={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={numberPlateImage}
                   />
                   <LocalButtonComp
                     title={"Add Other Image"}
@@ -2191,54 +2948,84 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Rc Front"
                     buttonText="Upload Rc Front Image"
                     mandatory={true}
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={rcFrontImage}
                   />
                   <CustomUpload
                     label="Rc Back"
                     buttonText="Upload Rc Back Image"
                     mandatory={true}
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={rcBackImage}
                   />
                   <CustomUpload
                     label="Insurance Copy"
                     buttonText="Upload Insurance Copy Image"
                     mandatory={true}
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={insuranceCopyImage}
                   />
                   <CustomUpload
                     label="Invoice"
                     buttonText="Upload Invoice Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={invoiceImage}
                   />
                   <CustomUpload
                     label="Hypothication Document"
                     buttonText="Upload Hypothication Document Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={hypothicationDocumentImage}
                   />
                   <CustomUpload
                     label="Bank/Finance - old car NOC"
                     buttonText="Upload Bank/Finance - old car NOC Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={oldCarNOCImage}
                   />
                   <CustomUpload
                     label="CC"
                     buttonText="Upload CC Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={ccImage}
                   />
                   <CustomUpload
                     label="Pollution"
                     buttonText="Upload Pollution Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={pollutionImage}
                   />
                   <CustomUpload
                     label="ID Proof"
                     buttonText="Upload Id Proof Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={idProofImage}
                   />
                   <CustomUpload
                     label="PAN Card"
                     buttonText="Upload PAN Card Image"
-                    onPress={() => {}}
+                    onPress={showImagePickerMethod}
+                    onShowImage={setImagePath}
+                    onDeleteImage={deleteImages}
+                    value={panCardImage}
                   />
                   <LocalButtonComp
                     title={"Add Other Image"}
@@ -2326,13 +3113,73 @@ const EvaluationForm = ({ route, navigation }) => {
                 ]}
               >
                 <View>
-                  <Table label={"Items"} />
+                  <Table
+                    label={"Items"}
+                    data={Refurbishment.Items}
+                    onPress={(item) => {
+                      const RefurbishmentTemp = Refurbishment.Items;
+                      for (let i = 0; i < RefurbishmentTemp.length; i++) {
+                        const element = RefurbishmentTemp[i];
+                        if (element.id === item.id) {
+                          element.status = item.status ? "Active" : "Deactive";
+                        }
+                      }
+                      setRefurbishment({
+                        Items: RefurbishmentTemp,
+                        AdditionalExpenses: Refurbishment.AdditionalExpenses,
+                      });
+                    }}
+                    onChangeText={(item) => {
+                      const RefurbishmentTemp = Refurbishment.Items;
+                      for (let i = 0; i < RefurbishmentTemp.length; i++) {
+                        const element = RefurbishmentTemp[i];
+                        if (element.id === item.id) {
+                          element.cost = item.text;
+                        }
+                      }
+                      setRefurbishment({
+                        Items: RefurbishmentTemp,
+                        AdditionalExpenses: Refurbishment.AdditionalExpenses,
+                      });
+                    }}
+                  />
                   <View style={{ height: 25 }} />
-                  <Table label={"Additional Expenses"} />
+                  <Table
+                    label={"Additional Expenses"}
+                    data={Refurbishment.AdditionalExpenses}
+                    onPress={(item) => {
+                      const RefurbishmentTemp =
+                        Refurbishment.AdditionalExpenses;
+                      for (let i = 0; i < RefurbishmentTemp.length; i++) {
+                        const element = RefurbishmentTemp[i];
+                        if (element.id === item.id) {
+                          element.status = item.status ? "Active" : "Deactive";
+                        }
+                      }
+                      setRefurbishment({
+                        Items: Refurbishment.Items,
+                        AdditionalExpenses: RefurbishmentTemp,
+                      });
+                    }}
+                    onChangeText={(item) => {
+                      const RefurbishmentTemp =
+                        Refurbishment.AdditionalExpenses;
+                      for (let i = 0; i < RefurbishmentTemp.length; i++) {
+                        const element = RefurbishmentTemp[i];
+                        if (element.id === item.id) {
+                          element.cost = item.text;
+                        }
+                      }
+                      setRefurbishment({
+                        Items: Refurbishment.Items,
+                        AdditionalExpenses: RefurbishmentTemp,
+                      });
+                    }}
+                  />
                   <Text
                     style={{ fontSize: 14, color: "#000", fontWeight: "500" }}
                   >
-                    {"Total Refurbishment Cost: 0"}
+                    {"Total Refurbishment Cost: " + getTotalCost(Refurbishment)}
                   </Text>
                   <LocalButtonComp
                     title={"Add Other Cost"}
@@ -2365,6 +3212,8 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Customer Expected Price"
                     mandatory={true}
                     value={customerExpectedPrice}
+                    maxLength={7}
+                    keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setCustomerExpectedPrice(text);
                     }}
@@ -2399,7 +3248,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Approval Expiry Date"
                     value={approvalExpiryDate}
-                    onPress={() => {}}
+                    onPress={ShowDatePickerFunction}
                   />
                 </View>
               </List.Accordion>

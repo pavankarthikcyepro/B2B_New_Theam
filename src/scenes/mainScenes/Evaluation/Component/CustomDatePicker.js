@@ -9,7 +9,7 @@ const CustomDatePicker = (props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
+      <TouchableOpacity style={styles.button} onPress={()=>onPress(label)}>
         <Text style={styles.buttonText}>{value}</Text>
         <Entypo size={15} name="calendar" color={Colors.BLACK} />
       </TouchableOpacity>
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   button: {
-    backgroundColor: "#D3D3D3",
+    backgroundColor: Colors.BRIGHT_GRAY,
     width: "100%",
     borderRadius: 8,
     paddingVertical: 10,

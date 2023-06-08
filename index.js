@@ -45,5 +45,5 @@ RNLocation.configure({
   showsBackgroundLocationIndicator: true,
 });
 
-AppRegistry.registerComponent(appName, () => AppScreen);
+AppRegistry.registerComponent(appName, () => EvaluationForm);
 TrackPlayer.registerPlaybackService(() => require("./trackServices"));

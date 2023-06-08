@@ -26,7 +26,7 @@ const CustomUpload = (props) => {
           color={Colors.RED}
           style={{ padding: 0, margin: 0 }}
           size={15}
-          onPress={onDeleteImage}
+          onPress={()=>onDeleteImage(label)}
         />
       </View>
     );
@@ -37,18 +37,20 @@ const CustomUpload = (props) => {
         {label}
         <Text style={styles.mandatory}>{mandatory ? " *" : ""}</Text>
       </Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
+      <TouchableOpacity style={styles.button} onPress={() => onPress(label)}>
         <Text style={styles.buttonText}>{buttonText}</Text>
         <AntDesign size={17} name="upload" color={Colors.RED} />
       </TouchableOpacity>
-      <View style={{ flexDirection: "row", marginTop: 5 }}>
-        <TouchableOpacity style={styles.preViewBtn} onPress={onShowImage}>
-          <Text style={styles.previewTxt}>Preview</Text>
-        </TouchableOpacity>
-        <View style={{ width: "80%" }}>
-          <DisplaySelectedImage fileName={label} from={"PAN"} />
+      {value?.name ? (
+        <View style={{ flexDirection: "row", marginTop: 5 }}>
+          <TouchableOpacity style={styles.preViewBtn} onPress={()=>onShowImage(value?.url)}>
+            <Text style={styles.previewTxt}>Preview</Text>
+          </TouchableOpacity>
+          <View style={{ width: "80%" }}>
+            <DisplaySelectedImage fileName={value?.name || ""} from={"PAN"} />
+          </View>
         </View>
-      </View>
+      ) : null}
     </View>
   );
 };
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   button: {
-    backgroundColor: "#D3D3D3",
+    backgroundColor: Colors.BRIGHT_GRAY,
     width: "100%",
     borderRadius: 8,
     paddingVertical: 10,
