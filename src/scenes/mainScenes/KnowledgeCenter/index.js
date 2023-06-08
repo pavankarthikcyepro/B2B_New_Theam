@@ -146,7 +146,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         setCarList(data);
         break;
       case "Brochures":
-        const data2 = getSelectedItems(DATA, "Vehicle_Specifications");
+        const data2 = getSelectedItems(DATA, "Vehicle_Sepcifications");
         setCarList(data2);
         break;
       case "Video":
@@ -177,7 +177,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         navigationToList(galleryImages);
         break;
       case "Brochures":
-        const data2 = getDocument(params, "Vehicle_Specifications");
+        const data2 = getDocument(params, "Vehicle_Sepcifications");
         checkPlatform(data2.doc);
         break;
       case "Video":
@@ -200,7 +200,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         _shareImage(galleryImages);
         break;
       case "Brochures":
-        const data2 = getDocument(params, "Vehicle_Specifications");
+        const data2 = getDocument(params, "Vehicle_Sepcifications");
         if (checkValidUrl(data2.doc)) {
           _shareImage([data2.doc]);
         } else {
@@ -323,7 +323,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         notification: true,
       };
       config(options)
-        .get("GET", url)
+        .fetch("GET", url)
         .then((res) => {
           // setLoading(false);
           setTimeout(() => {
@@ -380,8 +380,8 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         }
         break;
       case "Brochures":
-        const data2 = getDocument(item, "Vehicle_Specifications");
-        if (data2.length > 0) {
+        const data2 = getDocument(item, "Vehicle_Sepcifications");
+        if (Object.keys(data2).length > 0) {
           isGalleryAvailable = true;
         }
         break;
@@ -393,8 +393,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         break;
       case "Compare Doc":
         const data4 = getDocument(item, "Comparison");
-        let newKeys = Object.keys(data4);
-        if (newKeys.length > 0) {
+        if (Object.keys(data4).length > 0) {
           isGalleryAvailable = true;
         }
         break;
