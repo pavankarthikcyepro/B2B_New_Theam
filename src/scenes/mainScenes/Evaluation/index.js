@@ -268,10 +268,13 @@ const EvaluationForm = ({ route, navigation }) => {
   const [datePickerTitle, setDatePickerTitle] = useState("");
   const [imagePath, setImagePath] = useState("");
   const [errors, setErrors] = useState({});
-  const [addAnotherInsuranceImage, setAddAnotherInsuranceImage] =
-    useState([]);
+  const [addAnotherInsuranceImage, setAddAnotherInsuranceImage] = useState([]);
   const [enterInsurance, setEnterInsurance] = useState(true);
   const [enterHypothication, setEnterHypothication] = useState(true);
+
+  const [cost, setCost] = useState("0");
+  const [costName, setCostName] = useState("");
+  const [addOtherCost, setAddOtherCost] = useState(false);
 
   const [salutation, setSalutation] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -953,6 +956,8 @@ const EvaluationForm = ({ route, navigation }) => {
         setDataForDropDown([...months]);
         break;
       case "Year":
+        const d = new Date().getFullYear();
+        setDataForDropDown([...createYearObjects(1850, parseInt(d))]);
         break;
       case "Vehicle Type":
         break;
@@ -967,6 +972,16 @@ const EvaluationForm = ({ route, navigation }) => {
     setDropDownTitle(item);
     setShowDropDown(true);
   };
+
+  function createYearObjects(startYear, endYear) {
+    const yearObjects = [];
+    let id = 0;
+    for (let year = startYear; year <= endYear; year++) {
+      yearObjects.push({ name: year, id: id + 1 });
+      id = id + 1;
+    }
+    return yearObjects;
+  }
 
   const storeDropDown = (item) => {
     switch (dropDownTitle) {
@@ -1512,7 +1527,7 @@ const EvaluationForm = ({ route, navigation }) => {
     data.AdditionalExpenses.forEach((expense) => {
       totalCost += parseFloat(expense.cost);
     });
-
+    if (addOtherCost) totalCost += cost.trim() === "" ? 0 : parseInt(cost);
     return totalCost;
   };
 
@@ -1652,15 +1667,6 @@ const EvaluationForm = ({ route, navigation }) => {
             name: response.fileName,
           };
           saveImages(payload);
-          // if (keyId == "UPLOAD_CANCEL_LETTER") {
-          //   setCancelLetter(response);
-          // } else if (keyId == "UPLOAD_CANCEL_RECEIPT") {
-          //   setCancelReceipt(response);
-          // } else {
-          //   const dataObj = { ...uploadedImagesDataObj };
-          //   dataObj[response.documentType] = response;
-          //   setUploadedImagesDataObj({ ...dataObj });
-          // }
         }
       })
       .catch((error) => {
@@ -1715,6 +1721,7 @@ const EvaluationForm = ({ route, navigation }) => {
         );
       });
   };
+
   return (
     <View style={[{ flex: 1 }]}>
       <Modal
@@ -2937,7 +2944,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={numberPlateImage}
                     submitPressed={submitButtonPressed}
                   />
-                  {addAnotherInsuranceImage.length > 0 &&
+                  {/* {addAnotherInsuranceImage.length > 0 &&
                     addAnotherInsuranceImage.map((item, index) => {
                       return (
                         <View style={{ flexDirection: "row" }}>
@@ -2973,8 +2980,8 @@ const EvaluationForm = ({ route, navigation }) => {
                           </View>
                         </View>
                       );
-                    })}
-                  <LocalButtonComp
+                    })} */}
+                  {/* <LocalButtonComp
                     title={"Add Other Image"}
                     onPress={() => {
                       setAddAnotherInsuranceImage([
@@ -2983,7 +2990,7 @@ const EvaluationForm = ({ route, navigation }) => {
                       ]);
                     }}
                     disabled={false}
-                  />
+                  /> */}
                 </View>
               </List.Accordion>
               <List.Accordion
@@ -3163,41 +3170,13 @@ const EvaluationForm = ({ route, navigation }) => {
                     marginHorizontal: 15,
                   }}
                 >
-                  <Button
-                    onPress={() =>
-                      navigation.navigate(MyTasksStackIdentifiers.checkList)
-                    }
-                  >
-                    {"NAV"}
-                  </Button>
-                  <List.AccordionGroup
-                    expandedId={openAccordian2}
-                    onAccordionPress={(expandedId) =>
-                      updateSecondAccordian(expandedId)
-                    }
-                  >
-                    <List.Accordion
-                      id={"1"}
-                      key={"1"}
-                      title={"General Appearance"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "1" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "1" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View></View>
-                    </List.Accordion>
-                  </List.AccordionGroup>
+                  <LocalButtonComp
+                    title={"Edit Checklist"}
+                    onPress={() => {
+                      navigation.navigate(MyTasksStackIdentifiers.checkList);
+                    }}
+                    disabled={false}
+                  />
                 </View>
               </List.Accordion>
               <List.Accordion
@@ -3287,9 +3266,48 @@ const EvaluationForm = ({ route, navigation }) => {
                   >
                     {"Total Refurbishment Cost: " + getTotalCost(Refurbishment)}
                   </Text>
+                  {addOtherCost && (
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <View style={{ width: "90%" }}>
+                        <CustomTextInput
+                          placeholder="Enter Name"
+                          label="Name"
+                          value={costName}
+                          onChangeText={(text) => {
+                            setCostName(text);
+                          }}
+                        />
+                        <CustomTextInput
+                          placeholder="Enter Cost"
+                          label="Cost"
+                          value={cost}
+                          keyboardType={"number-pad"}
+                          onChangeText={(text) => {
+                            setCost(text);
+                          }}
+                        />
+                      </View>
+
+                      <View style={{ justifyContent: "flex-end" }}>
+                        <IconButton
+                          icon="close-circle-outline"
+                          color={Colors.RED}
+                          style={{ padding: 0, margin: 0 }}
+                          size={25}
+                          onPress={() => {
+                            setAddOtherCost(false);
+                          }}
+                        />
+                      </View>
+                    </View>
+                  )}
                   <LocalButtonComp
                     title={"Add Other Cost"}
-                    onPress={() => {}}
+                    onPress={() => {
+                      setAddOtherCost(true);
+                    }}
                     disabled={false}
                   />
                 </View>
