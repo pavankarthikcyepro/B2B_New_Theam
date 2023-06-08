@@ -163,6 +163,20 @@ export const getEnquiryTypesApi = createAsyncThunk(
   }
 );
 
+export const getBranchList = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getBranchList",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.DEALER_CODE_BRANCH_LIST(payload["orgId"], payload["locationId"])
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 const getAsyncstoreData = async () => {
   const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
 };
@@ -211,6 +225,11 @@ export const addPreEnquirySlice = createSlice({
     event_list_Config: [],
     event_list_response_Config_status: "",
     customer_types_response: [],
+    selectedLocation: "",
+    selectedOrgId: "",
+    selectedBranch: "",
+    selectedBranchId: "",
+    branchList: [],
   },
   reducers: {
     clearState: (state) => {
@@ -247,6 +266,11 @@ export const addPreEnquirySlice = createSlice({
       state.customer_types_response = [];
       state.enquiry_type_list = [];
       state.customer_type_list = [];
+      state.selectedLocation = "";
+      state.selectedOrgId = "";
+      state.selectedBranch = "";
+      state.selectedBranchId = "";
+      state.branchList = [];
     },
     setCreateEnquiryCheckbox: (state, action) => {
       state.create_enquiry_checked = !state.create_enquiry_checked;
@@ -289,6 +313,29 @@ export const addPreEnquirySlice = createSlice({
           break;
         case "EVENT_NAME":
           state.eventName = value;
+          break;
+        case "LOCATION":
+          state.selectedLocation = value;
+          state.branchList = [];
+          state.selectedBranch = "";
+          state.selectedBranchId = "";
+          state.sourceOfEnquiry = "";
+          state.sourceOfEnquiryId = null;
+          state.subSourceOfEnquiry = "";
+          state.subSourceOfEnquiryId = null;
+          break;
+        case "ORG_ID":
+          state.selectedOrgId = value;
+          break;
+        case "BRANCH":
+          state.selectedBranch = value;
+          state.sourceOfEnquiry = "";
+          state.sourceOfEnquiryId = null;
+          state.subSourceOfEnquiry = "";
+          state.subSourceOfEnquiryId = null;
+          break;
+        case "BRANCH_ID":
+          state.selectedBranchId = value;
           break;
       }
     },
@@ -478,6 +525,26 @@ export const addPreEnquirySlice = createSlice({
       .addCase(getPreEnquiryDetails.pending, (state, action) => {})
       .addCase(getPreEnquiryDetails.fulfilled, (state, action) => {})
       .addCase(getPreEnquiryDetails.rejected, (state, action) => {});
+
+    builder
+      .addCase(getBranchList.pending, (state, action) => {
+        state.branchList = [];
+      })
+      .addCase(getBranchList.fulfilled, (state, action) => {
+        let newArr = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let newObj = {
+            ...element,
+            name: element.branchName,
+          };
+          newArr.push(newObj);
+        }
+        state.branchList = [...newArr];
+      })
+      .addCase(getBranchList.rejected, (state, action) => {
+        state.branchList = [];
+      });
 
     // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
