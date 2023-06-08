@@ -1239,11 +1239,10 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                     {selector.saveReceptionistfilterObj?.selectedDesignation &&
                       selector.saveReceptionistfilterObj
                         ?.selectedDesignation[0] === "Reception"
-                      ? selector.receptionistData_ReceptionistDashboard_xrole
-                        ?.bookingsCount || 0
+                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount || 0
                       : userData.hrmsRole === "CRM"
-                        ? selector.receptionistData_CRM?.bookingsCount || 0
-                        : selector.receptionistDataV2?.bookingsCount || 0}
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCountt || 0
+                        : selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1255,19 +1254,18 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                       ?.selectedDesignation[0] === "Reception"
                   ) {
                     if (
-                      selector.receptionistData_ReceptionistDashboard_xrole
-                        ?.RetailCount > 0
+                      selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0
                     ) {
-                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads);
                     }
                   } else {
                     if (
                       userData.hrmsRole === "CRM" &&
-                      selector.receptionistData_CRM.RetailCount > 0
+                      selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0
                     ) {
-                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
-                    } else if (selector.receptionistDataV2.RetailCount) {
-                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads);
+                    } else if (selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount) {
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads);
                     }
                   }
                 }}
@@ -1279,11 +1277,10 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                     {selector.saveReceptionistfilterObj?.selectedDesignation &&
                       selector.saveReceptionistfilterObj
                         ?.selectedDesignation[0] === "Reception"
-                      ? selector.receptionistData_ReceptionistDashboard_xrole
-                        ?.RetailCount || 0
+                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount || 0
                       : userData.hrmsRole === "CRM"
-                        ? selector.receptionistData_CRM?.RetailCount || 0
-                        : selector.receptionistDataV2?.RetailCount || 0}
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount || 0
+                        : selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1295,37 +1292,18 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                       ?.selectedDesignation[0] === "Reception"
                   ) {
                     if (
-                      selector.receptionistData_ReceptionistDashboard_xrole
-                        ?.totalDroppedCount > 0
+                      selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedCount > 0
                     ) {
-                      navigateToDropAnalysis(
-                        userData.empId,
-                        false,
-                        "",
-                        false,
-                        true
-                      );
+                      navigateToDropAnalysisVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedLeads);
                     }
                   } else {
                     if (
                       userData.hrmsRole === "CRM" &&
-                      selector.receptionistData_CRM.totalDroppedCount > 0
+                      selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedCount > 0
                     ) {
-                      navigateToDropAnalysis(
-                        userData.empId,
-                        false,
-                        "",
-                        false,
-                        false
-                      );
-                    } else if (selector.receptionistDataV2.totalDroppedCount) {
-                      navigateToDropAnalysis(
-                        userData.empId,
-                        false,
-                        "",
-                        false,
-                        true
-                      );
+                      navigateToDropAnalysisVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedLeads);
+                    } else if (selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedCount) {
+                      navigateToDropAnalysisVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedLeads);
                     }
                   }
 
@@ -1345,11 +1323,10 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
                     {selector.saveReceptionistfilterObj?.selectedDesignation &&
                       selector.saveReceptionistfilterObj
                         ?.selectedDesignation[0] === "Reception"
-                      ? selector.receptionistData_ReceptionistDashboard_xrole
-                        ?.totalDroppedCount || 0
+                      ?selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedCount || 0
                       : userData.hrmsRole === "CRM"
-                        ? selector.receptionistData_CRM?.totalDroppedCount || 0
-                        : selector.receptionistDataV2?.totalDroppedCount || 0}
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedCount || 0
+                        : selector.receptionistData_CRM_vol2?.fullResponse?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
