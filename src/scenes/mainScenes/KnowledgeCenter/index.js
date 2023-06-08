@@ -381,7 +381,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         break;
       case "Brochures":
         const data2 = getDocument(item, "Vehicle_Specifications");
-        if (data2.length > 0) {
+        if (Object.keys(data2).length > 0) {
           isGalleryAvailable = true;
         }
         break;
@@ -393,8 +393,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         break;
       case "Compare Doc":
         const data4 = getDocument(item, "Comparison");
-        let newKeys = Object.keys(data4);
-        if (newKeys.length > 0) {
+        if (Object.keys(data4).length > 0) {
           isGalleryAvailable = true;
         }
         break;
