@@ -19,6 +19,7 @@ import { ScrollView } from "react-native-gesture-handler";
 
 import {
   delegateTask,
+  getCRM_ReceptionistDashboradVol2,
   getEmployeesList,
   getNewTargetParametersAllData,
   getReceptionistData,
@@ -663,6 +664,9 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => {
+      setCrmVol2AlluserData([])
+      setCrmVol2Level0([])
+      setCrmVol2Level1([])
       setSelfInsightsData([]);
       setLostLeadsData(null);
       setAccData(null);
@@ -775,15 +779,22 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
             selector.saveReceptionistfilterObj?.selectedDesignation[0] ===
             "Reception"
           ) {
-            let payload = {
+            // let payload = {
+            //   orgId: jsonObj.orgId,
+            //   loggedInEmpId:
+            //     selector.saveReceptionistfilterObj.selectedempId[0],
+            //   startDate: selector.saveReceptionistfilterObj.startDate,
+            //   endDate: selector.saveReceptionistfilterObj.endDate,
+            //   dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
+            // };
+            // dispatch(getReceptionistDataForRecepDashboard(payload));
+
+            let payloadXrole = {
               orgId: jsonObj.orgId,
-              loggedInEmpId:
-                selector.saveReceptionistfilterObj.selectedempId[0],
-              startDate: selector.saveReceptionistfilterObj.startDate,
-              endDate: selector.saveReceptionistfilterObj.endDate,
-              dealerCodes: selector.saveReceptionistfilterObj.dealerCodes,
+              loggedInEmpId: selector.saveReceptionistfilterObj.selectedempId[0],
+              dashboardType: "reception",
             };
-            dispatch(getReceptionistDataForRecepDashboard(payload));
+            dispatch(getCRM_ReceptionistDashboradVol2(payloadXrole))
           }
         } else {
         }
@@ -1287,136 +1298,72 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       ?.selectedDesignation[0] === "Reception"
                   ) {
                     item.id === 0
-                      ? selector.receptionistData_ReceptionistDashboard_xrole
-                        .enquirysCount > 0 &&
+                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
+                         > 0 &&
                       navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
                       : item.id === 1
-                        ? selector.receptionistData_ReceptionistDashboard_xrole
-                          .bookingsCount > 0 &&
-                        navigateToEmsVol2("BOOKING", "", [userData.empId], true)
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
                         : item.id === 2
-                          ? selector.receptionistData_ReceptionistDashboard_xrole
-                            .RetailCount > 0 &&
-                          navigateToEMS(
-                            "INVOICECOMPLETED",
-                            "",
-                            [userData.empId],
-                            true
-                          )
+                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
+                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
                           : item.id === 3
-                            ? selector.receptionistData_ReceptionistDashboard_xrole
-                              .totalLostCount > 0 &&
-                            navigateToDropAnalysis(
-                              selector.saveReceptionistfilterObj.selectedempId[0]
+                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
+                            navigateToDropAnalysisVol2(
+                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
                             )
                             : null;
                   } else {
                     item.id === 0
-                      ? selector.receptionistDataV2.enquirysCount > 0 &&
-                      navigateToEMS("ENQUIRY", "", [userData.empId], true)
+                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
+                      > 0 &&
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
                       : item.id === 1
-                        ? navigateToEMS("BOOKING", "", [userData.empId], true)
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
                         : item.id === 2
-                          ? selector.receptionistDataV2.RetailCount > 0 &&
-                          navigateToEMS(
-                            "INVOICECOMPLETED",
-                            "",
-                            [userData.empId],
-                            true
-                          )
+                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
+                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
                           : item.id === 3
-                            ? navigateToDropAnalysis(
-                              selector.saveReceptionistfilterObj.selectedempId[0]
+                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
+                            navigateToDropAnalysisVol2(
+                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
                             )
                             : null;
                   }
                 } else {
                   if (userData.hrmsRole === "CRM") {
                     item.id === 0
-                      ? selector.receptionistData_CRM.enquirysCount > 0 &&
-                      navigateToEMS(
-                        "ENQUIRY",
-                        "",
-                        [],
-                        true,
-                        userData.empId,
-                        true,
-                        false
-                      )
+                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
+                      > 0 &&
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
                       : item.id === 1
-                        ? selector.receptionistData_CRM.bookingsCount > 0 &&
-                        navigateToEMS(
-                          "BOOKING",
-                          "",
-                          [],
-                          true,
-                          userData.empId,
-                          true,
-                          false
-                        )
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
                         : item.id === 2
-                          ? selector.receptionistData_CRM.RetailCount > 0 &&
-                          navigateToEMS(
-                            "INVOICECOMPLETED",
-                            "",
-                            [],
-                            true,
-                            userData.empId,
-                            true,
-                            false
-                          )
+                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
+                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
                           : item.id === 3
-                            ? selector.receptionistData_CRM.totalLostCount > 0 &&
-                            navigateToDropAnalysis(
-                              userData.empId,
-                              false,
-                              "",
-                              false,
-                              false
+                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
+                            navigateToDropAnalysisVol2(
+                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
                             )
                             : null;
                   } else {
                     item.id === 0
-                      ? selector.receptionistDataV2.enquirysCount > 0 &&
-                      navigateToEMS(
-                        "ENQUIRY",
-                        "",
-                        [userData.empId],
-                        false,
-                        userData.empId,
-                        true,
-                        false
-                      )
+                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
+                      > 0 &&
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
                       : item.id === 1
-                        ? selector.receptionistDataV2.bookingsCount > 0 &&
-                        navigateToEMS(
-                          "BOOKING",
-                          "",
-                          [userData.empId],
-                          false,
-                          userData.empId,
-                          true,
-                          false
-                        )
+                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
                         : item.id === 2
-                          ? selector.receptionistDataV2.RetailCount > 0 &&
-                          navigateToEMS(
-                            "INVOICECOMPLETED",
-                            "",
-                            [userData.empId],
-                            false,
-                            userData.empId,
-                            true,
-                            false
-                          )
+                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
+                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
                           : item.id === 3
-                            ? selector.receptionistDataV2.totalLostCount > 0 &&
-                            navigateToDropAnalysis(
-                              userData.empId,
-                              false,
-                              "",
-                              false,
-                              true
+                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
+                            navigateToDropAnalysisVol2(
+                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
                             )
                             : null;
                   }
@@ -1431,32 +1378,28 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                    selector.receptionistData_ReceptionistDashboard_xrole
-                      .enquirysCount
+                      selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
                   }{" "}
                 </Text>
               ) : item.id === 1 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                    selector.receptionistData_ReceptionistDashboard_xrole
-                      .bookingsCount
+                        selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount 
                   }{" "}
                 </Text>
               ) : item.id === 2 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                    selector.receptionistData_ReceptionistDashboard_xrole
-                      .RetailCount
+                          selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount
                   }{" "}
                 </Text>
               ) : item.id === 3 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                    selector.receptionistData_ReceptionistDashboard_xrole
-                      .totalLostCount
+                            selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount
                   }{" "}
                 </Text>
               ) : (
@@ -1489,22 +1432,22 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
             ) : item.id === 0 ? (
               <Text style={styles.txt10}>
                 {" "}
-                    {selector.receptionistData_CRM_vol2.enquirysCount}{" "}
+                    {selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount}{" "}
               </Text>
             ) : item.id === 1 ? (
               <Text style={styles.txt10}>
                 {" "}
-                      {selector.receptionistData_CRM_vol2.bookingsCount}{" "}
+                      {selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount}{" "}
               </Text>
             ) : item.id === 2 ? (
               <Text style={styles.txt10}>
                 {" "}
-                        {selector.receptionistData_CRM_vol2.RetailCount}{" "}
+                        {selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount}{" "}
               </Text>
             ) : item.id === 3 ? (
               <Text style={styles.txt10}>
                 {" "}
-                          {selector.receptionistData_CRM_vol2.totalLostCount}{" "}
+                          {selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount}{" "}
               </Text>
             ) : (
               <Text style={styles.txt10}>0</Text>
@@ -4639,6 +4582,40 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
     );
   }
 
+  const oncllickOfEmployeeForCRm = async (item = [], index, allData, herirarchyLevel) => {
+
+    let modifeidArray = [...crmVol2AlluserData];
+    let storeTemp = [...crmVol2Level1];
+
+    // let modifiedData = _.cloneDeep(originalData);
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", item.empId);
+
+    // for (let index = 0; index < modifiedData.length; index++) {
+    //   const element = modifiedData[index];
+
+    //   if (element.selfUser.empId == item.empId) {
+    //     element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+    //   }
+
+    // }
+
+
+
+    let tempNewArray = await modifeidArray.filter(i => i.managerId != i.empId && i.managerId == item.empId)
+
+
+    await item.isOpenInner ? (item.isOpenInner = false,
+      item.innerData = []) : (item.isOpenInner = true, item.innerData.push(...tempNewArray))
+
+    // Array.prototype.push.apply(storeTemp, tempNewArray)
+
+
+    await setCrmVol2Level1(storeTemp);
+
+
+  }
+
+  
 
   const renderCRMNewTreeLevel1 = () => {
     // todo manthan
@@ -4647,8 +4624,8 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {crmVol2Level1.length > 0 &&
-          crmVol2Level1.map((item, index) => {
+        {crmVol2Level1?.length > 0 &&
+          crmVol2Level1?.map((item, index) => {
             return renderDynamicTree(item, index, [],
               color,
               0)
