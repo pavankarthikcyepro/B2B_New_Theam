@@ -18,8 +18,10 @@ import {
   getReceptionistManagerSource,
   getReceptionistModel,
   getReceptionistModelLive,
+  getReceptionistModelVol2,
   getReceptionistSource,
   getReceptionistSourceLive,
+  getReceptionistSourceVol2,
   getSourceModelDataForSelf,
   getXroleModel,
   getXroleSource,
@@ -92,7 +94,7 @@ const ReceptionistDashbordSourceModel = ({ route, navigation }) => {
     type,
     moduleType,
     role,
-    branchList, empList, self, dashboardType
+    branchList, empList, self, dashboardType, leadId_list=[]
   } = route.params;
   const [leadSource, setLeadSource] = useState([]);
   const [vehicleModel, setVehicleModel] = useState([]);
@@ -166,33 +168,63 @@ const ReceptionistDashbordSourceModel = ({ route, navigation }) => {
         };
        
         if (role == "Reception" || role == "Tele Caller" || role == "CRE" || role == "Field DSE" || role == "CRM_INd") {
-          dispatch(getReceptionistSource(newPayload));
-          dispatch(getReceptionistModel(newPayload));
+          let receptionistSourceModelPayload = {
+            "leadIdList": leadId_list,
+            "orgId": orgId
+          }
+          dispatch(getReceptionistSourceVol2(receptionistSourceModelPayload))
+          dispatch(getReceptionistModelVol2(receptionistSourceModelPayload))
+
+          // vol1 code 
+          // dispatch(getReceptionistSource(newPayload));
+          // dispatch(getReceptionistModel(newPayload));
         } else if (role == "CRM" && !selector.saveCRMfilterObj?.selectedempId) {
-          let newPayload3 = {
-            orgId: orgId,
-            loggedInEmpId: loggedInEmpId,
-            "startDate": selector.receptionistFilterIds.startDate,
-            "endDate": selector.receptionistFilterIds.endDate,
-            "dealerCodes": selector.receptionistFilterIds.dealerCodes,
-            "empList": empList ? empList : null,
-            "self": self,
-            "dashboardType": dashboardType 
-          };
-          dispatch(getReceptionistManagerSource(newPayload3));
-          dispatch(getReceptionistManagerModel(newPayload3));
+        //vol2 code 
+          let receptionistSourceModelPayload = {
+            "leadIdList": leadId_list,
+            "orgId": orgId
+          }
+          dispatch(getReceptionistSourceVol2(receptionistSourceModelPayload))
+          dispatch(getReceptionistModelVol2(receptionistSourceModelPayload))
+
+          // vol1 code
+          // let newPayload3 = {
+          //   orgId: orgId,
+          //   loggedInEmpId: loggedInEmpId,
+          //   "startDate": selector.receptionistFilterIds.startDate,
+          //   "endDate": selector.receptionistFilterIds.endDate,
+          //   "dealerCodes": selector.receptionistFilterIds.dealerCodes,
+          //   "empList": empList ? empList : null,
+          //   "self": self,
+          //   "dashboardType": dashboardType 
+          // };
+          // dispatch(getReceptionistManagerSource(newPayload3));
+          // dispatch(getReceptionistManagerModel(newPayload3));
         } else if (selector.saveCRMfilterObj?.selectedempId) {
-          let newPayload2 = {
-            orgId: orgId,
-            loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
-            "startDate": selector.saveCRMfilterObj.startDate,
-            "endDate": selector.saveCRMfilterObj.endDate,
-            "dealerCodes": selector.saveCRMfilterObj.dealerCodes
-          };
-          dispatch(getReceptionistSource(newPayload2));
-          dispatch(getReceptionistModel(newPayload2));
+          //vol2 code 
+          let receptionistSourceModelPayload = {
+            "leadIdList": leadId_list,
+            "orgId": orgId
+          }
+          dispatch(getReceptionistSourceVol2(receptionistSourceModelPayload))
+          dispatch(getReceptionistModelVol2(receptionistSourceModelPayload))
+          // let newPayload2 = {
+          //   orgId: orgId,
+          //   loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+          //   "startDate": selector.saveCRMfilterObj.startDate,
+          //   "endDate": selector.saveCRMfilterObj.endDate,
+          //   "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+          // };
+          // dispatch(getReceptionistSource(newPayload2));
+          // dispatch(getReceptionistModel(newPayload2));
         }
         else {
+          let receptionistSourceModelPayload = {
+            "leadIdList": leadId_list,
+            "orgId": orgId
+          }
+          dispatch(getReceptionistSourceVol2(receptionistSourceModelPayload))
+          dispatch(getReceptionistModelVol2(receptionistSourceModelPayload))
           // dispatch(getReceptionistManagerSource(payload));
           // dispatch(getReceptionistManagerModel(payload));
         }

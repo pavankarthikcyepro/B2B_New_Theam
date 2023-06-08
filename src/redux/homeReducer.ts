@@ -840,7 +840,7 @@ export const getCRM_ReceptionistDashboradVol2 = createAsyncThunk(
   "HOME/getCRM_ReceptionistDashboradVol2",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(
-      URL.GET_LIVE_LEADS_MANAGERDATA_VOL2(),
+      URL.RECEPTIONIST_DASHBOARDV2(),
       payload
     );
     const json = await response.json();
