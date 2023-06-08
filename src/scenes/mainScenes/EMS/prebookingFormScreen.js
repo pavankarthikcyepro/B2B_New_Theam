@@ -2111,6 +2111,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     }
 
+    const bookingAmount = parseInt(selector.booking_amount);
+    if (bookingAmount <= 0) {
+      scrollToPos(8);
+      setOpenAccordian("8");
+      showToast("please enter booking amount greater than 0");
+      return;
+    }
+
     let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
       return item.isPrimary === "Y";
@@ -6796,7 +6804,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dispatch(
                       setBookingPaymentDetails({
                         key: "BOOKING_AMOUNT",
-                        text: text,
+                        text: text.replace(/[^0-9]/g, ''),
                       })
                     )
                   }

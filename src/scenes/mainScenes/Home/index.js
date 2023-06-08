@@ -1023,8 +1023,12 @@ const HomeScreen = ({ route, navigation }) => {
             ).setHours(23, 59, 59, 999);
             let dateFormat1 = moment(firstDay).format("YYYY-MM-DD HH:mm:ss");
             let dateFormat2 = moment(lastDay).format("YYYY-MM-DD HH:mm:ss");
+            let tempArr = [];
+            let tmep = jsonObj.branchs.map((item) => {
+              tempArr.push(item.orgMapId);
+            })
             let newPayload = {
-              branchIdList: [],
+              branchIdList: tempArr,
               fromDate: dateFormat1,
               orgId: jsonObj.orgId,
               toDate: dateFormat2,
