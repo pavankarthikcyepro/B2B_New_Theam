@@ -14,6 +14,7 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
   let firstStr = "";
   let secStr = "";
   let thirdStr = "";
+  let anotherStr = "";
   let secStrCount = 0;
 
   if (conversionIndex >= 0 && perIndex >= 0) {
@@ -34,7 +35,7 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
     firstStr = title.slice(0, consStartIndex);
     secStr = title.slice(consStartIndex + 1, consEndIndex);
     thirdStr = title.slice(consEndIndex + 1, title.length);
-    secStr = secStr.split(", ").join(",\n");
+    anotherStr = secStr.split(", ");
     secStrCount = title
       .slice(consStartIndex + 1, consEndIndex)
       .split(",").length;
@@ -55,16 +56,31 @@ export const NotificationItem = ({ title, date, onPress, icon, style, isFlag }) 
               seeLessStyle={{ color: Colors.BLUE, marginTop: 5 }}
               >
               {firstStr}
-              <Text
-                style={[
-                  styles.perText,
-                  isFlag == "Y"
-                    ? { color: Colors.RED, fontWeight: "bold" }
-                    : null,
-                ]}
-              >
-                {secStrCount > 5 ? secStrCount : secStr}
-              </Text>
+              {secStrCount > 5 ? (
+                <Text
+                  style={[
+                    styles.perText,
+                    isFlag == "Y"
+                      ? { color: Colors.RED, fontWeight: "bold" }
+                      : null,
+                  ]}
+                >
+                  {`${secStrCount > 5 ? secStrCount : secStr}`}
+                </Text>
+              ) : anotherStr.length > 0 ? anotherStr.map((item, index) => {return (
+                <Text
+                  style={[
+                    styles.perText,
+                    isFlag == "Y"
+                      ? { color: Colors.RED, fontWeight: "bold" }
+                      : null,
+                  ]}
+                >
+                  {`${item}${
+                    index == anotherStr.length - 1 ? "" : `,\n`
+                  }`}
+                </Text>
+              );}) :null}
               <Text style={styles.title}>{thirdStr}</Text>
             </ReadMore>
           ) : (
