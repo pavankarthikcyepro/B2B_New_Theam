@@ -9,7 +9,13 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { Checkbox, DataTable, List, Button } from "react-native-paper";
+import {
+  Checkbox,
+  DataTable,
+  List,
+  Button,
+  IconButton,
+} from "react-native-paper";
 import { Colors } from "../../../styles";
 import { StyleSheet } from "react-native";
 import {
@@ -44,8 +50,11 @@ import {
   Insurence_Types,
   Salutation_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
-import { showToastRedAlert } from "../../../utils/toast";
+import { showAlertMessage, showToastRedAlert } from "../../../utils/toast";
 import moment from "moment";
+import _ from "lodash";
+import CustomImageUpload from "./Component/CustomImageUpload";
+
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().format(dateFormat);
 const LocalButtonComp = ({ title, onPress, disabled, color }) => {
@@ -67,6 +76,20 @@ const LocalButtonComp = ({ title, onPress, disabled, color }) => {
     </Button>
   );
 };
+const months = [
+  { name: "January", id: 1 },
+  { name: "February", id: 2 },
+  { name: "March", id: 3 },
+  { name: "April", id: 4 },
+  { name: "May", id: 5 },
+  { name: "June", id: 6 },
+  { name: "July", id: 7 },
+  { name: "August", id: 8 },
+  { name: "September", id: 9 },
+  { name: "October", id: 10 },
+  { name: "November", id: 11 },
+  { name: "December", id: 12 },
+];
 
 const Payload = {
   id: 0,
@@ -245,9 +268,10 @@ const EvaluationForm = ({ route, navigation }) => {
   const [datePickerTitle, setDatePickerTitle] = useState("");
   const [imagePath, setImagePath] = useState("");
   const [errors, setErrors] = useState({});
-
-  const [enterInsurance, setEnterInsurance] = useState(false);
-  const [enterHypothication, setEnterHypothication] = useState(false);
+  const [addAnotherInsuranceImage, setAddAnotherInsuranceImage] =
+    useState(false);
+  const [enterInsurance, setEnterInsurance] = useState(true);
+  const [enterHypothication, setEnterHypothication] = useState(true);
 
   const [salutation, setSalutation] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -527,8 +551,9 @@ const EvaluationForm = ({ route, navigation }) => {
   const [selectedBrand, setSelectedBrand] = useState({});
   const [modalDropdown, setModalDropdown] = useState([]);
   const [maxDate, setMaxDate] = useState(new Date());
+  const [miniDate, setMiniDate] = useState(null);
   const [budget, setBudget] = useState("");
-
+  const [submitButtonPressed, setSubmitButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   let scrollRef = useRef(null);
@@ -648,146 +673,6 @@ const EvaluationForm = ({ route, navigation }) => {
   const handleLogin = () => {
     // Handle login logic here
   };
-
-  // const validation = () => {
-  //   let isValid = true;
-  //   if (!eventNumber || isNaN(eventNumber)) {
-  //     setEventNumberError("Please enter a valid event number.");
-  //     isValid = false;
-  //   }
-  //   if (!eventName || eventName.length < 3) {
-  //     setEventNameError(
-  //       "Please enter a valid event name (at least 3 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!eventOrganiser || eventOrganiser.length < 3) {
-  //     setEventOrganiserError(
-  //       "Please enter a valid event organiser (at least 3 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!eventPlannerLocation) {
-  //     setEventPlannerLocationError("Please select an event planner location.");
-  //     isValid = false;
-  //   }
-  //   if (!eventPlannerCode) {
-  //     setEventPlannerDealerCodeError(
-  //       "Please select an event planner dealer code."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!pinCode || pinCode.length !== 6) {
-  //     setPincodeError("Please enter a valid pincode (6 digits).");
-  //     isValid = false;
-  //   }
-  //   if (!eventType) {
-  //     setEventTypeError("Please select an event type.");
-  //     isValid = false;
-  //   }
-  //   if (!eventCategory) {
-  //     setEventCategoryError("Please select an event category.");
-  //     isValid = false;
-  //   }
-  //   if (!eventArea) {
-  //     setEventAreaError("Please enter an event area.");
-  //     isValid = false;
-  //   }
-  //   if (!eventLocation) {
-  //     setEventLocationError("Please enter an event location.");
-  //     isValid = false;
-  //   }
-  //   if (!district) {
-  //     setDistrictError("Please enter a district.");
-  //     isValid = false;
-  //   }
-  //   if (!state) {
-  //     setStateError("Please enter a state.");
-  //     isValid = false;
-  //   }
-  //   if (!eventStartDate) {
-  //     setEventStartDateError("Please select a start date.");
-  //     isValid = false;
-  //   }
-  //   if (!eventEndDate) {
-  //     setEventEndDateError("Please select an end date.");
-  //     isValid = false;
-  //   }
-
-  //   if (!rcNumber || rcNumber.length !== 12) {
-  //     setRcNumberError("Please enter a valid RC number (12 characters).");
-  //     isValid = false;
-  //   }
-  //   if (!model || model.length < 2) {
-  //     setModelError("Please enter a valid model name (at least 2 characters).");
-  //     isValid = false;
-  //   }
-  //   if (!variant || variant.length < 2) {
-  //     setVariantError(
-  //       "Please enter a valid variant name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!color || color.length < 2) {
-  //     setColorError("Please enter a valid color name (at least 2 characters).");
-  //     isValid = false;
-  //   }
-  //   if (!fuelType || fuelType.length < 2) {
-  //     setFuelTypeError(
-  //       "Please enter a valid fuel type (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-
-  //   if (!manager || manager.length < 2) {
-  //     setManagerError(
-  //       "Please enter a valid manager name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!tl || tl.length < 2) {
-  //     setTlError(
-  //       "Please enter a valid team leader name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!consultant || consultant.length < 2) {
-  //     setConsultantError(
-  //       "Please enter a valid consultant name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!driver || driver.length < 2) {
-  //     setDriverError(
-  //       "Please enter a valid driver name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!financeExecutive || financeExecutive.length < 2) {
-  //     setFinanceExecutiveError(
-  //       "Please enter a valid finance executive name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-  //   if (!evaluator || evaluator.length < 2) {
-  //     setEvaluatorError(
-  //       "Please enter a valid evaluator name (at least 2 characters)."
-  //     );
-  //     isValid = false;
-  //   }
-
-  //   if (!openAccordian) {
-  //     setOpenAccordianError("Please select an accordion panel.");
-  //     isValid = false;
-  //   }
-
-  //   if (!showDatePicker) {
-  //     setShowDatePickerError("Please select a date.");
-  //     isValid = false;
-  //   }
-
-  //   return isValid;
-  // };
 
   const handleSubmit = () => {
     // if (!validation()) {
@@ -952,8 +837,8 @@ const EvaluationForm = ({ route, navigation }) => {
     }
 
     // Validate No. of Challan Pending
-    if (challanPending.trim() === "") {
-      newErrors.challanPending = "No. of Challan Pending is required";
+    if (noOfChallanPending.trim() === "") {
+      newErrors.noOfChallanPending = "No. of Challan Pending is required";
     }
 
     if (hypothecatedTo.trim() === "") {
@@ -995,18 +880,34 @@ const EvaluationForm = ({ route, navigation }) => {
       newErrors.managerApprovedPrice = "Manager Approved Price is required";
     }
 
-    // Validate Price Gap
-    if (priceGap.trim() === "") {
-      newErrors.priceGap = "Price Gap is required";
-    }
-
     // Validate Approval Expiry Date
     if (approvalExpiryDate.trim() === "") {
       newErrors.approvalExpiryDate = "Approval Expiry Date is required";
     }
 
+    if (!/^[A-Za-z0-9]{13}$/.test(rcNumber)) {
+      newErrors.rcNumber = "Registration number must be 13 characters long.";
+    }
+
+    if (new Date(dateOfRegistration) > new Date()) {
+      newErrors.dateOfRegistration = "Future dates are not allowed.";
+    }
+
+    if (new Date(regnValidUpto) < new Date()) {
+      newErrors.regnValidUpto = "Only future dates are allowed.";
+    }
+    if (!/^[A-Za-z0-9IVX]{4}$/.test(emission)) {
+      newErrors.emission =
+        "Emission must be 4 characters long and can contain alphabets, numerics, or Roman numerals.";
+    }
+
     // Update the errors state
+    console.log("SSsss", newErrors);
     setErrors(newErrors);
+    if (!_.isEmpty(newErrors)) {
+      showAlertMessage("Provide the required fields");
+      setSubmitButtonPressed(true);
+    }
   };
 
   const updateAccordian = (selectedIndex) => {
@@ -1049,6 +950,7 @@ const EvaluationForm = ({ route, navigation }) => {
         setDataForDropDown([...Fuel_Types]);
         break;
       case "Month":
+        setDataForDropDown([...months]);
         break;
       case "Year":
         break;
@@ -1167,8 +1069,46 @@ const EvaluationForm = ({ route, navigation }) => {
   };
 
   const ShowDatePickerFunction = (item) => {
-    setShowDatePicker(true);
     setDatePickerTitle(item);
+    switch (datePickerTitle) {
+      case "Approval Expiry Date":
+        setMaxDate(new Date());
+        setMiniDate(new Date("01/01/1700"));
+        break;
+      case "Insurance To Date":
+        setMaxDate(null);
+        setMiniDate(null);
+        break;
+      case "Insurance From Date":
+        setMaxDate(new Date());
+        setMiniDate(new Date("01/01/1700"));
+        break;
+      case "Hypothication Completed Date":
+        setMaxDate(new Date());
+        setMiniDate(new Date("01/01/1700"));
+        break;
+      case "Regn. Valid Upto":
+        setMaxDate(null);
+        setMiniDate(new Date());
+        break;
+      case "Date of Registration":
+        setMaxDate(new Date());
+        setMiniDate(new Date("01/01/1700"));
+        break;
+      case "Date of Birth":
+        setMaxDate(new Date());
+        setMiniDate(new Date("01/01/1700"));
+        break;
+      case "Anniversary Date":
+        setMaxDate(new Date());
+        setMiniDate(new Date("01/01/1700"));
+        break;
+      default:
+        break;
+    }
+    setTimeout(() => {
+      setShowDatePicker(true);
+    }, 1000);
   };
 
   const saveDate = (item) => {
@@ -1205,6 +1145,14 @@ const EvaluationForm = ({ route, navigation }) => {
   };
 
   const saveImages = (payload) => {
+    if (imageTitle.includes("Add Image")) {
+      const number = imageTitle.split(" ").pop(); // Split the string by space and get the last element
+      // console.log(number);
+      const temp = otherImages;
+      temp[parseInt(number) - 1].url = payload.url;
+      temp[parseInt(number) - 1].name = payload.name;
+      setOtherImages(temp);
+    }
     switch (imageTitle) {
       case "Front Side":
         setFrontSideImage(payload);
@@ -1366,7 +1314,7 @@ const EvaluationForm = ({ route, navigation }) => {
     const Payload = {
       id: 0,
       nameOnRC: nameOnRc,
-      registrationNumber: "AAAAAA1234",
+      registrationNumber: rcNumber,
       mobileNum: mobileNumber,
       customerId: "18-286-ca9d9470-478b-43df-9ffa-4a57b6644470",
       regValidity: regnValidUpto,
@@ -1679,7 +1627,6 @@ const EvaluationForm = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
-          console.log("RESPS", response, keyId);
           const payload = {
             url: response.documentPath,
             name: response.fileName,
@@ -1735,6 +1682,11 @@ const EvaluationForm = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((response) => {
         if (response) {
+          const payload = {
+            url: response.documentPath,
+            name: response.fileName,
+          };
+          saveImages(payload);
         }
       })
       .catch((error) => {
@@ -1794,7 +1746,10 @@ const EvaluationForm = ({ route, navigation }) => {
         visible={showDatePicker}
         mode={"date"}
         value={new Date(Date.now())}
-        maximumDate={maxDate}
+        maximumDate={showDatePicker === "Regn. Valid Upto" ? null : maxDate}
+        minimumDate={
+          showDatePicker === "Regn. Valid Upto" ? new Date() : miniDate
+        }
         onChange={(event, selectedDate) => {
           saveDate(moment(selectedDate).format(dateFormat));
         }}
@@ -2344,10 +2299,11 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="RC Number"
                     mandatory={true}
                     value={rcNumber}
-                    maxLength={15}
+                    maxLength={13}
                     onChangeText={(text) => {
                       setRcNumber(text);
                     }}
+                    errorMessage={errors.rcNumber}
                   />
                   <CustomTextInput
                     placeholder="Enter Name On RC"
@@ -2357,6 +2313,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setNameOnRc(text);
                     }}
+                    errorMessage={errors.nameOnRc}
                   />
                   <CustomTextInput
                     placeholder="Enter Mobile Number"
@@ -2367,6 +2324,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setMobileNumber2(text);
                     }}
+                    errorMessage={errors.mobileNumber2}
                   />
                   <CustomEvaluationDropDown
                     label="Brand"
@@ -2388,19 +2346,21 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Variant"
                     label="Variant"
                     mandatory={true}
-                    value={insuranceCompanyName}
+                    value={variant}
                     onChangeText={(text) => {
-                      setInsuranceCompanyName(text);
+                      setVariant(text);
                     }}
+                    errorMessage={errors.variant}
                   />
                   <CustomTextInput
                     placeholder="Enter Colour"
                     label="Colour"
                     mandatory={true}
-                    value={insuranceCompanyName}
+                    value={colour}
                     onChangeText={(text) => {
                       setInsuranceCompanyName(text);
                     }}
+                    errorMessage={errors.colour}
                   />
                   <CustomEvaluationDropDown
                     label="Fuel Type"
@@ -2418,6 +2378,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setTransmission(text);
                     }}
+                    errorMessage={errors.transmission}
                   />
                   <CustomTextInput
                     placeholder="Enter Vin Number"
@@ -2428,6 +2389,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setVinNumber(text);
                     }}
+                    errorMessage={errors.vinNumber}
                   />
                   <CustomTextInput
                     placeholder="Enter Engine Number"
@@ -2438,6 +2400,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setEngineNumber(text);
                     }}
+                    errorMessage={errors.engineNumber}
                   />
                   <CustomEvaluationDropDown
                     label="Month"
@@ -2474,6 +2437,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setPincode(text);
                     }}
+                    errorMessage={errors.pincode}
                   />
                   <CustomTextInput
                     placeholder="Enter Registration State"
@@ -2483,6 +2447,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setRegistrationState(text);
                     }}
+                    errorMessage={errors.registrationState}
                   />
                   <CustomTextInput
                     placeholder="Enter Registration District"
@@ -2492,6 +2457,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setRegistrationDistrict(text);
                     }}
+                    errorMessage={errors.registrationDistrict}
                   />
                   <CustomTextInput
                     placeholder="Enter Registration City"
@@ -2501,6 +2467,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setRegistrationCity(text);
                     }}
+                    errorMessage={errors.registrationCity}
                   />
                   <CustomTextInput
                     placeholder="Enter Emission"
@@ -2511,6 +2478,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setEmission(text);
                     }}
+                    errorMessage={errors.emission}
                   />
                   <CustomEvaluationDropDown
                     label="Vehicle Type"
@@ -2538,6 +2506,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setKmsDriven(text);
                     }}
+                    errorMessage={errors.kmsDriven}
                   />
                   <CustomTextInput
                     placeholder="Enter Cubic Capacity"
@@ -2547,6 +2516,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setCubicCapacity(text);
                     }}
+                    errorMessage={errors.cubicCapacity}
                   />
                   <CustomTextInput
                     placeholder="Enter No Owners"
@@ -2558,6 +2528,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setNoOwners(text);
                     }}
+                    errorMessage={errors.noOwners}
                   />
                   <CustomTextInput
                     placeholder="Enter No. of Challan Pending"
@@ -2569,6 +2540,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setNoOfChallanPending(text);
                     }}
+                    errorMessage={errors.noOfChallanPending}
                   />
                 </View>
               </List.Accordion>
@@ -2670,47 +2642,54 @@ const EvaluationForm = ({ route, navigation }) => {
                     />
                     <Text>{"* Agree to enter Hypothication details"}</Text>
                   </View>
-                  <CustomTextInput
-                    placeholder="Enter Hypothecated To"
-                    label="Hypothecated To"
-                    mandatory={true}
-                    maxLength={50}
-                    value={hypothecatedTo}
-                    onChangeText={(text) => {
-                      setHypothecatedTo(text);
-                    }}
-                  />
-                  <CustomTextInput
-                    placeholder="Enter Hypothecated Branch"
-                    label="Hypothecated Branch"
-                    mandatory={true}
-                    maxLength={30}
-                    value={hypothecatedBranch}
-                    onChangeText={(text) => {
-                      if (text.trim() !== "" && isValidInput(text)) {
-                        setHypothecatedBranch(text);
-                      }
-                      if (text.trim() === "") {
-                        setHypothecatedBranch(text);
-                      }
-                    }}
-                  />
-                  <CustomTextInput
-                    placeholder="Enter Loan amount due"
-                    label="Loan amount due"
-                    mandatory={true}
-                    value={loanAmountDue}
-                    keyboardType={"number-pad"}
-                    maxLength={7}
-                    onChangeText={(text) => {
-                      setLoanAmountDue(text);
-                    }}
-                  />
-                  <CustomDatePicker
-                    label="Hypothication Completed Date"
-                    value={hypothicationCompletedDate}
-                    onPress={ShowDatePickerFunction}
-                  />
+                  {enterHypothication && (
+                    <>
+                      <CustomTextInput
+                        placeholder="Enter Hypothecated To"
+                        label="Hypothecated To"
+                        mandatory={true}
+                        maxLength={50}
+                        value={hypothecatedTo}
+                        onChangeText={(text) => {
+                          setHypothecatedTo(text);
+                        }}
+                        errorMessage={errors.hypothecatedTo}
+                      />
+                      <CustomTextInput
+                        placeholder="Enter Hypothecated Branch"
+                        label="Hypothecated Branch"
+                        mandatory={true}
+                        maxLength={30}
+                        value={hypothecatedBranch}
+                        onChangeText={(text) => {
+                          if (text.trim() !== "" && isValidInput(text)) {
+                            setHypothecatedBranch(text);
+                          }
+                          if (text.trim() === "") {
+                            setHypothecatedBranch(text);
+                          }
+                        }}
+                        errorMessage={errors.hypothecatedBranch}
+                      />
+                      <CustomTextInput
+                        placeholder="Enter Loan amount due"
+                        label="Loan amount due"
+                        mandatory={true}
+                        value={loanAmountDue}
+                        keyboardType={"number-pad"}
+                        maxLength={7}
+                        onChangeText={(text) => {
+                          setLoanAmountDue(text);
+                        }}
+                        errorMessage={errors.loanAmountDue}
+                      />
+                      <CustomDatePicker
+                        label="Hypothication Completed Date"
+                        value={hypothicationCompletedDate}
+                        onPress={ShowDatePickerFunction}
+                      />
+                    </>
+                  )}
                 </View>
               </List.Accordion>
               <List.Accordion
@@ -2742,42 +2721,48 @@ const EvaluationForm = ({ route, navigation }) => {
                     />
                     <Text>{"* Agree to enter Insurance details"}</Text>
                   </View>
-                  <CustomEvaluationDropDown
-                    label="Insurance Type"
-                    buttonText="Choose your Insurance Type"
-                    value={insuranceType}
-                    onPress={() => {
-                      showDropDownModelMethod("Insurance Type");
-                    }}
-                  />
-                  <CustomTextInput
-                    placeholder="Enter Insurance Company Name"
-                    label="Insurance Company Name"
-                    mandatory={true}
-                    value={insuranceCompanyName}
-                    onChangeText={(text) => {
-                      setInsuranceCompanyName(text);
-                    }}
-                  />
-                  <CustomTextInput
-                    placeholder="Enter Policy Number"
-                    label="Policy Number"
-                    mandatory={true}
-                    value={policyNumber}
-                    onChangeText={(text) => {
-                      setPolicyNumber(text);
-                    }}
-                  />
-                  <CustomDatePicker
-                    label="Insurance From Date"
-                    value={insuranceFromDate}
-                    onPress={ShowDatePickerFunction}
-                  />
-                  <CustomDatePicker
-                    label="Insurance To Date"
-                    value={insuranceToDate}
-                    onPress={ShowDatePickerFunction}
-                  />
+                  {enterInsurance && (
+                    <>
+                      <CustomEvaluationDropDown
+                        label="Insurance Type"
+                        buttonText="Choose your Insurance Type"
+                        value={insuranceType}
+                        onPress={() => {
+                          showDropDownModelMethod("Insurance Type");
+                        }}
+                      />
+                      <CustomTextInput
+                        placeholder="Enter Insurance Company Name"
+                        label="Insurance Company Name"
+                        mandatory={true}
+                        value={insuranceCompanyName}
+                        onChangeText={(text) => {
+                          setInsuranceCompanyName(text);
+                        }}
+                        errorMessage={errors.insuranceCompanyName}
+                      />
+                      <CustomTextInput
+                        placeholder="Enter Policy Number"
+                        label="Policy Number"
+                        mandatory={true}
+                        value={policyNumber}
+                        onChangeText={(text) => {
+                          setPolicyNumber(text);
+                        }}
+                        errorMessage={errors.policyNumber}
+                      />
+                      <CustomDatePicker
+                        label="Insurance From Date"
+                        value={insuranceFromDate}
+                        onPress={ShowDatePickerFunction}
+                      />
+                      <CustomDatePicker
+                        label="Insurance To Date"
+                        value={insuranceToDate}
+                        onPress={ShowDatePickerFunction}
+                      />
+                    </>
+                  )}
                 </View>
               </List.Accordion>
               <List.Accordion
@@ -2807,6 +2792,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={frontSideImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Back Side"
@@ -2816,6 +2802,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={backSideImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Left Side"
@@ -2825,6 +2812,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={leftSideImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Right Side"
@@ -2834,6 +2822,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={rightSideImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Speedo meter"
@@ -2843,6 +2832,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={speedometerImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Chassis"
@@ -2852,6 +2842,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={chassisImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Interior Front"
@@ -2860,6 +2851,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={interiorFrontImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Interior Back"
@@ -2868,6 +2860,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={interiorBackImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Extra Fitment"
@@ -2877,6 +2870,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={extraFitmentImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Scratch Damage"
@@ -2885,6 +2879,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={scratchDamageImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Dent Damage"
@@ -2893,6 +2888,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={dentDamageImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Functions"
@@ -2901,6 +2897,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={functionsImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Break Damage"
@@ -2909,6 +2906,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={breakDamageImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Number Plate"
@@ -2917,10 +2915,47 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={numberPlateImage}
+                    submitPressed={submitButtonPressed}
                   />
+                  {otherImages.length > 0 &&
+                    otherImages.map((item, index) => {
+                      return (
+                        <View style={{ flexDirection: "row" }}>
+                          <View style={{ width: "90%" }}>
+                            <CustomImageUpload
+                              label={"Add Image " + (index + 1)}
+                              buttonText="Upload Image"
+                              onPress={showImagePickerMethod}
+                              onShowImage={setImagePath}
+                              onDeleteImage={deleteImages}
+                              onChangeText={(text) => {
+                                const temp = otherImages;
+                                temp[index].title = text;
+                                setOtherImages(temp);
+                              }}
+                              value={item}
+                            />
+                          </View>
+                          <View style={{ justifyContent: "center" }}>
+                            <IconButton
+                              icon="close-circle-outline"
+                              color={Colors.RED}
+                              // style={{ padding: 0, margin: 0 }}
+                              size={25}
+                              onPress={() => {}}
+                            />
+                          </View>
+                        </View>
+                      );
+                    })}
                   <LocalButtonComp
                     title={"Add Other Image"}
-                    onPress={() => {}}
+                    onPress={() => {
+                      setOtherImages([
+                        ...otherImages,
+                        { title: "", name: "", url: "" },
+                      ]);
+                    }}
                     disabled={false}
                   />
                 </View>
@@ -2952,6 +2987,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={rcFrontImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Rc Back"
@@ -2961,6 +2997,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={rcBackImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Insurance Copy"
@@ -2970,6 +3007,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={insuranceCopyImage}
+                    submitPressed={submitButtonPressed}
                   />
                   <CustomUpload
                     label="Invoice"
@@ -3026,10 +3064,47 @@ const EvaluationForm = ({ route, navigation }) => {
                     onShowImage={setImagePath}
                     onDeleteImage={deleteImages}
                     value={panCardImage}
+                    submitPressed={submitButtonPressed}
                   />
+                  {otherImages.length > 0 &&
+                    otherImages.map((item, index) => {
+                      return (
+                        <View style={{ flexDirection: "row" }}>
+                          <View style={{ width: "90%" }}>
+                            <CustomImageUpload
+                              label={"Add Image " + (index + 1)}
+                              buttonText="Upload Image"
+                              onPress={showImagePickerMethod}
+                              onShowImage={setImagePath}
+                              onDeleteImage={deleteImages}
+                              onChangeText={(text) => {
+                                const temp = otherImages;
+                                temp[index].title = text;
+                                setOtherImages(temp);
+                              }}
+                              value={item}
+                            />
+                          </View>
+                          <View style={{ justifyContent: "center" }}>
+                            <IconButton
+                              icon="close-circle-outline"
+                              color={Colors.RED}
+                              // style={{ padding: 0, margin: 0 }}
+                              size={25}
+                              onPress={() => {}}
+                            />
+                          </View>
+                        </View>
+                      );
+                    })}
                   <LocalButtonComp
                     title={"Add Other Image"}
-                    onPress={() => {}}
+                    onPress={() => {
+                      setOtherImages([
+                        ...otherImages,
+                        { title: "", name: "", url: "" },
+                      ]);
+                    }}
                     disabled={false}
                   />
                 </View>
@@ -3216,7 +3291,12 @@ const EvaluationForm = ({ route, navigation }) => {
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setCustomerExpectedPrice(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.customerExpectedPrice = ""),
+                      });
                     }}
+                    errorMessage={errors.customerExpectedPrice}
                   />
                   <CustomTextInput
                     placeholder="Enter Evaluator Offered Price"
@@ -3226,6 +3306,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setEvaluatorOfferedPrice(text);
                     }}
+                    errorMessage={errors.evaluatorOfferedPrice}
                   />
                   <CustomTextInput
                     placeholder="Enter Manager Approved Price"
@@ -3235,6 +3316,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       setManagerApprovedPrice(text);
                     }}
+                    errorMessage={errors.managerApprovedPrice}
                   />
                   <CustomTextInput
                     placeholder="Enter Price Gap"
@@ -3264,7 +3346,9 @@ const EvaluationForm = ({ route, navigation }) => {
               />
               <LocalButtonComp
                 title={"Submit"}
-                onPress={() => {}}
+                onPress={() => {
+                  handleValidation();
+                }}
                 disabled={false}
               />
             </View>

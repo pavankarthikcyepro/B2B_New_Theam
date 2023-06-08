@@ -1,19 +1,32 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import { RadioTextItem2 } from "../../../../pureComponents";
+import { Colors } from "../../../../styles";
 
-const TableView = () => {
+const TableView = (props) => {
+  const { data, onChangeText } = props;
   return (
     <View style={styles.container}>
       <View style={[styles.row, { borderBottomWidth: 1 }]}>
         <Text style={styles.columnHeader}>Checklist</Text>
         <Text style={styles.columnHeader}>Remarks</Text>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.cell}>Item 1</Text>
-        <TextInput style={[styles.column, styles.input]} />
-      </View>
-      <View style={styles.row}>
+      {data?.questions.map((item, index) => {
+        return (
+          <View style={styles.row}>
+            <Text style={styles.cell}>{item.question}</Text>
+            <TextInput
+              value={item?.value}
+              onChangeText={(text) => {
+                onChangeText({ index, text: text });
+              }}
+              style={[styles.column, styles.input]}
+            />
+          </View>
+        );
+      })}
+
+      {/* <View style={styles.row}>
         <Text style={styles.cell}>Item 2</Text>
         <TextInput style={[styles.column, styles.input]} />
       </View>
@@ -24,7 +37,7 @@ const TableView = () => {
       <View style={styles.row}>
         <Text style={styles.cell}>Item 4</Text>
         <TextInput style={[styles.column, styles.input]} />
-      </View>
+      </View> */}
       <View style={styles.row}>
         <View style={{ justifyContent: "center" }}>
           <View>
@@ -76,6 +89,8 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1, // Remove outline
+    borderRadius: 10,
+    borderColor: Colors.GRAY,
   },
 });
 

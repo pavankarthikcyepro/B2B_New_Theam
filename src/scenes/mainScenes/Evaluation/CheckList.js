@@ -83,61 +83,6 @@ const CheckListScreen = () => {
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [showImagePicker, setShowImagePicker] = useState(false);
 
-  const [eventNumber, setEventNumber] = useState("");
-  const [eventName, setEventName] = useState("");
-  const [eventOrganiser, setEventOrganiser] = useState("");
-  const [eventPlannerLocation, setEventPlannerLocation] = useState("");
-  const [eventPlannerCode, setEventPlannerCode] = useState("");
-  const [pinCode, setPinCode] = useState("");
-  const [eventType, setEventType] = useState("");
-  const [eventCategory, setEventCategory] = useState("");
-  const [eventArea, setEventArea] = useState("");
-  const [eventLocation, setEventLocation] = useState("");
-  const [district, setDistrict] = useState("");
-  const [state, setState] = useState("");
-  const [eventStartDate, setEventStartDate] = useState("");
-  const [eventEndDate, setEventEndDate] = useState("");
-
-  const [eventNumberError, setEventNumberError] = useState(null);
-  const [eventNameError, setEventNameError] = useState(null);
-  const [eventOrganiserError, setEventOrganiserError] = useState(null);
-  const [eventPlannerLocationError, setEventPlannerLocationError] =
-    useState(null);
-  const [eventPlannerDealerCodeError, setEventPlannerDealerCodeError] =
-    useState(null);
-  const [pincodeError, setPincodeError] = useState(null);
-  const [eventTypeError, setEventTypeError] = useState(null);
-  const [eventCategoryError, setEventCategoryError] = useState(null);
-  const [eventAreaError, setEventAreaError] = useState(null);
-  const [eventLocationError, setEventLocationError] = useState(null);
-  const [districtError, setDistrictError] = useState(null);
-  const [stateError, setStateError] = useState(null);
-  const [eventStartDateError, setEventStartDateError] = useState(null);
-  const [eventEndDateError, setEventEndDateError] = useState(null);
-
-  const [rcNumber, setRcNumber] = useState("");
-  const [model, setModel] = useState("");
-  const [variant, setVariant] = useState("");
-  const [color, setColor] = useState("");
-  const [fuelType, setFuelType] = useState("");
-
-  const [rcNumberError, setRcNumberError] = useState(null);
-  const [modelError, setModelError] = useState(null);
-  const [variantError, setVariantError] = useState(null);
-  const [colorError, setColorError] = useState(null);
-  const [fuelTypeError, setFuelTypeError] = useState(null);
-
-  const [manager, setManager] = useState("");
-  const [managerError, setManagerError] = useState(null);
-  const [tl, setTl] = useState("");
-  const [tlError, setTlError] = useState(null);
-  const [consultant, setConsultant] = useState("");
-  const [consultantError, setConsultantError] = useState(null);
-  const [driver, setDriver] = useState("");
-  const [driverError, setDriverError] = useState(null);
-  const [financeExecutive, setFinanceExecutive] = useState("");
-  const [financeExecutiveError, setFinanceExecutiveError] = useState(null);
-  const [evaluator, setEvaluator] = useState("");
   const [evaluatorError, setEvaluatorError] = useState(null);
   const [openAccordian, setOpenAccordian] = useState("1");
   const [openAccordian2, setOpenAccordian2] = useState("1");
@@ -167,149 +112,7 @@ const CheckListScreen = () => {
     // Handle login logic here
   };
 
-  const validation = () => {
-    let isValid = true;
-    if (!eventNumber || isNaN(eventNumber)) {
-      setEventNumberError("Please enter a valid event number.");
-      isValid = false;
-    }
-    if (!eventName || eventName.length < 3) {
-      setEventNameError(
-        "Please enter a valid event name (at least 3 characters)."
-      );
-      isValid = false;
-    }
-    if (!eventOrganiser || eventOrganiser.length < 3) {
-      setEventOrganiserError(
-        "Please enter a valid event organiser (at least 3 characters)."
-      );
-      isValid = false;
-    }
-    if (!eventPlannerLocation) {
-      setEventPlannerLocationError("Please select an event planner location.");
-      isValid = false;
-    }
-    if (!eventPlannerCode) {
-      setEventPlannerDealerCodeError(
-        "Please select an event planner dealer code."
-      );
-      isValid = false;
-    }
-    if (!pinCode || pinCode.length !== 6) {
-      setPincodeError("Please enter a valid pincode (6 digits).");
-      isValid = false;
-    }
-    if (!eventType) {
-      setEventTypeError("Please select an event type.");
-      isValid = false;
-    }
-    if (!eventCategory) {
-      setEventCategoryError("Please select an event category.");
-      isValid = false;
-    }
-    if (!eventArea) {
-      setEventAreaError("Please enter an event area.");
-      isValid = false;
-    }
-    if (!eventLocation) {
-      setEventLocationError("Please enter an event location.");
-      isValid = false;
-    }
-    if (!district) {
-      setDistrictError("Please enter a district.");
-      isValid = false;
-    }
-    if (!state) {
-      setStateError("Please enter a state.");
-      isValid = false;
-    }
-    if (!eventStartDate) {
-      setEventStartDateError("Please select a start date.");
-      isValid = false;
-    }
-    if (!eventEndDate) {
-      setEventEndDateError("Please select an end date.");
-      isValid = false;
-    }
-
-    if (!rcNumber || rcNumber.length !== 12) {
-      setRcNumberError("Please enter a valid RC number (12 characters).");
-      isValid = false;
-    }
-    if (!model || model.length < 2) {
-      setModelError("Please enter a valid model name (at least 2 characters).");
-      isValid = false;
-    }
-    if (!variant || variant.length < 2) {
-      setVariantError(
-        "Please enter a valid variant name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!color || color.length < 2) {
-      setColorError("Please enter a valid color name (at least 2 characters).");
-      isValid = false;
-    }
-    if (!fuelType || fuelType.length < 2) {
-      setFuelTypeError(
-        "Please enter a valid fuel type (at least 2 characters)."
-      );
-      isValid = false;
-    }
-
-    if (!manager || manager.length < 2) {
-      setManagerError(
-        "Please enter a valid manager name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!tl || tl.length < 2) {
-      setTlError(
-        "Please enter a valid team leader name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!consultant || consultant.length < 2) {
-      setConsultantError(
-        "Please enter a valid consultant name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!driver || driver.length < 2) {
-      setDriverError(
-        "Please enter a valid driver name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!financeExecutive || financeExecutive.length < 2) {
-      setFinanceExecutiveError(
-        "Please enter a valid finance executive name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-    if (!evaluator || evaluator.length < 2) {
-      setEvaluatorError(
-        "Please enter a valid evaluator name (at least 2 characters)."
-      );
-      isValid = false;
-    }
-
-    if (!openAccordian) {
-      setOpenAccordianError("Please select an accordion panel.");
-      isValid = false;
-    }
-
-    if (!showDatePicker) {
-      setShowDatePickerError("Please select a date.");
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
   const handleSubmit = () => {
-    if (!validation()) {
-    }
     // handle form submission logic
     scrollToPos(0);
     setOpenAccordian("2");
@@ -334,15 +137,538 @@ const CheckListScreen = () => {
   };
 
   const data = [
-    { label: "Item 1", value: "1" },
-    { label: "Item 2", value: "2" },
-    { label: "Item 3", value: "3" },
-    { label: "Item 4", value: "4" },
-    { label: "Item 5", value: "5" },
-    { label: "Item 6", value: "6" },
-    { label: "Item 7", value: "7" },
-    { label: "Item 8", value: "8" },
+    {
+      id: 1,
+      categoryName: "General Appearance",
+      organizationId: 1,
+      status: "Active",
+      subCategory: [
+        {
+          id: 3,
+          categoryid: 1,
+          subcategoryName: "Interior",
+          status: "Active",
+          questions: [
+            {
+              id: 15,
+              subCategoryId: 3,
+              question: "Gas-brake-clutch pedals",
+              status: "Active",
+            },
+            {
+              id: 20,
+              subCategoryId: 3,
+              question: "Odometer mileage",
+              status: "Active",
+            },
+            {
+              id: 22,
+              subCategoryId: 3,
+              question: "Operation of windows",
+              status: "Active",
+            },
+            {
+              id: 24,
+              subCategoryId: 3,
+              question: "Seat belts",
+              status: "Active",
+            },
+            {
+              id: 14,
+              subCategoryId: 3,
+              question: "Emergency brake",
+              status: "Active",
+            },
+            {
+              id: 26,
+              subCategoryId: 3,
+              question: "Sun roof",
+              status: "Active",
+            },
+            {
+              id: 19,
+              subCategoryId: 3,
+              question: "Mirrors",
+              status: "Active",
+            },
+            {
+              id: 18,
+              subCategoryId: 3,
+              question: "Hood release (if applicable)",
+              status: "Active",
+            },
+            {
+              id: 16,
+              subCategoryId: 3,
+              question: "Gauges",
+              status: "Active",
+            },
+            {
+              id: 13,
+              subCategoryId: 3,
+              question: "Dash board",
+              status: "Active",
+            },
+            {
+              id: 25,
+              subCategoryId: 3,
+              question: "Seats",
+              status: "Active",
+            },
+            {
+              id: 17,
+              subCategoryId: 3,
+              question: "Head liner",
+              status: "Active",
+            },
+            {
+              id: 21,
+              subCategoryId: 3,
+              question: "Operation of doors",
+              status: "Active",
+            },
+            {
+              id: 23,
+              subCategoryId: 3,
+              question: "Rugs and mats",
+              status: "Active",
+            },
+            {
+              id: 27,
+              subCategoryId: 3,
+              question: "Sun visors",
+              status: "Active",
+            },
+          ],
+          category_id: 1,
+        },
+        {
+          id: 1,
+          categoryid: 1,
+          subcategoryName: "Engine",
+          status: "Active",
+          questions: [
+            {
+              id: 3,
+              subCategoryId: 1,
+              question: "Emissions test",
+              status: "Active",
+            },
+            {
+              id: 4,
+              subCategoryId: 1,
+              question: "Hoses",
+              status: "Active",
+            },
+            {
+              id: 6,
+              subCategoryId: 1,
+              question: "Radiator coolant",
+              status: "Active",
+            },
+            {
+              id: 5,
+              subCategoryId: 1,
+              question: "Oil",
+              status: "Active",
+            },
+            {
+              id: 1,
+              subCategoryId: 1,
+              question: "Belts",
+              status: "Active",
+            },
+            {
+              id: 2,
+              subCategoryId: 1,
+              question: "Cleanliness",
+              status: "Active",
+            },
+            {
+              id: 7,
+              subCategoryId: 1,
+              question: "Transmission fluid",
+              status: "Active",
+            },
+          ],
+          category_id: 1,
+        },
+        {
+          id: 5,
+          categoryid: 1,
+          subcategoryName: "Underneath Vehicle",
+          status: "Active",
+          questions: [
+            {
+              id: 31,
+              subCategoryId: 5,
+              question: "Exhaust pipe",
+              status: "Active",
+            },
+            {
+              id: 34,
+              subCategoryId: 5,
+              question: "Tire tread",
+              status: "Active",
+            },
+            {
+              id: 33,
+              subCategoryId: 5,
+              question: "Shock absorbers/struts",
+              status: "Active",
+            },
+            {
+              id: 32,
+              subCategoryId: 5,
+              question: "Floor boards",
+              status: "Active",
+            },
+          ],
+          category_id: 1,
+        },
+        {
+          id: 4,
+          categoryid: 1,
+          subcategoryName: "Trunk",
+          status: "Active",
+          questions: [
+            {
+              id: 28,
+              subCategoryId: 4,
+              question: "Floor covering",
+              status: "Active",
+            },
+            {
+              id: 29,
+              subCategoryId: 4,
+              question: "Rust/holes",
+              status: "Active",
+            },
+            {
+              id: 30,
+              subCategoryId: 4,
+              question: "Spare tire",
+              status: "Active",
+            },
+          ],
+          category_id: 1,
+        },
+        {
+          id: 2,
+          categoryid: 1,
+          subcategoryName: "Exterior",
+          status: "Active",
+          questions: [
+            {
+              id: 8,
+              subCategoryId: 2,
+              question: "Body rust",
+              status: "Active",
+            },
+            {
+              id: 12,
+              subCategoryId: 2,
+              question: "Scrapes",
+              status: "Active",
+            },
+            {
+              id: 9,
+              subCategoryId: 2,
+              question: "Condition of paint",
+              status: "Active",
+            },
+            {
+              id: 11,
+              subCategoryId: 2,
+              question: "Missing or broken parts",
+              status: "Active",
+            },
+            {
+              id: 10,
+              subCategoryId: 2,
+              question: "Dents",
+              status: "Active",
+            },
+          ],
+          category_id: 1,
+        },
+      ],
+    },
+    {
+      id: 2,
+      categoryName: "In the Drivers Seat",
+      organizationId: 1,
+      status: "Active",
+      subCategory: [
+        {
+          id: 6,
+          categoryid: 2,
+          subcategoryName: "NA",
+          status: "Active",
+          questions: [
+            {
+              id: 35,
+              subCategoryId: 6,
+              question: "Air conditioning",
+              status: "Active",
+            },
+            {
+              id: 36,
+              subCategoryId: 6,
+              question: "Brakes",
+              status: "Active",
+            },
+            {
+              id: 45,
+              subCategoryId: 6,
+              question: "Motor idle",
+              status: "Active",
+            },
+            {
+              id: 49,
+              subCategoryId: 6,
+              question: "Seat movement control",
+              status: "Active",
+            },
+            {
+              id: 37,
+              subCategoryId: 6,
+              question: "Front and rear defrost",
+              status: "Active",
+            },
+            {
+              id: 43,
+              subCategoryId: 6,
+              question: "Head lights",
+              status: "Active",
+            },
+            {
+              id: 38,
+              subCategoryId: 6,
+              question: "Gauges/warning lights",
+              status: "Active",
+            },
+            {
+              id: 53,
+              subCategoryId: 6,
+              question: "Turn signals",
+              status: "Active",
+            },
+            {
+              id: 40,
+              subCategoryId: 6,
+              question: "Fuel",
+              status: "Active",
+            },
+            {
+              id: 41,
+              subCategoryId: 6,
+              question: "Oil pressure",
+              status: "Active",
+            },
+            {
+              id: 46,
+              subCategoryId: 6,
+              question: "Power windows/mirrors",
+              status: "Active",
+            },
+            {
+              id: 44,
+              subCategoryId: 6,
+              question: "Heater and heater fan",
+              status: "Active",
+            },
+            {
+              id: 52,
+              subCategoryId: 6,
+              question: "Tachometer",
+              status: "Active",
+            },
+            {
+              id: 39,
+              subCategoryId: 6,
+              question: "Battery",
+              status: "Active",
+            },
+            {
+              id: 48,
+              subCategoryId: 6,
+              question: "Seat belts",
+              status: "Active",
+            },
+            {
+              id: 51,
+              subCategoryId: 6,
+              question: "Steering wheel tilt",
+              status: "Active",
+            },
+            {
+              id: 50,
+              subCategoryId: 6,
+              question: "Speedometer",
+              status: "Active",
+            },
+            {
+              id: 47,
+              subCategoryId: 6,
+              question: "Radio/cassette/CD",
+              status: "Active",
+            },
+            {
+              id: 42,
+              subCategoryId: 6,
+              question: "Temperature",
+              status: "Active",
+            },
+          ],
+          category_id: 2,
+        },
+      ],
+    },
+    {
+      id: 3,
+      categoryName: "During Your Test Drive",
+      organizationId: 1,
+      status: "Active",
+      subCategory: [
+        {
+          id: 7,
+          categoryid: 3,
+          subcategoryName: "NA",
+          status: "Active",
+          questions: [
+            {
+              id: 59,
+              subCategoryId: 7,
+              question: "Tire noises",
+              status: "Active",
+            },
+            {
+              id: 60,
+              subCategoryId: 7,
+              question: "Wheel alignment",
+              status: "Active",
+            },
+            {
+              id: 54,
+              subCategoryId: 7,
+              question: "Cruise control",
+              status: "Active",
+            },
+            {
+              id: 56,
+              subCategoryId: 7,
+              question: "Smoothness of acceleration",
+              status: "Active",
+            },
+            {
+              id: 57,
+              subCategoryId: 7,
+              question: "Tachometer operation",
+              status: "Active",
+            },
+            {
+              id: 55,
+              subCategoryId: 7,
+              question: "Odometer/speedometer",
+              status: "Active",
+            },
+            {
+              id: 58,
+              subCategoryId: 7,
+              question: "Temperature gauge/light",
+              status: "Active",
+            },
+          ],
+          category_id: 3,
+        },
+      ],
+    },
+    {
+      id: 4,
+      categoryName: "Vehicle Exterior",
+      organizationId: 1,
+      status: "Active",
+      subCategory: [
+        {
+          id: 8,
+          categoryid: 4,
+          subcategoryName: "NA",
+          status: "Active",
+          questions: [
+            {
+              id: 67,
+              subCategoryId: 8,
+              question: "Running board",
+              status: "Active",
+            },
+            {
+              id: 68,
+              subCategoryId: 8,
+              question: "Rear Pannel",
+              status: "Active",
+            },
+            {
+              id: 63,
+              subCategoryId: 8,
+              question: "Fender",
+              status: "Active",
+            },
+            {
+              id: 70,
+              subCategoryId: 8,
+              question: "Tyre grove",
+              status: "Active",
+            },
+            {
+              id: 66,
+              subCategoryId: 8,
+              question: "Rear Door",
+              status: "Active",
+            },
+            {
+              id: 61,
+              subCategoryId: 8,
+              question: "Bumper",
+              status: "Active",
+            },
+            {
+              id: 69,
+              subCategoryId: 8,
+              question: "Roof pannel",
+              status: "Active",
+            },
+            {
+              id: 64,
+              subCategoryId: 8,
+              question: "Door",
+              status: "Active",
+            },
+            {
+              id: 62,
+              subCategoryId: 8,
+              question: "Hood pannel",
+              status: "Active",
+            },
+            {
+              id: 65,
+              subCategoryId: 8,
+              question: "Pailar",
+              status: "Active",
+            },
+          ],
+          category_id: 4,
+        },
+      ],
+    },
   ];
+  const [sampleData, setSampleData] = useState(data);
+
+  const editCheckList = (index, innerIndex, editIndex, text) => {
+    const temp = sampleData;
+    temp[index].subCategory[innerIndex].questions[editIndex].value = text;
+    setSampleData(temp);
+  };
 
   return (
     <View style={[{ flex: 1 }]}>
@@ -393,312 +719,88 @@ const CheckListScreen = () => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              <List.Accordion
-                id={"1"}
-                key={"1"}
-                title={"General Appearance"}
-                titleStyle={{
-                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                    height: 60,
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <View
-                  style={{
-                    marginHorizontal: 10,
-                  }}
-                >
-                  <List.AccordionGroup
-                    expandedId={openAccordian2}
-                    onAccordionPress={(expandedId) =>
-                      updateSecondAccordian(expandedId)
-                    }
+              {sampleData.map((item, index) => {
+                return (
+                  <List.Accordion
+                    id={item.id.toString()}
+                    key={item.id.toString()}
+                    title={item.categoryName}
+                    titleStyle={{
+                      color:
+                        openAccordian === item.id.toString()
+                          ? Colors.BLACK
+                          : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === item.id.toString()
+                            ? Colors.RED
+                            : Colors.WHITE,
+                        height: 60,
+                      },
+                      styles.accordianBorder,
+                    ]}
                   >
-                    <List.Accordion
-                      id={"1"}
-                      key={"1"}
-                      title={"Engine"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "1" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
+                    <View
+                      style={{
+                        marginHorizontal: 10,
                       }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "1" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
                     >
-                      <View>
-                        <TableView />
-                      </View>
-                    </List.Accordion>
-                    <List.Accordion
-                      id={"2"}
-                      key={"2"}
-                      title={"Exterior"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "2" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "2" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View>
-                        <TableView />
-                      </View>
-                    </List.Accordion>
-                    <List.Accordion
-                      id={"3"}
-                      key={"3"}
-                      title={"Trunk"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "3" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "3" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View>
-                        <TableView />
-                      </View>
-                    </List.Accordion>
-                    <List.Accordion
-                      id={"4"}
-                      key={"4"}
-                      title={"Interior"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "4" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "4" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View>
-                        <TableView />
-                      </View>
-                    </List.Accordion>
-                    <List.Accordion
-                      id={"5"}
-                      key={"5"}
-                      title={"Underneath Vehicle"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "5" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "5" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View>
-                        <TableView />
-                      </View>
-                    </List.Accordion>
-                  </List.AccordionGroup>
-                </View>
-              </List.Accordion>
-              <List.Accordion
-                id={"2"}
-                key={"2"}
-                title={"In the Drivers Seat"}
-                titleStyle={{
-                  color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                    height: 60,
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <View
-                  style={{
-                    marginHorizontal: 15,
-                  }}
-                >
-                  <List.AccordionGroup
-                    expandedId={openAccordian2}
-                    onAccordionPress={(expandedId) =>
-                      updateSecondAccordian(expandedId)
-                    }
-                  >
-                    <List.Accordion
-                      id={"1"}
-                      key={"1"}
-                      title={"General Appearance"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "1" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "1" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View></View>
-                    </List.Accordion>
-                  </List.AccordionGroup>
-                </View>
-              </List.Accordion>
-              <List.Accordion
-                id={"3"}
-                key={"3"}
-                title={"During Your Test Drive"}
-                titleStyle={{
-                  color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                    height: 60,
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <View
-                  style={{
-                    marginHorizontal: 15,
-                  }}
-                >
-                  <List.AccordionGroup
-                    expandedId={openAccordian2}
-                    onAccordionPress={(expandedId) =>
-                      updateSecondAccordian(expandedId)
-                    }
-                  >
-                    <List.Accordion
-                      id={"1"}
-                      key={"1"}
-                      title={"General Appearance"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "1" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "1" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View></View>
-                    </List.Accordion>
-                  </List.AccordionGroup>
-                </View>
-              </List.Accordion>
-              <List.Accordion
-                id={"4"}
-                key={"4"}
-                title={"Vehicle Exterior"}
-                titleStyle={{
-                  color: openAccordian === "4" ? Colors.BLACK : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                    height: 60,
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <View
-                  style={{
-                    marginHorizontal: 15,
-                  }}
-                >
-                  <List.AccordionGroup
-                    expandedId={openAccordian2}
-                    onAccordionPress={(expandedId) =>
-                      updateSecondAccordian(expandedId)
-                    }
-                  >
-                    <List.Accordion
-                      id={"1"}
-                      key={"1"}
-                      title={"General Appearance"}
-                      titleStyle={{
-                        color:
-                          openAccordian2 === "1" ? Colors.BLACK : Colors.BLACK,
-                        fontSize: 15,
-                        fontWeight: "500",
-                      }}
-                      style={[
-                        {
-                          backgroundColor:
-                            openAccordian2 === "1" ? Colors.RED : Colors.WHITE,
-                          height: 60,
-                        },
-                        styles.accordianBorder2,
-                      ]}
-                    >
-                      <View></View>
-                    </List.Accordion>
-                  </List.AccordionGroup>
-                </View>
-              </List.Accordion>
+                      <List.AccordionGroup
+                        expandedId={openAccordian2}
+                        onAccordionPress={(expandedId) =>
+                          updateSecondAccordian(expandedId)
+                        }
+                      >
+                        {item.subCategory.map((innerItem, innerIndex) => {
+                          return (
+                            <List.Accordion
+                              id={innerItem.id.toString()}
+                              key={innerItem.id.toString()}
+                              title={innerItem.subcategoryName}
+                              titleStyle={{
+                                color:
+                                  openAccordian2 === innerItem.id.toString()
+                                    ? Colors.BLACK
+                                    : Colors.BLACK,
+                                fontSize: 15,
+                                fontWeight: "500",
+                              }}
+                              style={[
+                                {
+                                  backgroundColor:
+                                    openAccordian2 === innerItem.id.toString()
+                                      ? Colors.RED
+                                      : Colors.WHITE,
+                                  height: 60,
+                                },
+                                styles.accordianBorder2,
+                              ]}
+                            >
+                              <View>
+                                <TableView
+                                  data={innerItem}
+                                  onChangeText={(editItem) => {
+                                    editCheckList(
+                                      index,
+                                      innerIndex,
+                                      editItem.index,
+                                      editItem.text
+                                    );
+                                  }}
+                                />
+                              </View>
+                            </List.Accordion>
+                          );
+                        })}
+                      </List.AccordionGroup>
+                    </View>
+                  </List.Accordion>
+                );
+              })}
             </List.AccordionGroup>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -711,7 +813,9 @@ const CheckListScreen = () => {
               />
               <LocalButtonComp
                 title={"Submit"}
-                onPress={() => {}}
+                onPress={() => {
+                  console.log(JSON.stringify(sampleData));
+                }}
                 disabled={false}
               />
             </View>

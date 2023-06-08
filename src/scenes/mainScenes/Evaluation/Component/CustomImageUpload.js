@@ -1,10 +1,16 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { Colors } from "../../../../styles";
 import { IconButton } from "react-native-paper";
 
-const CustomUpload = (props) => {
+const CustomImageUpload = (props) => {
   const {
     label,
     buttonText,
@@ -38,11 +44,16 @@ const CustomUpload = (props) => {
         {label}
         <Text style={styles.mandatory}>{mandatory ? " *" : ""}</Text>
       </Text>
-      <TouchableOpacity style={styles.button} onPress={() => onPress(label)}>
-        <Text style={styles.buttonText}>{buttonText}</Text>
-        <AntDesign size={17} name="upload" color={Colors.RED} />
-      </TouchableOpacity>
-      {value?.name ? (
+      <View style={styles.button}>
+        <TextInput
+          placeholder={buttonText}
+          style={[styles.buttonText, { width: "80%" }]}
+        />
+        <TouchableOpacity onPress={() => onPress(label)}>
+          <AntDesign size={17} name="upload" color={Colors.RED} />
+        </TouchableOpacity>
+      </View>
+      {value?.url ? (
         <View style={{ flexDirection: "row", marginTop: 5 }}>
           <TouchableOpacity
             style={styles.preViewBtn}
@@ -130,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomUpload;
+export default CustomImageUpload;
