@@ -269,7 +269,7 @@ const EvaluationForm = ({ route, navigation }) => {
   const [imagePath, setImagePath] = useState("");
   const [errors, setErrors] = useState({});
   const [addAnotherInsuranceImage, setAddAnotherInsuranceImage] =
-    useState(false);
+    useState([]);
   const [enterInsurance, setEnterInsurance] = useState(true);
   const [enterHypothication, setEnterHypothication] = useState(true);
 
@@ -1146,12 +1146,18 @@ const EvaluationForm = ({ route, navigation }) => {
 
   const saveImages = (payload) => {
     if (imageTitle.includes("Add Image")) {
-      const number = imageTitle.split(" ").pop(); // Split the string by space and get the last element
-      // console.log(number);
+      const number = imageTitle.split(" ").pop();
       const temp = otherImages;
       temp[parseInt(number) - 1].url = payload.url;
       temp[parseInt(number) - 1].name = payload.name;
       setOtherImages(temp);
+    }
+    if (imageTitle.includes("Add New Image")) {
+      const number = imageTitle.split(" ").pop();
+      const temp = addAnotherInsuranceImage;
+      temp[parseInt(number) - 1].url = payload.url;
+      temp[parseInt(number) - 1].name = payload.name;
+      setAddAnotherInsuranceImage(temp);
     }
     switch (imageTitle) {
       case "Front Side":
@@ -1232,6 +1238,20 @@ const EvaluationForm = ({ route, navigation }) => {
   };
 
   const deleteImages = (payload) => {
+    if (payload.includes("Add Image")) {
+      const number = imageTitle.split(" ").pop();
+      const temp = otherImages;
+      temp[parseInt(number) - 1].url = "";
+      temp[parseInt(number) - 1].name = "";
+      setOtherImages(temp);
+    }
+    if (payload.includes("Add New Image")) {
+      const number = imageTitle.split(" ").pop();
+      const temp = addAnotherInsuranceImage;
+      temp[parseInt(number) - 1].url = "";
+      temp[parseInt(number) - 1].name = "";
+      setAddAnotherInsuranceImage(temp);
+    }
     switch (payload) {
       case "Front Side":
         setFrontSideImage(null);
@@ -2917,21 +2937,21 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={numberPlateImage}
                     submitPressed={submitButtonPressed}
                   />
-                  {otherImages.length > 0 &&
-                    otherImages.map((item, index) => {
+                  {addAnotherInsuranceImage.length > 0 &&
+                    addAnotherInsuranceImage.map((item, index) => {
                       return (
                         <View style={{ flexDirection: "row" }}>
                           <View style={{ width: "90%" }}>
                             <CustomImageUpload
-                              label={"Add Image " + (index + 1)}
+                              label={"Add New Image " + (index + 1)}
                               buttonText="Upload Image"
                               onPress={showImagePickerMethod}
                               onShowImage={setImagePath}
                               onDeleteImage={deleteImages}
                               onChangeText={(text) => {
-                                const temp = otherImages;
+                                const temp = addAnotherInsuranceImage;
                                 temp[index].title = text;
-                                setOtherImages(temp);
+                                setAddAnotherInsuranceImage(temp);
                               }}
                               value={item}
                             />
@@ -2942,7 +2962,13 @@ const EvaluationForm = ({ route, navigation }) => {
                               color={Colors.RED}
                               // style={{ padding: 0, margin: 0 }}
                               size={25}
-                              onPress={() => {}}
+                              onPress={() => {
+                                const updatedArray =
+                                  addAnotherInsuranceImage.filter(
+                                    (_, i) => i !== index
+                                  );
+                                setAddAnotherInsuranceImage(updatedArray);
+                              }}
                             />
                           </View>
                         </View>
@@ -2951,8 +2977,8 @@ const EvaluationForm = ({ route, navigation }) => {
                   <LocalButtonComp
                     title={"Add Other Image"}
                     onPress={() => {
-                      setOtherImages([
-                        ...otherImages,
+                      setAddAnotherInsuranceImage([
+                        ...addAnotherInsuranceImage,
                         { title: "", name: "", url: "" },
                       ]);
                     }}
@@ -3091,7 +3117,12 @@ const EvaluationForm = ({ route, navigation }) => {
                               color={Colors.RED}
                               // style={{ padding: 0, margin: 0 }}
                               size={25}
-                              onPress={() => {}}
+                              onPress={() => {
+                                const updatedArray = otherImages.filter(
+                                  (_, i) => i !== index
+                                );
+                                setOtherImages(updatedArray);
+                              }}
                             />
                           </View>
                         </View>
