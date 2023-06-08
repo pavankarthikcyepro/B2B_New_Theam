@@ -160,8 +160,8 @@ android {
         applicationId "com.b2b_new_theme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 43
-        versionName "CPR43-02062023"
+        versionCode 44
+        versionName "CPR44-08062023"
     }
     splits {
         abi {
