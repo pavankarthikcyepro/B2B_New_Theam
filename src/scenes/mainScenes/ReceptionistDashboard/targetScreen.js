@@ -1289,11 +1289,11 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                     item.id === 0
                       ? selector.receptionistData_ReceptionistDashboard_xrole
                         .enquirysCount > 0 &&
-                      navigateToEMS("ENQUIRY", "", [userData.empId], true)
+                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
                       : item.id === 1
                         ? selector.receptionistData_ReceptionistDashboard_xrole
                           .bookingsCount > 0 &&
-                        navigateToEMS("BOOKING", "", [userData.empId], true)
+                        navigateToEmsVol2("BOOKING", "", [userData.empId], true)
                         : item.id === 2
                           ? selector.receptionistData_ReceptionistDashboard_xrole
                             .RetailCount > 0 &&
@@ -6557,60 +6557,71 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           <View style={{ alignItems: "flex-end" }}>
                             <SourceModelView
                               onClick={() => {
-                                if (
-                                  selector.saveReceptionistfilterObj.selectedempId
-                                ) {
-                                  navigation.navigate(
-                                    "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                    {
-                                      empId:
-                                        selector.saveReceptionistfilterObj
-                                          .selectedempId[0],
-                                      loggedInEmpId:
-                                        selector.saveReceptionistfilterObj
-                                          .selectedempId[0],
-                                      // type: "TEAM",
-                                      moduleType: "ReceptionistDashboard",
-                                      headerTitle: "Source/Model",
-                                      orgId: userData.orgId,
-                                      role: selector.saveReceptionistfilterObj
-                                        ?.selectedDesignation[0],
-                                      branchList: userData.branchs.map(
-                                        (a) => a.branchId
-                                      ),
-                                      // empList: selector.saveCRMfilterObj.selectedempId,
-                                      self: true,
-                                    }
-                                  );
-                                } else {
-                                  if (userData.hrmsRole === "CRM") {
-                                    navigation.navigate(
-                                      "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                      {
-                                        empId: userData.empId,
-                                        headerTitle: "Source/Model",
-                                        loggedInEmpId: userData.empId,
-                                        orgId: userData.orgId,
-                                        role: "CRM",
-                                        moduleType: "ReceptionistDashboard",
-                                        dashboardType: "reception",
-                                        self: false,
-                                      }
-                                    );
-                                  } else {
-                                    navigation.navigate(
-                                      "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                      {
-                                        empId: userData.empId,
-                                        headerTitle: "Source/Model",
-                                        loggedInEmpId: userData.empId,
-                                        orgId: userData.orgId,
-                                        role: "xrole",
-                                        moduleType: "ReceptionistDashboard",
-                                      }
-                                    );
-                                  }
+                                let tempArry = [];
+                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
+                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads)
+                                console.log("manthan jjjd ", tempArry);
+                                let item = {
+                                  empName:"Grand Total",
+                                  roleName:""
                                 }
+                                handleNavigationTOSourcrModelVol2(item,tempArry)
+                                // if (
+                                //   selector.saveReceptionistfilterObj.selectedempId
+                                // ) {
+                                //   navigation.navigate(
+                                //     "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                //     {
+                                //       empId:
+                                //         selector.saveReceptionistfilterObj
+                                //           .selectedempId[0],
+                                //       loggedInEmpId:
+                                //         selector.saveReceptionistfilterObj
+                                //           .selectedempId[0],
+                                //       // type: "TEAM",
+                                //       moduleType: "ReceptionistDashboard",
+                                //       headerTitle: "Source/Model",
+                                //       orgId: userData.orgId,
+                                //       role: selector.saveReceptionistfilterObj
+                                //         ?.selectedDesignation[0],
+                                //       branchList: userData.branchs.map(
+                                //         (a) => a.branchId
+                                //       ),
+                                //       // empList: selector.saveCRMfilterObj.selectedempId,
+                                //       self: true,
+                                //     }
+                                //   );
+                                // } else {
+                                //   if (userData.hrmsRole === "CRM") {
+                                //     navigation.navigate(
+                                //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                //       {
+                                //         empId: userData.empId,
+                                //         headerTitle: "Source/Model",
+                                //         loggedInEmpId: userData.empId,
+                                //         orgId: userData.orgId,
+                                //         role: "CRM",
+                                //         moduleType: "ReceptionistDashboard",
+                                //         dashboardType: "reception",
+                                //         self: false,
+                                //       }
+                                //     );
+                                //   } else {
+                                //     navigation.navigate(
+                                //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                //       {
+                                //         empId: userData.empId,
+                                //         headerTitle: "Source/Model",
+                                //         loggedInEmpId: userData.empId,
+                                //         orgId: userData.orgId,
+                                //         role: "xrole",
+                                //         moduleType: "ReceptionistDashboard",
+                                //       }
+                                //     );
+                                //   }
+                                // }
                               }}
                               style={{
                                 transform: [{ translateX: translation }],
@@ -6942,61 +6953,72 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                               <SourceModelView
                                 style={{ alignSelf: "flex-end" }}
                                 onClick={() => {
-                                  if (
-                                    selector.saveReceptionistfilterObj
-                                      .selectedempId
-                                  ) {
-                                    navigation.navigate(
-                                      "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                      {
-                                        empId:
-                                          selector.saveReceptionistfilterObj
-                                            .selectedempId[0],
-                                        loggedInEmpId:
-                                          selector.saveReceptionistfilterObj
-                                            .selectedempId[0],
-                                        // type: "TEAM",
-                                        moduleType: "ReceptionistDashboard",
-                                        headerTitle: "Source/Model",
-                                        orgId: userData.orgId,
-                                        role: selector.saveReceptionistfilterObj
-                                          ?.selectedDesignation[0],
-                                        branchList: userData.branchs.map(
-                                          (a) => a.branchId
-                                        ),
-                                        // empList: selector.saveCRMfilterObj.selectedempId,
-                                        self: true,
-                                      }
-                                    );
-                                  } else {
-                                    if (userData.hrmsRole === "CRM") {
-                                      navigation.navigate(
-                                        "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                        {
-                                          empId: userData.empId,
-                                          headerTitle: "Source/Model",
-                                          loggedInEmpId: userData.empId,
-                                          orgId: userData.orgId,
-                                          role: "CRM",
-                                          moduleType: "ReceptionistDashboard",
-                                          dashboardType: "reception",
-                                          self: false,
-                                        }
-                                      );
-                                    } else {
-                                      navigation.navigate(
-                                        "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                        {
-                                          empId: userData.empId,
-                                          headerTitle: "Source/Model",
-                                          loggedInEmpId: userData.empId,
-                                          orgId: userData.orgId,
-                                          role: "xrole",
-                                          moduleType: "ReceptionistDashboard",
-                                        }
-                                      );
-                                    }
+                                  let tempArry = [];
+                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
+                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
+                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
+                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads)
+                                  
+                                  let item = {
+                                    empName: "Source/Model",
+                                    roleName: ""
                                   }
+                                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                                  // if (
+                                  //   selector.saveReceptionistfilterObj
+                                  //     .selectedempId
+                                  // ) {
+                                  //   navigation.navigate(
+                                  //     "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                  //     {
+                                  //       empId:
+                                  //         selector.saveReceptionistfilterObj
+                                  //           .selectedempId[0],
+                                  //       loggedInEmpId:
+                                  //         selector.saveReceptionistfilterObj
+                                  //           .selectedempId[0],
+                                  //       // type: "TEAM",
+                                  //       moduleType: "ReceptionistDashboard",
+                                  //       headerTitle: "Source/Model",
+                                  //       orgId: userData.orgId,
+                                  //       role: selector.saveReceptionistfilterObj
+                                  //         ?.selectedDesignation[0],
+                                  //       branchList: userData.branchs.map(
+                                  //         (a) => a.branchId
+                                  //       ),
+                                  //       // empList: selector.saveCRMfilterObj.selectedempId,
+                                  //       self: true,
+                                  //     }
+                                  //   );
+                                  // } else {
+                                  //   if (userData.hrmsRole === "CRM") {
+                                  //     navigation.navigate(
+                                  //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                  //       {
+                                  //         empId: userData.empId,
+                                  //         headerTitle: "Source/Model",
+                                  //         loggedInEmpId: userData.empId,
+                                  //         orgId: userData.orgId,
+                                  //         role: "CRM",
+                                  //         moduleType: "ReceptionistDashboard",
+                                  //         dashboardType: "reception",
+                                  //         self: false,
+                                  //       }
+                                  //     );
+                                  //   } else {
+                                  //     navigation.navigate(
+                                  //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                                  //       {
+                                  //         empId: userData.empId,
+                                  //         headerTitle: "Source/Model",
+                                  //         loggedInEmpId: userData.empId,
+                                  //         orgId: userData.orgId,
+                                  //         role: "xrole",
+                                  //         moduleType: "ReceptionistDashboard",
+                                  //       }
+                                  //     );
+                                  //   }
+                                  // }
                                 }}
                               />
                             </View>
