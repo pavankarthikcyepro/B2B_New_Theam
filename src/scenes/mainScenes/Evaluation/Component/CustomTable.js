@@ -5,7 +5,6 @@ import { Colors } from "../../../../styles";
 
 const Table = (props) => {
   const { label, data, onPress, onChangeText } = props;
-
   return (
     <View style={styles.container}>
       <View style={styles.row}>

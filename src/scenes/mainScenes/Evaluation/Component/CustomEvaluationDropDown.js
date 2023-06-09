@@ -4,12 +4,16 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { Colors } from "../../../../styles";
 
 const CustomEvaluationDropDown = (props) => {
-  const { label, buttonText, onPress, value = "" } = props;
+  const { label, buttonText, onPress, value = "", disabled = false } = props;
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.button}
+        disabled={disabled}
+        onPress={onPress}
+      >
         <Text style={styles.buttonText}>
           {value !== "" ? value : buttonText}
         </Text>

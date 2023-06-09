@@ -10,6 +10,7 @@ const CustomTextInput = (props) => {
     mandatory = false,
     placeholder,
     errorMessage = "",
+    disabled =false,
     ...textInputProps
   } = props;
 
@@ -22,6 +23,7 @@ const CustomTextInput = (props) => {
       <TextInput
         value={value}
         placeholder={placeholder}
+        editable={!disabled}
         placeholderTextColor="#8b8680"
         style={styles.input}
         {...textInputProps}

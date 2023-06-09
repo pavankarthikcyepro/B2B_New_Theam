@@ -90,6 +90,466 @@ const months = [
   { name: "November", id: 11 },
   { name: "December", id: 12 },
 ];
+export const Vehicle_Types = [
+  {
+    id: "1",
+    name: "Personal",
+  },
+  {
+    id: "2",
+    name: "Taxi",
+  },
+];
+
+export const TypeOf_body_Types = [
+  {
+    id: "1",
+    name: "SUV",
+  },
+  {
+    id: "2",
+    name: "Sedan",
+  },
+  {
+    id: "2",
+    name: "HatchBack",
+  },
+];
+
+const incomming = {
+  dmsAccountDto: {
+    id: 22808,
+    age: 0,
+    branchId: 286,
+    company: "",
+    country: "India",
+    createdBy: "Rohith N P",
+    createdDate: 1685625888667,
+    customerType: "Business",
+    email: "",
+    enquiryDate: 1685557800000,
+    enquirySource: 192,
+    firstName: "lead",
+    gender: "FEMALE",
+    lastName: "Test",
+    modifiedBy: "Rohith N P",
+    modifiedDate: 1685625935440,
+    orgId: 18,
+    ownerName: "Rohith N P",
+    phone: "8798247987",
+    secondaryPhone: "",
+    status: "PREENQUIRY",
+    subSource: "318",
+    active: true,
+  },
+  dmsLeadDto: {
+    id: 59614,
+    firstName: "lead",
+    phone: "8798247987",
+    lastName: "Test",
+    email: "",
+    allocated: "Yes",
+    branchId: 286,
+    buyerType: "Exchange Buyer",
+    createdBy: "Rohith N P",
+    createddatetime: 1685625935000,
+    crmUniversalId: "18-286-dd7fdf70-b940-4b6a-98c0-dbe000d6ee1f",
+    dateOfEnquiry: 1685625934581,
+    dmsExpectedDeliveryDate: 1685625938000,
+    enquiryCategory: "Hot",
+    isVip: "N",
+    isHni: "N",
+    enquirySegment: "Personal",
+    leadStage: "ENQUIRY",
+    model: "NEW JEEP COMPASS",
+    organizationId: 18,
+    salesConsultant: "Rohith N P",
+    sourceOfEnquiry: 192,
+    dmsaccountid: 22808,
+    dmscontactid: 0,
+    enquirySource: "Tele-In",
+    subSource: "Advertisement",
+    maritalStatus: "",
+    documentType: "",
+    customerCategoryType: "",
+    referencenumber: "JP Nagar - IC0700043 - ENQ2023001489",
+    dmsAddresses: [
+      {
+        addressType: "Communication",
+        houseNo: "",
+        street: "",
+        city: "Yellandu",
+        district: "Khammam",
+        pincode: "507123",
+        state: "Telangana",
+        village: "B N Thanda",
+        county: "India",
+        rural: false,
+        urban: true,
+        id: 120733,
+      },
+      {
+        addressType: "Permanent",
+        houseNo: "",
+        street: "",
+        city: "Yellandu",
+        district: "Khammam",
+        pincode: "507123",
+        state: "Telangana",
+        village: "B N Thanda",
+        county: "India",
+        rural: false,
+        urban: true,
+        id: 120734,
+      },
+    ],
+    dmsLeadProducts: [
+      {
+        model: "NEW JEEP COMPASS",
+        variant: "TRAILHAWK 4x4(O2) 2.0D AT",
+        color: "Bright White+Black Roof",
+        fuel: "Diesel",
+        transimmisionType: "Automatic",
+        id: "",
+        isPrimary: "Y",
+        selected: true,
+      },
+    ],
+    dmsfinancedetails: [
+      {
+        financeType: "In House",
+        financeCategory: "",
+        downPayment: "",
+        loanAmount: "",
+        financeCompany: "",
+        annualIncome: "",
+        location: "",
+        rateOfInterest: "",
+        emi: "",
+        id: 0,
+      },
+    ],
+    dmsLeadScoreCards: [
+      {
+        lookingForAnyOtherBrand: "",
+        brand: "",
+        otherMake: "",
+        model: "",
+        otherModel: "",
+        variant: "",
+        color: "",
+        fuel: "",
+        transmissionType: "",
+        dealershipName: "",
+        dealershipLocation: "",
+        priceRange: "",
+        decisionPendingReason: "",
+        onRoadPriceanyDifference: "",
+        customerFrom: "",
+        village: "",
+        hamlet: "",
+        mandal: "",
+        mandalHq: "",
+        town: "",
+        dist: "",
+        distHq: "",
+        voiceofCustomerRemarks: "",
+        id: 0,
+      },
+    ],
+    dmsAttachments: [],
+    dmsExchagedetails: [
+      {
+        buyerType: "Exchange Buyer",
+        varient: "",
+        fuelType: "",
+        regNo: "sd667s87",
+        kiloMeters: "",
+        hypothication: "",
+        color: "",
+        transmission: "",
+        yearofManufacture: "",
+        hypothicationBranch: "",
+        hypothicationRequirement: "",
+        expectedPrice: "",
+        registrationDate: "",
+        registrationValidityDate: "",
+        insuranceAvailable: "",
+        insuranceDocumentAvailable: "",
+        insuranceType: "",
+        insuranceFromDate: "",
+        insuranceToDate: "",
+        insuranceCompanyName: "",
+        insuranceDocumentKey: "",
+        regDocumentKey: "",
+        id: 0,
+      },
+    ],
+    dmsAccessories: [],
+    dmsOrgTagConfigurationDto: [],
+    customerType: "Business",
+  },
+  previewControls: {
+    previewregistrationNumber: "",
+    previewnameonRC: "",
+    previewmodel: "",
+    previewvariant: "",
+    previewregDate: "",
+    previewmake: "",
+    previewfuelType: "",
+    previewtransmission: "",
+    role: "",
+    previewVehicleServiceCost: "",
+    previewvehicleServiceCost: "",
+    previewengineNumber: "",
+    previewpincode: "",
+    previewchallanPending: "",
+    previewminorAccidentRemarks: "",
+    previewminorAccident: "",
+    previewmajorAccidentRemarks: "",
+    previewmajorAccident: "",
+    previewcolour: "",
+    previewevalutorId: "",
+    previewcustExpectedPrice: "",
+    previewemission: "",
+    previewevaluatorOfferPrice: "",
+    previewoilChanges: "",
+    previewpowerbrakefluidchange: "",
+    previewcoolantFilterChange: "",
+    previewremovalStainMarksStickers: "",
+    previewcarpetCleaning: "",
+    previewengineRoom: "",
+    previewengineRoomCost: "",
+    previewvehicleTransfer: "",
+    previewnocClearanceExpense: "",
+    previewchallanAmount: "",
+    previewccClearanceExpense: "",
+    previewfrontWheelLeft: "",
+    previewfrontWheelRight: "",
+    previewhypothecatedBranch: "",
+    previewhypothecatedCompletedDate: "",
+    previewhypothecation: "",
+    previewimageDocuments: "",
+    previewinsFromDate: "",
+    previewinsToDate: "",
+    previewinsurance: "",
+    previewinsuranceCompanyName: "",
+    previewinsuranceType: "",
+    previewkmDriven: "",
+    previewloanAmountDue: "",
+    previewnoOfOwners: "",
+    previewpolicyNumber: "",
+    previewpollutionCertificate: "",
+    previewmobileNum: "",
+    previewname: "",
+    previewcost: "",
+    previewotherDocName: "",
+    previewotherDocFile: "",
+    previewrearWheelLeft: "",
+    previewrearWheelRight: "",
+    previewregCity: "",
+    previewregDistrict: "",
+    regDocument: "",
+    previewregState: "",
+    previewregValidity: "",
+    previewrubbingPolishing: "",
+    previewspareAlliWheel: "",
+    previewspareDiskWheel: "",
+    previewspareKey: "",
+    previewtypeOfBody: "",
+    previewvehicleType: "",
+    previewyearMonthOfManufacturing: "",
+    previewchassisNum: "",
+    previewperiodicService: "",
+    previewoldCarNocImg: "",
+    previewoldCarNocName: "",
+    previewnumberPlateImg: "",
+    previewnumberPlateName: "",
+    previewbreaksDmgImg: "",
+    previewbreaksDmgName: "",
+    previewfunctionsImg: "",
+    previewfunctionsName: "",
+    previewdentImg: "",
+    previewdentName: "",
+    previewscratchImg: "",
+    previewscratchName: "",
+    previewextraFitmentImg: "",
+    previewextraFitmentName: "",
+    previewinvoiceImg: "",
+    previewinvoiceName: "",
+    previewinsuranceImg: "",
+    previewinsuranceName: "",
+    previewrcBackImg: "",
+    previewrcBackName: "",
+    previewrcFrontImg: "",
+    previewrcFrontName: "",
+    previewinteriorBackImg: "",
+    previewinteriorBackName: "",
+    previewinteriorFrontImg: "",
+    previewinteriorFrontName: "",
+    previewchassisImg: "",
+    previewchassisImgName: "",
+    previewspeedoMeterImg: "",
+    previewspeedoMeterImgName: "",
+    previewcarRightImg: "",
+    previewcarLeftImg: "",
+    previewcarLeftImgName: "",
+    previewcarBackImg: "",
+    previewcarBackImgName: "",
+    previewcarFrontImg: "",
+    previewcarFrontImgName: "",
+    previewcarRightImgName: "",
+    otherImagesDoc: [],
+    otherfieldsDoc: [],
+    refurbishmentItems: [],
+    refurbishmentAdditionalItems: [],
+  },
+  profileControls: {
+    registrationNumber: "6tyu8765rgcvvcc",
+    variant: "",
+    fuelType: "",
+    transmission: "",
+    chassisNumber: "",
+    engineNumber: "",
+    yearOfManufacturing: "",
+    dateOfRegistration: "",
+    registrationValidity: "",
+    pincode: "",
+    belt: true,
+    airconditioning: "",
+    remarks1: "",
+    bodyrust: "",
+    registrationState: "",
+    registrationDistrict: "",
+    registrationCity: "",
+    emission: "",
+    Interior: "",
+    Trunk: "",
+    Exterior: "",
+    role: "",
+    managerId: "",
+    Engineroomcleaning: "no",
+    evaluatorId: "",
+    UnderneathVehicle: "",
+    InTheDiversseat: "",
+    cruisecontrol: "",
+    DrivingYourTestDrive: "",
+    vehicletype: "",
+    typeofbody: "",
+    distanceDriven: "",
+    NoOfOwners: "",
+    floorcovering: "",
+    challanPending: "",
+    exhaustpipe: "",
+    VehicleExterior: "",
+    bumper: "",
+    vehicleServiceCost: "",
+    managerid: "",
+    frontright: "",
+    frontleft: "",
+    rearright: "",
+    rearleft: "",
+    sparediskwheel: "",
+    sparealliwheel: "",
+    majorAccident: "",
+    majorAccidentRemarks: "",
+    minorAccident: "",
+    minorAccidentRemarks: "",
+    hypothetication: "",
+    hypotheticatedBranch: "",
+    loanDue: "",
+    insuranceType: "",
+    generalappearence: "",
+    Engine: "",
+    engine: "",
+    colour: "",
+    remarks: "",
+    insuranceCompanyName: "",
+    policyNumber: "",
+    insuranceFrom: "",
+    insuranceTo: "",
+    carFrontImgName: "",
+    carFrontImg: "",
+    dashboard: "",
+    carBackImgName: "",
+    carBackImg: "",
+    carLeftImgName: "",
+    carLeftImg: "",
+    carRightImgName: "",
+    carRightImg: "",
+    speedoMeterImgName: "",
+    speedoMeterImg: "",
+    chassisImgName: "",
+    chassisImg: "",
+    VehicleServiceCost: "",
+    interiorImg: "",
+    Pollutioncertificate: "no",
+    vinPlateImg: "",
+    rcFrontName: "",
+    rcFrontImg: "",
+    Drycleaning: "no",
+    RubbingPolishingCost: "no",
+    CCClearances: "no",
+    SpareKeysCost: "no",
+    Challenamount: "no",
+    otherCharges: "",
+    otherImages: "",
+    Engineandtransmission: "no",
+    RegistrationCost: "no",
+    Vehicletransfercharges: "no",
+    Removalstains: "no",
+    Nocclearance: "no",
+    Coolantandfilter: "no",
+    Steeringandfluid: "no",
+    rcBackName: "",
+    rcBackImg: "",
+    insuranceName: "",
+    insuranceImg: "",
+    InsuranceCost: "no",
+    interiorFrontName: "",
+    interiorFrontImg: "",
+    interiorBackName: "",
+    interiorBackImg: "",
+    invoiceName: "",
+    invoiceImg: "",
+    extraFitmentName: "",
+    extraFitmentImg: "",
+    functionsName: "",
+    functionsImg: "",
+    getcardetails: "",
+    scratchName: "",
+    scratchImg: "",
+    dentName: "",
+    dentImg: "",
+    breaksDmgName: "",
+    breaksDmgImg: "",
+    numberPlateName: "",
+    numberPlateImg: "",
+    oldCarNocName: "",
+    oldCarNocImg: "",
+    periodicServiceValue: "",
+    insuranceValue: "",
+    spareKeysValue: "",
+    registrationValue: "",
+    rubbingPolishingValue: "",
+    mobileNum: "8798247987",
+    otherDocfieldName: "",
+    periodicService: "no",
+    interiorCleaningValue: "",
+    interiorCleaningCost: "",
+    pollutionCertificateValue: "",
+    pollutionCertificateCost: "",
+    entertextfield: "",
+    priceGap: "",
+    acceptCost: "",
+    rejectCost: "",
+    evaluatorofferedprice: "",
+    otherImagesDoc: [],
+    otherfieldsDoc: [],
+    refurbishmentItems: [],
+    refurbishmentAdditionalItems: [],
+  },
+};
 
 const Payload = {
   id: 0,
@@ -281,9 +741,9 @@ const EvaluationForm = ({ route, navigation }) => {
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("");
   const [relationName, setRelationName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("17/05/1995");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [age, setAge] = useState("");
-  const [anniversaryDate, setAnniversaryDate] = useState("17/05/1995");
+  const [anniversaryDate, setAnniversaryDate] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [alternateMobileNumber, setAlternateMobileNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -566,6 +1026,184 @@ const EvaluationForm = ({ route, navigation }) => {
     getCheckList();
     getModalList();
   }, []);
+
+  // Set Address
+  useEffect(() => {
+    const tempCAddress = incomming.dmsLeadDto.dmsAddresses;
+    const getCAddress = tempCAddress.filter(
+      (item) => item.addressType === "Communication"
+    )[0];
+    setCommunication({
+      pincode: getCAddress.pincode,
+      isUrban: getCAddress.urban,
+      isRural: getCAddress.rural,
+      houseNo: getCAddress.houseNo,
+      street: getCAddress.street,
+      village: getCAddress.village,
+      city: getCAddress.city,
+      district: getCAddress.district,
+      state: getCAddress.state,
+      mandal: "",
+      country: getCAddress.county,
+    });
+    const getPAddress = tempCAddress.filter(
+      (item) => item.addressType === "Permanent"
+    )[0];
+    setPermanentAddress({
+      pincode: getPAddress.pincode,
+      isUrban: getPAddress.urban,
+      isRural: getPAddress.rural,
+      houseNo: getPAddress.houseNo,
+      street: getPAddress.street,
+      village: getPAddress.village,
+      city: getPAddress.city,
+      district: getPAddress.district,
+      state: getPAddress.state,
+      mandal: "",
+      country: getPAddress.county,
+    });
+  }, []);
+
+  useEffect(() => {
+    const temp = incomming.dmsAccountDto;
+    setFirstName(temp.firstName);
+    setLastName(temp.lastName);
+    setAlternateMobileNumber(temp.secondaryPhone);
+    setMobileNumber(temp.phone);
+    setEmail(temp.email);
+    setGender(temp.gender.charAt(0).toUpperCase() + temp.gender.slice(1));
+
+    const evaluationTemp = incomming.profileControls;
+    setRcNumber(evaluationTemp.registrationNumber);
+    setVariant(evaluationTemp.variant);
+    setFuelType(evaluationTemp.fuelType);
+    setTransmission(evaluationTemp.transmission);
+    setEngineNumber(evaluationTemp.engineNumber);
+    setPincode(evaluationTemp.pincode);
+    setRegistrationCity(evaluationTemp.registrationCity);
+    setRegistrationDistrict(evaluationTemp.registrationDistrict);
+    setRegistrationState(evaluationTemp.registrationState);
+    setEmission(evaluationTemp.emission);
+    setDateOfRegistration(evaluationTemp.dateOfRegistration);
+    setRegnValidUpto(evaluationTemp.registrationValidity);
+    setVehicleType(evaluationTemp.vehicletype);
+    setTypeOfBody(evaluationTemp.typeofbody);
+    setKmsDriven(evaluationTemp.distanceDriven);
+    setNoOfChallanPending(evaluationTemp.challanPending);
+    setNoOwners(evaluationTemp.NoOfOwners);
+    setFrontRightSelected(evaluationTemp.frontright);
+    setFrontRightSelected(evaluationTemp.frontright);
+    setRearLeftSelected(evaluationTemp.rearleft);
+    setRearRightSelected(evaluationTemp.rearright);
+    setSpareDiskWheelSelected(evaluationTemp.sparediskwheel);
+    setSpareAlliWheelSelected(evaluationTemp.sparealliwheel);
+    setAnyMinorAccidentSelected(evaluationTemp.minorAccident);
+    setAnyMajorAccidentSelected(evaluationTemp.majorAccident);
+    setHypothecatedTo(evaluationTemp.hypothetication);
+    setHypothecatedBranch(evaluationTemp.hypotheticatedBranch);
+    setLoanAmountDue(evaluationTemp.loanDue);
+    setInsuranceType(evaluationTemp.insuranceType);
+    setInsuranceCompanyName(evaluationTemp.insuranceCompanyName);
+    setPolicyNumber(evaluationTemp.policyNumber);
+    setInsuranceFromDate(evaluationTemp.insuranceFrom);
+    setInsuranceToDate(evaluationTemp.insuranceTo);
+
+    setFrontSideImage({
+      name: evaluationTemp.carFrontImgName,
+      url: evaluationTemp.carFrontImg,
+    });
+    setBackSideImage({
+      name: evaluationTemp.carBackImgName,
+      url: evaluationTemp.carBackImg,
+    });
+    setLeftSideImage({
+      name: evaluationTemp.carLeftImgName,
+      url: evaluationTemp.carLeftImg,
+    });
+    setRightSideImage({
+      name: evaluationTemp.carRightImgName,
+      url: evaluationTemp.carRightImg,
+    });
+    setSpeedometerImage({
+      name: evaluationTemp.chassisImgName,
+      url: evaluationTemp.chassisImg,
+    });
+    setInteriorFrontImage({
+      name: evaluationTemp.interiorFrontName,
+      url: evaluationTemp.interiorFrontImg,
+    });
+    setInteriorBackImage({
+      name: evaluationTemp.interiorBackName,
+      url: evaluationTemp.interiorBackImg,
+    });
+    setExtraFitmentImage({
+      name: evaluationTemp.extraFitmentName,
+      url: evaluationTemp.extraFitmentImg,
+    });
+
+    setScratchDamageImage({
+      name: evaluationTemp.scratchName,
+      url: evaluationTemp.scratchImg,
+    });
+    setDentDamageImage({
+      name: evaluationTemp.dentName,
+      url: evaluationTemp.dentImg,
+    });
+    setFunctionsImage({
+      name: evaluationTemp.functionsName,
+      url: evaluationTemp.functionsImg,
+    });
+    setBreakDamageImage({
+      name: evaluationTemp.breaksDmgName,
+      url: evaluationTemp.breaksDmgImg,
+    });
+    setNumberPlateImage({
+      name: evaluationTemp.numberPlateName,
+      url: evaluationTemp.numberPlateImg,
+    });
+
+    setRcFrontImage({
+      name: evaluationTemp.rcFrontName,
+      url: evaluationTemp.rcFrontImg,
+    });
+    setRcBackImage({
+      name: evaluationTemp.rcBackName,
+      url: evaluationTemp.rcBackImg,
+    });
+    setInsuranceCopyImage({
+      name: evaluationTemp.insuranceCompanyName,
+      url: evaluationTemp.insuranceImg,
+    });
+    setInvoiceImage({
+      name: evaluationTemp.invoiceName,
+      url: evaluationTemp.invoiceImg,
+    });
+    setOldCarNOCImage({
+      name: evaluationTemp.oldCarNocName,
+      url: evaluationTemp.oldCarNocImg,
+    });
+    setCcImage({
+      name: '',
+      url: '',
+    });
+    setPollutionImage({
+      name: "",
+      url: '',
+    });
+    setIdProofImage({
+      name: "",
+      url: "",
+    });
+    setPanCardImage({
+      name: "",
+      url: "",
+    });
+    setMobileNumber2(evaluationTemp.mobileNum);
+    setPriceGap(evaluationTemp.priceGap);
+    setEvaluatorOfferedPrice(evaluationTemp.evaluatorofferedprice);
+    
+  }, []);
+
   const getOptions = async () => {
     try {
       let employeeData = await AsyncStore.getData(
@@ -844,21 +1482,17 @@ const EvaluationForm = ({ route, navigation }) => {
       newErrors.noOfChallanPending = "No. of Challan Pending is required";
     }
 
-    if (hypothecatedTo.trim() === "") {
+    if (enterHypothication && hypothecatedTo.trim() === "") {
       newErrors.hypothecatedTo = "Hypothecated To is required";
     }
 
     // Validate Hypothecated Branch
-    if (hypothecatedBranch.trim() === "") {
+    if (enterHypothication && hypothecatedBranch.trim() === "") {
       newErrors.hypothecatedBranch = "Hypothecated Branch is required";
     }
 
     // Validate Loan amount due
-    if (loanAmountDue.trim() === "") {
-      newErrors.loanAmountDue = "Loan amount due is required";
-    }
-
-    if (customerExpectedPrice.trim() === "") {
+    if (enterHypothication && loanAmountDue.trim() === "") {
       newErrors.loanAmountDue = "Loan amount due is required";
     }
 
@@ -886,6 +1520,14 @@ const EvaluationForm = ({ route, navigation }) => {
     // Validate Approval Expiry Date
     if (approvalExpiryDate.trim() === "") {
       newErrors.approvalExpiryDate = "Approval Expiry Date is required";
+    }
+
+    if (insuranceCompanyName.trim() === "") {
+      newErrors.insuranceCompanyName = "Insurance Company Name is required";
+    }
+
+    if (policyNumber.trim() === "") {
+      newErrors.policyNumber = "Policy Number is required";
     }
 
     if (!/^[A-Za-z0-9]{13}$/.test(rcNumber)) {
@@ -957,11 +1599,15 @@ const EvaluationForm = ({ route, navigation }) => {
         break;
       case "Year":
         const d = new Date().getFullYear();
-        setDataForDropDown([...createYearObjects(1850, parseInt(d))]);
+        setDataForDropDown([
+          ..._.reverse(createYearObjects(1850, parseInt(d))),
+        ]);
         break;
       case "Vehicle Type":
+        setDataForDropDown([...Vehicle_Types]);
         break;
       case "Type of Body":
+        setDataForDropDown([...TypeOf_body_Types]);
         break;
       case "Insurance Type":
         setDataForDropDown([...Insurence_Types]);
@@ -1345,7 +1991,18 @@ const EvaluationForm = ({ route, navigation }) => {
     }
   };
 
+  function convertData(data) {
+    return data.map((item) => {
+      const { title, url } = item;
+      return {
+        document: title,
+        url: url,
+      };
+    });
+  }
   const update = () => {
+    const tempImages = otherImages.length > 0 ? convertData(otherImages) : [];
+
     const Payload = {
       id: 0,
       nameOnRC: nameOnRc,
@@ -1360,71 +2017,82 @@ const EvaluationForm = ({ route, navigation }) => {
       imageDocuments: [
         {
           documentName: "frontside",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxEBR .png",
+          url: frontSideImage.url,
         },
         {
           documentName: "backside",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+          url: backSideImage.url,
         },
         {
           documentName: "leftside",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+          url: leftSideImage.url,
         },
         {
           documentName: "rightside",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxETBR.png",
+          url: rightSideImage.url,
         },
         {
           documentName: "speedometer",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Group Lvl.png",
+          url: speedometerImage.url,
         },
         {
           documentName: "chassis",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1685554496096.xlsxSupport Team Lvl.png",
+          url: chassisImage.url,
         },
         {
           documentName: "interiorfront",
+          url: interiorFrontImage.url,
         },
         {
           documentName: "interiorback",
+          url: interiorBackImage.url,
         },
         {
           documentName: "rc front",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxFact sheet.png",
+          url: rcFrontImage.url,
         },
         {
           documentName: "rc back",
-          url: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/18-286-ca9d9470-478b-43df-9ffa-4a57b6644470/ETVBRL_1684420826675.xlsxSupport.png",
+          url: rcBackImage.url,
         },
         {
           documentName: "insurance",
+          url: insuranceCopyImage.url,
         },
         {
           documentName: "invoice",
+          url: invoiceImage.url,
         },
         {
           documentName: "extra fitment",
+          url: extraFitmentImage.url,
         },
         {
           documentName: "scrach damage",
+          url: scratchDamageImage.url,
         },
         {
           documentName: "dent damage",
+          url: dentDamageImage.url,
         },
         {
           documentName: "functions",
+          url: functionsImage.url,
         },
         {
           documentName: "break damage",
+          url: breakDamageImage.url,
         },
         {
           documentName: "number plate",
+          url: numberPlateImage.url,
         },
         {
           documentName: "bank finance old car/noc",
+          url: oldCarNOCImage.url,
         },
       ],
-      otherImages: [],
+      otherImages: tempImages,
       model: model,
       varient: variant,
       yearMonthOfManufacturing: yearMonthOfManufacturing,
@@ -1444,7 +2112,7 @@ const EvaluationForm = ({ route, navigation }) => {
       updatedDate: "",
       make: make,
       fuelType: fuelType,
-      chassisNum: "78hb",
+      chassisNum: "",
       noOfOwners: noOwners,
       colour: colour,
       transmission: transmission,
@@ -1468,15 +2136,17 @@ const EvaluationForm = ({ route, navigation }) => {
       regDate: dateOfRegistration,
       emission: emission,
       challanPending: noOfChallanPending,
-      hypothecation: hypothecatedTo,
-      hypothecatedBranch: hypothecatedBranch,
-      hypothecatedCompletedDate: hypothicationCompletedDate,
-      insuranceType: insuranceType,
-      loanAmountDue: loanAmountDue,
-      insuranceCompanyName: insuranceCompanyName,
-      policyNumber: policyNumber,
-      insFromDate: insuranceFromDate,
-      insToDate: insuranceToDate,
+      hypothecation: enterHypothication ? hypothecatedTo : "",
+      hypothecatedBranch: enterHypothication ? hypothecatedBranch : "",
+      hypothecatedCompletedDate: enterHypothication
+        ? hypothicationCompletedDate
+        : "",
+      insuranceType: enterInsurance ? insuranceType : "",
+      loanAmountDue: enterHypothication ? loanAmountDue : "",
+      insuranceCompanyName: enterInsurance ? insuranceCompanyName : "",
+      policyNumber: enterInsurance ? policyNumber : "",
+      insFromDate: enterInsurance ? insuranceFromDate : "",
+      insToDate: enterInsurance ? insuranceToDate : "",
       periodicService: "no",
       periodicServiceCost: null,
       EngineandtransmissionCost: null,
@@ -1722,6 +2392,36 @@ const EvaluationForm = ({ route, navigation }) => {
       });
   };
 
+  const saveData = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.post(URL.EVALUATION_AUTOSAVE());
+        const json = await response.json();
+        if (response.ok) {
+        }
+      }
+    } catch (error) {}
+  };
+
+  const autoSaveData = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.post(URL.EVALUATION_AUTOSAVE());
+        const json = await response.json();
+        if (response.ok) {
+        }
+      }
+    } catch (error) {}
+  };
+
   return (
     <View style={[{ flex: 1 }]}>
       <Modal
@@ -1853,6 +2553,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Salutation"
                     buttonText="Select Salutation"
                     value={salutation}
+                    disabled={true}
                     onPress={() => {
                       showDropDownModelMethod("Salutation");
                     }}
@@ -1861,6 +2562,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter First Name"
                     label="First Name"
                     mandatory={true}
+                    disabled={true}
                     value={firstName}
                     onChangeText={(text) => {
                       setFirstName(text);
@@ -1870,6 +2572,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Last Name"
                     label="Last Name"
                     mandatory={true}
+                    disabled={true}
                     value={lastName}
                     onChangeText={(text) => {
                       setLastName(text);
@@ -1879,6 +2582,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     label="Gender"
                     buttonText="Select Gender"
                     value={gender}
+                    disabled={true}
                     onPress={() => {
                       showDropDownModelMethod("Gender");
                     }}
@@ -1887,6 +2591,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Relation Name"
                     label="Relation Name"
                     value={relationName}
+                    disabled={true}
                     onChangeText={(text) => {
                       setRelationName(text);
                     }}
@@ -1894,12 +2599,14 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Date of Birth"
                     value={dateOfBirth}
+                    disabled={true}
                     onPress={ShowDatePickerFunction}
                   />
                   <CustomTextInput
                     placeholder="Enter Age"
                     label="Age"
                     value={age}
+                    disabled={true}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setAge(text);
@@ -1908,12 +2615,14 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomDatePicker
                     label="Anniversary Date"
                     value={anniversaryDate}
+                    disabled={true}
                     onPress={ShowDatePickerFunction}
                   />
                   <CustomTextInput
                     placeholder="Enter Mobile Number"
                     label="Mobile Number"
                     mandatory={true}
+                    disabled={true}
                     value={mobileNumber}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
@@ -1924,6 +2633,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Alternate Mobile Number"
                     label="Alternate Mobile Number"
                     value={alternateMobileNumber}
+                    disabled={true}
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setAlternateMobileNumber(text);
@@ -1933,6 +2643,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Email ID"
                     label="Email ID"
                     value={email}
+                    disabled={true}
                     keyboardType={"email-address"}
                     onChangeText={(text) => {
                       setEmail(text);
@@ -1969,6 +2680,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Pincode"
                     label="Pincode"
                     mandatory={true}
+                    disabled={true}
                     keyboardType={"number-pad"}
                     value={communicationAddress.pincode}
                     onChangeText={(text) => {
@@ -1990,6 +2702,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Urban"}
                       value={"urban"}
+                      disabled={true}
                       status={communicationAddress.isUrban ? true : false}
                       onPress={() => {
                         setCommunication({
@@ -2008,6 +2721,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Rural"}
                       value={"rural"}
+                      disabled={true}
                       status={communicationAddress.isRural ? true : false}
                       onPress={() => {
                         setCommunication({
@@ -2027,6 +2741,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter H-No"
                     label="H-No"
+                    disabled={true}
                     value={communicationAddress.houseNo}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2043,6 +2758,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter Street"
                     label="Street"
+                    disabled={true}
                     value={communicationAddress.street}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2059,6 +2775,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     label="Village/Town"
                     placeholder="Enter Village/Town"
+                    disabled={true}
                     value={communicationAddress.village}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2075,6 +2792,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter Mandal/Tahsil"
                     label="Mandal/Tahsil"
+                    disabled={true}
                     value={communicationAddress.mandal}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2091,6 +2809,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter City"
                     label="City"
+                    disabled={true}
                     value={communicationAddress.city}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2107,6 +2826,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter District"
                     label="District"
+                    disabled={true}
                     value={communicationAddress.district}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2123,6 +2843,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter State"
                     label="State"
+                    disabled={true}
                     value={communicationAddress.state}
                     onChangeText={(text) => {
                       setCommunication({
@@ -2153,6 +2874,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Yes"}
                       value={"yes"}
+                      disabled={true}
                       status={sameAsPermanent}
                       onPress={() => {
                         setSameAsPermanent(true);
@@ -2162,6 +2884,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"No"}
                       value={"no"}
+                      disabled={true}
                       status={!sameAsPermanent}
                       onPress={() => {
                         setSameAsPermanent(false);
@@ -2185,6 +2908,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     placeholder="Enter Pincode"
                     label="Pincode"
                     mandatory={true}
+                    disabled={true}
                     keyboardType={"number-pad"}
                     value={permanentAddress.pincode}
                     onChangeText={(text) => {
@@ -2201,6 +2925,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Urban"}
                       value={"urban"}
+                      disabled={true}
                       status={permanentAddress.isUrban ? true : false}
                       onPress={() =>
                         setPermanentAddress({
@@ -2213,6 +2938,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     <RadioTextItem
                       label={"Rural"}
                       value={"rural"}
+                      disabled={true}
                       status={permanentAddress.isRural ? true : false}
                       onPress={() =>
                         setPermanentAddress({
@@ -2226,6 +2952,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter H-No"
                     label="H-No"
+                    disabled={true}
                     value={permanentAddress.houseNo}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2237,6 +2964,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter Street"
                     label="Street"
+                    disabled={true}
                     value={permanentAddress.street}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2248,6 +2976,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     label="Village/Town"
                     placeholder="Enter Village/Town"
+                    disabled={true}
                     value={permanentAddress.village}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2259,6 +2988,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter Mandal/Tahsil"
                     label="Mandal/Tahsil"
+                    disabled={true}
                     value={permanentAddress.mandal}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2270,6 +3000,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter City"
                     label="City"
+                    disabled={true}
                     value={permanentAddress.city}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2281,6 +3012,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter District"
                     label="District"
+                    disabled={true}
                     value={permanentAddress.district}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2292,6 +3024,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomTextInput
                     placeholder="Enter State"
                     label="State"
+                    disabled={true}
                     value={permanentAddress.state}
                     onChangeText={(text) => {
                       setPermanentAddress({
@@ -2329,6 +3062,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     maxLength={13}
                     onChangeText={(text) => {
                       setRcNumber(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.rcNumber = ""),
+                      });
                     }}
                     errorMessage={errors.rcNumber}
                   />
@@ -2339,6 +3076,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={nameOnRc}
                     onChangeText={(text) => {
                       setNameOnRc(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.nameOnRc = ""),
+                      });
                     }}
                     errorMessage={errors.nameOnRc}
                   />
@@ -2350,6 +3091,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={mobileNumber2}
                     onChangeText={(text) => {
                       setMobileNumber2(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.mobileNumber2 = ""),
+                      });
                     }}
                     errorMessage={errors.mobileNumber2}
                   />
@@ -2376,6 +3121,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={variant}
                     onChangeText={(text) => {
                       setVariant(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.variant = ""),
+                      });
                     }}
                     errorMessage={errors.variant}
                   />
@@ -2386,6 +3135,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={colour}
                     onChangeText={(text) => {
                       setInsuranceCompanyName(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.colour = ""),
+                      });
                     }}
                     errorMessage={errors.colour}
                   />
@@ -2404,6 +3157,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={transmission}
                     onChangeText={(text) => {
                       setTransmission(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.transmission = ""),
+                      });
                     }}
                     errorMessage={errors.transmission}
                   />
@@ -2415,6 +3172,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     maxLength={17}
                     onChangeText={(text) => {
                       setVinNumber(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.vinNumber = ""),
+                      });
                     }}
                     errorMessage={errors.vinNumber}
                   />
@@ -2426,6 +3187,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     maxLength={20}
                     onChangeText={(text) => {
                       setEngineNumber(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.engineNumber = ""),
+                      });
                     }}
                     errorMessage={errors.engineNumber}
                   />
@@ -2463,6 +3228,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={pincode}
                     onChangeText={(text) => {
                       setPincode(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.pincode = ""),
+                      });
                     }}
                     errorMessage={errors.pincode}
                   />
@@ -2473,6 +3242,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={registrationState}
                     onChangeText={(text) => {
                       setRegistrationState(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.registrationState = ""),
+                      });
                     }}
                     errorMessage={errors.registrationState}
                   />
@@ -2483,6 +3256,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={registrationDistrict}
                     onChangeText={(text) => {
                       setRegistrationDistrict(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.registrationDistrict = ""),
+                      });
                     }}
                     errorMessage={errors.registrationDistrict}
                   />
@@ -2493,6 +3270,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={registrationCity}
                     onChangeText={(text) => {
                       setRegistrationCity(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.registrationCity = ""),
+                      });
                     }}
                     errorMessage={errors.registrationCity}
                   />
@@ -2504,6 +3285,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     maxLength={4}
                     onChangeText={(text) => {
                       setEmission(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.emission = ""),
+                      });
                     }}
                     errorMessage={errors.emission}
                   />
@@ -2532,6 +3317,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     maxLength={7}
                     onChangeText={(text) => {
                       setKmsDriven(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.kmsDriven = ""),
+                      });
                     }}
                     errorMessage={errors.kmsDriven}
                   />
@@ -2542,6 +3331,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={cubicCapacity}
                     onChangeText={(text) => {
                       setCubicCapacity(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.cubicCapacity = ""),
+                      });
                     }}
                     errorMessage={errors.cubicCapacity}
                   />
@@ -2554,6 +3347,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     keyboardType={"number-pad"}
                     onChangeText={(text) => {
                       setNoOwners(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.noOwners = ""),
+                      });
                     }}
                     errorMessage={errors.noOwners}
                   />
@@ -2566,6 +3363,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={noOfChallanPending}
                     onChangeText={(text) => {
                       setNoOfChallanPending(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.noOfChallanPending = ""),
+                      });
                     }}
                     errorMessage={errors.noOfChallanPending}
                   />
@@ -2679,6 +3480,10 @@ const EvaluationForm = ({ route, navigation }) => {
                         value={hypothecatedTo}
                         onChangeText={(text) => {
                           setHypothecatedTo(text);
+                          setErrors({
+                            ...errors,
+                            ...(errors.hypothecatedTo = ""),
+                          });
                         }}
                         errorMessage={errors.hypothecatedTo}
                       />
@@ -2695,6 +3500,10 @@ const EvaluationForm = ({ route, navigation }) => {
                           if (text.trim() === "") {
                             setHypothecatedBranch(text);
                           }
+                          setErrors({
+                            ...errors,
+                            ...(errors.hypothecatedBranch = ""),
+                          });
                         }}
                         errorMessage={errors.hypothecatedBranch}
                       />
@@ -2707,6 +3516,10 @@ const EvaluationForm = ({ route, navigation }) => {
                         maxLength={7}
                         onChangeText={(text) => {
                           setLoanAmountDue(text);
+                          setErrors({
+                            ...errors,
+                            ...(errors.loanAmountDue = ""),
+                          });
                         }}
                         errorMessage={errors.loanAmountDue}
                       />
@@ -2765,6 +3578,10 @@ const EvaluationForm = ({ route, navigation }) => {
                         value={insuranceCompanyName}
                         onChangeText={(text) => {
                           setInsuranceCompanyName(text);
+                          setErrors({
+                            ...errors,
+                            ...(errors.insuranceCompanyName = ""),
+                          });
                         }}
                         errorMessage={errors.insuranceCompanyName}
                       />
@@ -2775,6 +3592,10 @@ const EvaluationForm = ({ route, navigation }) => {
                         value={policyNumber}
                         onChangeText={(text) => {
                           setPolicyNumber(text);
+                          setErrors({
+                            ...errors,
+                            ...(errors.policyNumber = ""),
+                          });
                         }}
                         errorMessage={errors.policyNumber}
                       />
@@ -3354,6 +4175,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={evaluatorOfferedPrice}
                     onChangeText={(text) => {
                       setEvaluatorOfferedPrice(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.evaluatorOfferedPrice = ""),
+                      });
                     }}
                     errorMessage={errors.evaluatorOfferedPrice}
                   />
@@ -3364,6 +4189,10 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={managerApprovedPrice}
                     onChangeText={(text) => {
                       setManagerApprovedPrice(text);
+                      setErrors({
+                        ...errors,
+                        ...(errors.managerApprovedPrice = ""),
+                      });
                     }}
                     errorMessage={errors.managerApprovedPrice}
                   />
