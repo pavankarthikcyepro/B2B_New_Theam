@@ -56,7 +56,6 @@ import {
   getReceptionistData,
   updateIsModalVisible,
   getReceptionistManagerData,
-  get_xrole_SalesManagerDigitalTeam,
   updatereceptionistDataObjectData,
   get_xrole_SalesManagerReceptinistTeam,
   getCRM_ReceptionistDashborad,

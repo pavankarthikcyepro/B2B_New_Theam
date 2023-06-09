@@ -59,6 +59,7 @@ import {
   get_xrole_SalesManagerDigitalTeam,
   getCRM_ReceptionistManagerData,
   updatereceptionistDataObjectData,
+  get_xrole_SalesManagerDigitalTeam_Vol2,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -477,7 +478,8 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       };
 
       if (!selector.saveCRMfilterObj.selectedempId) {
-        dispatch(get_xrole_SalesManagerDigitalTeam(payloadXrole));
+        // dispatch(get_xrole_SalesManagerDigitalTeam(payloadXrole));
+        dispatch(get_xrole_SalesManagerDigitalTeam_Vol2(payloadXrole));
       }
 
       Promise.all([

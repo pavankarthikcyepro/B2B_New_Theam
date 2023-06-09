@@ -867,6 +867,21 @@ export const getCRM_ReceptionistManagerDataDigital = createAsyncThunk(
   }
 );
 
+export const get_xrole_SalesManagerDigitalTeam_Vol2 = createAsyncThunk(
+  "HOME/get_xrole_SalesManagerDigitalTeam_Vol2",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE_VOL2(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const get_xrole_SalesManagerDigitalTeam = createAsyncThunk(
   "HOME/get_xrole_SalesManagerDigitalTeam",
   async (payload, { rejectWithValue }) => {
@@ -1153,6 +1168,18 @@ export const homeSlice = createSlice({
       contactsCount: 0,
       enquirysCount: 0,
       totalLostCount: 0,
+      fullResponse: {},
+
+    },
+    digitalDashboard_Vol2: {
+      // RetailCount: 0,
+      // bookingsCount: 0,
+      // consultantList: [],
+      // totalAllocatedCount: 0,
+      // totalDroppedCount: 0,
+      // contactsCount: 0,
+      // enquirysCount: 0,
+      // totalLostCount: 0,
       fullResponse: {},
 
     },
@@ -1537,6 +1564,18 @@ export const homeSlice = createSlice({
           totalLostCount: 0,
           fullResponse: {},
         },
+        state.digitalDashboard_Vol2 = {
+          // RetailCount: 0,
+          // bookingsCount: 0,
+          // consultantList: [],
+          // totalAllocatedCount: 0,
+          // totalDroppedCount: 0,
+          // contactsCount: 0,
+          // enquirysCount: 0,
+          // totalLostCount: 0,
+          fullResponse: {},
+
+        }, 
         state.crm_employees_drop_down_data_recep = {},
         (state.filter_drop_down_designations = {}),
         (state.filter_leadership_selectedDesignation_name = "");
@@ -2289,6 +2328,26 @@ export const homeSlice = createSlice({
         };
       })
       .addCase(getCRM_ReceptionistManagerDataDigital.rejected, (state, action) => { })
+
+
+
+      .addCase(get_xrole_SalesManagerDigitalTeam_Vol2.pending, (state) => { })
+      .addCase(get_xrole_SalesManagerDigitalTeam_Vol2.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.digitalDashboard_Vol2 = {
+          // RetailCount: dataObj.totalRetailCount,
+          // bookingsCount: dataObj.totalBookingCount,
+          // consultantList: dataObj.manager,
+          // totalAllocatedCount: dataObj.enquirysCount,
+          // totalDroppedCount: dataObj.totalDroppedCount,
+          // contactsCount: dataObj.totalPreInquiryCount,
+          // enquirysCount: dataObj.totalEnquiryCount,
+          // totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(get_xrole_SalesManagerDigitalTeam_Vol2.rejected, (state, action) => { })
+
 
       .addCase(get_xrole_SalesManagerDigitalTeam.pending, (state) => { })
       .addCase(get_xrole_SalesManagerDigitalTeam.fulfilled, (state, action) => {

@@ -1015,6 +1015,9 @@ const URL = {
   RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE: () => {
     return dashboard + "/SalesManagerDigitalTeam";
   },
+  RECEPTIONIST_MANAGER_DASHBOARD_CRM_XROLE_VOL2: () => {
+    return dashboard + "/sales/tree";
+  },
   RECEPTIONIST_MANAGER_TEAM: () => {
     return dashboard + "/receptionistTeam";
   },
