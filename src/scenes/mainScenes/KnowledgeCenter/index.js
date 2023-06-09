@@ -220,7 +220,7 @@ const KnowledgeCenterScreen = ({ route, navigation }) => {
         if (Platform.OS === "ios") {
           downloadInLocal(data4.doc);
         } else {
-          shareFileXlx(data4.doc);
+          shareFileDoc(data4.doc);
         }
         break;
       default:
