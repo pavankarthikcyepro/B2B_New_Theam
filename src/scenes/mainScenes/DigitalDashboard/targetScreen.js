@@ -157,6 +157,16 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   const [indexLocalFirstLevel, setIndexLocalFirstLevel] = useState(-1);
   const [filterExapand, setfilterExapand] = useState(false);
 
+  const [crmVol2Level0, setCrmVol2Level0] = useState([])
+  const [crmVol2Level1, setCrmVol2Level1] = useState([])
+  const [crmVol2AlluserData, setCrmVol2AlluserData] = useState([])
+  // const [crmVol2ReportingData, setCrmVol2ReportingData] =useState(datav2.reportingUser)
+  const [crmVol2ReportingData, setCrmVol2ReportingData] = useState([])
+  const [crmVol2ReportingAllTree, setCrmVol2ReportingAllTree] = useState([])
+  const [crmVol2ReportingLevel1, setCrmVol2ReportingLevel1] = useState([])
+  const [isViewExpandedCRMReporting, setIsViewExpandedCRMReporting] = useState(false);
+  const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
+
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
@@ -563,21 +573,26 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
     if (!_.isEmpty(selector.digitalDashboard_Vol2?.fullResponse) && _.isEmpty(selector.saveCRMfilterObj.selectedempId) && selector.digitalDashboard_Vol2?.fullResponse !== undefined) {
      
-
+      let crmUserData =[];
+      let tempCrm = selector.digitalDashboard_Vol2?.fullResponse.crmusers.map((item)=>{
+        crmUserData.push(item);
+      })
+      setCrmVol2Level0(crmUserData)
+      // console.log("manthan jjjf ",JSON.stringify(crmUserData));
 
     }
 
-    if (selector.digitalDashboard_Vol2) {
-      let totalKey1 = selector?.digitalDashboard_Vol2?.enquirysCount;
-      let totalKey2 = selector?.digitalDashboard_Vol2?.bookingsCount;
-      let totalKey3 = selector?.digitalDashboard_Vol2?.RetailCount;
-      let totalKey4 = selector?.digitalDashboard_Vol2?.totalLostCount;
+    // if (selector.digitalDashboard_Vol2) {
+    //   let totalKey1 = selector?.digitalDashboard_Vol2?.enquirysCount;
+    //   let totalKey2 = selector?.digitalDashboard_Vol2?.bookingsCount;
+    //   let totalKey3 = selector?.digitalDashboard_Vol2?.RetailCount;
+    //   let totalKey4 = selector?.digitalDashboard_Vol2?.totalLostCount;
 
-      let total = [totalKey1, totalKey2, totalKey3, totalKey4];
-      setTotalofTeam(total);
-    }
+    //   let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+    //   setTotalofTeam(total);
+    // }
     
-  }, [selector.receptionistData])
+  }, [selector.digitalDashboard_Vol2])
 
   useEffect(() => {
 
@@ -2215,12 +2230,12 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
       >
-        {crmFirstLevelData?.length > 0 &&
-          crmFirstLevelData?.map((item, index) => {
+        {crmVol2Level0?.length > 0 &&
+          crmVol2Level0?.map((item, index) => {
 
             // if (item.emp_id === userData.empId) {
             return (
-              <View key={`${item.emp_name} ${index}`}
+              <View key={`${item?.self?.selfUser?.empName} ${index}`}
                 style={{
                   borderColor: isViewExpanded && indexLocalFirstLevel === index ? Colors.PINK : "",
                   borderWidth: isViewExpanded && indexLocalFirstLevel === index ? 1 : 0,
@@ -2247,9 +2262,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         textTransform: "capitalize",
                       }}
                     >
-                      {item.emp_name}
+                      {item?.self?.selfUser?.empName}
                       {"  "}
-                      {"-   " + item?.roleName}
+                      {"-   " + item?.self?.selfUser?.roleName}
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row" }}></View>
@@ -2327,7 +2342,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                 <View
                   style={[
                     { flexDirection: "row" },
-                    item.isOpenInner && {
+                    item?.self?.selfUser?.isOpenInner && {
                       borderRadius: 10,
                       borderWidth: 2,
                       borderColor: "#C62159",
@@ -2339,21 +2354,21 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                   {/*RIGHT SIDE VIEW*/}
                   <View style={[styles.view6]}>
                     <View style={styles.view7}>
-                      <RenderLevel1NameViewCRM
+                      <RenderLevel1NameViewCRMVol2
                         level={0}
-                        item={item}
+                        item={item?.self?.selfUser}
                         branchName={checkIsSelfManager()
                           ? ""
-                          : item.branch}
+                          : item?.self?.selfUser?.branchName}
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
 
 
-                          formateFirstLevelData(item, index)
+                          formateFirstLevelData(item?.self?.selfUser, index)
                         }}
-                        roleName={item.roleName}
+                        roleName={item?.self?.selfUser?.roleName}
                         stopLocation={true}
                       />
                       <View
@@ -5097,6 +5112,104 @@ export const SourceModelView = ({ style = null, onClick }) => {
         </Text>
       </Pressable>
     </Animated.View>
+  );
+};
+
+
+export const RenderLevel1NameViewCRMVol2 = ({
+  level,
+  item,
+  branchName = "",
+  color,
+  titleClick,
+  navigation,
+  disable = false,
+  receptionManager = false,
+  stopLocation = false,
+}) => {
+  return (
+    <View
+      style={{
+        width: 100,
+        justifyContent: "center",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
+      <View
+        style={{ width: 60, justifyContent: "center", alignItems: "center" }}
+      >
+        <TouchableOpacity
+          disabled={disable}
+          style={{
+            width: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: color,
+            borderRadius: 20,
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+          onPress={titleClick}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#fff",
+            }}
+          >
+            {item?.empName?.charAt(0)}
+          </Text>
+        </TouchableOpacity>
+        {/* {level === 0 && !!branchName && ( */}
+        {branchName ? (
+          <TouchableOpacity
+            disabled={stopLocation}
+            onPress={() => {
+              if (item.roleName !== "MD" && item.roleName !== "CEO") {
+                navigation.navigate(
+                  AppNavigator.HomeStackIdentifiers.location,
+                  {
+                    empId: item.empId,
+                    orgId: item.orgId,
+                  }
+                );
+              }
+            }}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+        {/* )} */}
+      </View>
+      {/* <View
+        style={{
+          width: "25%",
+          justifyContent: "space-around",
+          textAlign: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "ACH"}
+        </Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "TGT"}
+        </Text>
+      </View> */}
+    </View>
   );
 };
 
