@@ -1460,8 +1460,11 @@ const ListComponent = ({ route, navigation }) => {
     //   // const tempArr = item.myTaskList.concat(mergeTest[0].myTaskList);
     //   // itemClicked({ myTaskList: tempArr });
     // } else {
+
       navigateToList(
-        filterAvailable.selectedFilterLocal,
+        notificationSelector.myTaskAllFilter
+          ? "ALL"
+          : filterAvailable.selectedFilterLocal,
         filterAvailable.fromClick,
         [item.taskName]
       );
