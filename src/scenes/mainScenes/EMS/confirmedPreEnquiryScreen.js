@@ -592,11 +592,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             }
             const sourceOfEnquiryId = selector.pre_enquiry_details.dmsLeadDto.sourceOfEnquiry;
             const data = {
-                sourceId: sourceOfEnquiryId,
-                orgId: organizationId,
-                branchId: branchId
-            }
-
+              sourceId: sourceOfEnquiryId,
+              orgId: organizationId,
+              branchId: route.params?.itemData?.branchId ?? branchId,
+            };
             Promise.all([
                 dispatch(getEmployeesListApi(data))
             ]).then(async (res) => {
