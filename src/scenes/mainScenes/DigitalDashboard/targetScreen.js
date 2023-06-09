@@ -73,6 +73,834 @@ const data = [
 
 
 ]
+
+const dataLocal = [
+  {
+    "self": {
+      "level1": [
+        {
+          "empId": 940,
+          "empName": "Raghiv Sanghvi",
+          "email": "raghivsanghvi@mps-fca.com",
+          "mobile": "7997988101",
+          "cognitoUserName": "raghivsanghvi",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 940,
+          "roleName": "MD",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 37,
+          "isExpand": true,
+          "self": {
+            "enquiryCount": 0,
+            "enquiryLeads": [
+              
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        }
+      ],
+      "selfUser": {
+        "empId": 962,
+        "empName": "Pallavi Sanjay",
+        "email": "crmsales.blr@mps-fca.com",
+        "mobile": "9066584290",
+        "cognitoUserName": "pallavisanjay",
+        "orgId": 18,
+        "branchId": 286,
+        "managerId": 941,
+        "roleName": "CRM",
+        "branchName": "JP Nagar - IC0700043",
+        "isOpenInner": false,
+        "innerData": [
+          
+        ],
+        "childCount": 6,
+        "isExpand": true,
+        "self": {
+          "enquiryCount": 1,
+          "enquiryLeads": [
+            58999
+          ],
+          "bookingCount": 0,
+          "bookingLeads": [
+            
+          ],
+          "retailCount": 0,
+          "retailLeads": [
+            
+          ],
+          "lostCount": 0,
+          "lostLeads": [
+            
+          ]
+        },
+        "total": {
+          "enquiryCount": 3,
+          "enquiryLeads": [
+            58999,
+            58992,
+            58991
+          ],
+          "bookingCount": 0,
+          "bookingLeads": [
+            
+          ],
+          "retailCount": 0,
+          "retailLeads": [
+            
+          ],
+          "lostCount": 0,
+          "lostLeads": [
+            
+          ]
+        }
+      },
+      "droppedCount": 0,
+      "droppedLeads": [
+        
+      ],
+      "contactCount": 3,
+      "contactLeads": [
+        58992,
+        58999,
+        58991
+      ],
+      "allTreeData": [
+        {
+          "empId": 940,
+          "empName": "Raghiv Sanghvi",
+          "email": "raghivsanghvi@mps-fca.com",
+          "mobile": "7997988101",
+          "cognitoUserName": "raghivsanghvi",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 940,
+          "roleName": "MD",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 37,
+          "isExpand": true,
+          "self": {
+            "enquiryCount": 0,
+            "enquiryLeads": [
+              
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        },
+        {
+          "empId": 941,
+          "empName": "Chandrashekar S",
+          "email": "c.shekar@mps-fca.com",
+          "mobile": "7997988799",
+          "cognitoUserName": "chandrashekars",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 940,
+          "roleName": "MD",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 35,
+          "isExpand": true,
+          "self": {
+            "enquiryCount": 0,
+            "enquiryLeads": [
+              
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        },
+        {
+          "empId": 942,
+          "empName": "Suresh Kumar S",
+          "email": "suresh.kumar@mps-fca.com",
+          "mobile": "8105916936",
+          "cognitoUserName": "sureshkumars",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 941,
+          "roleName": "branch manager",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 18,
+          "isExpand": true,
+          "self": {
+            "enquiryCount": 0,
+            "enquiryLeads": [
+              
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        },
+        {
+          "empId": 946,
+          "empName": "Gladstone Gideon",
+          "email": "gladstone.g@mps-fca.com",
+          "mobile": "9886600206",
+          "cognitoUserName": "gladstonegideon",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 942,
+          "roleName": "Sales Manager",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 9,
+          "isExpand": true,
+          "self": {
+            "enquiryCount": 0,
+            "enquiryLeads": [
+              
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        },
+        {
+          "empId": 915,
+          "empName": "Chetan",
+          "email": "chetan.m@mps-fca.com",
+          "mobile": "9902551744",
+          "cognitoUserName": "chetan",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 946,
+          "roleName": "Field DSE",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 0,
+          "isExpand": false,
+          "self": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58992
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        }
+      ],
+      "treeLevelCount": 5
+    },
+    "reportingUser": [
+      {
+        "level1": [
+          {
+            "empId": 940,
+            "empName": "Raghiv Sanghvi",
+            "email": "raghivsanghvi@mps-fca.com",
+            "mobile": "7997988101",
+            "cognitoUserName": "raghivsanghvi",
+            "orgId": 18,
+            "branchId": 286,
+            "managerId": 940,
+            "roleName": "MD",
+            "branchName": "JP Nagar - IC0700043",
+            "isOpenInner": false,
+            "innerData": [
+              
+            ],
+            "childCount": 37,
+            "isExpand": true,
+            "self": {
+              "enquiryCount": 0,
+              "enquiryLeads": [
+                
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            },
+            "total": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            }
+          }
+        ],
+        "selfUser": {
+          "empId": 965,
+          "empName": "Jyoti Lamani",
+          "email": "salescre2.blr@mps-fca.com",
+          "mobile": "9844310725",
+          "cognitoUserName": "jyotilamani",
+          "orgId": 18,
+          "branchId": 286,
+          "managerId": 962,
+          "roleName": "CRE",
+          "branchName": "JP Nagar - IC0700043",
+          "isOpenInner": false,
+          "innerData": [
+            
+          ],
+          "childCount": 0,
+          "isExpand": true,
+          "self": {
+            "enquiryCount": 0,
+            "enquiryLeads": [
+              
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          },
+          "total": {
+            "enquiryCount": 1,
+            "enquiryLeads": [
+              58991
+            ],
+            "bookingCount": 0,
+            "bookingLeads": [
+              
+            ],
+            "retailCount": 0,
+            "retailLeads": [
+              
+            ],
+            "lostCount": 0,
+            "lostLeads": [
+              
+            ]
+          }
+        },
+        "droppedCount": 0,
+        "droppedLeads": [
+          
+        ],
+        "contactCount": 1,
+        "contactLeads": [
+          58991
+        ],
+        "allTreeData": [
+          {
+            "empId": 940,
+            "empName": "Raghiv Sanghvi",
+            "email": "raghivsanghvi@mps-fca.com",
+            "mobile": "7997988101",
+            "cognitoUserName": "raghivsanghvi",
+            "orgId": 18,
+            "branchId": 286,
+            "managerId": 940,
+            "roleName": "MD",
+            "branchName": "JP Nagar - IC0700043",
+            "isOpenInner": false,
+            "innerData": [
+              
+            ],
+            "childCount": 37,
+            "isExpand": true,
+            "self": {
+              "enquiryCount": 0,
+              "enquiryLeads": [
+                
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            },
+            "total": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            }
+          },
+          {
+            "empId": 941,
+            "empName": "Chandrashekar S",
+            "email": "c.shekar@mps-fca.com",
+            "mobile": "7997988799",
+            "cognitoUserName": "chandrashekars",
+            "orgId": 18,
+            "branchId": 286,
+            "managerId": 940,
+            "roleName": "MD",
+            "branchName": "JP Nagar - IC0700043",
+            "isOpenInner": false,
+            "innerData": [
+              
+            ],
+            "childCount": 35,
+            "isExpand": true,
+            "self": {
+              "enquiryCount": 0,
+              "enquiryLeads": [
+                
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            },
+            "total": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            }
+          },
+          {
+            "empId": 942,
+            "empName": "Suresh Kumar S",
+            "email": "suresh.kumar@mps-fca.com",
+            "mobile": "8105916936",
+            "cognitoUserName": "sureshkumars",
+            "orgId": 18,
+            "branchId": 286,
+            "managerId": 941,
+            "roleName": "branch manager",
+            "branchName": "JP Nagar - IC0700043",
+            "isOpenInner": false,
+            "innerData": [
+              
+            ],
+            "childCount": 18,
+            "isExpand": true,
+            "self": {
+              "enquiryCount": 0,
+              "enquiryLeads": [
+                
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            },
+            "total": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            }
+          },
+          {
+            "empId": 946,
+            "empName": "Gladstone Gideon",
+            "email": "gladstone.g@mps-fca.com",
+            "mobile": "9886600206",
+            "cognitoUserName": "gladstonegideon",
+            "orgId": 18,
+            "branchId": 286,
+            "managerId": 942,
+            "roleName": "Sales Manager",
+            "branchName": "JP Nagar - IC0700043",
+            "isOpenInner": false,
+            "innerData": [
+              
+            ],
+            "childCount": 9,
+            "isExpand": true,
+            "self": {
+              "enquiryCount": 0,
+              "enquiryLeads": [
+                
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            },
+            "total": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            }
+          },
+          {
+            "empId": 915,
+            "empName": "Chetan",
+            "email": "chetan.m@mps-fca.com",
+            "mobile": "9902551744",
+            "cognitoUserName": "chetan",
+            "orgId": 18,
+            "branchId": 286,
+            "managerId": 946,
+            "roleName": "Field DSE",
+            "branchName": "JP Nagar - IC0700043",
+            "isOpenInner": false,
+            "innerData": [
+              
+            ],
+            "childCount": 0,
+            "isExpand": false,
+            "self": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            },
+            "total": {
+              "enquiryCount": 1,
+              "enquiryLeads": [
+                58991
+              ],
+              "bookingCount": 0,
+              "bookingLeads": [
+                
+              ],
+              "retailCount": 0,
+              "retailLeads": [
+                
+              ],
+              "lostCount": 0,
+              "lostLeads": [
+                
+              ]
+            }
+          }
+        ],
+        "treeLevelCount": 5
+      }
+    ],
+    "nonReportingUser": [
+      
+    ],
+    "totalEnquiryCount": 3,
+    "totalEnquiryLeads": [
+      58999,
+      58992,
+      58991
+    ],
+    "totalBookingCount": 0,
+    "totalBookingLeads": [
+      
+    ],
+    "totalRetailCount": 0,
+    "totalRetailLeads": [
+      
+    ],
+    "totalLostCount": 0,
+    "totalLostLeads": [
+      
+    ],
+    "totalDroppedCount": 0,
+    "totalDroppedLeads": [
+      
+    ],
+    "totalContactCount": 3,
+    "totalContactLeads": [
+      58992,
+      58999,
+      58991
+    ]
+  }
+]
 const receptionistRole = ["Reception", "CRM"];
 const DigitalDashBoardTargetScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -2222,6 +3050,45 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       </View>)
   }
 
+  const onCRMClickedVol2 = async(item,allData)=>{
+    // let localCrmLevel0data = _.cloneDeep(allData);
+    let localCrmLevel0data = [...dataLocal];
+
+    let id = "";
+    let data = [];
+
+    console.log("manthan fff allData ", typeof localCrmLevel0data);
+    let temp = localCrmLevel0data.map((item2) => {
+      id = item2.self?.level1[0].empId;
+      data = item2.self?.allTreeData;
+    });
+    console.log("manthan fff ", item);
+    setCrmVol2ReportingAllTree(data);
+
+    let findInnderDataLevel1 = data.filter(
+      (item2, index2) => item2.empId == id
+    );
+
+    
+    // let tmp = localCrmLevel0data.map((itemss) =>{
+    //     itemss.self?.selfUser.empId == item.empId ? {...itemss.self?.selfUser.isOpenInner = true}:itemss
+    // })
+
+    for (let index = 0; index < localCrmLevel0data.length; index++) {
+      const element = localCrmLevel0data[index];
+
+      if (element.self?.selfUser.empId == item.empId) {
+        console.log("manthan hhh dd ", element.self?.selfUser.isOpenInner );
+         element.self?.selfUser.isOpenInner = false;
+        //  element.self?.selfUser.innerData = findInnderDataLevel1;
+      } else {
+        //    element.self?.selfUser.isOpenInner = false;
+        //    element.self?.selfUser.innerData = [];
+      }
+    }
+    setCrmVol2Level0(localCrmLevel0data);
+  }
+
 
   const renderCRMTreeVOl2 = () => {
 
@@ -2235,13 +3102,20 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
 
             // if (item.emp_id === userData.empId) {
             return (
-              <View key={`${item?.self?.selfUser?.empName} ${index}`}
+              <View
+                key={`${item?.self?.selfUser?.empName} ${index}`}
                 style={{
-                  borderColor: isViewExpanded && indexLocalFirstLevel === index ? Colors.PINK : "",
-                  borderWidth: isViewExpanded && indexLocalFirstLevel === index ? 1 : 0,
+                  borderColor:
+                    isViewExpanded && indexLocalFirstLevel === index
+                      ? Colors.PINK
+                      : "",
+                  borderWidth:
+                    isViewExpanded && indexLocalFirstLevel === index ? 1 : 0,
                   borderRadius: 10,
-                  margin: isViewExpanded && indexLocalFirstLevel === index ? 10 : 0
-                }}>
+                  margin:
+                    isViewExpanded && indexLocalFirstLevel === index ? 10 : 0,
+                }}
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -2250,8 +3124,6 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     justifyContent: "space-between",
                     marginTop: 12,
                     width: Dimensions.get("screen").width - 28,
-
-
                   }}
                 >
                   <View style={{ flexDirection: "row" }}>
@@ -2269,12 +3141,11 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                   </View>
                   <View style={{ flexDirection: "row" }}></View>
                   <View style={{ flexDirection: "row" }}>
-                    {selector.receptionistData?.fullResponse?.childUserCount > 0 && (
+                    {selector.receptionistData?.fullResponse?.childUserCount >
+                      0 && (
                       <Animated.View
                         style={{
-                          transform: [
-                            { translateX: translation },
-                          ],
+                          transform: [{ translateX: translation }],
                         }}
                       >
                         <View
@@ -2296,20 +3167,34 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                             size={15}
                             color={Colors.BLACK}
                           />
-                          <Text>{selector.receptionistData?.fullResponse?.CRM[index].data.childUserCount}</Text>
+                          <Text>
+                            {
+                              selector.receptionistData?.fullResponse?.CRM[
+                                index
+                              ].data.childUserCount
+                            }
+                          </Text>
                         </View>
                       </Animated.View>
                     )}
                     <SourceModelView
                       onClick={() => {
-
                         if (isViewExpanded) {
-
                           // handleSourceModalNavigation()
-                          handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd")
+                          handleSourceModalNavigation(
+                            item,
+                            item?.emp_id,
+                            [item.emp_id],
+                            "CRM_INd"
+                          );
                         } else {
-
-                          handleSourceModalNavigation(item, "", [], "CRM", true)
+                          handleSourceModalNavigation(
+                            item,
+                            "",
+                            [],
+                            "CRM",
+                            true
+                          );
                         }
 
                         // navigation.navigate(
@@ -2330,9 +3215,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         // );
                       }}
                       style={{
-                        transform: [
-                          { translateX: translation },
-                        ],
+                        transform: [{ translateX: translation }],
                       }}
                     />
                   </View>
@@ -2357,16 +3240,16 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRMVol2
                         level={0}
                         item={item?.self?.selfUser}
-                        branchName={checkIsSelfManager()
-                          ? ""
-                          : item?.self?.selfUser?.branchName}
+                        branchName={
+                          checkIsSelfManager()
+                            ? ""
+                            : item?.self?.selfUser?.branchName
+                        }
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
                         titleClick={async (e) => {
-
-
-                          formateFirstLevelData(item?.self?.selfUser, index)
+                          onCRMClickedVol2(item?.self?.selfUser, crmVol2Level0);
                         }}
                         roleName={item?.self?.selfUser?.roleName}
                         stopLocation={true}
@@ -2374,8 +3257,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
@@ -2386,49 +3268,113 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         isViewExpanded ? item.bookingCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalRetailCount : 0 || 0,
                         isViewExpanded ? item.retailCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalLostCount : 0 || 0,
                         ] */}
-
-                        {[
+                        {/* {[
                           isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].enquiryCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalEnquiryCount : 0 || 0,
                           isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].bookingCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalBookingCount : 0 || 0,
                           isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].retailCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalRetailCount : 0 || 0,
                           isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].droppedCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalLostCount : 0 || 0,
+                        ] */}
+
+                        {[
+                          (!isViewExpanded &&
+                            item?.self.selfUser.total.enquiryCount) ||
+                            item?.self.selfUser.self.enquiryCount ||
+                            0,
+                          (!isViewExpanded &&
+                            item?.self.selfUser.total.bookingCount) ||
+                            item?.self.selfUser.self.bookingCount ||
+                            0,
+                          (!isViewExpanded &&
+                            item?.self.selfUser.total.retailCount) ||
+                            item?.self.selfUser.self.retailCount ||
+                            0,
+                          (!isViewExpanded &&
+                            item?.self.selfUser.total.lostCount) ||
+                            item?.self.selfUser.self.lostCount ||
+                            0,
                         ].map((e, indexss) => {
                           return (
-                            <Pressable onPress={() => {
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections logic  first level
+                                if (e > 0) {
+                                  if (!isViewExpanded) {
+                                    if (indexss === 0) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        true,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    } else if (indexss === 1) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        true,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    } else if (indexss === 2) {
+                                      navigateToEMS(
+                                        "INVOICECOMPLETED",
+                                        "",
+                                        [item.emp_id],
+                                        true,
+                                        item.emp_id,
+                                        true,
+                                        true
+                                      );
+                                    } else if (indexss === 3) {
+                                      navigateToDropAnalysis(
+                                        item.emp_id,
+                                        false,
+                                        "",
+                                        true
+                                      );
+                                    }
+                                  } else {
+                                    if (indexss === 0) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        true,
+                                        storeFirstLevelLocal.emp_id
+                                      );
+                                    } else if (indexss === 1) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        true,
+                                        storeFirstLevelLocal.emp_id
+                                      );
+                                    } else if (indexss === 2) {
+                                      navigateToEMS(
+                                        "INVOICECOMPLETED",
+                                        "",
+                                        [item.emp_id],
+                                        true,
+                                        storeFirstLevelLocal.emp_id
+                                      );
+                                    } else if (indexss === 3) {
+                                      // todo navigate to lost
 
-                              // todo redirections logic  first level
-                              if (e > 0) {
-
-                                if (!isViewExpanded) {
-                                  if (indexss === 0) {
-
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, item.emp_id, true, true);
-                                  } else if (indexss === 1) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], true, item.emp_id, true, true);
-                                  } else if (indexss === 2) {
-                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, item.emp_id, true, true);
-                                  } else if (indexss === 3) {
-
-                                    navigateToDropAnalysis(item.emp_id, false, "", true)
+                                      navigateToDropAnalysis(
+                                        item.emp_id,
+                                        true,
+                                        item.emp_id
+                                      );
+                                    }
                                   }
                                 }
-                                else {
-                                  if (indexss === 0) {
-
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
-                                  } else if (indexss === 1) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
-                                  } else if (indexss === 2) {
-                                    navigateToEMS("INVOICECOMPLETED", "", [item.emp_id], true, storeFirstLevelLocal.emp_id);
-                                  } else if (indexss === 3) {
-                                    // todo navigate to lost
-
-                                    navigateToDropAnalysis(item.emp_id, true, item.emp_id)
-                                  }
-                                }
-                              }
-
-                            }}>
+                              }}
+                            >
                               <View
                                 style={{
                                   width: 55,
@@ -2441,7 +3387,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
                                     // marginLeft: 50,
                                   }}
                                 >
@@ -2456,7 +3403,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {isViewExpanded && indexLocalFirstLevel === index && renderCRMTreeChild()}
+                {isViewExpanded &&
+                  indexLocalFirstLevel === index &&
+                  renderCRMTreeChild()}
               </View>
             );
             // }
