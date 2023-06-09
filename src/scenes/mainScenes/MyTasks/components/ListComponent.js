@@ -107,7 +107,7 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     setFilterAvailable({
-      selectedFilterLocal: "",
+      selectedFilterLocal: "MONTH",
       fromClick: false,
     });
     if (isFocused) {
