@@ -43,7 +43,9 @@ const AppScreen = () => {
 
   useEffect(async () => {
     Orientation.lockToPortrait();
-    await TrackPlayer.setupPlayer();
+    try {
+      await TrackPlayer.setupPlayer({ autoHandleInterruptions: true });
+    } catch (error) {}
   }, []);
 
   const [state, dispatch] = React.useReducer(
