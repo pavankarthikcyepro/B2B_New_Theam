@@ -4,7 +4,7 @@ import { Colors } from "../../../../styles";
 import { RadioTextItem2 } from "../../../../pureComponents";
 
 const CustomSelection = (props) => {
-  const { label, value, mandatory, onPress } = props;
+  const { label, value, mandatory, onPress, status = false } = props;
 
   return (
     <View style={styles.container}>
@@ -26,6 +26,9 @@ const CustomSelection = (props) => {
           onPress={() => onPress("No")}
         />
       </View>
+      {mandatory && status && (
+        <Text style={styles.error}>{label + "is Required"}</Text>
+      )}
     </View>
   );
 };

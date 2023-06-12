@@ -85,6 +85,7 @@ const taskNames = [
   "bookingfollowup-dse",
   "retestdrive",
   "rehomevisit",
+  "evaluation",
 ];
 
 const restrictArray = ["Re Home Visit", "Re Test Drive"];
@@ -111,7 +112,7 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     setFilterAvailable({
-      selectedFilterLocal: "",
+      selectedFilterLocal: "MONTH",
       fromClick: false,
     });
     if (isFocused) {
@@ -207,6 +208,11 @@ const ListComponent = ({ route, navigation }) => {
     {
       taskCnt: 0,
       taskName: "Pre Enquiry Follow Up",
+      myTaskList: [],
+    },
+    {
+      taskCnt: 0,
+      taskName: "Evaluation",
       myTaskList: [],
     },
   ];
@@ -1709,11 +1715,6 @@ const ListComponent = ({ route, navigation }) => {
 
   return (
     <View style={styles.mainView}>
-      <Button
-        onPress={() => navigation.navigate(MyTasksStackIdentifiers.evaluation)}
-      >
-        {"NAV"}
-      </Button>
       <View style={styles.view2}>
         {/* <View style={{ width: "75%" }}>
                     <SegmentedControl

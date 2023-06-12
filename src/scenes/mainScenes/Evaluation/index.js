@@ -1018,10 +1018,11 @@ const EvaluationForm = ({ route, navigation }) => {
   const [budget, setBudget] = useState("");
   const [submitButtonPressed, setSubmitButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [initialData, setInitialData] = useState(null);
   let scrollRef = useRef(null);
 
   useEffect(() => {
+    getCurrentEvaluation();
     getOptions();
     getCheckList();
     getModalList();
@@ -1065,144 +1066,145 @@ const EvaluationForm = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    const temp = incomming.dmsAccountDto;
-    setFirstName(temp.firstName);
-    setLastName(temp.lastName);
-    setAlternateMobileNumber(temp.secondaryPhone);
-    setMobileNumber(temp.phone);
-    setEmail(temp.email);
-    setGender(temp.gender.charAt(0).toUpperCase() + temp.gender.slice(1));
+    if (initialData) {
+      const temp = initialData.dmsAccountDto;
+      setFirstName(temp.firstName);
+      setLastName(temp.lastName);
+      setAlternateMobileNumber(temp.secondaryPhone);
+      setMobileNumber(temp.phone);
+      setEmail(temp.email);
+      setGender(temp.gender.charAt(0).toUpperCase() + temp.gender.slice(1));
 
-    const evaluationTemp = incomming.profileControls;
-    setRcNumber(evaluationTemp.registrationNumber);
-    setVariant(evaluationTemp.variant);
-    setFuelType(evaluationTemp.fuelType);
-    setTransmission(evaluationTemp.transmission);
-    setEngineNumber(evaluationTemp.engineNumber);
-    setPincode(evaluationTemp.pincode);
-    setRegistrationCity(evaluationTemp.registrationCity);
-    setRegistrationDistrict(evaluationTemp.registrationDistrict);
-    setRegistrationState(evaluationTemp.registrationState);
-    setEmission(evaluationTemp.emission);
-    setDateOfRegistration(evaluationTemp.dateOfRegistration);
-    setRegnValidUpto(evaluationTemp.registrationValidity);
-    setVehicleType(evaluationTemp.vehicletype);
-    setTypeOfBody(evaluationTemp.typeofbody);
-    setKmsDriven(evaluationTemp.distanceDriven);
-    setNoOfChallanPending(evaluationTemp.challanPending);
-    setNoOwners(evaluationTemp.NoOfOwners);
-    setFrontRightSelected(evaluationTemp.frontright);
-    setFrontRightSelected(evaluationTemp.frontright);
-    setRearLeftSelected(evaluationTemp.rearleft);
-    setRearRightSelected(evaluationTemp.rearright);
-    setSpareDiskWheelSelected(evaluationTemp.sparediskwheel);
-    setSpareAlliWheelSelected(evaluationTemp.sparealliwheel);
-    setAnyMinorAccidentSelected(evaluationTemp.minorAccident);
-    setAnyMajorAccidentSelected(evaluationTemp.majorAccident);
-    setHypothecatedTo(evaluationTemp.hypothetication);
-    setHypothecatedBranch(evaluationTemp.hypotheticatedBranch);
-    setLoanAmountDue(evaluationTemp.loanDue);
-    setInsuranceType(evaluationTemp.insuranceType);
-    setInsuranceCompanyName(evaluationTemp.insuranceCompanyName);
-    setPolicyNumber(evaluationTemp.policyNumber);
-    setInsuranceFromDate(evaluationTemp.insuranceFrom);
-    setInsuranceToDate(evaluationTemp.insuranceTo);
+      const evaluationTemp = initialData.profileControls;
+      setRcNumber(evaluationTemp.registrationNumber);
+      setVariant(evaluationTemp.variant);
+      setFuelType(evaluationTemp.fuelType);
+      setTransmission(evaluationTemp.transmission);
+      setEngineNumber(evaluationTemp.engineNumber);
+      setPincode(evaluationTemp.pincode);
+      setRegistrationCity(evaluationTemp.registrationCity);
+      setRegistrationDistrict(evaluationTemp.registrationDistrict);
+      setRegistrationState(evaluationTemp.registrationState);
+      setEmission(evaluationTemp.emission);
+      setDateOfRegistration(evaluationTemp.dateOfRegistration);
+      setRegnValidUpto(evaluationTemp.registrationValidity);
+      setVehicleType(evaluationTemp.vehicletype);
+      setTypeOfBody(evaluationTemp.typeofbody);
+      setKmsDriven(evaluationTemp.distanceDriven);
+      setNoOfChallanPending(evaluationTemp.challanPending);
+      setNoOwners(evaluationTemp.NoOfOwners);
+      setFrontRightSelected(evaluationTemp.frontright);
+      setFrontRightSelected(evaluationTemp.frontright);
+      setRearLeftSelected(evaluationTemp.rearleft);
+      setRearRightSelected(evaluationTemp.rearright);
+      setSpareDiskWheelSelected(evaluationTemp.sparediskwheel);
+      setSpareAlliWheelSelected(evaluationTemp.sparealliwheel);
+      setAnyMinorAccidentSelected(evaluationTemp.minorAccident);
+      setAnyMajorAccidentSelected(evaluationTemp.majorAccident);
+      setHypothecatedTo(evaluationTemp.hypothetication);
+      setHypothecatedBranch(evaluationTemp.hypotheticatedBranch);
+      setLoanAmountDue(evaluationTemp.loanDue);
+      setInsuranceType(evaluationTemp.insuranceType);
+      setInsuranceCompanyName(evaluationTemp.insuranceCompanyName);
+      setPolicyNumber(evaluationTemp.policyNumber);
+      setInsuranceFromDate(evaluationTemp.insuranceFrom);
+      setInsuranceToDate(evaluationTemp.insuranceTo);
 
-    setFrontSideImage({
-      name: evaluationTemp.carFrontImgName,
-      url: evaluationTemp.carFrontImg,
-    });
-    setBackSideImage({
-      name: evaluationTemp.carBackImgName,
-      url: evaluationTemp.carBackImg,
-    });
-    setLeftSideImage({
-      name: evaluationTemp.carLeftImgName,
-      url: evaluationTemp.carLeftImg,
-    });
-    setRightSideImage({
-      name: evaluationTemp.carRightImgName,
-      url: evaluationTemp.carRightImg,
-    });
-    setSpeedometerImage({
-      name: evaluationTemp.chassisImgName,
-      url: evaluationTemp.chassisImg,
-    });
-    setInteriorFrontImage({
-      name: evaluationTemp.interiorFrontName,
-      url: evaluationTemp.interiorFrontImg,
-    });
-    setInteriorBackImage({
-      name: evaluationTemp.interiorBackName,
-      url: evaluationTemp.interiorBackImg,
-    });
-    setExtraFitmentImage({
-      name: evaluationTemp.extraFitmentName,
-      url: evaluationTemp.extraFitmentImg,
-    });
+      setFrontSideImage({
+        name: evaluationTemp.carFrontImgName,
+        url: evaluationTemp.carFrontImg,
+      });
+      setBackSideImage({
+        name: evaluationTemp.carBackImgName,
+        url: evaluationTemp.carBackImg,
+      });
+      setLeftSideImage({
+        name: evaluationTemp.carLeftImgName,
+        url: evaluationTemp.carLeftImg,
+      });
+      setRightSideImage({
+        name: evaluationTemp.carRightImgName,
+        url: evaluationTemp.carRightImg,
+      });
+      setSpeedometerImage({
+        name: evaluationTemp.chassisImgName,
+        url: evaluationTemp.chassisImg,
+      });
+      setInteriorFrontImage({
+        name: evaluationTemp.interiorFrontName,
+        url: evaluationTemp.interiorFrontImg,
+      });
+      setInteriorBackImage({
+        name: evaluationTemp.interiorBackName,
+        url: evaluationTemp.interiorBackImg,
+      });
+      setExtraFitmentImage({
+        name: evaluationTemp.extraFitmentName,
+        url: evaluationTemp.extraFitmentImg,
+      });
 
-    setScratchDamageImage({
-      name: evaluationTemp.scratchName,
-      url: evaluationTemp.scratchImg,
-    });
-    setDentDamageImage({
-      name: evaluationTemp.dentName,
-      url: evaluationTemp.dentImg,
-    });
-    setFunctionsImage({
-      name: evaluationTemp.functionsName,
-      url: evaluationTemp.functionsImg,
-    });
-    setBreakDamageImage({
-      name: evaluationTemp.breaksDmgName,
-      url: evaluationTemp.breaksDmgImg,
-    });
-    setNumberPlateImage({
-      name: evaluationTemp.numberPlateName,
-      url: evaluationTemp.numberPlateImg,
-    });
+      setScratchDamageImage({
+        name: evaluationTemp.scratchName,
+        url: evaluationTemp.scratchImg,
+      });
+      setDentDamageImage({
+        name: evaluationTemp.dentName,
+        url: evaluationTemp.dentImg,
+      });
+      setFunctionsImage({
+        name: evaluationTemp.functionsName,
+        url: evaluationTemp.functionsImg,
+      });
+      setBreakDamageImage({
+        name: evaluationTemp.breaksDmgName,
+        url: evaluationTemp.breaksDmgImg,
+      });
+      setNumberPlateImage({
+        name: evaluationTemp.numberPlateName,
+        url: evaluationTemp.numberPlateImg,
+      });
 
-    setRcFrontImage({
-      name: evaluationTemp.rcFrontName,
-      url: evaluationTemp.rcFrontImg,
-    });
-    setRcBackImage({
-      name: evaluationTemp.rcBackName,
-      url: evaluationTemp.rcBackImg,
-    });
-    setInsuranceCopyImage({
-      name: evaluationTemp.insuranceCompanyName,
-      url: evaluationTemp.insuranceImg,
-    });
-    setInvoiceImage({
-      name: evaluationTemp.invoiceName,
-      url: evaluationTemp.invoiceImg,
-    });
-    setOldCarNOCImage({
-      name: evaluationTemp.oldCarNocName,
-      url: evaluationTemp.oldCarNocImg,
-    });
-    setCcImage({
-      name: '',
-      url: '',
-    });
-    setPollutionImage({
-      name: "",
-      url: '',
-    });
-    setIdProofImage({
-      name: "",
-      url: "",
-    });
-    setPanCardImage({
-      name: "",
-      url: "",
-    });
-    setMobileNumber2(evaluationTemp.mobileNum);
-    setPriceGap(evaluationTemp.priceGap);
-    setEvaluatorOfferedPrice(evaluationTemp.evaluatorofferedprice);
-    
-  }, []);
+      setRcFrontImage({
+        name: evaluationTemp.rcFrontName,
+        url: evaluationTemp.rcFrontImg,
+      });
+      setRcBackImage({
+        name: evaluationTemp.rcBackName,
+        url: evaluationTemp.rcBackImg,
+      });
+      setInsuranceCopyImage({
+        name: evaluationTemp.insuranceName,
+        url: evaluationTemp.insuranceImg,
+      });
+      setInvoiceImage({
+        name: evaluationTemp.invoiceName,
+        url: evaluationTemp.invoiceImg,
+      });
+      setOldCarNOCImage({
+        name: evaluationTemp.oldCarNocName,
+        url: evaluationTemp.oldCarNocImg,
+      });
+      setCcImage({
+        name: "",
+        url: "",
+      });
+      setPollutionImage({
+        name: "",
+        url: "",
+      });
+      setIdProofImage({
+        name: "",
+        url: "",
+      });
+      setPanCardImage({
+        name: "",
+        url: "",
+      });
+      setMobileNumber2(evaluationTemp.mobileNum);
+      setPriceGap(evaluationTemp.priceGap);
+      setEvaluatorOfferedPrice(evaluationTemp.evaluatorofferedprice);
+    }
+  }, [initialData]);
 
   const getOptions = async () => {
     try {
@@ -1222,6 +1224,18 @@ const EvaluationForm = ({ route, navigation }) => {
     } catch (error) {
       // setRefurbishment({ Items: [], AdditionalExpenses: [] });
     }
+  };
+
+  const getCurrentEvaluation = async () => {
+    try {
+      const response = await client.get(
+        URL.GET_EVALUATION("18-286-17e760b5-6bf7-429d-ab82-7b096d7bef5b")
+      );
+      const json = await response.json();
+      if (response.ok) {
+        setInitialData(json);
+      }
+    } catch (error) {}
   };
 
   const getCheckList = async () => {
@@ -1545,7 +1559,31 @@ const EvaluationForm = ({ route, navigation }) => {
       newErrors.emission =
         "Emission must be 4 characters long and can contain alphabets, numerics, or Roman numerals.";
     }
-
+    if (frontRightSelected.trim() === "") {
+      newErrors.frontRightSelected = "frontRightSelected is required";
+    }
+    if (frontLeftSelected.trim() === "") {
+      newErrors.frontLeftSelected = "frontLeftSelected is required";
+    }
+    if (rearRightSelected.trim() === "") {
+      newErrors.rearRightSelected = "rearRightSelected is required";
+    }
+    if (rearLeftSelected.trim() === "") {
+      newErrors.rearLeftSelected = "rearLeftSelected is required";
+    }
+    if (spareDiskWheelSelected.trim() === "") {
+      newErrors.spareDiskWheelSelected = "spareDiskWheelSelected is required";
+    }
+    if (spareAlliWheelSelected.trim() === "") {
+      newErrors.spareAlliWheelSelected = "spareAlliWheelSelected is required";
+    }
+    if (anyMinorAccidentSelected.trim() === "") {
+      newErrors.anyMinorAccidentSelected =
+        "anyMinorAccidentSelected is required";
+    }
+    if (anyMajorAccidentSelected.trim() === "") {
+      newErrors.spareAlliWheelSelected = "anyMajorAccidentSelected is required";
+    }
     // Update the errors state
     console.log("SSsss", newErrors);
     setErrors(newErrors);
@@ -3396,48 +3434,56 @@ const EvaluationForm = ({ route, navigation }) => {
                     value={frontRightSelected}
                     onPress={setFrontRightSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomRadioButton
                     label="Front left"
                     value={frontLeftSelected}
                     onPress={setFrontLeftSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomRadioButton
                     label="Rear right"
                     value={rearRightSelected}
                     onPress={setRearRightSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomRadioButton
                     label="Rear left"
                     value={rearLeftSelected}
                     onPress={setRearLeftSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomRadioButton
                     label="Spare Disk Wheel"
                     value={spareDiskWheelSelected}
                     onPress={setSpareDiskWheelSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomRadioButton
                     label="Spare Alli Wheel"
                     value={spareAlliWheelSelected}
                     onPress={setSpareAlliWheelSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomSelection
                     label="Any Minor Accident"
                     value={anyMinorAccidentSelected}
                     onPress={setAnyMinorAccidentSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                   <CustomSelection
                     label="Any Major Accident"
                     value={anyMajorAccidentSelected}
                     onPress={setAnyMajorAccidentSelected}
                     mandatory={true}
+                    status={submitButtonPressed}
                   />
                 </View>
               </List.Accordion>

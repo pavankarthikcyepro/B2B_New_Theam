@@ -4,7 +4,7 @@ import { Colors } from "../../../../styles";
 import { RadioTextItem2 } from "../../../../pureComponents";
 
 const CustomRadioButton = (props) => {
-  const { label, value, mandatory, onPress } = props;
+  const { label, value, mandatory, onPress, status = false } = props;
 
   return (
     <View style={styles.container}>
@@ -38,6 +38,9 @@ const CustomRadioButton = (props) => {
           onPress={() => onPress("20")}
         />
       </View>
+      {mandatory && status && (
+        <Text style={styles.error}>{label + "is Required"}</Text>
+      )}
     </View>
   );
 };
@@ -76,6 +79,11 @@ const styles = StyleSheet.create({
   },
   mandatory: {
     color: Colors.RED,
+  },
+  error: {
+    color: "red",
+    marginLeft: 5,
+    marginBottom: 3,
   },
 });
 

@@ -1082,6 +1082,9 @@ const URL = {
   EVALUATION_AUTOSAVE: () => {
     return baseUrl + "dfdr/dynamic-reports/autosave";
   },
+  EVALUATION_DROP_DOWN: (orgId) => {
+    return downloadFile + `/get-followup/${orgId}/Evaluation`;
+  },
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

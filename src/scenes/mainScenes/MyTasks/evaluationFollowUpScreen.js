@@ -48,7 +48,6 @@ import {
 import * as AsyncStorage from "../../../asyncStore";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
 import { Dropdown } from "react-native-element-dropdown";
-import { MyTasksStackIdentifiers } from "../../../navigations/appNavigator";
 
 const ScreenWidth = Dimensions.get("window").width;
 
@@ -67,7 +66,7 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
   );
 };
 
-const EnquiryFollowUpScreen = ({ route, navigation }) => {
+const EvaluationFollowUpScreen = ({ route, navigation }) => {
   const { taskId, identifier, universalId, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
 
@@ -100,14 +99,11 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       case "BOOKING_FOLLOW_UP":
         title = "Booking follow up";
         break;
-      case "EVALUATION_FOLLOW_UP":
-        title = "Evaluation follow up";
-        break;
     }
 
-    navigation.setOptions({
-      title: title,
-    });
+    // navigation.setOptions({
+    //   title: title,
+    // });
   }, [navigation]);
 
   useEffect(() => {
@@ -321,15 +317,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   }, [selector.update_task_response_status]);
 
   const updateTask = () => {
-    if (identifier === "EVALUATION_FOLLOW_UP") {
-      navigation.navigate(MyTasksStackIdentifiers.evaluation, {
-        taskId,
-        identifier,
-        universalId,
-      });
-    } else {
-      changeTaskStatusBasedOnActionType("UPDATE");
-    }
+    // changeTaskStatusBasedOnActionType("UPDATE");
+
   };
 
   const closeTask = () => {
@@ -424,6 +413,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
 
     setActionType(type);
+    console.log("newTaskObj",newTaskObj);
     dispatch(updateTaskApi(newTaskObj));
   };
   const setDropDownDataForModel = (key, title) => {
@@ -699,11 +689,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               <View>
                 <View style={styles.view1}>
                   <LocalButtonComp
-                    title={
-                      identifier === "EVALUATION_FOLLOW_UP"
-                        ? "Create Evaluation"
-                        : "Update"
-                    }
+                    title={"Create Evaluation"}
                     onPress={updateTask}
                     disabled={selector.is_loading_for_task_update}
                   />
@@ -742,7 +728,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   );
 };
 
-export default EnquiryFollowUpScreen;
+export default EvaluationFollowUpScreen;
 
 const styles = StyleSheet.create({
   container: {

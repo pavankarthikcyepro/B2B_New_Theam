@@ -37,6 +37,7 @@ const mytasksIdentifires = {
   preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
   createenquiry: "CREATE_ENQUIRY",
   "bookingfollowup-dse": "BOOKING_FOLLOW_UP",
+  evaluation:"EVALUATION_FOLLOW_UP"
 };
 
 const TaskListScreen = ({ route, navigation }) => {
@@ -115,6 +116,7 @@ const TaskListScreen = ({ route, navigation }) => {
     const finalTaskName = trimName.replace(/ /g, "");
     let navigationId = "";
     let taskNameNew = "";
+    console.log("Json", JSON.stringify(item));
     switch (finalTaskName) {
       case "testdrive":
         navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
@@ -163,6 +165,10 @@ const TaskListScreen = ({ route, navigation }) => {
       case "createenquiry":
         navigationId = AppNavigator.MyTasksStackIdentifiers.createEnquiry;
         taskNameNew = "";
+        break;
+      case "evaluation":
+        navigationId = AppNavigator.MyTasksStackIdentifiers.bookingFollowUp;
+        taskNameNew = "Evaluation";
         break;
     }
     if (!navigationId) {
