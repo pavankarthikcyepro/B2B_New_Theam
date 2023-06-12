@@ -2036,7 +2036,7 @@ const LeadsScreen = ({ route, navigation }) => {
       ) : (
         <View style={[styles.flatlistView]}>
           <FlatList
-            initialNumToRender={searchedData?.length}
+            initialNumToRender={500} // changes to handle crash issue if too much data in live-leads
             data={
               searchedData.length > 0 && AssignByMe
                 ? onAssignByMe(searchedData)
