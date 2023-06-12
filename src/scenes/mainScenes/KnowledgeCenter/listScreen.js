@@ -95,7 +95,7 @@ const ListScreen = ({ route, navigation }) => {
           "File" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        mime: "application/xlsx",
+        // mime: "application/xlsx",
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
