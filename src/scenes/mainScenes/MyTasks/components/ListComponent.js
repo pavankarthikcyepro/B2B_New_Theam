@@ -107,7 +107,7 @@ const ListComponent = ({ route, navigation }) => {
 
   useEffect(() => {
     setFilterAvailable({
-      selectedFilterLocal: "",
+      selectedFilterLocal: "MONTH",
       fromClick: false,
     });
     if (isFocused) {
@@ -232,7 +232,6 @@ const ListComponent = ({ route, navigation }) => {
   }, [index]);
 
   const initialTask = async (selectedFilterLocal, fromClick) => {
-    console.log(route.params.from);
     try {
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -352,8 +351,6 @@ const ListComponent = ({ route, navigation }) => {
                   const finalTaskName = trimName.replace(/ /g, "");
                   return taskNames.includes(finalTaskName);
                 });
-                console.log("todaysData", filteredData);
-
                 if (filteredData?.length > 0) {
                   for (let i = 0; i < filteredData.length; i++) {
                     let index = -1;
@@ -365,7 +362,6 @@ const ListComponent = ({ route, navigation }) => {
                       tempData[index].myTaskList = filteredData[i].myTaskList;
                     }
                     if (i === filteredData.length - 1) {
-                      console.log("sss");
                       setMyTeamsData(tempData);
                     }
                   }
@@ -911,12 +907,13 @@ const ListComponent = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const dateFormat = "YYYY-MM-DD";
-        const currentDate = moment().format(dateFormat);
+        // const currentDate = moment().format(dateFormat);
+        const currentDate = moment().add(0, "day").format(dateFormat)
         let startDate, endDate;
-        if (selectedFilterLocal === "TODAY") {
+        if (selectedFilterLocal == "TODAY") {
           startDate = currentDate;
           endDate = currentDate;
-        } else if (selectedFilterLocal === "MONTH") {
+        } else if (selectedFilterLocal == "MONTH") {
           startDate = moment(currentDate, dateFormat)
             .subtract(0, "months")
             .startOf("month")
@@ -925,7 +922,7 @@ const ListComponent = ({ route, navigation }) => {
             .subtract(0, "months")
             .endOf("month")
             .format(dateFormat);
-        } else if (selectedFilterLocal === "WEEK") {
+        } else if (selectedFilterLocal == "WEEK") {
           var curr = new Date(); // get current date
           var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
           var last = first + 6; // last day is the first day + 6
@@ -1460,7 +1457,9 @@ const ListComponent = ({ route, navigation }) => {
     //   // itemClicked({ myTaskList: tempArr });
     // } else {
       navigateToList(
-        filterAvailable.selectedFilterLocal,
+        notificationSelector.myTaskAllFilter
+          ? "ALL"
+          : filterAvailable.selectedFilterLocal,
         filterAvailable.fromClick,
         [item.taskName]
       );

@@ -109,6 +109,19 @@ const bikeWoMenu = [
   "Target Planning",
   "Digital Dashboard",
 ];
+const bikeWoMenuForCRE_CRM = [
+  "Home",
+  "Sign Out",
+  "Settings",
+  "Helpdesk",
+  "QR Code",
+  "Drop Analysis",
+  "My Stock",
+  "Download Report",
+  "Live Leads",
+  "Target Planning",
+  // "Digital Dashboard",
+];
 
 const receptionTelCallerMenu = [
   ...commonMenu,
@@ -300,9 +313,16 @@ const SideMenuScreen = ({ navigation }) => {
     getProfilePic(jsonObj);
     let newFilterData = [];
     if (jsonObj.orgName?.includes("BikeWo Corporation")) {
-      newFilterData = selector.tableData.filter((item) =>
-        bikeWoMenu.includes(item.title)
-      );
+      if (jsonObj.hrmsRole == "CRE" || jsonObj.hrmsRole == "CRM" || jsonObj.hrmsRole == "Dealer Head"){
+        newFilterData = selector.tableData.filter((item) =>
+          bikeWoMenuForCRE_CRM.includes(item.title)
+        );
+      }else{
+        newFilterData = selector.tableData.filter((item) =>
+          bikeWoMenu.includes(item.title)
+        );
+      }
+      
     } else if (
       jsonObj.hrmsRole == "Reception" ||
       jsonObj.hrmsRole == "CRE" ||

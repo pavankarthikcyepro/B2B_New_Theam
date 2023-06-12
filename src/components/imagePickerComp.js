@@ -74,7 +74,8 @@ const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage })
         }
         let isCameraPermitted = await requestCameraPermission();
         let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
+        if (isCameraPermitted) {
+        // if (isCameraPermitted && isStoragePermitted) {
             launchCamera(options, (res) => {
                 handleResponse(res);
             })

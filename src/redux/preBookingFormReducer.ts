@@ -493,6 +493,45 @@ export const postEvalutionApi = createAsyncThunk(
   }
 );
 
+export const getOrgTags = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOrgTags",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getOrgTagsById = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOrgTagsById",
+  async (leadId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS_BY_ID(leadId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const postOrgTags = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/postOrgTags",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_ORG_TAGS(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -563,6 +602,8 @@ const prebookingFormSlice = createSlice({
     buyer_type: "",
     customer_type: "",
     marital_status: "",
+    orgTagList: [],
+    orgTagListById: [],
     // Communication Address
     pincode: "",
     defaultAddress: "",
@@ -800,6 +841,8 @@ const prebookingFormSlice = createSlice({
       state.configureRulesResponse_status = "";
       state.otherPricesDropDown = [];
       state.enquiry_type_list = [];
+      state.orgTagList = [];
+      state.orgTagListById = [];
     },
     updateStatus: (state, action) => {
       state.pre_booking_payment_response_status = "";
@@ -2076,6 +2119,47 @@ const prebookingFormSlice = createSlice({
       }
     });
     builder.addCase(getOtherPricesDropDown.rejected, (state, action) => {});
+
+    //Get Organisation Tags
+    builder.addCase(getOrgTags.pending, (state, action) => {});
+    builder.addCase(getOrgTags.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tag,
+          };
+          data.push(obj);
+        }
+        state.orgTagList = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTags.rejected, (state, action) => {});
+
+    //Get Organisation Tags By Id
+    builder.addCase(getOrgTagsById.pending, (state, action) => {});
+    builder.addCase(getOrgTagsById.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tagName,
+          };
+          data.push(obj);
+        }
+        state.orgTagListById = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTagsById.rejected, (state, action) => {});
+
+    //Post Organisation Tags
+    builder.addCase(postOrgTags.pending, (state, action) => {});
+    builder.addCase(postOrgTags.fulfilled, (state, action) => {});
+    builder.addCase(postOrgTags.rejected, (state, action) => {});
   },
 });
 

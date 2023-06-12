@@ -150,6 +150,7 @@ const HomeScreen = ({ route, navigation }) => {
     empName: "",
     hrmsRole: "",
     orgId: 0,
+    orgName:""
   });
 
   const isFocused = useIsFocused();
@@ -517,6 +518,7 @@ const HomeScreen = ({ route, navigation }) => {
         empName: jsonObj.empName,
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
+        orgName: jsonObj.orgName
       });
       const payload = {
         orgId: jsonObj.orgId,
@@ -1023,8 +1025,12 @@ const HomeScreen = ({ route, navigation }) => {
             ).setHours(23, 59, 59, 999);
             let dateFormat1 = moment(firstDay).format("YYYY-MM-DD HH:mm:ss");
             let dateFormat2 = moment(lastDay).format("YYYY-MM-DD HH:mm:ss");
+            let tempArr = [];
+            let tmep = jsonObj.branchs.map((item)=>{
+              tempArr.push(item.orgMapId);
+            })
             let newPayload = {
-              branchIdList: [],
+              branchIdList: tempArr,
               fromDate: dateFormat1,
               orgId: jsonObj.orgId,
               toDate: dateFormat2,
@@ -1370,13 +1376,15 @@ const HomeScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <RenderModal />
-      <AttendanceFromSelf
-        visible={attendance}
-        showReason={reason}
-        inVisible={() => {
-          setAttendance(false);
-        }}
-      />
+      {userData?.orgName?.includes("BikeWo Corporation") ? null
+        : <AttendanceFromSelf
+          visible={attendance}
+          showReason={reason}
+          inVisible={() => {
+            setAttendance(false);
+          }}
+        />}
+    
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}

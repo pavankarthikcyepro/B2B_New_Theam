@@ -5372,6 +5372,7 @@ const BookingFormScreen = ({ route, navigation }) => {
               </List.AccordionGroup>
 
               {userData.hrmsRole.includes("DSE") ||
+              userData.hrmsRole.includes("Dealer Head") ||
               userData.hrmsRole.includes("Sales Consultant") ? (
                 <>
                   {fromScreen != undefined && fromScreen !== "DROP_ANALYSIS" ? (

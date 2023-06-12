@@ -148,6 +148,7 @@ import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
 import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
 import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
 import EmployeeLocationsScreen from "../scenes/mainScenes/Geolocation/EmployeeLocations";
+import StatsTripListScreen from "../scenes/mainScenes/Map/StatsTripListScreen";
 import EMICalculator from "../scenes/mainScenes/EMICalculator/EMICalculator";
 
 const drawerWidth = 300;
@@ -440,6 +441,7 @@ export const HomeStackIdentifiers = {
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
   location: "MAP_TRACKER",
+  tripStats: "TRIP_LIST",
   map: "MAP",
   mapDetail: "MAP_DETAIL",
   receptionistFilter: "REECEPTION_FILTER",
@@ -608,6 +610,13 @@ const HomeStackNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={HomeStackIdentifiers.location}
         component={TripListScreen}
+        options={{
+          title: "Trip List",
+        }}
+      />
+      <MainDrawerNavigator.Screen
+        name={HomeStackIdentifiers.tripStats}
+        component={StatsTripListScreen}
         options={{
           title: "Trip List",
         }}

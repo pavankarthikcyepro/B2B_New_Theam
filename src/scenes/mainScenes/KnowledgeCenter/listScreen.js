@@ -76,7 +76,7 @@ const ListScreen = ({ route, navigation }) => {
         },
       };
       config(options)
-        .fetch("GET", url, {})
+        .fetch("GET", url)
         .then((res) => {
           setLoading(false);
           RNFetchBlob.android.actionViewIntent(res.path());
@@ -102,7 +102,7 @@ const ListScreen = ({ route, navigation }) => {
         notification: true,
       };
       config(options)
-        .fetch("GET", url, {})
+        .fetch("GET", url)
         .then((res) => {
           setLoading(false);
           setTimeout(() => {

@@ -163,6 +163,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     hrmsRole: "",
     orgId: 0,
     branchs: [],
+    isSelfManager: "N",
+    orgName: "",
   });
   const scrollViewRef = useRef();
   const paramsMetadata = [
@@ -429,6 +431,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
         branchs: jsonObj.branchs,
+        isSelfManager: jsonObj.isSelfManager,
+        orgName: jsonObj.orgName,
       });
       if (true) {
         // getReceptionManagerTeam(jsonObj);
@@ -1289,7 +1293,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
@@ -1523,7 +1529,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
@@ -1747,7 +1755,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -2065,7 +2075,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
@@ -2307,7 +2319,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -2568,7 +2582,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         color={Colors.CORAL}
                         receptionManager={true}
                         navigation={navigation}
@@ -2811,7 +2827,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
@@ -3093,7 +3111,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         // color={"#C62159"}
                         color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                         receptionManager={true}
@@ -3317,7 +3337,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         // color={"#C62159"}
                         color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                         receptionManager={true}
@@ -3533,7 +3555,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
@@ -3728,15 +3752,24 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     }
   }
 
-  function navigateToEMS(params) {
-    navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-      screen: "EMS",
-      params: {
-        screen: "LEADS",
-      },
-    });
-  }
+  // function navigateToEMS(params) {
+  //   navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+  //     screen: "EMS",
+  //     params: {
+  //       screen: "LEADS",
+  //     },
+  //   });
+  // }
 
+  const checkIsSelfManager = () => {
+    if (
+      userData?.orgName?.includes("BikeWo Corporation") &&
+      userData.isSelfManager == "Y"
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   return (
     <React.Fragment>
@@ -3908,7 +3941,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={item.branch}
+                                        branchName={checkIsSelfManager()
+                                          ? ""
+                                          : item.branch}
                                         color={"#C62159"}
                                         receptionManager={true}
                                         navigation={navigation}
@@ -4774,7 +4809,7 @@ export const SourceModelView = ({ style = null, onClick }) => {
       <Pressable onPress={onClick}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: "600",
             color: Colors.BLUE,
             marginLeft: 8,
