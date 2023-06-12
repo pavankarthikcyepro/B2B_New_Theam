@@ -6212,7 +6212,7 @@ export const SourceModelView = ({ style = null, onClick }) => {
       <Pressable onPress={onClick}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: "600",
             color: Colors.BLUE,
             marginLeft: 8,

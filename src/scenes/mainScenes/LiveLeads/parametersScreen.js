@@ -1516,7 +1516,7 @@ const ParametersScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -1777,7 +1777,7 @@ const ParametersScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -1990,7 +1990,7 @@ const ParametersScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -2281,7 +2281,7 @@ const ParametersScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -2605,7 +2605,7 @@ const ParametersScreen = ({ route }) => {
                   >
                     <Text
                       style={{
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: "600",
                         color: Colors.BLUE,
                         marginLeft: 8,
@@ -2900,7 +2900,7 @@ const ParametersScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -3171,7 +3171,7 @@ const ParametersScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -3350,7 +3350,7 @@ const ParametersScreen = ({ route }) => {
             >
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: "600",
                   color: Colors.BLUE,
                   marginLeft: 8,
@@ -3485,7 +3485,7 @@ const ParametersScreen = ({ route }) => {
           >
             <Text
               style={{
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: "600",
                 color: Colors.BLUE,
               }}
@@ -3746,7 +3746,7 @@ const ParametersScreen = ({ route }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
@@ -3849,7 +3849,7 @@ const ParametersScreen = ({ route }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
@@ -3965,7 +3965,7 @@ const ParametersScreen = ({ route }) => {
                               >
                                 <Text
                                   style={{
-                                    fontSize: 12,
+                                    fontSize: 14,
                                     fontWeight: "600",
                                     color: Colors.BLUE,
                                     marginLeft: 8,
@@ -4079,7 +4079,7 @@ const ParametersScreen = ({ route }) => {
                                 >
                                   <Text
                                     style={{
-                                      fontSize: 12,
+                                      fontSize: 14,
                                       fontWeight: "600",
                                       color: Colors.BLUE,
                                     }}
@@ -4197,7 +4197,7 @@ const ParametersScreen = ({ route }) => {
                                                 >
                                                   <Text
                                                     style={{
-                                                      fontSize: 12,
+                                                      fontSize: 14,
                                                       fontWeight: "600",
                                                       color: Colors.BLUE,
                                                       marginLeft: 8,
@@ -4501,7 +4501,7 @@ const ParametersScreen = ({ route }) => {
                                                           >
                                                             <Text
                                                               style={{
-                                                                fontSize: 12,
+                                                                fontSize: 14,
                                                                 fontWeight:
                                                                   "600",
                                                                 color:
@@ -4869,7 +4869,7 @@ const ParametersScreen = ({ route }) => {
                                                                     >
                                                                       <Text
                                                                         style={{
-                                                                          fontSize: 12,
+                                                                          fontSize: 14,
                                                                           fontWeight:
                                                                             "600",
                                                                           color:
@@ -5269,7 +5269,7 @@ const ParametersScreen = ({ route }) => {
                                                                               >
                                                                                 <Text
                                                                                   style={{
-                                                                                    fontSize: 12,
+                                                                                    fontSize: 14,
                                                                                     fontWeight:
                                                                                       "600",
                                                                                     color:
@@ -5687,7 +5687,7 @@ const ParametersScreen = ({ route }) => {
                                                                                         >
                                                                                           <Text
                                                                                             style={{
-                                                                                              fontSize: 12,
+                                                                                              fontSize: 14,
                                                                                               fontWeight:
                                                                                                 "600",
                                                                                               color:
@@ -6122,7 +6122,7 @@ const ParametersScreen = ({ route }) => {
                                                                                                   >
                                                                                                     <Text
                                                                                                       style={{
-                                                                                                        fontSize: 12,
+                                                                                                        fontSize: 14,
                                                                                                         fontWeight:
                                                                                                           "600",
                                                                                                         color:
@@ -6559,7 +6559,7 @@ const ParametersScreen = ({ route }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
@@ -6674,14 +6674,14 @@ const ParametersScreen = ({ route }) => {
                           type: selector.isDSE ? "SELF" : "INSIGHTS",
                           moduleType: "live-leads",
                           orgId: selector.login_employee_details.orgId,
-                          isOpenner : false
+                          isOpenner: false,
                         }
                       );
                     }}
                   >
                     <Text
                       style={{
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: "600",
                         color: Colors.BLUE,
                         textDecorationLine: "underline",
@@ -6741,7 +6741,7 @@ const ParametersScreen = ({ route }) => {
                   >
                     <Text
                       style={{
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: "600",
                         color: Colors.BLUE,
                         textDecorationLine: "underline",
@@ -6824,7 +6824,7 @@ const ParametersScreen = ({ route }) => {
                   >
                     <Text
                       style={{
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: "600",
                         color: Colors.BLUE,
                         textDecorationLine: "underline",
@@ -7059,7 +7059,7 @@ export const SourceModelView = ({ style = null, onClick }) => {
       <Pressable onPress={onClick}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: "600",
             color: Colors.BLUE,
             marginLeft: 8,
