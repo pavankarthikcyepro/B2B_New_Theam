@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AppNavigator } from "../../../../../navigations";
 import { IconButton, ProgressBar } from "react-native-paper";
-import { Colors } from "../../../../../styles";
+import { Colors, GlobalStyle } from "../../../../../styles";
 import moment from "moment/moment";
 import TextTicker from "react-native-text-ticker";
 import { achievementPercentage } from "../../../../../utils/helperFunctions";
@@ -65,10 +65,30 @@ export const RenderSelfInsights = (args) => {
 
   return getRearrangeArray().map((item, index) => {
     if (item) {
-      
+      console.log("item -> ", item);
+      let newPer = (100 * item?.shortfall) / item?.target;
+      let newPerStr = `(${newPer?.toFixed(0)}%)`;
+      let isPerShow = false;
+
+      if (
+        item.paramName == "INVOICE" ||
+        item.paramName == "Exchange" ||
+        item.paramName == "Finance" ||
+        item.paramName == "Insurance" ||
+        item.paramName == "EXTENDEDWARRANTY" ||
+        item.paramName == "Accessories"
+      ) {
+        isPerShow = true;
+      }
+
       return (
         <View
-          style={{ flexDirection: "row", marginLeft: 8 }}
+          style={[
+            item.paramName == "INVOICE" || item.paramName == "DROPPED"
+              ? styles.highLightRow
+              : null,
+            { flexDirection: "row", paddingLeft: 8 },
+          ]}
           key={`${item?.paramShortName}_${index}`}
         >
           <TouchableOpacity
@@ -80,34 +100,30 @@ export const RenderSelfInsights = (args) => {
                 param === "Booking" ||
                 param === "INVOICE"
               ) {
-                 navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
-                   screen: "EMS",
-                   params: {
-                     screen: "LEADS",
-                     params: {
-                       screenName: "TargetScreenSales",
-                       params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
-                       moduleType: "",
-                       employeeDetail: "",
-                       selectedEmpId: !_.isEmpty(
-                         selector.filterIds?.empSelected
-                       )
-                         ? selector.filterIds?.empSelected[0]
-                         : "",
-                       startDate: "",
-                       endDate: "",
-                       dealerCodes: !_.isEmpty(
-                         selector.filterIds?.levelSelected
-                       )
-                         ? selector.filterIds?.levelSelected
-                         : [],
-                       ignoreSelectedId: false,
-                       parentId: "",
-                       istotalClick: true,
-                       self: false,
-                     },
-                   },
-                 });
+                navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+                  screen: "EMS",
+                  params: {
+                    screen: "LEADS",
+                    params: {
+                      screenName: "TargetScreenSales",
+                      params: param === "INVOICE" ? "INVOICECOMPLETED" : param,
+                      moduleType: "",
+                      employeeDetail: "",
+                      selectedEmpId: !_.isEmpty(selector.filterIds?.empSelected)
+                        ? selector.filterIds?.empSelected[0]
+                        : "",
+                      startDate: "",
+                      endDate: "",
+                      dealerCodes: !_.isEmpty(selector.filterIds?.levelSelected)
+                        ? selector.filterIds?.levelSelected
+                        : [],
+                      ignoreSelectedId: false,
+                      parentId: "",
+                      istotalClick: true,
+                      self: false,
+                    },
+                  },
+                });
                 // setTimeout(() => {
                 //   navigation.navigate("LEADS", {
                 //     param: param === "INVOICE" ? "Retail" : param,
@@ -382,6 +398,7 @@ export const RenderSelfInsights = (args) => {
                           Math.round(parseInt(item.shortfall) / dateDiff)
                         )
                       : 0}
+                    {isPerShow && newPer != NaN && newPer ? newPerStr : ""}
                   </Text>
                 </TextTicker>
               </View>
@@ -396,3 +413,20 @@ export const RenderSelfInsights = (args) => {
     }
   });
 };
+
+const styles = StyleSheet.create({
+  highLightRow: {
+    ...GlobalStyle.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    backgroundColor: Colors.LIGHT_GRAY,
+    borderRadius: 5,
+    paddingBottom: 10,
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: Colors.LIGHT_GRAY,
+    marginHorizontal: 5
+  },
+});

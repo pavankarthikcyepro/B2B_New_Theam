@@ -3268,10 +3268,10 @@ const TargetScreen = ({ route }) => {
                         }}
                       />
                     </View>
-                    <View style={{ width: "30%", flexDirection: "row" }}>
+                    <View style={{ width: "30%", flexDirection: "row", justifyContent: "space-between" }}>
                       <Text style={styles.txt3}>Balance</Text>
                       <View style={{ marginRight: 15 }}></View>
-                      <Text style={styles.txt3}>AR/Day</Text>
+                      <Text style={styles.txt3}>AR</Text>
                     </View>
                   </View>
                 )}
@@ -3889,7 +3889,7 @@ const TargetScreen = ({ route }) => {
                 {!receptionistRole.includes(userData.hrmsRole) && (
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <>
-                      <View style={{ paddingRight: 10 }}>
+                      <View>
                         <View
                           style={{
                             width: "42%",
