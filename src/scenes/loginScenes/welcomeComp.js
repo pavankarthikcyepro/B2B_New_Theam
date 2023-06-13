@@ -198,7 +198,9 @@ const WelcomeScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    firebase.initializeApp({});
+    if (!firebase.apps.length) {
+      firebase.initializeApp({});
+    }
     crashlytics().setCrashlyticsCollectionEnabled(true);
   }, []);
 

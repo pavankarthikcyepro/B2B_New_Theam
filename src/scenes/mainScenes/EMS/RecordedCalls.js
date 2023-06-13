@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearRecordedCallsData, getRecordedCallList } from '../../../redux/recordedCallsReducer';
 import { LoaderComponent } from '../../../components';
 import moment from 'moment';
-import TrackPlayer, { Event, RepeatMode, useProgress, useTrackPlayerEvents } from 'react-native-track-player';
+import TrackPlayer, { AppKilledPlaybackBehavior, Event, RepeatMode, useProgress, useTrackPlayerEvents } from 'react-native-track-player';
 import Slider from '@react-native-community/slider';
 import { showToast } from '../../../utils/toast';
 
@@ -42,8 +42,20 @@ const RecordedCalls = ({ navigation, route }) => {
   }, []);
 
   useEffect(async () => {
-    await TrackPlayer.setRepeatMode(RepeatMode.Track);
+    await SetupService();
   }, []);
+
+  const SetupService = async () => {
+    try {
+      await TrackPlayer.updateOptions({
+        android: {
+          appKilledPlaybackBehavior:
+            AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+        },
+      });
+      await TrackPlayer.setRepeatMode(RepeatMode.Track);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     if (!selector.isLoading) {
@@ -55,9 +67,9 @@ const RecordedCalls = ({ navigation, route }) => {
 
   useEffect(() => {
     if (
-      (previousPosition == 0 ||
-        previousPosition == null ||
-        previousPosition > position)
+      previousPosition == 0 ||
+      previousPosition == null ||
+      previousPosition > position
     ) {
       if (recordingList.length > 0 && !onSliding) {
         previousPosition = 0;
@@ -115,7 +127,7 @@ const RecordedCalls = ({ navigation, route }) => {
     const element = recordingList;
     element[index].isMute = !element[index].isMute;
     setRecordingList([...element]);
-    
+
     if (item.isMute) {
       TrackPlayer.setVolume(0);
     } else {

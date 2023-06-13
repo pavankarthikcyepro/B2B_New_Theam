@@ -1504,13 +1504,15 @@ const ParametersScreenRecep = ({ route }) => {
         creFirstLevelData.map((item, index) => {
          
           return (
-
-            <View style={{
-              borderColor: isViewCREExpanded && index === creIndex ? Colors.YELLOW : "",
-              borderWidth: isViewCREExpanded && index === creIndex ? 1 : 0,
-              borderRadius: 10,
-              margin: isViewCREExpanded && index === creIndex ? 10 : 0
-            }}>
+            <View
+              style={{
+                borderColor:
+                  isViewCREExpanded && index === creIndex ? Colors.YELLOW : "",
+                borderWidth: isViewCREExpanded && index === creIndex ? 1 : 0,
+                borderRadius: 10,
+                margin: isViewCREExpanded && index === creIndex ? 10 : 0,
+              }}
+            >
               <View
                 style={{
                   paddingHorizontal: 8,
@@ -1534,11 +1536,15 @@ const ParametersScreenRecep = ({ route }) => {
               <Pressable
                 style={{ alignSelf: "flex-end" }}
                 onPress={() => {
-                 
                   if (isViewCREExpanded) {
-                    handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd")
+                    handleSourceModalNavigation(
+                      item,
+                      item?.emp_id,
+                      [item.emp_id],
+                      "CRM_INd"
+                    );
                   } else {
-                    handleSourceModalNavigation(item, "", [], "CRM")
+                    handleSourceModalNavigation(item, "", [], "CRM");
                   }
 
                   // navigation.navigate(
@@ -1556,7 +1562,7 @@ const ParametersScreenRecep = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: "600",
                     color: Colors.BLUE,
                     marginLeft: 8,
@@ -1593,9 +1599,8 @@ const ParametersScreenRecep = ({ route }) => {
                       branchName={getBranchName(item?.branch)}
                       color={Colors.CORAL}
                       titleClick={async () => {
-                       
-                        formatCRESecondLeveleData(item,index);
-                       
+                        formatCRESecondLeveleData(item, index);
+
                         // setStoreFirstLevelLocal(item)
 
                         return;
@@ -1604,49 +1609,121 @@ const ParametersScreenRecep = ({ route }) => {
                     <View
                       style={{
                         flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
+                        backgroundColor: "rgba(223,228,231,0.67)",
                         alignItems: "center",
                         flexDirection: "row",
                       }}
                     >
                       {[
-                        isViewCREExpanded && index === creIndex ? item.contactCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].contactsCount : 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.enquiryCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].enquirysCount: 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.bookingCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].bookingsCount: 0 || 0,
-                        isViewCREExpanded && index === creIndex ? item.retailCount : creFirstLevelSelfData ? creFirstLevelSelfData[index].RetailCount : 0 || 0,
+                        isViewCREExpanded && index === creIndex
+                          ? item.contactCount
+                          : creFirstLevelSelfData
+                          ? creFirstLevelSelfData[index].contactsCount
+                          : 0 || 0,
+                        isViewCREExpanded && index === creIndex
+                          ? item.enquiryCount
+                          : creFirstLevelSelfData
+                          ? creFirstLevelSelfData[index].enquirysCount
+                          : 0 || 0,
+                        isViewCREExpanded && index === creIndex
+                          ? item.bookingCount
+                          : creFirstLevelSelfData
+                          ? creFirstLevelSelfData[index].bookingsCount
+                          : 0 || 0,
+                        isViewCREExpanded && index === creIndex
+                          ? item.retailCount
+                          : creFirstLevelSelfData
+                          ? creFirstLevelSelfData[index].RetailCount
+                          : 0 || 0,
                       ].map((e, index) => {
                         return (
-                          <Pressable onPress={() => {
-                            
-                            
-                            if (e > 0) {
-                              if (isViewCREExpanded) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false);
-                                }
-                              } else {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, false, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false, false);
+                          <Pressable
+                            onPress={() => {
+                              if (e > 0) {
+                                if (isViewCREExpanded) {
+                                  if (index === 0) {
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 1) {
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 2) {
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 3) {
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  }
+                                } else {
+                                  if (index === 0) {
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false,
+                                      false
+                                    );
+                                  } else if (index === 1) {
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false,
+                                      false
+                                    );
+                                  } else if (index === 2) {
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false,
+                                      false
+                                    );
+                                  } else if (index === 3) {
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false,
+                                      false
+                                    );
+                                  }
                                 }
                               }
-                            }
-
-                          }}>
+                            }}
+                          >
                             <View
                               style={{
                                 width: 55,
@@ -1660,7 +1737,8 @@ const ParametersScreenRecep = ({ route }) => {
                                 style={{
                                   fontSize: 16,
                                   fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
+                                  textDecorationLine:
+                                    e > 0 ? "underline" : "none",
                                   // marginLeft: 50,
                                 }}
                               >
@@ -1686,7 +1764,9 @@ const ParametersScreenRecep = ({ route }) => {
                   {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                 </View>
               </View>
-              {isViewCREExpanded && index === creIndex && renderCREtreeSecondLevel()}
+              {isViewCREExpanded &&
+                index === creIndex &&
+                renderCREtreeSecondLevel()}
             </View>
           );
         })
@@ -1701,13 +1781,16 @@ const ParametersScreenRecep = ({ route }) => {
         creSecondLevelData.length > 0 &&
         creSecondLevelData.map((item, index) => {
           return (
-
-            <View style={{
-              // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-              // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-              // borderRadius: 10,
-              // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-            }}>
+            <View
+              style={
+                {
+                  // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
+                  // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                  // borderRadius: 10,
+                  // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
+                }
+              }
+            >
               <View
                 style={{
                   paddingHorizontal: 8,
@@ -1731,16 +1814,16 @@ const ParametersScreenRecep = ({ route }) => {
               <Pressable
                 style={{ alignSelf: "flex-end" }}
                 onPress={() => {
-                 
-               
-               
-                  handleSourceModalNavigation(item, storeCREFirstLevelLocal?.emp_id,[item.emp_id])
-                  
+                  handleSourceModalNavigation(
+                    item,
+                    storeCREFirstLevelLocal?.emp_id,
+                    [item.emp_id]
+                  );
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: "600",
                     color: Colors.BLUE,
                     marginLeft: 8,
@@ -1779,44 +1862,68 @@ const ParametersScreenRecep = ({ route }) => {
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
-                        formateSaleConsutantDataCRM(item, index)
+                        formateSaleConsutantDataCRM(item, index);
                         return;
                       }}
                     />
                     <View
                       style={{
                         flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
+                        backgroundColor: "rgba(223,228,231,0.67)",
                         alignItems: "center",
                         flexDirection: "row",
                       }}
                     >
                       {[
-                         item.contactCount || 0,
+                        item.contactCount || 0,
                         item.enquiryCount || 0,
                         item.bookingCount || 0,
                         item.retailCount || 0,
                       ].map((e, index) => {
                         return (
-                          <Pressable onPress={() => {
-
-                           
-                            if (e > 0) {
-                              if (index === 0) {
-                                navigateToEMS("Contact", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-
-                              } else if (index === 1) {
-                                navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-                              } else if (index === 2) {
-                                navigateToEMS("BOOKING", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
-                              } else if (index === 3) {
-                                navigateToEMS("Invoice", "", [item.emp_id], false, storeCREFirstLevelLocal?.emp_id, false);
+                          <Pressable
+                            onPress={() => {
+                              if (e > 0) {
+                                if (index === 0) {
+                                  navigateToEMS(
+                                    "Contact",
+                                    "",
+                                    [item.emp_id],
+                                    false,
+                                    storeCREFirstLevelLocal?.emp_id,
+                                    false
+                                  );
+                                } else if (index === 1) {
+                                  navigateToEMS(
+                                    "ENQUIRY",
+                                    "",
+                                    [item.emp_id],
+                                    false,
+                                    storeCREFirstLevelLocal?.emp_id,
+                                    false
+                                  );
+                                } else if (index === 2) {
+                                  navigateToEMS(
+                                    "BOOKING",
+                                    "",
+                                    [item.emp_id],
+                                    false,
+                                    storeCREFirstLevelLocal?.emp_id,
+                                    false
+                                  );
+                                } else if (index === 3) {
+                                  navigateToEMS(
+                                    "Invoice",
+                                    "",
+                                    [item.emp_id],
+                                    false,
+                                    storeCREFirstLevelLocal?.emp_id,
+                                    false
+                                  );
+                                }
                               }
-
-                            }
-
-                          }}>
+                            }}
+                          >
                             <View
                               style={{
                                 width: 55,
@@ -1830,7 +1937,8 @@ const ParametersScreenRecep = ({ route }) => {
                                 style={{
                                   fontSize: 16,
                                   fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
+                                  textDecorationLine:
+                                    e > 0 ? "underline" : "none",
                                   // marginLeft: 50,
                                 }}
                               >
@@ -1872,13 +1980,14 @@ const ParametersScreenRecep = ({ route }) => {
         crmFirstLevelData.length > 0 &&
         crmFirstLevelData.map((item, index) => {
           return (
-
-            <View style={{
-              borderColor: isViewExpanded ? "#C62159" : "",
-              borderWidth: isViewExpanded ? 2 : 0, 
-              borderRadius: 10,
-              margin: isViewExpanded ? 10 : 0
-              }}>
+            <View
+              style={{
+                borderColor: isViewExpanded ? "#C62159" : "",
+                borderWidth: isViewExpanded ? 2 : 0,
+                borderRadius: 10,
+                margin: isViewExpanded ? 10 : 0,
+              }}
+            >
               <View
                 style={{
                   paddingHorizontal: 8,
@@ -1902,15 +2011,18 @@ const ParametersScreenRecep = ({ route }) => {
               <Pressable
                 style={{ alignSelf: "flex-end" }}
                 onPress={() => {
-               
-                  if(isViewExpanded){
-                    
-                    handleSourceModalNavigation(item, item?.emp_id, [item.emp_id], "CRM_INd",true)
-                  }else{
-                   
-                    handleSourceModalNavigation(item, "", [], "CRM",true)
+                  if (isViewExpanded) {
+                    handleSourceModalNavigation(
+                      item,
+                      item?.emp_id,
+                      [item.emp_id],
+                      "CRM_INd",
+                      true
+                    );
+                  } else {
+                    handleSourceModalNavigation(item, "", [], "CRM", true);
                   }
-                 
+
                   // navigation.navigate(
                   //   AppNavigator.HomeStackIdentifiers.sourceModel,
                   //   {
@@ -1926,7 +2038,7 @@ const ParametersScreenRecep = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: "600",
                     color: Colors.BLUE,
                     marginLeft: 8,
@@ -1963,8 +2075,8 @@ const ParametersScreenRecep = ({ route }) => {
                       branchName={getBranchName(item?.branch)}
                       color={"#C62159"}
                       titleClick={async () => {
-                        setIsViewExpanded(!isViewExpanded)
-                        setStoreFirstLevelLocal(item)
+                        setIsViewExpanded(!isViewExpanded);
+                        setStoreFirstLevelLocal(item);
 
                         return;
                       }}
@@ -1972,8 +2084,7 @@ const ParametersScreenRecep = ({ route }) => {
                     <View
                       style={{
                         flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
+                        backgroundColor: "rgba(223,228,231,0.67)",
                         alignItems: "center",
                         flexDirection: "row",
                       }}
@@ -1985,58 +2096,131 @@ const ParametersScreenRecep = ({ route }) => {
                         isViewExpanded ? item.retailCount : selector.crm_response_data.totalRetailCount || 0,
                       ]. */}
                       {[
-                        isViewExpanded ? item.contactCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalPreInquiryCount : 0 || 0,
-                        isViewExpanded ? item.enquiryCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalEnquiryCount : 0 || 0,
-                        isViewExpanded ? item.bookingCount : crmFirstLevelTotalData ?crmFirstLevelTotalData?.totalBookingCount : 0|| 0,
-                        isViewExpanded ? item.retailCount :crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalRetailCount : 0 || 0,
-                      ].
-                        map((e, index) => {
+                        isViewExpanded
+                          ? item.contactCount
+                          : crmFirstLevelTotalData
+                          ? crmFirstLevelTotalData?.totalPreInquiryCount
+                          : 0 || 0,
+                        isViewExpanded
+                          ? item.enquiryCount
+                          : crmFirstLevelTotalData
+                          ? crmFirstLevelTotalData?.totalEnquiryCount
+                          : 0 || 0,
+                        isViewExpanded
+                          ? item.bookingCount
+                          : crmFirstLevelTotalData
+                          ? crmFirstLevelTotalData?.totalBookingCount
+                          : 0 || 0,
+                        isViewExpanded
+                          ? item.retailCount
+                          : crmFirstLevelTotalData
+                          ? crmFirstLevelTotalData?.totalRetailCount
+                          : 0 || 0,
+                      ].map((e, index) => {
                         return (
-                          <Pressable onPress={() => {
-
-                            // todo redirections 
-                            if (e > 0) {
-
-                              if (isViewExpanded) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, false);
-                                }
-                              } else {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [], false, item.emp_id, true,true);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [], false, item.emp_id, true, true);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [], false, item.emp_id, true, true);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [], false, item.emp_id, true, true);
+                          <Pressable
+                            onPress={() => {
+                              // todo redirections
+                              if (e > 0) {
+                                if (isViewExpanded) {
+                                  if (index === 0) {
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 1) {
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 2) {
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 3) {
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
+                                  }
+                                } else {
+                                  if (index === 0) {
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      true,
+                                      true
+                                    );
+                                  } else if (index === 1) {
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      true,
+                                      true
+                                    );
+                                  } else if (index === 2) {
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      true,
+                                      true
+                                    );
+                                  } else if (index === 3) {
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [],
+                                      false,
+                                      item.emp_id,
+                                      true,
+                                      true
+                                    );
+                                  }
                                 }
                               }
-                            }
-
-                          }}>
+                            }}
+                          >
                             <View
                               style={{
                                 width: 55,
                                 height: 30,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginLeft:10,
+                                marginLeft: 10,
                               }}
                             >
                               <Text
                                 style={{
                                   fontSize: 16,
                                   fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
+                                  textDecorationLine:
+                                    e > 0 ? "underline" : "none",
                                   // marginLeft: 50,
                                 }}
                               >
@@ -2078,13 +2262,18 @@ const ParametersScreenRecep = ({ route }) => {
         crmSecondLevelData.length > 0 &&
         crmSecondLevelData.map((item, index) => {
           return (
-
-            <View style={{
-              borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-              borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-              borderRadius: 10,
-              margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-            }}>
+            <View
+              style={{
+                borderColor:
+                  isSecondLevelExpanded && indexLocal === index
+                    ? Colors.BLUE
+                    : "",
+                borderWidth:
+                  isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                borderRadius: 10,
+                margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0,
+              }}
+            >
               <View
                 style={{
                   paddingHorizontal: 8,
@@ -2120,22 +2309,28 @@ const ParametersScreenRecep = ({ route }) => {
                   //   }
                   // );
 
-                  if (isSecondLevelExpanded){
-                    handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id, [storeSecondLevelLocal.emp_id])
-                  }else{
+                  if (isSecondLevelExpanded) {
+                    handleSourceModalNavigation(
+                      item,
+                      storeSecondLevelLocal.emp_id,
+                      [storeSecondLevelLocal.emp_id]
+                    );
+                  } else {
                     if (item.roleName === "Field DSE") {
-                     
-                      handleSourceModalNavigation(item, storeFirstLevelLocal.emp_id, [item.emp_id])
+                      handleSourceModalNavigation(
+                        item,
+                        storeFirstLevelLocal.emp_id,
+                        [item.emp_id]
+                      );
                     } else {
-                      
-                      handleSourceModalNavigation(item)
+                      handleSourceModalNavigation(item);
                     }
                   }
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: "600",
                     color: Colors.BLUE,
                     marginLeft: 8,
@@ -2170,77 +2365,172 @@ const ParametersScreenRecep = ({ route }) => {
                       level={0}
                       item={item}
                       branchName={getBranchName(item?.branch)}
-                      color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
+                      color={
+                        item.roleName.toLowerCase() === "field dse"
+                          ? "#2C97DE"
+                          : "#FF4040"
+                      }
                       titleClick={async () => {
                         // setIsViewExpanded(!isViewExpanded)
                         // setIsSecondLevelExpanded(!isSecondLevelExpanded)
-                        formateSaleConsutantDataCRM(item,index)
+                        formateSaleConsutantDataCRM(item, index);
                         return;
                       }}
                     />
                     <View
                       style={{
                         flex: 1,
-                        backgroundColor:
-                          "rgba(223,228,231,0.67)",
+                        backgroundColor: "rgba(223,228,231,0.67)",
                         alignItems: "center",
                         flexDirection: "row",
                       }}
                     >
                       {[
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].contactCount : item.contactCount   || 0,
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].enquiryCount : item.enquiryCount   || 0,
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].bookingCount : item.bookingCount || 0,
-                        isSecondLevelExpanded && index === indexLocal && crmSecondLevelSelectedData ? crmSecondLevelSelectedData[0].retailCount  : item.retailCount || 0,
+                        isSecondLevelExpanded &&
+                        index === indexLocal &&
+                        crmSecondLevelSelectedData
+                          ? crmSecondLevelSelectedData[0].contactCount
+                          : item.contactCount || 0,
+                        isSecondLevelExpanded &&
+                        index === indexLocal &&
+                        crmSecondLevelSelectedData
+                          ? crmSecondLevelSelectedData[0].enquiryCount
+                          : item.enquiryCount || 0,
+                        isSecondLevelExpanded &&
+                        index === indexLocal &&
+                        crmSecondLevelSelectedData
+                          ? crmSecondLevelSelectedData[0].bookingCount
+                          : item.bookingCount || 0,
+                        isSecondLevelExpanded &&
+                        index === indexLocal &&
+                        crmSecondLevelSelectedData
+                          ? crmSecondLevelSelectedData[0].retailCount
+                          : item.retailCount || 0,
                       ].map((e, index) => {
                         return (
-                          <Pressable onPress={() => {
-
-                            
-                            if (e > 0) {
-                              if (isSecondLevelExpanded){
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [item.emp_id], false, item.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], false, item.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], false, item.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [item.emp_id], false, item.emp_id, false);
-                                }
-                              }else{
-                               
-                                if (item.roleName == "Field DSE"){
+                          <Pressable
+                            onPress={() => {
+                              if (e > 0) {
+                                if (isSecondLevelExpanded) {
                                   if (index === 0) {
-                                    navigateToEMS("Contact", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
-
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
                                   } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
                                   } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
                                   } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [item.emp_id], false, storeFirstLevelLocal.emp_id, false);
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      item.emp_id,
+                                      false
+                                    );
                                   }
-
-                                }else{
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [], false, item.emp_id, false);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [], false, item.emp_id, false);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [], false, item.emp_id, false);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [], false, item.emp_id, false);
+                                } else {
+                                  if (item.roleName == "Field DSE") {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeFirstLevelLocal.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeFirstLevelLocal.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeFirstLevelLocal.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        storeFirstLevelLocal.emp_id,
+                                        false
+                                      );
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        item.emp_id,
+                                        false
+                                      );
+                                    }
                                   }
                                 }
-                               
                               }
-                             
-                            }
-
-                          }}>
+                            }}
+                          >
                             <View
                               style={{
                                 width: 55,
@@ -2254,7 +2544,8 @@ const ParametersScreenRecep = ({ route }) => {
                                 style={{
                                   fontSize: 16,
                                   fontWeight: "700",
-                                  textDecorationLine: e > 0 ? "underline" : "none"
+                                  textDecorationLine:
+                                    e > 0 ? "underline" : "none",
                                   // marginLeft: 50,
                                 }}
                               >
@@ -2280,7 +2571,9 @@ const ParametersScreenRecep = ({ route }) => {
                   {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                 </View>
               </View>
-              {isSecondLevelExpanded && index === indexLocal && renderCRMtreeThirdLevel()}
+              {isSecondLevelExpanded &&
+                index === indexLocal &&
+                renderCRMtreeThirdLevel()}
             </View>
           );
         })
@@ -2317,13 +2610,16 @@ const ParametersScreenRecep = ({ route }) => {
         crmThirdLevelData?.map((item, index) => {
           if (item.emp_id !== userData.empId && crmSecondLevelSelectedData[0].emp_id !== item.emp_id) {
             return (
-
-              <View style={{
-                // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-                // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-                // borderRadius: 10,
-                // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-              }}>
+              <View
+                style={
+                  {
+                    // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
+                    // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                    // borderRadius: 10,
+                    // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
+                  }
+                }
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -2347,14 +2643,16 @@ const ParametersScreenRecep = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                 
-
-                    handleSourceModalNavigation(item, storeSecondLevelLocal.emp_id, [item.emp_id])
+                    handleSourceModalNavigation(
+                      item,
+                      storeSecondLevelLocal.emp_id,
+                      [item.emp_id]
+                    );
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -2391,15 +2689,13 @@ const ParametersScreenRecep = ({ route }) => {
                         branchName={getBranchName(item?.branch)}
                         color={"#C62159"}
                         titleClick={async () => {
-                        
                           return;
                         }}
                       />
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
@@ -2411,22 +2707,49 @@ const ParametersScreenRecep = ({ route }) => {
                           item.retailCount || 0,
                         ].map((e, index) => {
                           return (
-                            <Pressable onPress={() => {
-
-                              if (e > 0) {
-                                if (index === 0) {
-                                  navigateToEMS("Contact", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
-
-                                } else if (index === 1) {
-                                  navigateToEMS("ENQUIRY", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
-                                } else if (index === 2) {
-                                  navigateToEMS("BOOKING", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
-                                } else if (index === 3) {
-                                  navigateToEMS("Invoice", "", [item.emp_id], false, storeSecondLevelLocal.emp_id, false);
+                            <Pressable
+                              onPress={() => {
+                                if (e > 0) {
+                                  if (index === 0) {
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeSecondLevelLocal.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 1) {
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeSecondLevelLocal.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 2) {
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeSecondLevelLocal.emp_id,
+                                      false
+                                    );
+                                  } else if (index === 3) {
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      storeSecondLevelLocal.emp_id,
+                                      false
+                                    );
+                                  }
                                 }
-
-                              }
-                            }}>
+                              }}
+                            >
                               <View
                                 style={{
                                   width: 55,
@@ -2440,7 +2763,8 @@ const ParametersScreenRecep = ({ route }) => {
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
                                     // marginLeft: 50,
                                   }}
                                 >
@@ -2789,7 +3113,7 @@ const ParametersScreenRecep = ({ route }) => {
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: Colors.BLUE,
                           marginLeft: 8,
@@ -3455,7 +3779,7 @@ const ParametersScreenRecep = ({ route }) => {
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: Colors.BLUE,
                           marginLeft: 8,
@@ -3725,7 +4049,7 @@ const ParametersScreenRecep = ({ route }) => {
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: Colors.BLUE,
                           marginLeft: 8,
@@ -4226,12 +4550,14 @@ const ParametersScreenRecep = ({ route }) => {
           CRM_filterParameters.map((item, index) => {
           
             return (
-              <View style={{
-                borderColor: isFilterViewExapanded  ? Colors.BLUE : "",
-                borderWidth: isFilterViewExapanded ? 1 : 0,
-                borderRadius: 10,
-                margin: isFilterViewExapanded  ? 5 : 0
-              }}>
+              <View
+                style={{
+                  borderColor: isFilterViewExapanded ? Colors.BLUE : "",
+                  borderWidth: isFilterViewExapanded ? 1 : 0,
+                  borderRadius: 10,
+                  margin: isFilterViewExapanded ? 5 : 0,
+                }}
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -4255,17 +4581,18 @@ const ParametersScreenRecep = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    if(isFilterViewExapanded){
-                      handleSourceModalNavigation(item, item.emp_id, [item.emp_id])
-                    }else{
-                      handleSourceModalNavigation(item, item.emp_id, [])   
+                    if (isFilterViewExapanded) {
+                      handleSourceModalNavigation(item, item.emp_id, [
+                        item.emp_id,
+                      ]);
+                    } else {
+                      handleSourceModalNavigation(item, item.emp_id, []);
                     }
-                   
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -4302,22 +4629,18 @@ const ParametersScreenRecep = ({ route }) => {
                         branchName={getBranchName(item?.branch)}
                         color={Colors.CORAL}
                         titleClick={async () => {
-                          setisFilterViewExapanded(!isFilterViewExapanded)
+                          setisFilterViewExapanded(!isFilterViewExapanded);
                           return;
                         }}
                       />
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
                       >
-
-
-      
                         {/* {[
                           item.contactCount || 0,
                           item.enquiryCount || 0,
@@ -4325,44 +4648,107 @@ const ParametersScreenRecep = ({ route }) => {
                           item.retailCount || 0,
                         ]. */}
                         {[
-                          isFilterViewExapanded ? item.contactCount : selector.receptionist_self_data?.contactsCount || 0,
-                          isFilterViewExapanded ? item.enquiryCount : selector.receptionist_self_data?.enquirysCount || 0,
-                          isFilterViewExapanded ? item.bookingCount : selector.receptionist_self_data?.bookingsCount || 0,
-                          isFilterViewExapanded ? item.retailCount : selector.receptionist_self_data?.RetailCount || 0,
-                        ].
-                          map((e, index) => {
+                          isFilterViewExapanded
+                            ? item.contactCount
+                            : selector.receptionist_self_data?.contactsCount ||
+                              0,
+                          isFilterViewExapanded
+                            ? item.enquiryCount
+                            : selector.receptionist_self_data?.enquirysCount ||
+                              0,
+                          isFilterViewExapanded
+                            ? item.bookingCount
+                            : selector.receptionist_self_data?.bookingsCount ||
+                              0,
+                          isFilterViewExapanded
+                            ? item.retailCount
+                            : selector.receptionist_self_data?.RetailCount || 0,
+                        ].map((e, index) => {
                           return (
-                            <Pressable onPress={() => {
-
-                              // todo redirections logic filter UI 
-                              if (e > 0) {
-                                if(isFilterViewExapanded){
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [item.emp_id], false, userData.empId, true);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, userData.empId, true);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], false, userData.empId, true);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [item.emp_id], false, userData.empId, true);
-                                  }
-                                }else{
-                                  if (index === 0) {
-                                    navigateToEMS("Contact", "", [], false, userData.empId, true);
-
-                                  } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [], false, userData.empId, true);
-                                  } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [], false, userData.empId, true);
-                                  } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [], false, userData.empId, true);
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections logic filter UI
+                                if (e > 0) {
+                                  if (isFilterViewExapanded) {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [item.emp_id],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    }
+                                  } else {
+                                    if (index === 0) {
+                                      navigateToEMS(
+                                        "Contact",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 1) {
+                                      navigateToEMS(
+                                        "ENQUIRY",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 2) {
+                                      navigateToEMS(
+                                        "BOOKING",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    } else if (index === 3) {
+                                      navigateToEMS(
+                                        "Invoice",
+                                        "",
+                                        [],
+                                        false,
+                                        userData.empId,
+                                        true
+                                      );
+                                    }
                                   }
                                 }
-                                
-                              }
-
-                            }}>
+                              }}
+                            >
                               <View
                                 style={{
                                   width: 55,
@@ -4376,7 +4762,8 @@ const ParametersScreenRecep = ({ route }) => {
                                   style={{
                                     fontSize: 16,
                                     fontWeight: "700",
-                                    textDecorationLine: e > 0 ? "underline" : "none"
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
                                     // marginLeft: 50,
                                   }}
                                 >
@@ -4419,12 +4806,16 @@ const ParametersScreenRecep = ({ route }) => {
           CRM_filterParametersSecondLevel.map((item, index) => {
 
             return (
-              <View style={{
-                // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
-                // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
-                // borderRadius: 10,
-                // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
-              }}>
+              <View
+                style={
+                  {
+                    // borderColor: isSecondLevelExpanded && indexLocal === index ? Colors.BLUE : "",
+                    // borderWidth: isSecondLevelExpanded && indexLocal === index ? 1 : 0,
+                    // borderRadius: 10,
+                    // margin: isSecondLevelExpanded && indexLocal === index ? 10 : 0
+                  }
+                }
+              >
                 <View
                   style={{
                     paddingHorizontal: 8,
@@ -4448,12 +4839,16 @@ const ParametersScreenRecep = ({ route }) => {
                 <Pressable
                   style={{ alignSelf: "flex-end" }}
                   onPress={() => {
-                    handleSourceModalNavigation(item, selector.saveLiveleadObjectCRM?.selectedempId[0], [item.emp_id])
+                    handleSourceModalNavigation(
+                      item,
+                      selector.saveLiveleadObjectCRM?.selectedempId[0],
+                      [item.emp_id]
+                    );
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: "600",
                       color: Colors.BLUE,
                       marginLeft: 8,
@@ -4488,24 +4883,19 @@ const ParametersScreenRecep = ({ route }) => {
                         level={0}
                         item={item}
                         branchName={getBranchName(item?.branch)}
-                        color={"#2C97DE"} 
+                        color={"#2C97DE"}
                         titleClick={async () => {
-
                           return;
                         }}
                       />
                       <View
                         style={{
                           flex: 1,
-                          backgroundColor:
-                            "rgba(223,228,231,0.67)",
+                          backgroundColor: "rgba(223,228,231,0.67)",
                           alignItems: "center",
                           flexDirection: "row",
                         }}
                       >
-
-
-
                         {/* {[
                           item.contactCount || 0,
                           item.enquiryCount || 0,
@@ -4516,50 +4906,81 @@ const ParametersScreenRecep = ({ route }) => {
                           item?.contactCount || 0,
                           item?.enquiryCount || 0,
                           item?.bookingCount || 0,
-                          item?.retailCount  || 0,
-                        ].
-                          map((e, index) => {
-                            return (
-                              <Pressable onPress={() => {
-
-                                // todo redirections logic filter UI 
+                          item?.retailCount || 0,
+                        ].map((e, index) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections logic filter UI
                                 if (e > 0) {
                                   if (index === 0) {
-                                    navigateToEMS("Contact", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
-
+                                    navigateToEMS(
+                                      "Contact",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   } else if (index === 1) {
-                                    navigateToEMS("ENQUIRY", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                    navigateToEMS(
+                                      "ENQUIRY",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   } else if (index === 2) {
-                                    navigateToEMS("BOOKING", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                    navigateToEMS(
+                                      "BOOKING",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   } else if (index === 3) {
-                                    navigateToEMS("Invoice", "", [item.emp_id], false, selector.saveLiveleadObjectCRM?.selectedempId[0], true);
+                                    navigateToEMS(
+                                      "Invoice",
+                                      "",
+                                      [item.emp_id],
+                                      false,
+                                      selector.saveLiveleadObjectCRM
+                                        ?.selectedempId[0],
+                                      true
+                                    );
                                   }
                                 }
-
-                              }}>
-                                <View
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  marginLeft: 10,
+                                }}
+                              >
+                                <Text
                                   style={{
-                                    width: 55,
-                                    height: 30,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginLeft: 10,
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
                                   }}
                                 >
-                                  <Text
-                                    style={{
-                                      fontSize: 16,
-                                      fontWeight: "700",
-                                      textDecorationLine: e > 0 ? "underline" : "none"
-                                      // marginLeft: 50,
-                                    }}
-                                  >
-                                    {e || 0}
-                                  </Text>
-                                </View>
-                              </Pressable>
-                            );
-                          })}
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
                       </View>
                       {/* <View
                       style={{
@@ -4584,155 +5005,151 @@ const ParametersScreenRecep = ({ route }) => {
   }
 
   const renderCRMFilterViewTeamTotal = ()=>{
-    return (<>
-    { totalOfTeamAfterFilter && (
-      <View>
-        <Pressable
-          style={{ alignSelf: "flex-end" }}
-          onPress={() => {
-            // navigation.navigate(
-            //   "RECEP_SOURCE_MODEL_CRM_RECEP",
-            //   {
-            //     empId: selector.login_employee_details.empId,
-            //     headerTitle: "Grand Total",
-            //     loggedInEmpId: selector.login_employee_details.empId,
-            //     type: "TEAM",
-            //     moduleType: "live-leads",
-            //     orgId: userData.orgId,
-            //     role: userData.hrmsRole,
-            //     branchList: userData.branchs.map(
-            //       (a) => a.branchId
-            //     ),
-            //     self: false
-            //   }
-            // );
-            if (CRM_filterParameters.length > 0) {
-
-              handleSourceModalNavigation(CRM_filterParameters[0], CRM_filterParameters[0].emp_id)
-              // navigation.navigate(
-              //   "RECEP_SOURCE_MODEL_CRM_RECEP",
-              //   {
-              //     empId: CRM_filterParameters[0].emp_id,
-              //     headerTitle: "Source/Model",
-              //     loggedInEmpId: CRM_filterParameters[0].emp_id,
-              //     type: "TEAM",
-              //     moduleType: "live-leads",
-              //     orgId: userData.orgId,
-              //     role: CRM_filterParameters[0].roleName,
-              //     branchList: userData.branchs.map(
-              //       (a) => a.branchId
-              //     ),
-              //   }
-              // );
-            } else {
-              navigation.navigate(
-                "RECEP_SOURCE_MODEL_CRM_RECEP",
-                {
-                  empId: selector.login_employee_details.empId,
-                  headerTitle: "Source/Model",
-                  loggedInEmpId: selector.login_employee_details.empId,
-                  type: "TEAM",
-                  moduleType: "live-leads",
-                  orgId: userData.orgId,
-                  role: userData.hrmsRole,
-                  branchList: userData.branchs.map(
-                    (a) => a.branchId
-                  ),
-                  self: false,
+    return (
+      <>
+        {totalOfTeamAfterFilter && (
+          <View>
+            <Pressable
+              style={{ alignSelf: "flex-end" }}
+              onPress={() => {
+                // navigation.navigate(
+                //   "RECEP_SOURCE_MODEL_CRM_RECEP",
+                //   {
+                //     empId: selector.login_employee_details.empId,
+                //     headerTitle: "Grand Total",
+                //     loggedInEmpId: selector.login_employee_details.empId,
+                //     type: "TEAM",
+                //     moduleType: "live-leads",
+                //     orgId: userData.orgId,
+                //     role: userData.hrmsRole,
+                //     branchList: userData.branchs.map(
+                //       (a) => a.branchId
+                //     ),
+                //     self: false
+                //   }
+                // );
+                if (CRM_filterParameters.length > 0) {
+                  handleSourceModalNavigation(
+                    CRM_filterParameters[0],
+                    CRM_filterParameters[0].emp_id
+                  );
+                  // navigation.navigate(
+                  //   "RECEP_SOURCE_MODEL_CRM_RECEP",
+                  //   {
+                  //     empId: CRM_filterParameters[0].emp_id,
+                  //     headerTitle: "Source/Model",
+                  //     loggedInEmpId: CRM_filterParameters[0].emp_id,
+                  //     type: "TEAM",
+                  //     moduleType: "live-leads",
+                  //     orgId: userData.orgId,
+                  //     role: CRM_filterParameters[0].roleName,
+                  //     branchList: userData.branchs.map(
+                  //       (a) => a.branchId
+                  //     ),
+                  //   }
+                  // );
+                } else {
+                  navigation.navigate("RECEP_SOURCE_MODEL_CRM_RECEP", {
+                    empId: selector.login_employee_details.empId,
+                    headerTitle: "Source/Model",
+                    loggedInEmpId: selector.login_employee_details.empId,
+                    type: "TEAM",
+                    moduleType: "live-leads",
+                    orgId: userData.orgId,
+                    role: userData.hrmsRole,
+                    branchList: userData.branchs.map((a) => a.branchId),
+                    self: false,
+                  });
                 }
-              );
-            }
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: "600",
-              color: Colors.BLUE,
-              marginLeft: 8,
-              paddingRight: 12,
-            }}
-          >
-            Source/Model
-          </Text>
-        </Pressable>
-
-        <View style={{ flexDirection: "row", height: 40 }}>
-          <View
-            style={{
-              width: 70,
-              minHeight: 40,
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexDirection: "row",
-              backgroundColor: Colors.RED,
-            }}
-          >
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: 6,
               }}
             >
               <Text
-                style={[
-                  styles.grandTotalText,
-                  {
-                    color: Colors.WHITE,
-                    fontSize: 12,
-                  },
-                ]}
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: Colors.BLUE,
+                  marginLeft: 8,
+                  paddingRight: 12,
+                }}
               >
-                Total
+                Source/Model
               </Text>
-            </View>
+            </Pressable>
 
-          </View>
-          <View
-            style={{
-              minHeight: 40,
-              flexDirection: "column",
-
-            }}
-          >
-            <View
-              style={{
-                // minHeight: 40,
-                flexDirection: "row",
-                // backgroundColor:"yellow"
-              }}
-            >
-                {totalOfTeamAfterFilter.map((e) => {
-                return (
-                  <View
-                    style={{
-                      width: 70,
-                      height: 40,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: Colors.RED,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: "700",
+            <View style={{ flexDirection: "row", height: 40 }}>
+              <View
+                style={{
+                  width: 70,
+                  minHeight: 40,
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  backgroundColor: Colors.RED,
+                }}
+              >
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginLeft: 6,
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.grandTotalText,
+                      {
                         color: Colors.WHITE,
-
-                      }}
-                    >
-                      {e || 0}
-                    </Text>
-                  </View>
-                );
-              })}
+                        fontSize: 12,
+                      },
+                    ]}
+                  >
+                    Total
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  minHeight: 40,
+                  flexDirection: "column",
+                }}
+              >
+                <View
+                  style={{
+                    // minHeight: 40,
+                    flexDirection: "row",
+                    // backgroundColor:"yellow"
+                  }}
+                >
+                  {totalOfTeamAfterFilter.map((e) => {
+                    return (
+                      <View
+                        style={{
+                          width: 70,
+                          height: 40,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: Colors.RED,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            color: Colors.WHITE,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-      </View>
-    )}
-    </>)
+        )}
+      </>
+    );
   }
 
   return (
@@ -4922,7 +5339,7 @@ const ParametersScreenRecep = ({ route }) => {
                             >
                               <Text
                                 style={{
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   fontWeight: "600",
                                   color: Colors.BLUE,
                                   marginLeft: 8,
@@ -5052,7 +5469,7 @@ const ParametersScreenRecep = ({ route }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
@@ -5157,7 +5574,7 @@ const ParametersScreenRecep = ({ route }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
@@ -5273,7 +5690,7 @@ const ParametersScreenRecep = ({ route }) => {
                               >
                                 <Text
                                   style={{
-                                    fontSize: 12,
+                                    fontSize: 14,
                                     fontWeight: "600",
                                     color: Colors.BLUE,
                                     marginLeft: 8,
@@ -5372,7 +5789,7 @@ const ParametersScreenRecep = ({ route }) => {
                                 >
                                   <Text
                                     style={{
-                                      fontSize: 12,
+                                      fontSize: 14,
                                       fontWeight: "600",
                                       color: Colors.BLUE,
                                     }}
@@ -5490,7 +5907,7 @@ const ParametersScreenRecep = ({ route }) => {
                                                 >
                                                   <Text
                                                     style={{
-                                                      fontSize: 12,
+                                                      fontSize: 14,
                                                       fontWeight: "600",
                                                       color: Colors.BLUE,
                                                       marginLeft: 8,
@@ -5794,7 +6211,7 @@ const ParametersScreenRecep = ({ route }) => {
                                                           >
                                                             <Text
                                                               style={{
-                                                                fontSize: 12,
+                                                                fontSize: 14,
                                                                 fontWeight:
                                                                   "600",
                                                                 color:
@@ -6162,7 +6579,7 @@ const ParametersScreenRecep = ({ route }) => {
                                                                     >
                                                                       <Text
                                                                         style={{
-                                                                          fontSize: 12,
+                                                                          fontSize: 14,
                                                                           fontWeight:
                                                                             "600",
                                                                           color:
@@ -6562,7 +6979,7 @@ const ParametersScreenRecep = ({ route }) => {
                                                                               >
                                                                                 <Text
                                                                                   style={{
-                                                                                    fontSize: 12,
+                                                                                    fontSize: 14,
                                                                                     fontWeight:
                                                                                       "600",
                                                                                     color:
@@ -6980,7 +7397,7 @@ const ParametersScreenRecep = ({ route }) => {
                                                                                         >
                                                                                           <Text
                                                                                             style={{
-                                                                                              fontSize: 12,
+                                                                                              fontSize: 14,
                                                                                               fontWeight:
                                                                                                 "600",
                                                                                               color:
@@ -7415,7 +7832,7 @@ const ParametersScreenRecep = ({ route }) => {
                                                                                                   >
                                                                                                     <Text
                                                                                                       style={{
-                                                                                                        fontSize: 12,
+                                                                                                        fontSize: 14,
                                                                                                         fontWeight:
                                                                                                           "600",
                                                                                                         color:
@@ -7848,7 +8265,7 @@ const ParametersScreenRecep = ({ route }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: "600",
                                 color: Colors.BLUE,
                                 marginLeft: 8,
@@ -7971,7 +8388,7 @@ const ParametersScreenRecep = ({ route }) => {
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: Colors.BLUE,
                           textDecorationLine: "underline",
@@ -8031,7 +8448,7 @@ const ParametersScreenRecep = ({ route }) => {
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: Colors.BLUE,
                           textDecorationLine: "underline",
@@ -8127,7 +8544,7 @@ const ParametersScreenRecep = ({ route }) => {
                     >
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: "600",
                           color: Colors.BLUE,
                           textDecorationLine: "underline",
@@ -8427,7 +8844,7 @@ export const SourceModelView = ({ style = null, onClick }) => {
       <Pressable onPress={onClick}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: "600",
             color: Colors.BLUE,
             marginLeft: 8,

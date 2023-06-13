@@ -660,6 +660,11 @@ const LeadsScreen = ({ route, navigation }) => {
         true
       );
     } else {
+      if (route?.params?.moduleType === "live-leads") {
+        getSubMenuList(route?.params?.param.toString(), true);
+        setLeadsFilterDropDownText(route?.params?.param.toString());
+        return;
+      }
       onTempFliter(
         newArr,
         null,
@@ -934,7 +939,8 @@ const LeadsScreen = ({ route, navigation }) => {
   const getSubMenuList = async (
     item,
     getAllData = false,
-    employeeDetail = {}
+    employeeDetail = {},
+    fromMenus = false
   ) => {
     Promise.all([dispatch(getSubMenu(item.toUpperCase()))])
       .then((response) => {
@@ -965,14 +971,14 @@ const LeadsScreen = ({ route, navigation }) => {
           const x =
             item === "Delivery"
               ? path.map((object) => {
-                return { ...object, checked: true };
-              })
-              : path.map((object) => {
-                if (object.subMenu === condition) {
                   return { ...object, checked: true };
-                }
-                return object;
-              });
+                })
+              : path.map((object) => {
+                  if (object.subMenu === condition) {
+                    return { ...object, checked: true };
+                  }
+                  return object;
+                });
           setSubMenu([...x]);
           setTempFilterPayload(x);
           onTempFliter(
@@ -982,7 +988,10 @@ const LeadsScreen = ({ route, navigation }) => {
             tempCategoryList,
             tempSourceList,
             selectedFromDate,
-            selectedToDate
+            selectedToDate,
+            "",
+            "",
+            fromMenus
           );
           setLeadsSubMenuFilterVisible(false);
           const data = x.filter((y) => y.checked);
@@ -1012,7 +1021,7 @@ const LeadsScreen = ({ route, navigation }) => {
           NewSubMenu(path);
         }
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const NewSubMenu = (item) => {
@@ -1118,7 +1127,8 @@ const LeadsScreen = ({ route, navigation }) => {
       if (
         leadStages &&
         leadStages.length > 0 &&
-        route?.params?.param !== "Retail"
+        route?.params?.param !== "Retail" &&
+        !isRefresh
       ) {
         if (leadStages[0] === "INVOICECOMPLETED") {
           if (leadStages[0] === "INVOICE") {
@@ -1138,8 +1148,8 @@ const LeadsScreen = ({ route, navigation }) => {
         leadStages &&
         leadStages.length > 0 &&
         route?.params?.param === "Enquiry"
-        //  &&
-        // !isRefresh
+         &&
+        !isRefresh
       ) {
         leadStages = []
         let tempEnquriyArr = ["ENQUIRY", "PREBOOKING"]
@@ -1149,8 +1159,8 @@ const LeadsScreen = ({ route, navigation }) => {
         leadStages &&
         leadStages.length > 0 &&
         route?.params?.param === "Booking"
-        //  &&
-        // !isRefresh
+         &&
+        !isRefresh
       ) {
         leadStages = []
         let tempEnquriyArr = ["BOOKING","INVOICE"]
@@ -2033,7 +2043,7 @@ const LeadsScreen = ({ route, navigation }) => {
               setLeadsFilterDropDownText("All");
             } else {
               const names = data.map((y) => y.menu);
-              getSubMenuList(names.toString(), true);
+              getSubMenuList(names.toString(), true, {}, true);
               setLeadsFilterDropDownText(names.toString());
             }
           }}
