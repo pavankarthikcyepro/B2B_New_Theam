@@ -376,7 +376,6 @@ const AppScreen = () => {
         if (granted) {
           locationSubscription = RNLocation.subscribeToLocationUpdates(
             async (locations) => {
-              console.log("locations", locations[0]);
               if (locations[0].speed >= GlobalSpeed) {
                 checkTheDate(employeeData, locations[0]);
               }
