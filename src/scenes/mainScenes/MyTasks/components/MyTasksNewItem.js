@@ -417,22 +417,40 @@ export const MyTaskNewItem = ({
             <IconComp
               iconName={"phone-outline"}
               onPress={() => {
-                if (from == "MY_TASKS") {
-                  navigator.navigate(
-                    AppNavigator.MyTasksStackIdentifiers.webCallScreen,
-                    {
-                      phone,
-                      uniqueId,
-                    }
-                  );
-                } else {
-                  callWebViewRecord({
-                    navigator,
-                    phone,
-                    uniqueId,
-                    type,
-                  });
-                }
+                // if (from == "MY_TASKS") {
+                //   const employeeData = await AsyncStore.getData(
+                //     AsyncStore.Keys.LOGIN_EMPLOYEE
+                //   );
+                //   if (employeeData) {
+                //     const jsonObj = JSON.parse(employeeData);
+                //     if (jsonObj.orgName.includes("BikeWo Corporation")) {
+                //       callNumber(phone);
+                //     } else {
+                //       navigator.navigate(
+                //         AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                //         {
+                //           phone,
+                //           uniqueId,
+                //         }
+                //       );
+                //     }
+                //   } else {
+                //     navigator.navigate(
+                //       AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                //       {
+                //         phone,
+                //         uniqueId,
+                //       }
+                //     );
+                //   }
+                // } else {
+                callWebViewRecord({
+                  navigator,
+                  phone,
+                  uniqueId,
+                  type,
+                });
+                // }
                 return;
                 if (onlylead) {
                   let user = userData.toLowerCase();

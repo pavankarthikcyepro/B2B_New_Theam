@@ -95,14 +95,14 @@ const ListScreen = ({ route, navigation }) => {
           "File" +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           file_ext,
-        mime: "application/xlsx",
+        // mime: "application/xlsx",
         // appendExt: 'xlsx',
         //path: filePath,
         //appendExt: fileExt,
         notification: true,
       };
       config(options)
-        .fetch("GET", url, {})
+        .fetch("GET", url)
         .then((res) => {
           setLoading(false);
           setTimeout(() => {
