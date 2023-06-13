@@ -401,7 +401,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             </View>
           ) : null}
           <View style={styles.iconContainer}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               activeOpacity={0.6}
               onPress={() => {
                 navigation.navigate(
@@ -450,7 +450,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 Recordings
               </Text>
             </TouchableOpacity>
-            <View style={styles.iconDivider} />
+            <View style={styles.iconDivider} /> */}
             <TouchableOpacity
               onPress={() => openMap(item.lat, item.lon)}
               activeOpacity={0.6}
