@@ -65,9 +65,8 @@ export const RenderSelfInsights = (args) => {
 
   return getRearrangeArray().map((item, index) => {
     if (item) {
-      console.log("item -> ", item);
       let newPer = (100 * item?.shortfall) / item?.target;
-      let newPerStr = `(${newPer?.toFixed(0)}%)`;
+      let newPerStr = `${newPer?.toFixed(0)}%`;
       let isPerShow = false;
 
       if (
@@ -391,14 +390,17 @@ export const RenderSelfInsights = (args) => {
                   }}
                 >
                   <Text style={{ padding: 2 }}>
-                    {parseInt(item.achievment) > parseInt(item.target)
+                    {isPerShow
+                      ? newPer != NaN && newPer
+                        ? newPerStr
+                        : "0"
+                      : parseInt(item.achievment) > parseInt(item.target)
                       ? 0
                       : dateDiff > 0 && parseInt(item.shortfall) !== 0
                       ? Math.abs(
                           Math.round(parseInt(item.shortfall) / dateDiff)
                         )
                       : 0}
-                    {isPerShow && newPer != NaN && newPer ? newPerStr : ""}
                   </Text>
                 </TextTicker>
               </View>
