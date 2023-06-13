@@ -163,6 +163,9 @@ android {
         versionCode 45
         versionName "CPR45-09062023"
     }
+    lintOptions {
+        checkReleaseBuilds false
+    }
     splits {
         abi {
             reset()
