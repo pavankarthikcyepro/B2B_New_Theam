@@ -58,28 +58,27 @@ const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage })
     };
 
     const cameraClicked = async () => {
-
-        onDismiss();
-
-        let options = {
-            mediaType: 'photo',
-            noData: true,
-            maxWidth: 256,
-            maxHeight: 256,
-            quality: 1,
-            cameraType: 'front',
-            includeBase64: false,
-            saveToPhotos: false,
-            durationLimit: 20
-        }
-        let isCameraPermitted = await requestCameraPermission();
-        let isStoragePermitted = await requestExternalWritePermission();
-        if (isCameraPermitted && isStoragePermitted) {
-            launchCamera(options, (res) => {
-                handleResponse(res);
-            })
-        }
-    }
+      let options = {
+        mediaType: "photo",
+        noData: true,
+        maxWidth: 256,
+        maxHeight: 256,
+        quality: 1,
+        cameraType: "front",
+        includeBase64: false,
+        saveToPhotos: false,
+        durationLimit: 20,
+      };
+      let isCameraPermitted = await requestCameraPermission();
+      let isStoragePermitted = await requestExternalWritePermission();
+      if (isCameraPermitted) {
+        // if (isCameraPermitted && isStoragePermitted) {
+        launchCamera(options, (res) => {
+          onDismiss();
+          handleResponse(res);
+        }).catch((err) => onDismiss());
+      }
+    };
 
     const handleResponse = (res) => {
         if (res.assets) {
