@@ -2341,7 +2341,7 @@ export const homeSlice = createSlice({
           consultantList: dataObj.manager,
           totalAllocatedCount: dataObj.enquirysCount,
           totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.totalPreInquiryCount,
+          contactsCount: dataObj.totalContactCount,
           enquirysCount: dataObj.totalEnquiryCount,
           totalLostCount: dataObj.totalLostCount,
           fullResponse: dataObj
@@ -2362,7 +2362,7 @@ export const homeSlice = createSlice({
           consultantList: dataObj.manager,
           totalAllocatedCount: dataObj.enquirysCount,
           totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.totalPreInquiryCount,
+          contactsCount: dataObj.totalContactCount,
           enquirysCount: dataObj.totalEnquiryCount,
           totalLostCount: dataObj.totalLostCount,
           fullResponse: dataObj
@@ -2400,7 +2400,7 @@ export const homeSlice = createSlice({
           consultantList: dataObj.manager,
           totalAllocatedCount: dataObj.enquirysCount,
           totalDroppedCount: dataObj.totalDroppedCount,
-          contactsCount: dataObj.totalPreInquiryCount,
+          contactsCount: dataObj.totalContactCount,
           enquirysCount: dataObj.totalEnquiryCount,
           totalLostCount: dataObj.totalLostCount,
           fullResponse: dataObj

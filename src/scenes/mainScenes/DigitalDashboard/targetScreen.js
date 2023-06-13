@@ -2054,81 +2054,321 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   const renderItem = (item, index) => {
 
     return (
-      <View style={{
-        // width: 300,
-        padding: 10,
-        borderColor: index === 0 ? Colors.PURPLE : index === 2 ? Colors.RED : index === 3 ? Colors.YELLOW : Colors.BLUE_V2,
-        borderWidth: 1,
-        borderRadius: 10,
-        justifyContent: "center",
-        marginVertical: 10,
-        // marginStart:'8%'
-
-
-      }}>
+      <View
+        style={{
+          // width: 300,
+          padding: 10,
+          borderColor:
+            index === 0
+              ? Colors.PURPLE
+              : index === 2
+              ? Colors.RED
+              : index === 3
+              ? Colors.YELLOW
+              : Colors.BLUE_V2,
+          borderWidth: 1,
+          borderRadius: 10,
+          justifyContent: "center",
+          marginVertical: 10,
+          // marginStart:'8%'
+        }}
+      >
         <View style={styles.scondView}>
-          <Text style={{
-            fontSize: 16,
-            // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
-            color: Colors.BLACK,
-            fontWeight: "700",
-            paddingVertical: 10
-          }}>{item.name}</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+              color: Colors.BLACK,
+              fontWeight: "700",
+              paddingVertical: 10,
+            }}
+          >
+            {item.name}
+          </Text>
 
-          <TouchableOpacity onPress={() => {
-
-            {
-              // todo add logic for redirections filer applied manthan
-              if (selector.saveCRMfilterObj.selectedempId) {
-                if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                  item.id === 0 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
-                    item.id === 1 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount > 0 && navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
-                      item.id === 2 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
-                        item.id === 3 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount > 0 &&  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
-                }else{
-                  item.id === 0 ? selector?.receptionistDataDigitalFilter_CRE?.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, "",false,false) :
-                    item.id === 1 ? selector?.receptionistDataDigitalFilter_CRE?.bookingsCount > 0 && navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
-                      item.id === 2 ? selector?.receptionistDataDigitalFilter_CRE?.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
-                        item.id === 3 ? selector?.receptionistDataDigitalFilter_CRE?.totalLostCount > 0 && navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+          <TouchableOpacity
+            onPress={() => {
+              {
+                // todo add logic for redirections filer applied manthan
+                if (selector.saveCRMfilterObj.selectedempId) {
+                  if (
+                    selector.saveCRMfilterObj?.selectedDesignation &&
+                    selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM"
+                  ) {
+                    item.id === 0
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.enquiryCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.enquiryLeads
+                        )
+                      : item.id === 1
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.bookingCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.bookingLeads
+                        )
+                      : item.id === 2
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.retailCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.retailLeads
+                        )
+                      : item.id === 3
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.lostCount > 0 &&
+                        navigateToDropAnalysisVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.lostLeads
+                        )
+                      : null;
+                  } else {
+                    item.id === 0
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.enquiryCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.enquiryLeads
+                        )
+                      : item.id === 1
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.bookingCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.bookingLeads
+                        )
+                      : item.id === 2
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.retailCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.retailLeads
+                        )
+                      : item.id === 3
+                      ? selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.lostCount > 0 &&
+                        navigateToDropAnalysisVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.lostLeads
+                        )
+                      : null;
+                  }
+                } else {
+                  item.id === 0
+                    ? selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalEnquiryCount > 0 &&
+                      navigateToEmsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalEnquiryLeads
+                      )
+                    : item.id === 1
+                    ? selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalBookingCount > 0 &&
+                      navigateToEmsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalBookingLeads
+                      )
+                    : item.id === 2
+                    ? selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalRetailCount > 0 &&
+                      navigateToEmsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalRetailLeads
+                      )
+                    : item.id === 3
+                    ? selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalLostCount > 0 &&
+                      navigateToDropAnalysisVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalLostLeads
+                      )
+                    : null;
                 }
-              
-              } else {
-                item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], false, userData.empId, true, false) :
-                  item.id === 1 ? selector.receptionistData.bookingsCount > 0 && navigateToEMS("BOOKING", "", [userData.empId], false, userData.empId, true, false) :
-                    item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], false, userData.empId, true, false) :
-                      item.id === 3 ? selector.receptionistData.totalLostCount > 0 && navigateToDropAnalysis(userData.empId,false,"",false,true) : null
               }
-
-            }
-          }}>
-            {selector.saveCRMfilterObj?.selectedDesignation ?
-              selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
-
-                item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount} </Text> :
-                  item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount} </Text> :
-                    item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount} </Text> :
-                      item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount} </Text> :
-                        <Text style={styles.txt10}>0</Text>
-
-                : item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.enquirysCount} </Text> :
-                  item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.bookingsCount} </Text> :
-                    item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter_CRE?.RetailCount} </Text> :
-                      item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.totalLostCount} </Text> :
-                        <Text style={styles.txt10}>0</Text>
-              :
-              item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> :
-                item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> :
-                  item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> :
-                    item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> :
-                      <Text style={styles.txt10}>0</Text>
-
-            }
-            
-
+            }}
+          >
+            {selector.saveCRMfilterObj?.selectedDesignation ? (
+              selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ? (
+                item.id === 0 ? (
+                  <Text style={styles.txt10}>
+                    {" "}
+                    {
+                      selector.receptionistData_CRM_vol2_digital.fullResponse
+                        ?.self?.selfUser.total.enquiryCount
+                    }{" "}
+                  </Text>
+                ) : item.id === 1 ? (
+                  <Text style={styles.txt10}>
+                    {" "}
+                    {
+                      selector.receptionistData_CRM_vol2_digital.fullResponse
+                        ?.self?.selfUser.total.bookingCount
+                    }{" "}
+                  </Text>
+                ) : item.id === 2 ? (
+                  <Text style={styles.txt10}>
+                    {" "}
+                    {
+                      selector.receptionistData_CRM_vol2_digital.fullResponse
+                        ?.self?.selfUser.total.retailCount
+                    }{" "}
+                  </Text>
+                ) : item.id === 3 ? (
+                  <Text style={styles.txt10}>
+                    {" "}
+                    {
+                      selector.receptionistData_CRM_vol2_digital.fullResponse
+                        ?.self?.selfUser.total.lostCount
+                    }{" "}
+                  </Text>
+                ) : (
+                  <Text style={styles.txt10}>0</Text>
+                )
+              ) : item.id === 0 ? (
+                <Text style={styles.txt10}>
+                  {" "}
+                  {
+                    selector.receptionistData_CRM_vol2_digital.fullResponse
+                      ?.self?.selfUser.total.enquiryCount
+                  }{" "}
+                </Text>
+              ) : item.id === 1 ? (
+                <Text style={styles.txt10}>
+                  {" "}
+                  {
+                    selector.receptionistData_CRM_vol2_digital.fullResponse
+                      ?.self?.selfUser.total.bookingCount
+                  }{" "}
+                </Text>
+              ) : item.id === 2 ? (
+                <Text style={styles.txt10}>
+                  {" "}
+                  {
+                    selector.receptionistData_CRM_vol2_digital.fullResponse
+                      ?.self?.selfUser.total.retailCount
+                  }{" "}
+                </Text>
+              ) : item.id === 3 ? (
+                <Text style={styles.txt10}>
+                  {" "}
+                  {
+                    selector.receptionistData_CRM_vol2_digital.fullResponse
+                      ?.self?.selfUser.total.lostCount
+                  }{" "}
+                </Text>
+              ) : (
+                <Text style={styles.txt10}>0</Text>
+              )
+            ) : item.id === 0 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.digitalDashboard_Vol2?.enquirysCount}{" "}
+              </Text>
+            ) : item.id === 1 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.digitalDashboard_Vol2?.bookingsCount}{" "}
+              </Text>
+            ) : item.id === 2 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.digitalDashboard_Vol2?.RetailCount}{" "}
+              </Text>
+            ) : item.id === 3 ? (
+              <Text style={styles.txt10}>
+                {" "}
+                {selector.digitalDashboard_Vol2?.totalLostCount}{" "}
+              </Text>
+            ) : (
+              <Text style={styles.txt10}>0</Text>
+            )}
           </TouchableOpacity>
         </View>
-      </View>)
+      </View>
+    );
   }
+
+  // vol1 workind code
+  // const renderItem = (item, index) => {
+
+  //   return (
+  //     <View style={{
+  //       // width: 300,
+  //       padding: 10,
+  //       borderColor: index === 0 ? Colors.PURPLE : index === 2 ? Colors.RED : index === 3 ? Colors.YELLOW : Colors.BLUE_V2,
+  //       borderWidth: 1,
+  //       borderRadius: 10,
+  //       justifyContent: "center",
+  //       marginVertical: 10,
+  //       // marginStart:'8%'
+
+
+  //     }}>
+  //       <View style={styles.scondView}>
+  //         <Text style={{
+  //           fontSize: 16,
+  //           // color: index === 0 ? Colors.CORAL : Colors.GREEN_V2,
+  //           color: Colors.BLACK,
+  //           fontWeight: "700",
+  //           paddingVertical: 10
+  //         }}>{item.name}</Text>
+
+  //         <TouchableOpacity onPress={() => {
+
+  //           {
+  //             // todo add logic for redirections filer applied manthan
+  //             if (selector.saveCRMfilterObj.selectedempId) {
+  //               if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
+  //                 item.id === 0 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+  //                   item.id === 1 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount > 0 && navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+  //                     item.id === 2 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, selector.saveCRMfilterObj.selectedempId[0], true, true) :
+  //                       item.id === 3 ? selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount > 0 &&  navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+  //               }else{
+  //                 item.id === 0 ? selector?.receptionistDataDigitalFilter_CRE?.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", selector.saveCRMfilterObj.selectedempId, true, "",false,false) :
+  //                   item.id === 1 ? selector?.receptionistDataDigitalFilter_CRE?.bookingsCount > 0 && navigateToEMS("BOOKING", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
+  //                     item.id === 2 ? selector?.receptionistDataDigitalFilter_CRE?.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", selector.saveCRMfilterObj.selectedempId, true, "", false, false) :
+  //                       item.id === 3 ? selector?.receptionistDataDigitalFilter_CRE?.totalLostCount > 0 && navigateToDropAnalysis(selector.saveCRMfilterObj.selectedempId[0]) : null
+  //               }
+              
+  //             } else {
+  //               item.id === 0 ? selector.receptionistData.enquirysCount > 0 && navigateToEMS("ENQUIRY", "", [userData.empId], false, userData.empId, true, false) :
+  //                 item.id === 1 ? selector.receptionistData.bookingsCount > 0 && navigateToEMS("BOOKING", "", [userData.empId], false, userData.empId, true, false) :
+  //                   item.id === 2 ? selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId], false, userData.empId, true, false) :
+  //                     item.id === 3 ? selector.receptionistData.totalLostCount > 0 && navigateToDropAnalysis(userData.empId,false,"",false,true) : null
+  //             }
+
+  //           }
+  //         }}>
+  //           {selector.saveCRMfilterObj?.selectedDesignation ?
+  //             selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ?
+
+  //               item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount} </Text> :
+  //                 item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerBookingCount} </Text> :
+  //                   item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount} </Text> :
+  //                     item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter?.fullResponse?.managerLostCount} </Text> :
+  //                       <Text style={styles.txt10}>0</Text>
+
+  //               : item.id === 0 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.enquirysCount} </Text> :
+  //                 item.id === 1 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.bookingsCount} </Text> :
+  //                   item.id === 2 ? <Text style={styles.txt10}>  {selector?.receptionistDataDigitalFilter_CRE?.RetailCount} </Text> :
+  //                     item.id === 3 ? <Text style={styles.txt10}> {selector?.receptionistDataDigitalFilter_CRE?.totalLostCount} </Text> :
+  //                       <Text style={styles.txt10}>0</Text>
+  //             :
+  //             item.id === 0 ? <Text style={styles.txt10}> {selector.receptionistData.enquirysCount} </Text> :
+  //               item.id === 1 ? <Text style={styles.txt10}> {selector.receptionistData.bookingsCount} </Text> :
+  //                 item.id === 2 ? <Text style={styles.txt10}>  {selector.receptionistData.RetailCount} </Text> :
+  //                   item.id === 3 ? <Text style={styles.txt10}> {selector.receptionistData.totalLostCount} </Text> :
+  //                     <Text style={styles.txt10}>0</Text>
+
+  //           }
+            
+
+  //         </TouchableOpacity>
+  //       </View>
+  //     </View>)
+  // }
   const renderCRMTreeFilterApplied = () => {
 
 
@@ -6161,64 +6401,163 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                   selector.saveCRMfilterObj
                                     ?.selectedDesignation[0] === "CRM"
                                 ) {
-                                  navigation.navigate(
-                                    "RECEP_SOURCE_MODEL_DEGITAL",
-                                    {
-                                      empId:
-                                        selector.saveCRMfilterObj
-                                          .selectedempId[0],
-                                      loggedInEmpId:
-                                        selector.saveCRMfilterObj
-                                          .selectedempId[0],
-                                      // type: "TEAM",
-                                      moduleType: "DigitalDashboard",
-                                      headerTitle: "Source/Model",
-                                      orgId: userData.orgId,
-                                      role: "CRM",
-                                      branchList: userData.branchs.map(
-                                        (a) => a.branchId
-                                      ),
-                                      // empList: selector.saveCRMfilterObj.selectedempId,
-                                      self: true,
-                                    }
+                                    let tempArry = [];
+                                    Array.prototype.push.apply(
+                                      tempArry,
+                                      selector.receptionistData_CRM_vol2_digital
+                                        .fullResponse?.self?.selfUser.total
+                                        .enquiryLeads
+                                    );
+                                    Array.prototype.push.apply(
+                                      tempArry,
+                                      selector.receptionistData_CRM_vol2_digital
+                                        .fullResponse?.self?.selfUser.total
+                                        .bookingLeads
+                                    );
+                                     Array.prototype.push.apply(
+                                       tempArry,
+                                       selector
+                                         .receptionistData_CRM_vol2_digital
+                                         .fullResponse?.self?.selfUser.total
+                                         .retailLeads
+                                     );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .lostLeads
+                                      );
+                                let item = {
+                                  empName:"Grand Total",
+                                  roleName:""
+                                }
+                                 
+                                  handleSourcrModelNavigationVol2(
+                                    tempArry,
+                                    item
                                   );
+                                  // navigation.navigate(
+                                  //   "RECEP_SOURCE_MODEL_DEGITAL",
+                                  //   {
+                                  //     empId:
+                                  //       selector.saveCRMfilterObj
+                                  //         .selectedempId[0],
+                                  //     loggedInEmpId:
+                                  //       selector.saveCRMfilterObj
+                                  //         .selectedempId[0],
+                                  //     // type: "TEAM",
+                                  //     moduleType: "DigitalDashboard",
+                                  //     headerTitle: "Source/Model",
+                                  //     orgId: userData.orgId,
+                                  //     role: "CRM",
+                                  //     branchList: userData.branchs.map(
+                                  //       (a) => a.branchId
+                                  //     ),
+                                  //     // empList: selector.saveCRMfilterObj.selectedempId,
+                                  //     self: true,
+                                  //   }
+                                  // );
                                 } else {
-                                  navigation.navigate(
-                                    "RECEP_SOURCE_MODEL_DEGITAL",
-                                    {
-                                      empId:
-                                        selector.saveCRMfilterObj
-                                          .selectedempId[0],
-                                      loggedInEmpId:
-                                        selector.saveCRMfilterObj
-                                          .selectedempId[0],
-                                      // type: "TEAM",
-                                      moduleType: "DigitalDashboard",
-                                      headerTitle: "Source/Model",
-                                      orgId: userData.orgId,
-                                      role: selector.saveCRMfilterObj
-                                        ?.selectedDesignation[0],
-                                      branchList: userData.branchs.map(
-                                        (a) => a.branchId
-                                      ),
-                                      // empList: selector.saveCRMfilterObj.selectedempId,
-                                      self: true,
-                                    }
+                                  let tempArry = [];
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.receptionistData_CRM_vol2_digital
+                                      .fullResponse?.self?.selfUser.total
+                                      .enquiryLeads
                                   );
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.receptionistData_CRM_vol2_digital
+                                      .fullResponse?.self?.selfUser.total
+                                      .bookingLeads
+                                  );
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.receptionistData_CRM_vol2_digital
+                                      .fullResponse?.self?.selfUser.total
+                                      .retailLeads
+                                  );
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.receptionistData_CRM_vol2_digital
+                                      .fullResponse?.self?.selfUser.total
+                                      .lostLeads
+                                  );
+                                  let item = {
+                                    empName: "Grand Total",
+                                    roleName: "",
+                                  };
+
+                                  handleSourcrModelNavigationVol2(
+                                    tempArry,
+                                    item
+                                  );
+                                  // navigation.navigate(
+                                  //   "RECEP_SOURCE_MODEL_DEGITAL",
+                                  //   {
+                                  //     empId:
+                                  //       selector.saveCRMfilterObj
+                                  //         .selectedempId[0],
+                                  //     loggedInEmpId:
+                                  //       selector.saveCRMfilterObj
+                                  //         .selectedempId[0],
+                                  //     // type: "TEAM",
+                                  //     moduleType: "DigitalDashboard",
+                                  //     headerTitle: "Source/Model",
+                                  //     orgId: userData.orgId,
+                                  //     role: selector.saveCRMfilterObj
+                                  //       ?.selectedDesignation[0],
+                                  //     branchList: userData.branchs.map(
+                                  //       (a) => a.branchId
+                                  //     ),
+                                  //     // empList: selector.saveCRMfilterObj.selectedempId,
+                                  //     self: true,
+                                  //   }
+                                  // );
                                   // handleSourceModalNavigation(item, "", [], "CRM", true)
                                 }
                               } else {
-                                navigation.navigate(
-                                  "RECEP_SOURCE_MODEL_DEGITAL",
-                                  {
-                                    empId: userData.empId,
-                                    headerTitle: "Source/Model",
-                                    loggedInEmpId: userData.empId,
-                                    orgId: userData.orgId,
-                                    role: "xrole",
-                                    moduleType: "DigitalDashboard",
-                                  }
-                                );
+                                let tempArry = [];
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.digitalDashboard_Vol2?.fullResponse
+                                      ?.totalEnquiryLeads
+                                  );
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.digitalDashboard_Vol2?.fullResponse
+                                      ?.totalBookingLeads
+                                  );
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.digitalDashboard_Vol2?.fullResponse
+                                      ?.totalRetailLeads
+                                  );
+                                  Array.prototype.push.apply(
+                                    tempArry,
+                                    selector.digitalDashboard_Vol2?.fullResponse
+                                      ?.totalLostLeads
+                                  );
+                                    let item = {
+                                      empName: "Grand Total",
+                                      roleName: "",
+                                    };
+                                  handleSourcrModelNavigationVol2(
+                                    tempArry,
+                                    userData.hrmsRole
+                                  );
+                                // navigation.navigate(
+                                //   "RECEP_SOURCE_MODEL_DEGITAL",
+                                //   {
+                                //     empId: userData.empId,
+                                //     headerTitle: "Source/Model",
+                                //     loggedInEmpId: userData.empId,
+                                //     orgId: userData.orgId,
+                                //     role: "xrole",
+                                //     moduleType: "DigitalDashboard",
+                                //   }
+                                // );
                               }
                             }}
                             style={{
@@ -6380,64 +6719,172 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                       selector.saveCRMfilterObj
                                         ?.selectedDesignation[0] === "CRM"
                                     ) {
-                                      navigation.navigate(
-                                        "RECEP_SOURCE_MODEL_DEGITAL",
-                                        {
-                                          empId:
-                                            selector.saveCRMfilterObj
-                                              .selectedempId[0],
-                                          loggedInEmpId:
-                                            selector.saveCRMfilterObj
-                                              .selectedempId[0],
-                                          // type: "TEAM",
-                                          moduleType: "DigitalDashboard",
-                                          headerTitle: "Source/Model",
-                                          orgId: userData.orgId,
-                                          role: "CRM",
-                                          branchList: userData.branchs.map(
-                                            (a) => a.branchId
-                                          ),
-                                          // empList: selector.saveCRMfilterObj.selectedempId,
-                                          self: true,
-                                        }
+                                      let tempArry = [];
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .enquiryLeads
                                       );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .bookingLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .retailLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .lostLeads
+                                      );
+                                      let item = {
+                                        empName: "Source/Model",
+                                        roleName: "",
+                                      };
+                                      handleSourcrModelNavigationVol2(
+                                        tempArry,
+                                        item
+                                      );
+
+                                      //vol1 working code
+                                      // navigation.navigate(
+                                      //   "RECEP_SOURCE_MODEL_DEGITAL",
+                                      //   {
+                                      //     empId:
+                                      //       selector.saveCRMfilterObj
+                                      //         .selectedempId[0],
+                                      //     loggedInEmpId:
+                                      //       selector.saveCRMfilterObj
+                                      //         .selectedempId[0],
+                                      //     // type: "TEAM",
+                                      //     moduleType: "DigitalDashboard",
+                                      //     headerTitle: "Source/Model",
+                                      //     orgId: userData.orgId,
+                                      //     role: "CRM",
+                                      //     branchList: userData.branchs.map(
+                                      //       (a) => a.branchId
+                                      //     ),
+                                      //     // empList: selector.saveCRMfilterObj.selectedempId,
+                                      //     self: true,
+                                      //   }
+                                      // );
                                     } else {
-                                      navigation.navigate(
-                                        "RECEP_SOURCE_MODEL_DEGITAL",
-                                        {
-                                          empId:
-                                            selector.saveCRMfilterObj
-                                              .selectedempId[0],
-                                          loggedInEmpId:
-                                            selector.saveCRMfilterObj
-                                              .selectedempId[0],
-                                          // type: "TEAM",
-                                          moduleType: "DigitalDashboard",
-                                          headerTitle: "Source/Model",
-                                          orgId: userData.orgId,
-                                          role: selector.saveCRMfilterObj
-                                            ?.selectedDesignation[0],
-                                          branchList: userData.branchs.map(
-                                            (a) => a.branchId
-                                          ),
-                                          // empList: selector.saveCRMfilterObj.selectedempId,
-                                          self: true,
-                                        }
+                                      let tempArry = [];
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .enquiryLeads
                                       );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .bookingLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .retailLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector
+                                          .receptionistData_CRM_vol2_digital
+                                          .fullResponse?.self?.selfUser.total
+                                          .lostLeads
+                                      );
+                                      let item = {
+                                        empName: "Source/Model",
+                                        roleName: "",
+                                      };
+                                      handleSourcrModelNavigationVol2(
+                                        tempArry,
+                                        item
+                                      );
+
+                                      //vol1 working code
+                                      // navigation.navigate(
+                                      //   "RECEP_SOURCE_MODEL_DEGITAL",
+                                      //   {
+                                      //     empId:
+                                      //       selector.saveCRMfilterObj
+                                      //         .selectedempId[0],
+                                      //     loggedInEmpId:
+                                      //       selector.saveCRMfilterObj
+                                      //         .selectedempId[0],
+                                      //     // type: "TEAM",
+                                      //     moduleType: "DigitalDashboard",
+                                      //     headerTitle: "Source/Model",
+                                      //     orgId: userData.orgId,
+                                      //     role: selector.saveCRMfilterObj
+                                      //       ?.selectedDesignation[0],
+                                      //     branchList: userData.branchs.map(
+                                      //       (a) => a.branchId
+                                      //     ),
+                                      //     // empList: selector.saveCRMfilterObj.selectedempId,
+                                      //     self: true,
+                                      //   }
+                                      // );
                                       // handleSourceModalNavigation(item, "", [], "CRM", true)
                                     }
                                   } else {
-                                    navigation.navigate(
-                                      "RECEP_SOURCE_MODEL_DEGITAL",
-                                      {
-                                        empId: userData.empId,
-                                        headerTitle: "Source/Model",
-                                        loggedInEmpId: userData.empId,
-                                        orgId: userData.orgId,
-                                        role: "xrole",
-                                        moduleType: "DigitalDashboard",
-                                      }
-                                    );
+
+                                     let tempArry = [];
+                                     Array.prototype.push.apply(
+                                       tempArry,
+                                       selector.digitalDashboard_Vol2
+                                         ?.fullResponse?.totalEnquiryLeads
+                                     );
+                                     Array.prototype.push.apply(
+                                       tempArry,
+                                       selector.digitalDashboard_Vol2
+                                         ?.fullResponse?.totalBookingLeads
+                                     );
+                                     Array.prototype.push.apply(
+                                       tempArry,
+                                       selector.digitalDashboard_Vol2
+                                         ?.fullResponse?.totalRetailLeads
+                                     );
+                                     Array.prototype.push.apply(
+                                       tempArry,
+                                       selector.digitalDashboard_Vol2
+                                         ?.fullResponse?.totalLostLeads
+                                     );
+                                     let item = {
+                                       empName: "Source/Model",
+                                       roleName: "",
+                                     };
+                                     handleSourcrModelNavigationVol2(
+                                       tempArry,
+                                       item
+                                     );
+                                    // navigation.navigate(
+                                    //   "RECEP_SOURCE_MODEL_DEGITAL",
+                                    //   {
+                                    //     empId: userData.empId,
+                                    //     headerTitle: "Source/Model",
+                                    //     loggedInEmpId: userData.empId,
+                                    //     orgId: userData.orgId,
+                                    //     role: "xrole",
+                                    //     moduleType: "DigitalDashboard",
+                                    //   }
+                                    // );
                                   }
                                 }}
                               />

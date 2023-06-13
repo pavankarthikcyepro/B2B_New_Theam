@@ -1077,6 +1077,64 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       },
     });
   }
+
+   function navigateToDropAnalysisVol2(leadIdList) {
+     navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+       screen: "DROP_ANALYSIS",
+       params: {
+         emp_id: "",
+         fromScreen: "targetScreen1CRMVol2",
+         dealercodes: leadIdList,
+         isFilterApplied: false,
+         parentId: "",
+         isSelf: false,
+       },
+     });
+   }
+
+   function navigateToContactsVol2(leadidList) {
+     navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+       screen: "EMS",
+       params: {
+         screen: "PRE_ENQUIRY",
+         params: {
+           screenName: "TargetScreenCRMVol2",
+           params: "",
+           moduleType: "",
+           employeeDetail: "",
+           selectedEmpId: "",
+           startDate: "",
+           endDate: "",
+           dealerCodes: leadidList, // sending lead ids in this
+           ignoreSelectedId: "",
+           parentId: "",
+         },
+       },
+     });
+   }
+
+   function navigateToEmsVol2(leadidList) {
+     navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+       screen: "EMS",
+       params: {
+         screen: "LEADS",
+         params: {
+           screenName: "TargetScreenCRMVol2",
+           params: "",
+           moduleType: "",
+           employeeDetail: "",
+           selectedEmpId: "",
+           startDate: "",
+           endDate: "",
+           dealerCodes: leadidList,
+           ignoreSelectedId: false,
+           parentId: "",
+           istotalClick: false,
+         },
+       },
+     });
+   }
+
   return (
     <SafeAreaView style={styles.container}>
       <DropDownComponant
@@ -1123,22 +1181,31 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       "CRM"
                     ) {
                       if (
-                        selector?.receptionistDataDigitalFilter?.fullResponse
-                          ?.managerPreInquiryCount > 0
+                        selector?.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.contactCount > 0
                       ) {
-                        navigateToContact("Contact");
+                        navigateToContactsVol2(
+                          selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.contactLeads
+                        );
                       }
                     } else {
                       if (
-                        selector?.receptionistDataDigitalFilter_CRE
-                          ?.contactsCount > 0
+                        selector?.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.contactCount > 0
                       ) {
-                        navigateToContact("Contact");
+                        navigateToContactsVol2(
+                          selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.contactLeads
+                        );
                       }
                     }
                   } else {
-                    if (selector.receptionistData.contactsCount > 0) {
-                      navigateToContact("Contact");
+                    if (selector.digitalDashboard_Vol2.contactsCount > 0) {
+                      navigateToContactsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalContactLeads
+                      );
                     }
                   }
                 }}
@@ -1153,11 +1220,11 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       ? selector.saveCRMfilterObj?.selectedDesignation &&
                         selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
-                        ? selector?.receptionistDataDigitalFilter?.fullResponse
-                            ?.managerPreInquiryCount || 0
-                        : selector?.receptionistDataDigitalFilter_CRE
-                            ?.contactsCount || 0
-                      : selector.receptionistData?.contactsCount || 0}
+                        ? selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.contactCount || 0
+                        : selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.contactCount || 0
+                      : selector.digitalDashboard_Vol2.contactsCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1173,22 +1240,34 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       "CRM"
                     ) {
                       if (
-                        selector?.receptionistDataDigitalFilter?.fullResponse
-                          ?.managerEnquiryCount > 0
+                        selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.enquiryCount > 0
                       ) {
-                        navigateToEMS("ENQUIRY", "", [userData.empId]);
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.enquiryLeads
+                        );
                       }
                     } else {
                       if (
-                        selector?.receptionistDataDigitalFilter_CRE
-                          ?.enquirysCount > 0
+                        selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.enquiryCount > 0
                       ) {
-                        navigateToEMS("ENQUIRY", "", [userData.empId]);
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.enquiryLeads
+                        );
                       }
                     }
                   } else {
-                    if (selector.receptionistData.enquirysCount > 0) {
-                      navigateToEMS("ENQUIRY", "", [userData.empId]);
+                    if (
+                      selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalEnquiryCount > 0
+                    ) {
+                      navigateToEmsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalEnquiryLeads
+                      );
                     }
                   }
 
@@ -1206,11 +1285,14 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       ? selector.saveCRMfilterObj?.selectedDesignation &&
                         selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
-                        ? selector?.receptionistDataDigitalFilter?.fullResponse
-                            ?.managerEnquiryCount || 0
-                        : selector?.receptionistDataDigitalFilter_CRE
-                            ?.enquirysCount || 0
-                      : selector.receptionistData?.enquirysCount || 0}
+                        ? selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.enquiryCount ||
+                          0
+                        : selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.enquiryCount ||
+                          0
+                      : selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalEnquiryCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1225,30 +1307,42 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       "CRM"
                     ) {
                       if (
-                        selector?.receptionistDataDigitalFilter?.fullResponse
-                          ?.managerBookingCount > 0
+                        selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.bookingCount > 0
                       ) {
-                        navigateToEMS("BOOKING", "", [userData.empId]);
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.bookingLeads
+                        );
                       }
                     } else {
                       if (
-                        selector?.receptionistDataDigitalFilter_CRE
-                          ?.bookingsCount > 0
+                        selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.bookingCount > 0
                       ) {
-                        navigateToEMS("BOOKING", "", [userData.empId]);
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.bookingLeads
+                        );
                       }
                     }
                   } else {
-                    if (selector.receptionistData?.bookingsCount > 0) {
-                      navigateToEMS("BOOKING", "", [userData.empId]);
+                    if (
+                      selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalBookingCount > 0
+                    ) {
+                      navigateToEmsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalBookingLeads
+                      );
                     }
                   }
 
-                  selector?.receptionistDataDigitalFilter_CRE?.bookingsCount ||
-                    selector?.receptionistDataDigitalFilter?.fullResponse
-                      ?.managerBookingCount ||
-                    (selector.receptionistData.bookingsCount > 0 &&
-                      navigateToEMS("BOOKING", "", [userData.empId]));
+                  // selector?.receptionistDataDigitalFilter_CRE?.bookingsCount ||
+                  //   selector?.receptionistDataDigitalFilter?.fullResponse
+                  //     ?.managerBookingCount ||
+                  //   (selector.receptionistData.bookingsCount > 0 &&
+                  //     navigateToEMS("BOOKING", "", [userData.empId]));
                 }}
                 style={styles.view8}
               >
@@ -1259,11 +1353,14 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       ? selector.saveCRMfilterObj?.selectedDesignation &&
                         selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
-                        ? selector?.receptionistDataDigitalFilter?.fullResponse
-                            ?.managerBookingCount || 0
-                        : selector?.receptionistDataDigitalFilter_CRE
-                            ?.bookingsCount || 0
-                      : selector.receptionistData?.bookingsCount || 0}
+                        ? selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.bookingCount ||
+                          0
+                        : selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.bookingCount ||
+                          0
+                      : selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalBookingCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1278,22 +1375,34 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       "CRM"
                     ) {
                       if (
-                        selector?.receptionistDataDigitalFilter?.fullResponse
-                          ?.managerRetailCount > 0
+                        selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.retailCount > 0
                       ) {
-                        navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.retailLeads
+                        );
                       }
                     } else {
                       if (
-                        selector?.receptionistDataDigitalFilter_CRE
-                          ?.RetailCount > 0
+                        selector.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.selfUser.total.retailCount > 0
                       ) {
-                        navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.retailLeads
+                        );
                       }
                     }
                   } else {
-                    if (selector.receptionistData.RetailCount > 0) {
-                      navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+                    if (
+                      selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalRetailCount > 0
+                    ) {
+                      navigateToEmsVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalRetailLeads
+                      );
                     }
                   }
 
@@ -1308,11 +1417,12 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       ? selector.saveCRMfilterObj?.selectedDesignation &&
                         selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
-                        ? selector?.receptionistDataDigitalFilter?.fullResponse
-                            ?.managerRetailCount || 0
-                        : selector?.receptionistDataDigitalFilter_CRE
-                            ?.RetailCount || 0
-                      : selector.receptionistData?.RetailCount || 0}
+                        ? selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.lostCount || 0
+                        : selector.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.selfUser.total.lostCount || 0
+                      : selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalBookingCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1327,39 +1437,33 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       "CRM"
                     ) {
                       if (
-                        selector?.receptionistDataDigitalFilter?.fullResponse
-                          ?.managerDroppedCount > 0
+                        selector?.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.droppedCount > 0
                       ) {
-                        navigateToDropAnalysis(
-                          userData.empId,
-                          false,
-                          "",
-                          false,
-                          true
+                        navigateToDropAnalysisVol2(
+                          selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.droppedLeads
                         );
                       }
                     } else {
                       if (
-                        selector?.receptionistDataDigitalFilter_CRE
-                          ?.totalDroppedCount > 0
+                        selector?.receptionistData_CRM_vol2_digital.fullResponse
+                          ?.self?.droppedCount > 0
                       ) {
-                        navigateToDropAnalysis(
-                          userData.empId,
-                          false,
-                          "",
-                          false,
-                          true
+                        navigateToDropAnalysisVol2(
+                          selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.droppedLeads
                         );
                       }
                     }
                   } else {
-                    if (selector.receptionistData.totalDroppedCount > 0) {
-                      navigateToDropAnalysis(
-                        userData.empId,
-                        false,
-                        "",
-                        false,
-                        true
+                    if (
+                      selector.digitalDashboard_Vol2?.fullResponse
+                        ?.totalDroppedCount > 0
+                    ) {
+                      navigateToDropAnalysisVol2(
+                        selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalDroppedLeads
                       );
                     }
                   }
@@ -1380,15 +1484,296 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                       ? selector.saveCRMfilterObj?.selectedDesignation &&
                         selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
-                        ? selector?.receptionistDataDigitalFilter?.fullResponse
-                            ?.managerDroppedCount || 0
-                        : selector?.receptionistDataDigitalFilter_CRE
-                            ?.totalDroppedCount || 0
-                      : selector.receptionistData?.totalDroppedCount || 0}
+                        ? selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.droppedCount || 0
+                        : selector?.receptionistData_CRM_vol2_digital
+                            .fullResponse?.self?.droppedCount || 0
+                      : selector.digitalDashboard_Vol2?.fullResponse
+                          ?.totalDroppedCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>
             </View>
+
+            // vol1 wworking code
+            // <View style={styles.view7}>
+            //   <TouchableOpacity
+            //     onPress={() => {
+            //       if (
+            //         !_.isEmpty(selector.saveCRMfilterObj.selectedempId) &&
+            //         !_.isEmpty(selector.saveCRMfilterObj?.selectedDesignation)
+            //       ) {
+            //         if (
+            //           selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //           "CRM"
+            //         ) {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter?.fullResponse
+            //               ?.managerPreInquiryCount > 0
+            //           ) {
+            //             navigateToContact("Contact");
+            //           }
+            //         } else {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter_CRE
+            //               ?.contactsCount > 0
+            //           ) {
+            //             navigateToContact("Contact");
+            //           }
+            //         }
+            //       } else {
+            //         if (selector.receptionistData.contactsCount > 0) {
+            //           navigateToContact("Contact");
+            //         }
+            //       }
+            //     }}
+            //     style={styles.view8}
+            //   >
+            //     <Text numberOfLines={2} style={styles.rankHeadingText}>
+            //       {"Contact"}
+            //     </Text>
+            //     <View style={styles.cardView}>
+            //       <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+            //         {selector.saveCRMfilterObj.selectedempId
+            //           ? selector.saveCRMfilterObj?.selectedDesignation &&
+            //             selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //               "CRM"
+            //             ? selector?.receptionistDataDigitalFilter?.fullResponse
+            //                 ?.managerPreInquiryCount || 0
+            //             : selector?.receptionistDataDigitalFilter_CRE
+            //                 ?.contactsCount || 0
+            //           : selector.receptionistData?.contactsCount || 0}
+            //       </Text>
+            //     </View>
+            //   </TouchableOpacity>
+
+            //   <TouchableOpacity
+            //     onPress={() => {
+            //       if (
+            //         selector.saveCRMfilterObj.selectedempId &&
+            //         selector.saveCRMfilterObj?.selectedDesignation
+            //       ) {
+            //         if (
+            //           selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //           "CRM"
+            //         ) {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter?.fullResponse
+            //               ?.managerEnquiryCount > 0
+            //           ) {
+            //             navigateToEMS("ENQUIRY", "", [userData.empId]);
+            //           }
+            //         } else {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter_CRE
+            //               ?.enquirysCount > 0
+            //           ) {
+            //             navigateToEMS("ENQUIRY", "", [userData.empId]);
+            //           }
+            //         }
+            //       } else {
+            //         if (selector.receptionistData.enquirysCount > 0) {
+            //           navigateToEMS("ENQUIRY", "", [userData.empId]);
+            //         }
+            //       }
+
+            //       // selector?.receptionistDataDigitalFilter_CRE?.enquirysCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerEnquiryCount || selector.receptionistData.enquirysCount > 0 &&
+            //       //   navigateToEMS("ENQUIRY", "", [userData.empId]);
+            //     }}
+            //     style={styles.view8}
+            //   >
+            //     <Text numberOfLines={2} style={styles.rankHeadingText}>
+            //       {"Enquiry"}
+            //     </Text>
+            //     <View style={styles.cardView}>
+            //       <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+            //         {selector.saveCRMfilterObj.selectedempId
+            //           ? selector.saveCRMfilterObj?.selectedDesignation &&
+            //             selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //               "CRM"
+            //             ? selector?.receptionistDataDigitalFilter?.fullResponse
+            //                 ?.managerEnquiryCount || 0
+            //             : selector?.receptionistDataDigitalFilter_CRE
+            //                 ?.enquirysCount || 0
+            //           : selector.receptionistData?.enquirysCount || 0}
+            //       </Text>
+            //     </View>
+            //   </TouchableOpacity>
+            //   <TouchableOpacity
+            //     onPress={() => {
+            //       if (
+            //         selector.saveCRMfilterObj.selectedempId &&
+            //         selector.saveCRMfilterObj?.selectedDesignation
+            //       ) {
+            //         if (
+            //           selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //           "CRM"
+            //         ) {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter?.fullResponse
+            //               ?.managerBookingCount > 0
+            //           ) {
+            //             navigateToEMS("BOOKING", "", [userData.empId]);
+            //           }
+            //         } else {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter_CRE
+            //               ?.bookingsCount > 0
+            //           ) {
+            //             navigateToEMS("BOOKING", "", [userData.empId]);
+            //           }
+            //         }
+            //       } else {
+            //         if (selector.receptionistData?.bookingsCount > 0) {
+            //           navigateToEMS("BOOKING", "", [userData.empId]);
+            //         }
+            //       }
+
+            //       selector?.receptionistDataDigitalFilter_CRE?.bookingsCount ||
+            //         selector?.receptionistDataDigitalFilter?.fullResponse
+            //           ?.managerBookingCount ||
+            //         (selector.receptionistData.bookingsCount > 0 &&
+            //           navigateToEMS("BOOKING", "", [userData.empId]));
+            //     }}
+            //     style={styles.view8}
+            //   >
+            //     <Text style={styles.rankHeadingText}>{"Booking"}</Text>
+            //     <View style={styles.cardView}>
+            //       <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+            //         {selector.saveCRMfilterObj.selectedempId
+            //           ? selector.saveCRMfilterObj?.selectedDesignation &&
+            //             selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //               "CRM"
+            //             ? selector?.receptionistDataDigitalFilter?.fullResponse
+            //                 ?.managerBookingCount || 0
+            //             : selector?.receptionistDataDigitalFilter_CRE
+            //                 ?.bookingsCount || 0
+            //           : selector.receptionistData?.bookingsCount || 0}
+            //       </Text>
+            //     </View>
+            //   </TouchableOpacity>
+            //   <TouchableOpacity
+            //     onPress={() => {
+            //       if (
+            //         selector.saveCRMfilterObj.selectedempId &&
+            //         selector.saveCRMfilterObj?.selectedDesignation
+            //       ) {
+            //         if (
+            //           selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //           "CRM"
+            //         ) {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter?.fullResponse
+            //               ?.managerRetailCount > 0
+            //           ) {
+            //             navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+            //           }
+            //         } else {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter_CRE
+            //               ?.RetailCount > 0
+            //           ) {
+            //             navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+            //           }
+            //         }
+            //       } else {
+            //         if (selector.receptionistData.RetailCount > 0) {
+            //           navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+            //         }
+            //       }
+
+            //       // selector?.receptionistDataDigitalFilter_CRE?.RetailCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerRetailCount || selector.receptionistData.RetailCount > 0 && navigateToEMS("INVOICECOMPLETED", "", [userData.empId]);
+            //     }}
+            //     style={styles.view8}
+            //   >
+            //     <Text style={styles.rankHeadingText}>{"Retail"}</Text>
+            //     <View style={styles.cardView}>
+            //       <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+            //         {selector.saveCRMfilterObj.selectedempId
+            //           ? selector.saveCRMfilterObj?.selectedDesignation &&
+            //             selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //               "CRM"
+            //             ? selector?.receptionistDataDigitalFilter?.fullResponse
+            //                 ?.managerRetailCount || 0
+            //             : selector?.receptionistDataDigitalFilter_CRE
+            //                 ?.RetailCount || 0
+            //           : selector.receptionistData?.RetailCount || 0}
+            //       </Text>
+            //     </View>
+            //   </TouchableOpacity>
+            //   <TouchableOpacity
+            //     onPress={() => {
+            //       if (
+            //         selector.saveCRMfilterObj.selectedempId &&
+            //         selector.saveCRMfilterObj?.selectedDesignation
+            //       ) {
+            //         if (
+            //           selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //           "CRM"
+            //         ) {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter?.fullResponse
+            //               ?.managerDroppedCount > 0
+            //           ) {
+            //             navigateToDropAnalysis(
+            //               userData.empId,
+            //               false,
+            //               "",
+            //               false,
+            //               true
+            //             );
+            //           }
+            //         } else {
+            //           if (
+            //             selector?.receptionistDataDigitalFilter_CRE
+            //               ?.totalDroppedCount > 0
+            //           ) {
+            //             navigateToDropAnalysis(
+            //               userData.empId,
+            //               false,
+            //               "",
+            //               false,
+            //               true
+            //             );
+            //           }
+            //         }
+            //       } else {
+            //         if (selector.receptionistData.totalDroppedCount > 0) {
+            //           navigateToDropAnalysis(
+            //             userData.empId,
+            //             false,
+            //             "",
+            //             false,
+            //             true
+            //           );
+            //         }
+            //       }
+            //       // selector?.receptionistDataDigitalFilter_CRE?.totalDroppedCount || selector?.receptionistDataDigitalFilter?.fullResponse?.managerDroppedCount || selector.receptionistData.totalDroppedCount > 0 &&
+            //       //   navigateToDropAnalysis(userData.empId, false, "", false, true)
+            //     }}
+            //     style={styles.view8}
+            //   >
+            //     <Text
+            //       numberOfLines={1}
+            //       style={{ ...styles.rankHeadingText, width: 50 }}
+            //     >
+            //       {"Drop"}
+            //     </Text>
+            //     <View style={styles.cardView}>
+            //       <Text style={{ ...styles.rankText, color: Colors.PINK }}>
+            //         {selector.saveCRMfilterObj.selectedempId
+            //           ? selector.saveCRMfilterObj?.selectedDesignation &&
+            //             selector.saveCRMfilterObj?.selectedDesignation[0] ===
+            //               "CRM"
+            //             ? selector?.receptionistDataDigitalFilter?.fullResponse
+            //                 ?.managerDroppedCount || 0
+            //             : selector?.receptionistDataDigitalFilter_CRE
+            //                 ?.totalDroppedCount || 0
+            //           : selector.receptionistData?.totalDroppedCount || 0}
+            //       </Text>
+            //     </View>
+            //   </TouchableOpacity>
+            // </View>
           )}
         </View>
         {/* 1111 */}
@@ -1453,7 +1838,8 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
               </View>
             </View>
           )}
-          {selector.isDSE && (null
+          {
+            selector.isDSE && null
             // <View style={styles.view9}>
             //   <View style={styles.view10}>
             //     <TouchableOpacity
@@ -1467,7 +1853,7 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
             //     </TouchableOpacity>
             //   </View>
             // </View>
-          )}
+          }
         </View>
 
         {/* 2222 */}

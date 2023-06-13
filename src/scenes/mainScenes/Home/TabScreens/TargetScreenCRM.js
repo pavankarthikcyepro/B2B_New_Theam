@@ -5539,7 +5539,7 @@ const TargetScreenCRM = ({ route }) => {
                                 Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalBookingLeads)
                                 Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalRetailLeads)
                                 Array.prototype.push.apply(tempArry, selector.receptionistDataV3CRM?.fullResponse?.totalLostLeads)
-                                console.log("manthan jjjd ",tempArry);
+                                
                                 handleSourcrModelNavigationVol2(tempArry, userData.hrmsRole)
                               
 
