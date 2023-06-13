@@ -38,11 +38,13 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   const [userRole, setUserRole] = useState("");
   const [isApprovar, setIsApprovar] = useState(false);
   const [dataForFOllowUpCount, setdataForFOllowUpCount] = useState([]);
+  const [userData, setUserData] = useState({ orgName: "" });
 
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData({ orgName: jsonObj.orgName });
       setUserRole(jsonObj.hrmsRole);
       if (jsonObj?.hrmsRole === "Test drive approver") {
         setIsApprovar(true);
