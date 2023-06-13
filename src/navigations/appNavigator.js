@@ -168,7 +168,6 @@ import EmployeeLocationsScreen from "../scenes/mainScenes/Geolocation/EmployeeLo
 import EMICalculator from "../scenes/mainScenes/EMICalculator/EMICalculator";
 import EvaluationForm from "../scenes/mainScenes/Evaluation";
 import CheckListScreen from "../scenes/mainScenes/Evaluation/CheckList";
-import EvaluationFollowUpScreen from "../scenes/mainScenes/MyTasks/evaluationFollowUpScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -522,7 +521,6 @@ export const MyTasksStackIdentifiers = {
   homevisitHistory: "HOME_VISIT_HISTORY",
   evaluation: "EVALUATION",
   checkList: "CHECKLIST",
-  evaluationFollowUp: "EVALUATION_FOLLOW_UP"
 };
 
 export const PriceStackIdentifiers = {
@@ -859,12 +857,6 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.tasksListScreen}
         component={TaskListScreen}
         options={{ title: "My Tasks" }}
-      />
-
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.evaluationFollowUp}
-        component={EvaluationFollowUpScreen}
-        options={{ title: "Evaluation Follow Up" }}
       />
       <MyTaskStack.Screen
         name={MyTasksStackIdentifiers.bookingFollowUp}

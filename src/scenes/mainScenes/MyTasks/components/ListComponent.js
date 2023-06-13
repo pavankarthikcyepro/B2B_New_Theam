@@ -1937,6 +1937,18 @@ const ListComponent = ({ route, navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             // if (restrictArray.includes(item.taskName)) return;
+            if (
+              employeeData.hrmsRole === "Evaluator" &&
+              item.taskName !== "Evaluation"
+            ) {
+              return
+            }
+            if (
+              employeeData.hrmsRole !== "Evaluator" &&
+              item.taskName === "Evaluation"
+            ) {
+              return;
+            }
             let reTestDriveCount = reTestDriveCountFun(item);
             let reHomeVisit = reHomeVisitCountFun(item);
             const chartHeight = itemWidth - 20;
@@ -2017,6 +2029,18 @@ const ListComponent = ({ route, navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => {
             // if (restrictArray.includes(item.taskName)) return;
+            if (
+              employeeData.hrmsRole === "Evaluator" &&
+              item.taskName !== "Evaluation"
+            ) {
+              return;
+            }
+            if (
+              employeeData.hrmsRole !== "Evaluator" &&
+              item.taskName === "Evaluation"
+            ) {
+              return;
+            }
             let reTestDriveCount = reTestDriveCountFun(item);
             let reHomeVisit = reHomeVisitCountFun(item);
             const chartHeight = itemWidth - 20;
