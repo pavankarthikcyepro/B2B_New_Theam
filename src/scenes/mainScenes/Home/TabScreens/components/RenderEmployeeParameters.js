@@ -79,7 +79,8 @@ export const RenderEmployeeParameters = (parameter) => {
             param: param === "INVOICE" ? "Retail" : param,
             employeeDetail: employeeDetail,
             moduleType: "live-leads",
-            self: item.isOpenInner
+            self: item.isOpenInner,
+            screenName: "DEFAULT",
           });
         }, 1000);
       }

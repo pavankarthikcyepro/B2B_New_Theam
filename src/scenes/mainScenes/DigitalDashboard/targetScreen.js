@@ -28,6 +28,7 @@ import {
   getTotalOftheTeam,
   getTotalTargetParametersData,
   getUserWiseTargetParameters,
+  getCRM_ReceptionistDashboradVol2_Digital,
   updateEmployeeDataBasedOnDelegate,
   updatereceptionistDataObjectData,
 } from "../../../redux/homeReducer";
@@ -74,833 +75,7 @@ const data = [
 
 ]
 
-const dataLocal = [
-  {
-    "self": {
-      "level1": [
-        {
-          "empId": 940,
-          "empName": "Raghiv Sanghvi",
-          "email": "raghivsanghvi@mps-fca.com",
-          "mobile": "7997988101",
-          "cognitoUserName": "raghivsanghvi",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 940,
-          "roleName": "MD",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 37,
-          "isExpand": true,
-          "self": {
-            "enquiryCount": 0,
-            "enquiryLeads": [
-              
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        }
-      ],
-      "selfUser": {
-        "empId": 962,
-        "empName": "Pallavi Sanjay",
-        "email": "crmsales.blr@mps-fca.com",
-        "mobile": "9066584290",
-        "cognitoUserName": "pallavisanjay",
-        "orgId": 18,
-        "branchId": 286,
-        "managerId": 941,
-        "roleName": "CRM",
-        "branchName": "JP Nagar - IC0700043",
-        "isOpenInner": false,
-        "innerData": [
-          
-        ],
-        "childCount": 6,
-        "isExpand": true,
-        "self": {
-          "enquiryCount": 1,
-          "enquiryLeads": [
-            58999
-          ],
-          "bookingCount": 0,
-          "bookingLeads": [
-            
-          ],
-          "retailCount": 0,
-          "retailLeads": [
-            
-          ],
-          "lostCount": 0,
-          "lostLeads": [
-            
-          ]
-        },
-        "total": {
-          "enquiryCount": 3,
-          "enquiryLeads": [
-            58999,
-            58992,
-            58991
-          ],
-          "bookingCount": 0,
-          "bookingLeads": [
-            
-          ],
-          "retailCount": 0,
-          "retailLeads": [
-            
-          ],
-          "lostCount": 0,
-          "lostLeads": [
-            
-          ]
-        }
-      },
-      "droppedCount": 0,
-      "droppedLeads": [
-        
-      ],
-      "contactCount": 3,
-      "contactLeads": [
-        58992,
-        58999,
-        58991
-      ],
-      "allTreeData": [
-        {
-          "empId": 940,
-          "empName": "Raghiv Sanghvi",
-          "email": "raghivsanghvi@mps-fca.com",
-          "mobile": "7997988101",
-          "cognitoUserName": "raghivsanghvi",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 940,
-          "roleName": "MD",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 37,
-          "isExpand": true,
-          "self": {
-            "enquiryCount": 0,
-            "enquiryLeads": [
-              
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        },
-        {
-          "empId": 941,
-          "empName": "Chandrashekar S",
-          "email": "c.shekar@mps-fca.com",
-          "mobile": "7997988799",
-          "cognitoUserName": "chandrashekars",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 940,
-          "roleName": "MD",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 35,
-          "isExpand": true,
-          "self": {
-            "enquiryCount": 0,
-            "enquiryLeads": [
-              
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        },
-        {
-          "empId": 942,
-          "empName": "Suresh Kumar S",
-          "email": "suresh.kumar@mps-fca.com",
-          "mobile": "8105916936",
-          "cognitoUserName": "sureshkumars",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 941,
-          "roleName": "branch manager",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 18,
-          "isExpand": true,
-          "self": {
-            "enquiryCount": 0,
-            "enquiryLeads": [
-              
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        },
-        {
-          "empId": 946,
-          "empName": "Gladstone Gideon",
-          "email": "gladstone.g@mps-fca.com",
-          "mobile": "9886600206",
-          "cognitoUserName": "gladstonegideon",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 942,
-          "roleName": "Sales Manager",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 9,
-          "isExpand": true,
-          "self": {
-            "enquiryCount": 0,
-            "enquiryLeads": [
-              
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        },
-        {
-          "empId": 915,
-          "empName": "Chetan",
-          "email": "chetan.m@mps-fca.com",
-          "mobile": "9902551744",
-          "cognitoUserName": "chetan",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 946,
-          "roleName": "Field DSE",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 0,
-          "isExpand": false,
-          "self": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58992
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        }
-      ],
-      "treeLevelCount": 5
-    },
-    "reportingUser": [
-      {
-        "level1": [
-          {
-            "empId": 940,
-            "empName": "Raghiv Sanghvi",
-            "email": "raghivsanghvi@mps-fca.com",
-            "mobile": "7997988101",
-            "cognitoUserName": "raghivsanghvi",
-            "orgId": 18,
-            "branchId": 286,
-            "managerId": 940,
-            "roleName": "MD",
-            "branchName": "JP Nagar - IC0700043",
-            "isOpenInner": false,
-            "innerData": [
-              
-            ],
-            "childCount": 37,
-            "isExpand": true,
-            "self": {
-              "enquiryCount": 0,
-              "enquiryLeads": [
-                
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            },
-            "total": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            }
-          }
-        ],
-        "selfUser": {
-          "empId": 965,
-          "empName": "Jyoti Lamani",
-          "email": "salescre2.blr@mps-fca.com",
-          "mobile": "9844310725",
-          "cognitoUserName": "jyotilamani",
-          "orgId": 18,
-          "branchId": 286,
-          "managerId": 962,
-          "roleName": "CRE",
-          "branchName": "JP Nagar - IC0700043",
-          "isOpenInner": false,
-          "innerData": [
-            
-          ],
-          "childCount": 0,
-          "isExpand": true,
-          "self": {
-            "enquiryCount": 0,
-            "enquiryLeads": [
-              
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          },
-          "total": {
-            "enquiryCount": 1,
-            "enquiryLeads": [
-              58991
-            ],
-            "bookingCount": 0,
-            "bookingLeads": [
-              
-            ],
-            "retailCount": 0,
-            "retailLeads": [
-              
-            ],
-            "lostCount": 0,
-            "lostLeads": [
-              
-            ]
-          }
-        },
-        "droppedCount": 0,
-        "droppedLeads": [
-          
-        ],
-        "contactCount": 1,
-        "contactLeads": [
-          58991
-        ],
-        "allTreeData": [
-          {
-            "empId": 940,
-            "empName": "Raghiv Sanghvi",
-            "email": "raghivsanghvi@mps-fca.com",
-            "mobile": "7997988101",
-            "cognitoUserName": "raghivsanghvi",
-            "orgId": 18,
-            "branchId": 286,
-            "managerId": 940,
-            "roleName": "MD",
-            "branchName": "JP Nagar - IC0700043",
-            "isOpenInner": false,
-            "innerData": [
-              
-            ],
-            "childCount": 37,
-            "isExpand": true,
-            "self": {
-              "enquiryCount": 0,
-              "enquiryLeads": [
-                
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            },
-            "total": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            }
-          },
-          {
-            "empId": 941,
-            "empName": "Chandrashekar S",
-            "email": "c.shekar@mps-fca.com",
-            "mobile": "7997988799",
-            "cognitoUserName": "chandrashekars",
-            "orgId": 18,
-            "branchId": 286,
-            "managerId": 940,
-            "roleName": "MD",
-            "branchName": "JP Nagar - IC0700043",
-            "isOpenInner": false,
-            "innerData": [
-              
-            ],
-            "childCount": 35,
-            "isExpand": true,
-            "self": {
-              "enquiryCount": 0,
-              "enquiryLeads": [
-                
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            },
-            "total": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            }
-          },
-          {
-            "empId": 942,
-            "empName": "Suresh Kumar S",
-            "email": "suresh.kumar@mps-fca.com",
-            "mobile": "8105916936",
-            "cognitoUserName": "sureshkumars",
-            "orgId": 18,
-            "branchId": 286,
-            "managerId": 941,
-            "roleName": "branch manager",
-            "branchName": "JP Nagar - IC0700043",
-            "isOpenInner": false,
-            "innerData": [
-              
-            ],
-            "childCount": 18,
-            "isExpand": true,
-            "self": {
-              "enquiryCount": 0,
-              "enquiryLeads": [
-                
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            },
-            "total": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            }
-          },
-          {
-            "empId": 946,
-            "empName": "Gladstone Gideon",
-            "email": "gladstone.g@mps-fca.com",
-            "mobile": "9886600206",
-            "cognitoUserName": "gladstonegideon",
-            "orgId": 18,
-            "branchId": 286,
-            "managerId": 942,
-            "roleName": "Sales Manager",
-            "branchName": "JP Nagar - IC0700043",
-            "isOpenInner": false,
-            "innerData": [
-              
-            ],
-            "childCount": 9,
-            "isExpand": true,
-            "self": {
-              "enquiryCount": 0,
-              "enquiryLeads": [
-                
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            },
-            "total": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            }
-          },
-          {
-            "empId": 915,
-            "empName": "Chetan",
-            "email": "chetan.m@mps-fca.com",
-            "mobile": "9902551744",
-            "cognitoUserName": "chetan",
-            "orgId": 18,
-            "branchId": 286,
-            "managerId": 946,
-            "roleName": "Field DSE",
-            "branchName": "JP Nagar - IC0700043",
-            "isOpenInner": false,
-            "innerData": [
-              
-            ],
-            "childCount": 0,
-            "isExpand": false,
-            "self": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            },
-            "total": {
-              "enquiryCount": 1,
-              "enquiryLeads": [
-                58991
-              ],
-              "bookingCount": 0,
-              "bookingLeads": [
-                
-              ],
-              "retailCount": 0,
-              "retailLeads": [
-                
-              ],
-              "lostCount": 0,
-              "lostLeads": [
-                
-              ]
-            }
-          }
-        ],
-        "treeLevelCount": 5
-      }
-    ],
-    "nonReportingUser": [
-      
-    ],
-    "totalEnquiryCount": 3,
-    "totalEnquiryLeads": [
-      58999,
-      58992,
-      58991
-    ],
-    "totalBookingCount": 0,
-    "totalBookingLeads": [
-      
-    ],
-    "totalRetailCount": 0,
-    "totalRetailLeads": [
-      
-    ],
-    "totalLostCount": 0,
-    "totalLostLeads": [
-      
-    ],
-    "totalDroppedCount": 0,
-    "totalDroppedLeads": [
-      
-    ],
-    "totalContactCount": 3,
-    "totalContactLeads": [
-      58992,
-      58999,
-      58991
-    ]
-  }
-]
+
 const receptionistRole = ["Reception", "CRM"];
 const DigitalDashBoardTargetScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -994,6 +169,17 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   const [crmVol2ReportingLevel1, setCrmVol2ReportingLevel1] = useState([])
   const [isViewExpandedCRMReporting, setIsViewExpandedCRMReporting] = useState(false);
   const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
+
+  const [crmVol2Level0_filter, setCrmVol2Level0_filter] = useState([]);
+  const [crmVol2Level1_filter, setCrmVol2Level1_filter] = useState([]);
+  const [crmVol2AlluserData_filter, setCrmVol2AlluserData_filter] = useState(
+    []
+  );
+  // const [crmVol2ReportingData, setCrmVol2ReportingData] =useState(datav2.reportingUser)
+  const [crmVol2ReportingData_filter, setCrmVol2ReportingData_filter] =
+    useState([]);
+  const [crmVol2ReportingAllTree_filter, setCrmVol2ReportingAllTree_filter] =
+    useState([]);
 
   const [userData, setUserData] = useState({
     empId: 0,
@@ -1402,25 +588,89 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     if (!_.isEmpty(selector.digitalDashboard_Vol2?.fullResponse) && _.isEmpty(selector.saveCRMfilterObj.selectedempId) && selector.digitalDashboard_Vol2?.fullResponse !== undefined) {
      
       let crmUserData =[];
+      let crmUserDataNonReporting=[] ;
       let tempCrm = selector.digitalDashboard_Vol2?.fullResponse.crmusers.map((item)=>{
         crmUserData.push(item);
+        
       })
+      
       setCrmVol2Level0(crmUserData)
-      // console.log("manthan jjjf ",JSON.stringify(crmUserData));
+
+        let tempCRE = selector.digitalDashboard_Vol2?.fullResponse.creusers.map(
+          (item) => {
+            crmUserDataNonReporting.push(item);
+          }
+        );
+      
+      setCrmVol2NonReportingData(crmUserDataNonReporting);
+      
 
     }
 
-    // if (selector.digitalDashboard_Vol2) {
-    //   let totalKey1 = selector?.digitalDashboard_Vol2?.enquirysCount;
-    //   let totalKey2 = selector?.digitalDashboard_Vol2?.bookingsCount;
-    //   let totalKey3 = selector?.digitalDashboard_Vol2?.RetailCount;
-    //   let totalKey4 = selector?.digitalDashboard_Vol2?.totalLostCount;
+    if (selector.digitalDashboard_Vol2) {
+      let totalKey1 = selector?.digitalDashboard_Vol2?.enquirysCount;
+      let totalKey2 = selector?.digitalDashboard_Vol2?.bookingsCount;
+      let totalKey3 = selector?.digitalDashboard_Vol2?.RetailCount;
+      let totalKey4 = selector?.digitalDashboard_Vol2?.totalLostCount;
 
-    //   let total = [totalKey1, totalKey2, totalKey3, totalKey4];
-    //   setTotalofTeam(total);
-    // }
+      let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+      setTotalofTeam(total);
+    }
     
   }, [selector.digitalDashboard_Vol2])
+
+  useEffect(() => {
+    // findDataFromObject(selector.receptionistDataV3.fullResponse);
+    if (!_.isEmpty(selector.receptionistData_CRM_vol2_digital?.fullResponse)) {
+      let modified =
+        selector.receptionistData_CRM_vol2_digital?.fullResponse?.self?.allTreeData?.map(
+          (v) => ({ ...v, isOpenInner: false, innerData: [] })
+        );
+
+      setCrmVol2AlluserData(modified);
+      let tempFilterIds =
+        selector.receptionistData_CRM_vol2_digital?.fullResponse?.self?.level1?.map(
+          (item) => item.empId
+        );
+
+      let tempArr = modified.filter((item) =>
+        tempFilterIds.includes(item.empId)
+      );
+
+      setCrmVol2Level1(tempArr);
+      setCrmVol2Level0_filter([
+        selector.receptionistData_CRM_vol2_digital.fullResponse?.self?.selfUser,
+      ]);
+
+      setCrmVol2ReportingData(
+        selector.receptionistData_CRM_vol2_digital.fullResponse?.reportingUser
+      );
+
+      setCrmVol2NonReportingData(
+        selector.receptionistData_CRM_vol2_digital.fullResponse?.nonReportingUser
+      );
+
+      if (selector.receptionistData_CRM_vol2_digital) {
+        let totalKey1 =
+          selector.receptionistData_CRM_vol2_digital.fullResponse?.self
+            ?.selfUser.total.enquiryCount;
+        let totalKey2 =
+          selector.receptionistData_CRM_vol2_digital.fullResponse?.self
+            ?.selfUser.total.bookingCount;
+        let totalKey3 =
+          selector.receptionistData_CRM_vol2_digital.fullResponse?.self
+            ?.selfUser.total.retailCount;
+        let totalKey4 =
+          selector.receptionistData_CRM_vol2_digital.fullResponse?.self
+            ?.selfUser.total?.lostCount;
+
+        let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+        setTotalofTeam(total);
+      }
+    }
+
+   
+  }, [selector.receptionistData_CRM_vol2_digital]);
 
   useEffect(() => {
 
@@ -1477,17 +727,36 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
               loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
               "dashboardType": "digital"
             };
-            dispatch(getCRM_ReceptionistManagerDataDigital(payloadXrole))
+            dispatch(getCRM_ReceptionistDashboradVol2_Digital(payloadXrole));
+
+            // vol1 working code
+            //  let payloadXrole = {
+            //    orgId: jsonObj.orgId,
+            //    loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+            //    dashboardType: "digital",
+            //  };
+            //  dispatch(getCRM_ReceptionistManagerDataDigital(payloadXrole));
           } else {
-            // todo recep api call 
-            let payload = {
+
+
+            let payloadXrole = {
               orgId: jsonObj.orgId,
-              loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-              "startDate": selector.saveCRMfilterObj.startDate,
-              "endDate": selector.saveCRMfilterObj.endDate,
-              "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+              loggedInEmpId: selector.saveCRMfilterObj?.selectedempId[0],
+              dashboardType: "digital",
             };
-            dispatch(getReceptionistDataDigitalDashboard(payload));
+            dispatch(getCRM_ReceptionistDashboradVol2_Digital(payloadXrole));
+
+
+            // vol1 working code 
+            // todo recep api call 
+            // let payload = {
+            //   orgId: jsonObj.orgId,
+            //   loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
+            //   "startDate": selector.saveCRMfilterObj.startDate,
+            //   "endDate": selector.saveCRMfilterObj.endDate,
+            //   "dealerCodes": selector.saveCRMfilterObj.dealerCodes
+            // };
+            // dispatch(getReceptionistDataDigitalDashboard(payload));
           }
         } else {
 
@@ -1845,6 +1114,59 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     setToggleParamsMetaData([...data]);
     setToggleParamsIndex(index);
   };
+
+
+  function navigateToDropAnalysisVol2(leadIdList) {
+    navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, {
+      screen: "DROP_ANALYSIS",
+      params: {
+        emp_id: "",
+        fromScreen: "targetScreen1CRMVol2",
+        dealercodes: leadIdList,
+        isFilterApplied: false,
+        parentId: "",
+        isSelf: false,
+      },
+    });
+  }
+
+  const handleSourcrModelNavigationVol2 = (listIdList, item) => {
+    navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
+      // empId: parentId ? parentId : item?.emp_id,
+      // headerTitle: item?.emp_name,
+      // loggedInEmpId: parentId ? parentId : item.emp_id,
+      type: "TEAM",
+      moduleType: "home",
+      headerTitle: item.empName,
+      orgId: userData.orgId,
+      role: item.roleName,
+      leadId_list: listIdList,
+      // branchList: userData.branchs.map((a) => a.branchId),
+      empList: listIdList,
+    });
+  };
+
+   function navigateToEmsVol2(leadidList) {
+     navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+       screen: "EMS",
+       params: {
+         screen: "LEADS",
+         params: {
+           screenName: "TargetScreenCRMVol2",
+           params: "",
+           moduleType: "",
+           employeeDetail: "",
+           selectedEmpId: "",
+           startDate: "",
+           endDate: "",
+           dealerCodes: leadidList, // sending lead ids in this
+           ignoreSelectedId: false,
+           parentId: "",
+           istotalClick: false,
+         },
+       },
+     });
+   }
 
   function navigateToEMS(params = "", screenName = "", selectedEmpId = [], isIgnore = false, parentId = "", istotalClick = false, isSelf) {
     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
@@ -3051,44 +2373,355 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
   }
 
   const onCRMClickedVol2 = async(item,allData)=>{
-    // let localCrmLevel0data = _.cloneDeep(allData);
-    let localCrmLevel0data = [...dataLocal];
-
+    let localCrmLevel0data = _.cloneDeep(allData);
     let id = "";
     let data = [];
+    let reportingAlldata = [];
 
-    console.log("manthan fff allData ", typeof localCrmLevel0data);
     let temp = localCrmLevel0data.map((item2) => {
       id = item2.self?.level1[0].empId;
       data = item2.self?.allTreeData;
+      reportingAlldata = item2.reportingUser;
     });
-    console.log("manthan fff ", item);
-    setCrmVol2ReportingAllTree(data);
+    setCrmVol2ReportingData(reportingAlldata);
+    setCrmVol2AlluserData(data);
 
     let findInnderDataLevel1 = data.filter(
       (item2, index2) => item2.empId == id
     );
+    setCrmVol2Level1(findInnderDataLevel1);
+   
+    let storeLocalUpdatedObject;
 
-    
-    // let tmp = localCrmLevel0data.map((itemss) =>{
-    //     itemss.self?.selfUser.empId == item.empId ? {...itemss.self?.selfUser.isOpenInner = true}:itemss
-    // })
+          for (let index = 0; index < localCrmLevel0data.length; index++) 
+          {
+            const element = localCrmLevel0data[index];
+            if (element.self?.selfUser.empId == item.empId) {
+              const updatedObject = [
+                {
+                  ...element,
+                  self: {
+                    ...element.self,
+                    selfUser: {
+                      ...element.self.selfUser,
+                      isOpenInner: !element.self.selfUser.isOpenInner,
+                      innerData: findInnderDataLevel1,
+                    },
+                  },
+                },
+              ];
 
-    for (let index = 0; index < localCrmLevel0data.length; index++) {
-      const element = localCrmLevel0data[index];
+              storeLocalUpdatedObject = updatedObject;
+            } else {
+              const updatedObject = [
+                {
+                  ...element,
+                  self: {
+                    ...element.self,
+                    selfUser: {
+                      ...element.self.selfUser,
+                      isOpenInner: false,
+                      innerData: [],
+                    },
+                  },
+                },
+              ];
 
-      if (element.self?.selfUser.empId == item.empId) {
-        console.log("manthan hhh dd ", element.self?.selfUser.isOpenInner );
-         element.self?.selfUser.isOpenInner = false;
-        //  element.self?.selfUser.innerData = findInnderDataLevel1;
-      } else {
-        //    element.self?.selfUser.isOpenInner = false;
-        //    element.self?.selfUser.innerData = [];
-      }
-    }
-    setCrmVol2Level0(localCrmLevel0data);
+              storeLocalUpdatedObject = updatedObject;
+            }
+          }
+        
+    setCrmVol2Level0(storeLocalUpdatedObject);
   }
 
+   const renderCRMtNewTreeVol2_filter = () => {
+     // todo manthan
+
+     return (
+       <View
+       // style={{ height: selector.isMD ? "81%" : "80%" }}
+       >
+         {crmVol2Level0_filter.length > 0 &&
+           crmVol2Level0_filter.map((item, index) => {
+             // if (item.empId === userData.empId) {
+             return (
+               <View
+                 key={`${item.empName} ${index}`}
+                 style={{
+                   borderRadius: 10,
+                   borderWidth: isViewExpanded ? 2 : 0,
+                   borderColor: "#C62159",
+                   backgroundColor: "#FFFFFF",
+                 }}
+               >
+                 <View
+                   style={{
+                     flexDirection: "row",
+                     justifyContent: "space-between",
+                   }}
+                 >
+                   <View
+                     style={{
+                       paddingHorizontal: 8,
+                       display: "flex",
+                       flexDirection: "row",
+                       justifyContent: "space-between",
+                       marginTop: 12,
+                       // width: Dimensions.get("screen").width - 28,
+                     }}
+                   >
+                     <Text
+                       style={{
+                         fontSize: 12,
+                         fontWeight: "600",
+                         textTransform: "capitalize",
+                       }}
+                     >
+                       {item?.empName}
+                       {"  "}
+                       {"-   " + item?.roleName}
+                     </Text>
+                   </View>
+                   <View style={{ flexDirection: "row", marginTop: 12 }}>
+                     {item?.childCount > 0 && (
+                       <Animated.View
+                         style={{
+                           transform: [{ translateX: translation }],
+                         }}
+                       >
+                         <View
+                           style={{
+                             backgroundColor: "lightgrey",
+                             flexDirection: "row",
+                             paddingHorizontal: 7,
+                             borderRadius: 10,
+                             alignItems: "center",
+                             justifyContent: "space-between",
+                             // marginBottom: 5,
+                             alignSelf: "center",
+                             marginLeft: 7,
+                             // transform: [{ translateX: translation }],
+                           }}
+                         >
+                           <MaterialIcons
+                             name="person"
+                             size={15}
+                             color={Colors.BLACK}
+                           />
+                           <Text>{item?.childCount}</Text>
+                         </View>
+                       </Animated.View>
+                     )}
+                     <SourceModelView
+                       onClick={() => {
+                         if (!isViewExpanded) {
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.lostLeads
+                           );
+
+                           handleSourcrModelNavigationVol2(
+                             tempArry,
+                             item.roleName
+                           );
+                         } else {
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.lostLeads
+                           );
+
+                           handleSourcrModelNavigationVol2(
+                             tempArry,
+                             item.roleName
+                           );
+                         }
+
+                         // navigation.navigate(
+                         //   "RECEP_SOURCE_MODEL",
+                         //   {
+                         //     empId: item?.emp_id,
+                         //     headerTitle: item?.emp_name,
+                         //     loggedInEmpId: item.emp_id,
+                         //     type: "TEAM",
+                         //     moduleType: "home",
+                         //     headerTitle: "Source/Model",
+                         //     orgId: userData.orgId,
+                         //     role: userData.hrmsRole,
+                         //     branchList: userData.branchs.map(
+                         //       (a) => a.branchId
+                         //     ),
+                         //   }
+                         // );
+                       }}
+                       style={{
+                         transform: [{ translateX: translation }],
+                       }}
+                     />
+                   </View>
+                 </View>
+
+                 {/*Source/Model View END */}
+                 <View
+                   style={[
+                     { flexDirection: "row" },
+                     item.isOpenInner && {
+                       borderRadius: 10,
+                       borderWidth: 2,
+                       borderColor: "#C62159",
+                       marginHorizontal: 6,
+                       overflow: "hidden",
+                     },
+                   ]}
+                 >
+                   {/*RIGHT SIDE VIEW*/}
+                   <View style={[styles.view6]}>
+                     <View style={styles.view7}>
+                       <RenderLevel1NameViewCRMVol2
+                         level={0}
+                         item={item}
+                         branchName={item.branchName}
+                         color={"#C62159"}
+                         receptionManager={true}
+                         navigation={navigation}
+                         titleClick={async (e) => {
+                           setIsViewExpanded(!isViewExpanded);
+                           // formateFirstLevelData(item);
+                         }}
+                         roleName={item.roleName}
+                         stopLocation={true}
+                       />
+                       <View
+                         style={{
+                           flex: 1,
+                           backgroundColor: "rgba(223,228,231,0.67)",
+                           alignItems: "center",
+                           flexDirection: "row",
+                         }}
+                       >
+                         {[
+                           isViewExpanded
+                             ? item.self.enquiryCount
+                             : item.total.enquiryCount || 0,
+
+                           isViewExpanded
+                             ? item.self.bookingCount
+                             : item.total.bookingCount || 0,
+                           isViewExpanded
+                             ? item.self.retailCount
+                             : item.total.retailCount || 0,
+                           isViewExpanded
+                             ? item.self.lostCount
+                             : item.total.lostCount || 0,
+                         ].map((e, indexss) => {
+                           return (
+                             <Pressable
+                               onPress={() => {
+                                 // todo redirections logic  first level
+                                 if (e > 0) {
+                                   if (isViewExpanded) {
+                                     if (indexss === 0) {
+                                       navigateToEmsVol2(
+                                         item.self.enquiryLeads
+                                       );
+                                     } else if (indexss === 1) {
+                                       navigateToEmsVol2(
+                                         item.self.bookingLeads
+                                       );
+                                     } else if (indexss === 2) {
+                                       navigateToEmsVol2(item.self.retailLeads);
+                                     } else if (indexss === 3) {
+                                       navigateToDropAnalysisVol2(
+                                         item.self.lostLeads
+                                       );
+                                     }
+                                   } else {
+                                     if (indexss === 0) {
+                                       navigateToEmsVol2(
+                                         item.total.enquiryLeads
+                                       );
+                                     } else if (indexss === 1) {
+                                       navigateToEmsVol2(
+                                         item.total.bookingLeads
+                                       );
+                                     } else if (indexss === 2) {
+                                       navigateToEmsVol2(
+                                         item.total.retailLeads
+                                       );
+                                     } else if (indexss === 3) {
+                                       // todo navigate to lost
+
+                                       navigateToDropAnalysisVol2(
+                                         item.total.lostLeads
+                                       );
+                                     }
+                                   }
+                                 }
+                               }}
+                             >
+                               <View
+                                 style={{
+                                   width: 55,
+                                   height: 30,
+                                   justifyContent: "center",
+                                   alignItems: "center",
+                                 }}
+                               >
+                                 <Text
+                                   style={{
+                                     fontSize: 16,
+                                     fontWeight: "700",
+                                     textDecorationLine:
+                                       e > 0 ? "underline" : "none",
+                                     // marginLeft: 50,
+                                   }}
+                                 >
+                                   {e || 0}
+                                 </Text>
+                               </View>
+                             </Pressable>
+                           );
+                         })}
+                       </View>
+                     </View>
+                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                   </View>
+                 </View>
+                 {isViewExpanded && renderCRMNewTreeLevel1()}
+               </View>
+             );
+             // }
+           })}
+         {/* {renderCREFirstLevel()} */}
+         {/* {renderCRMNonReportingUserTreeVol2()} */}
+       </View>
+     );
+   };
 
   const renderCRMTreeVOl2 = () => {
 
@@ -3099,7 +2732,6 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       >
         {crmVol2Level0?.length > 0 &&
           crmVol2Level0?.map((item, index) => {
-
             // if (item.emp_id === userData.empId) {
             return (
               <View
@@ -3179,22 +2811,46 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     )}
                     <SourceModelView
                       onClick={() => {
-                        if (isViewExpanded) {
-                          // handleSourceModalNavigation()
-                          handleSourceModalNavigation(
-                            item,
-                            item?.emp_id,
-                            [item.emp_id],
-                            "CRM_INd"
-                          );
+                        if (!isViewExpanded) {
+                         let tempArry = [];
+                         Array.prototype.push.apply(
+                           tempArry,
+                           item?.self?.selfUser.total.enquiryLeads
+                         );
+                         Array.prototype.push.apply(
+                           tempArry,
+                           item?.self?.selfUser.total.bookingLeads
+                         );
+                         Array.prototype.push.apply(
+                           tempArry,
+                           item?.self?.selfUser.total.retailLeads
+                         );
+                         Array.prototype.push.apply(
+                           tempArry,
+                           item?.self?.selfUser.total.lostLeads
+                         );
+
+                          handleSourcrModelNavigationVol2(tempArry,item)
                         } else {
-                          handleSourceModalNavigation(
-                            item,
-                            "",
-                            [],
-                            "CRM",
-                            true
-                          );
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item?.self?.selfUser.self.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item?.self?.selfUser.self.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item?.self?.selfUser.self.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item?.self?.selfUser.self.lostLeads
+                           );
+
+                            handleSourcrModelNavigationVol2(tempArry, item);
                         }
 
                         // navigation.navigate(
@@ -3276,19 +2932,19 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         ] */}
 
                         {[
-                          (!isViewExpanded &&
+                          (!item?.self?.selfUser?.isOpenInner &&
                             item?.self.selfUser.total.enquiryCount) ||
                             item?.self.selfUser.self.enquiryCount ||
                             0,
-                          (!isViewExpanded &&
+                          (!item?.self?.selfUser?.isOpenInner &&
                             item?.self.selfUser.total.bookingCount) ||
                             item?.self.selfUser.self.bookingCount ||
                             0,
-                          (!isViewExpanded &&
+                          (!item?.self?.selfUser?.isOpenInner &&
                             item?.self.selfUser.total.retailCount) ||
                             item?.self.selfUser.self.retailCount ||
                             0,
-                          (!isViewExpanded &&
+                          (!item?.self?.selfUser?.isOpenInner &&
                             item?.self.selfUser.total.lostCount) ||
                             item?.self.selfUser.self.lostCount ||
                             0,
@@ -3298,77 +2954,339 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                               onPress={() => {
                                 // todo redirections logic  first level
                                 if (e > 0) {
-                                  if (!isViewExpanded) {
+                                  if (!item?.self?.selfUser?.isOpenInner) {
                                     if (indexss === 0) {
-                                      navigateToEMS(
-                                        "ENQUIRY",
-                                        "",
-                                        [item.emp_id],
-                                        true,
-                                        item.emp_id,
-                                        true,
-                                        true
+                                      navigateToEmsVol2(
+                                        item?.self.selfUser.total.enquiryLeads
                                       );
                                     } else if (indexss === 1) {
                                       navigateToEMS(
-                                        "BOOKING",
-                                        "",
-                                        [item.emp_id],
-                                        true,
-                                        item.emp_id,
-                                        true,
-                                        true
+                                        item?.self.selfUser.total.bookingLeads
                                       );
                                     } else if (indexss === 2) {
                                       navigateToEMS(
-                                        "INVOICECOMPLETED",
-                                        "",
-                                        [item.emp_id],
-                                        true,
-                                        item.emp_id,
-                                        true,
-                                        true
+                                        item?.self.selfUser.total.retailLeads
                                       );
                                     } else if (indexss === 3) {
-                                      navigateToDropAnalysis(
-                                        item.emp_id,
-                                        false,
-                                        "",
-                                        true
+                                      navigateToDropAnalysisVol2(
+                                        item?.self.selfUser.total.lostLeads
+                                      );
+                                    }
+                                  } else {
+                                  if (indexss === 0) {
+                                    navigateToEmsVol2(
+                                      item?.self.selfUser.self.enquiryLeads
+                                    );
+                                  } else if (indexss === 1) {
+                                    navigateToEMS(
+                                      item?.self.selfUser.self.bookingLeads
+                                    );
+                                  } else if (indexss === 2) {
+                                    navigateToEMS(
+                                      item?.self.selfUser.self.retailLeads
+                                    );
+                                  } else if (indexss === 3) {
+                                    navigateToDropAnalysisVol2(
+                                      item?.self.selfUser.self.lostLeads
+                                    );
+                                  }
+                                  }
+                                }
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 55,
+                                  height: 30,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                    textDecorationLine:
+                                      e > 0 ? "underline" : "none",
+                                    // marginLeft: 50,
+                                  }}
+                                >
+                                  {e || 0}
+                                </Text>
+                              </View>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                    {item?.self?.selfUser?.isOpenInner &&
+                      renderCRMNewTreeLevel1()}
+                    {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                  </View>
+                </View>
+              </View>
+            );
+            // }
+          })}
+        {renderCRMNonReportingUserTreeVol2()}
+      </View>
+    );
+  }
+
+
+
+  const renderCRMNonReportingUserTreeVol2 = () => {
+    // todo manthan
+    const borderColor = color[4 % color.length];
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {crmVol2NonReportingData?.length > 0 &&
+          crmVol2NonReportingData?.map((item, index) => {
+            // if (item.empId === userData.empId) {
+            return (
+              <View
+                key={`${item?.selfUser?.empName} ${index}`}
+                style={{
+                  borderRadius: 10,
+                  borderWidth: item.selfUser.isOpenInner ? 2 : 0,
+                  borderColor: borderColor,
+                  backgroundColor: "#FFFFFF",
+                }}
+              >
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 12,
+                    width: Dimensions.get("screen").width - 28,
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {item.selfUser.empName}
+                      {"  "}
+                      {"-   " + item.selfUser?.roleName}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}></View>
+                  <View style={{ flexDirection: "row" }}>
+                    {/* {selector.receptionistData?.fullResponse?.childUserCount >
+                      0 && (
+                        <Animated.View
+                          style={{
+                            transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                              alignSelf: "flex-start",
+                              marginLeft: 7,
+                              // transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>
+                              {
+                                selector.receptionistData?.fullResponse
+                                  ?.childUserCount
+                              }
+                            </Text>
+                          </View>
+                        </Animated.View>
+                      )} */}
+                    <SourceModelView
+                      onClick={() => {
+                        if (!item.selfUser.isOpenInner) {
+                          let tempArry = [];
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.lostLeads
+                          );
+
+                          handleSourcrModelNavigationVol2(
+                            tempArry,
+                            item
+                          );
+                        } else {
+                          let tempArry = [];
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.lostLeads
+                          );
+
+                          handleSourcrModelNavigationVol2(
+                            tempArry,
+                            item.selfUser.roleName
+                          );
+                        }
+
+                        // navigation.navigate(
+                        //   "RECEP_SOURCE_MODEL",
+                        //   {
+                        //     empId: item?.emp_id,
+                        //     headerTitle: item?.emp_name,
+                        //     loggedInEmpId: item.emp_id,
+                        //     type: "TEAM",
+                        //     moduleType: "home",
+                        //     headerTitle: "Source/Model",
+                        //     orgId: userData.orgId,
+                        //     role: userData.hrmsRole,
+                        //     branchList: userData.branchs.map(
+                        //       (a) => a.branchId
+                        //     ),
+                        //   }
+                        // );
+                      }}
+                      style={{
+                        transform: [{ translateX: translation }],
+                      }}
+                    />
+                  </View>
+                </View>
+
+                {/*Source/Model View END */}
+                <View
+                  style={[
+                    { flexDirection: "row" },
+                    item.isOpenInner && {
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: "#C62159",
+                      marginHorizontal: 6,
+                      overflow: "hidden",
+                    },
+                  ]}
+                >
+                  {/*RIGHT SIDE VIEW*/}
+                  <View style={[styles.view6]}>
+                    <View style={styles.view7}>
+                      <RenderLevel1NameViewCRMVol2
+                        level={0}
+                        item={item.selfUser}
+                        branchName={item.selfUser.branchName}
+                        color={borderColor}
+                        receptionManager={true}
+                        navigation={navigation}
+                        titleClick={async (e) => {
+                          formateNonReportingUserData(
+                            item.selfUser,
+                            index,
+                            crmVol2NonReportingData,
+                            0
+                          );
+                        }}
+                        roleName={item.selfUser.roleName}
+                        stopLocation={true}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          backgroundColor: "rgba(223,228,231,0.67)",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        {[
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.enquiryCount
+                            : item.selfUser.total.enquiryCount || 0,
+
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.bookingCount
+                            : item.selfUser.total.bookingCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.retailCount
+                            : item.selfUser.total.retailCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.lostCount
+                            : item.selfUser.total.lostCount || 0,
+                        ].map((e, indexss) => {
+                          return (
+                            <Pressable
+                              onPress={() => {
+                                // todo redirections logic  first level
+                                if (e > 0) {
+                                  if (item.selfUser.isOpenInner) {
+                                    if (indexss === 0) {
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.enquiryLeads
+                                      );
+                                    } else if (indexss === 1) {
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.bookingLeads
+                                      );
+                                    } else if (indexss === 2) {
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.retailLeads
+                                      );
+                                    } else if (indexss === 3) {
+                                      navigateToDropAnalysisVol2(
+                                        item.selfUser.self.lostLeads
                                       );
                                     }
                                   } else {
                                     if (indexss === 0) {
-                                      navigateToEMS(
-                                        "ENQUIRY",
-                                        "",
-                                        [item.emp_id],
-                                        true,
-                                        storeFirstLevelLocal.emp_id
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.enquiryLeads
                                       );
                                     } else if (indexss === 1) {
-                                      navigateToEMS(
-                                        "BOOKING",
-                                        "",
-                                        [item.emp_id],
-                                        true,
-                                        storeFirstLevelLocal.emp_id
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.bookingLeads
                                       );
                                     } else if (indexss === 2) {
-                                      navigateToEMS(
-                                        "INVOICECOMPLETED",
-                                        "",
-                                        [item.emp_id],
-                                        true,
-                                        storeFirstLevelLocal.emp_id
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.retailLeads
                                       );
                                     } else if (indexss === 3) {
                                       // todo navigate to lost
 
-                                      navigateToDropAnalysis(
-                                        item.emp_id,
-                                        true,
-                                        item.emp_id
+                                      navigateToDropAnalysisVol2(
+                                        item.selfUser.total.lostLeads
                                       );
                                     }
                                   }
@@ -3403,18 +3321,995 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {isViewExpanded &&
-                  indexLocalFirstLevel === index &&
-                  renderCRMTreeChild()}
+                {item.selfUser.isOpenInner &&
+                  renderReportingUserTree(item.selfUser)}
               </View>
             );
             // }
-
           })}
-        {renderCREFirstLevel()}
-      </View>)
-  }
+        {/* {renderCREFirstLevel()} */}
+      </View>
+    );
+  };
   
+
+  const renderCRMNewTreeLevel1 = () => {
+    // todo manthan
+
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {crmVol2Level1.length > 0 &&
+          crmVol2Level1.map((item, index) => {
+            return renderDynamicTree(item, index, crmVol2Level1, color, 0);
+          })}
+        {renderCRMReportingUserTreeVol2()}
+      </View>
+    );
+  };
+
+
+   const renderCRMReportingUserTreeVol2 = () => {
+     // todo manthan
+     const borderColor = color[4 % color.length];
+     return (
+       <View
+       // style={{ height: selector.isMD ? "81%" : "80%" }}
+       >
+         {crmVol2ReportingData?.length > 0 &&
+           crmVol2ReportingData?.map((item, index) => {
+             // if (item.empId === userData.empId) {
+             return (
+               <View
+                 key={`${item.selfUser.empName} ${index}`}
+                 style={{
+                   borderRadius: 10,
+                   borderWidth: item.selfUser.isOpenInner ? 2 : 0,
+                   borderColor: "#C62159",
+                   backgroundColor: "#FFFFFF",
+                 }}
+               >
+                 <View
+                   style={{
+                     flexDirection: "row",
+                     justifyContent: "space-between",
+                   }}
+                 >
+                   <View
+                     style={{
+                       paddingHorizontal: 8,
+                       display: "flex",
+                       flexDirection: "row",
+                       justifyContent: "space-between",
+                       marginTop: 12,
+                       // width: Dimensions.get("screen").width - 28,
+                     }}
+                   >
+                     <Text
+                       style={{
+                         fontSize: 12,
+                         fontWeight: "600",
+                         textTransform: "capitalize",
+                       }}
+                     >
+                       {item?.selfUser?.empName}
+                       {"  "}
+                       {"-   " + item?.selfUser?.roleName}
+                     </Text>
+                   </View>
+                   <View style={{ flexDirection: "row", marginTop: 12 }}>
+                     {item?.selfUser?.childCount > 0 && (
+                       // <Animated.View
+                       //   style={{
+                       //     transform: [{ translateX: translation }],
+                       //   }}
+                       // >
+                       <View
+                         style={{
+                           backgroundColor: "lightgrey",
+                           flexDirection: "row",
+                           paddingHorizontal: 7,
+                           borderRadius: 10,
+                           alignItems: "center",
+                           justifyContent: "space-between",
+                           // marginBottom: 5,
+                           alignSelf: "center",
+                           marginLeft: 7,
+                           // transform: [{ translateX: translation }],
+                         }}
+                       >
+                         <MaterialIcons
+                           name="person"
+                           size={15}
+                           color={Colors.BLACK}
+                         />
+                         <Text>{item?.selfUser?.childCount}</Text>
+                       </View>
+                       // </Animated.View>
+                     )}
+                     <SourceModelView
+                       onClick={() => {
+                         if (!item.selfUser.isOpenInner) {
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.total.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.total.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.total.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.total.lostLeads
+                           );
+
+                           handleSourcrModelNavigationVol2(
+                             tempArry,
+                             item.roleName
+                           );
+                         } else {
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.self.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.self.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.self.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.selfUser.self.lostLeads
+                           );
+
+                           handleSourcrModelNavigationVol2(
+                             tempArry,
+                             item.selfUser.roleName
+                           );
+                         }
+
+                         // navigation.navigate(
+                         //   "RECEP_SOURCE_MODEL",
+                         //   {
+                         //     empId: item?.emp_id,
+                         //     headerTitle: item?.emp_name,
+                         //     loggedInEmpId: item.emp_id,
+                         //     type: "TEAM",
+                         //     moduleType: "home",
+                         //     headerTitle: "Source/Model",
+                         //     orgId: userData.orgId,
+                         //     role: userData.hrmsRole,
+                         //     branchList: userData.branchs.map(
+                         //       (a) => a.branchId
+                         //     ),
+                         //   }
+                         // );
+                       }}
+                       style={{
+                         transform: [{ translateX: translation }],
+                       }}
+                     />
+                   </View>
+                 </View>
+
+                 {/*Source/Model View END */}
+                 <View
+                   style={[
+                     { flexDirection: "row" },
+                     item.isOpenInner && {
+                       borderRadius: 10,
+                       borderWidth: 2,
+                       borderColor: "#C62159",
+                       marginHorizontal: 6,
+                       overflow: "hidden",
+                     },
+                   ]}
+                 >
+                   {/*RIGHT SIDE VIEW*/}
+                   <View style={[styles.view6]}>
+                     <View style={styles.view7}>
+                       <RenderLevel1NameViewCRMVol2
+                         level={0}
+                         item={item.selfUser}
+                         branchName={item.selfUser.branchName}
+                         color={borderColor}
+                         receptionManager={true}
+                         navigation={navigation}
+                         titleClick={async (e) => {
+                           formateReportingUserData(
+                             item.selfUser,
+                             index,
+                             crmVol2ReportingData,
+                             0
+                           );
+                         }}
+                         roleName={item.selfUser.roleName}
+                         stopLocation={true}
+                       />
+                       <View
+                         style={{
+                           flex: 1,
+                           backgroundColor: "rgba(223,228,231,0.67)",
+                           alignItems: "center",
+                           flexDirection: "row",
+                         }}
+                       >
+                         {[
+                           item.selfUser.isOpenInner
+                             ? item.selfUser.self.enquiryCount
+                             : item.selfUser.total.enquiryCount || 0,
+
+                           item.selfUser.isOpenInner
+                             ? item.selfUser.self.bookingCount
+                             : item.selfUser.total.bookingCount || 0,
+                           item.selfUser.isOpenInner
+                             ? item.selfUser.self.retailCount
+                             : item.selfUser.total.retailCount || 0,
+                           item.selfUser.isOpenInner
+                             ? item.selfUser.self.lostCount
+                             : item.selfUser.total.lostCount || 0,
+                         ].map((e, indexss) => {
+                           return (
+                             <Pressable
+                               onPress={() => {
+                                 // todo redirections logic  first level
+                                 if (e > 0) {
+                                   if (item.selfUser.isOpenInner) {
+                                     if (indexss === 0) {
+                                       navigateToEmsVol2(
+                                         item.selfUser.self.enquiryLeads
+                                       );
+                                     } else if (indexss === 1) {
+                                       navigateToEmsVol2(
+                                         item.selfUser.self.bookingLeads
+                                       );
+                                     } else if (indexss === 2) {
+                                       navigateToEmsVol2(
+                                         item.selfUser.self.retailLeads
+                                       );
+                                     } else if (indexss === 3) {
+                                       navigateToDropAnalysisVol2(
+                                         item.selfUser.self.lostLeads
+                                       );
+                                     }
+                                   } else {
+                                     if (indexss === 0) {
+                                       navigateToEmsVol2(
+                                         item.selfUser.total.enquiryLeads
+                                       );
+                                     } else if (indexss === 1) {
+                                       navigateToEmsVol2(
+                                         item.selfUser.total.bookingLeads
+                                       );
+                                     } else if (indexss === 2) {
+                                       navigateToEmsVol2(
+                                         item.selfUser.total.retailLeads
+                                       );
+                                     } else if (indexss === 3) {
+                                       // todo navigate to lost
+
+                                       navigateToDropAnalysisVol2(
+                                         item.selfUser.total.lostLeads
+                                       );
+                                     }
+                                   }
+                                 }
+                               }}
+                             >
+                               <View
+                                 style={{
+                                   width: 55,
+                                   height: 30,
+                                   justifyContent: "center",
+                                   alignItems: "center",
+                                 }}
+                               >
+                                 <Text
+                                   style={{
+                                     fontSize: 16,
+                                     fontWeight: "700",
+                                     textDecorationLine:
+                                       e > 0 ? "underline" : "none",
+                                     // marginLeft: 50,
+                                   }}
+                                 >
+                                   {e || 0}
+                                 </Text>
+                               </View>
+                             </Pressable>
+                           );
+                         })}
+                       </View>
+                     </View>
+                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                   </View>
+                 </View>
+                 {item.selfUser.isOpenInner &&
+                   renderReportingUserTree(item.selfUser)}
+               </View>
+             );
+             // }
+           })}
+         {/* {renderCREFirstLevel()} */}
+       </View>
+     );
+   };
+
+
+  const renderReportingUserTree = (item) => {
+    return (
+      <View
+      // style={{ height: selector.isMD ? "81%" : "80%" }}
+      >
+        {item.innerData.length > 0 &&
+          item.innerData.map((item, index) => {
+            return renderDynamicTreeReportingUser(item, index, item, color, 1);
+          })}
+      </View>
+    );
+  };
+
+   const renderDynamicTreeReportingUser = (
+     item,
+     index,
+     allData,
+     levelColors,
+     newLevel
+   ) => {
+     const hierarchyLevel = newLevel;
+     const borderColor = levelColors[hierarchyLevel % levelColors.length];
+
+     return (
+       <View
+         key={`${item.empName} ${index}`}
+         style={[
+           {
+             // borderColor: item.isOpenInner ? borderColor : "",
+             // borderWidth: item.isOpenInner ? 2 : 0,
+             // borderRadius: 10,
+             // margin: item.isOpenInner ? 10 : 0,
+           },
+           item.isOpenInner && {
+             borderRadius: 10,
+             borderWidth: 2,
+             borderColor: borderColor,
+             backgroundColor: "#FFFFFF",
+           },
+         ]}
+         // style={{
+         //   borderColor: item.isOpenInner ? borderColor : "",
+         //   borderWidth: item.isOpenInner ? 2 : 0,
+         //   borderRadius: 10,
+         //   margin: item.isOpenInner ? 10 : 0,
+         // }}
+       >
+         <View
+           style={{ flexDirection: "row", justifyContent: "space-between" }}
+         >
+           <View
+             style={{
+               paddingHorizontal: 8,
+               display: "flex",
+               flexDirection: "row",
+               justifyContent: "space-between",
+               marginTop: 12,
+               // width: Dimensions.get("screen").width - 28,
+             }}
+           >
+             <Text
+               style={{
+                 fontSize: 12,
+                 fontWeight: "600",
+                 textTransform: "capitalize",
+               }}
+             >
+               {item?.empName}
+               {"  "}
+               {"-   " + item?.roleName}
+             </Text>
+           </View>
+           <View style={{ flexDirection: "row", marginTop: 12 }}>
+             {item?.childCount > 0 && (
+               <Animated.View
+                 style={{
+                   transform: [{ translateX: translation }],
+                 }}
+               >
+                 <View
+                   style={{
+                     backgroundColor: "lightgrey",
+                     flexDirection: "row",
+                     paddingHorizontal: 7,
+                     borderRadius: 10,
+                     alignItems: "center",
+                     justifyContent: "space-between",
+                     // marginBottom: 5,
+                     alignSelf: "center",
+                     marginLeft: 7,
+                     // transform: [{ translateX: translation }],
+                   }}
+                 >
+                   <MaterialIcons
+                     name="person"
+                     size={15}
+                     color={Colors.BLACK}
+                   />
+                   <Text>{item?.childCount}</Text>
+                 </View>
+               </Animated.View>
+             )}
+             <SourceModelView
+               onClick={() => {
+                 if (!item.isOpenInner) {
+                   let tempArry = [];
+                   Array.prototype.push.apply(
+                     tempArry,
+                     item.total.enquiryLeads
+                   );
+                   Array.prototype.push.apply(
+                     tempArry,
+                     item.total.bookingLeads
+                   );
+                   Array.prototype.push.apply(tempArry, item.total.retailLeads);
+                   Array.prototype.push.apply(tempArry, item.total.lostLeads);
+
+                   handleSourcrModelNavigationVol2(tempArry, item.roleName);
+                 } else {
+                   let tempArry = [];
+                   Array.prototype.push.apply(tempArry, item.self.enquiryLeads);
+                   Array.prototype.push.apply(tempArry, item.self.bookingLeads);
+                   Array.prototype.push.apply(tempArry, item.self.retailLeads);
+                   Array.prototype.push.apply(tempArry, item.self.lostLeads);
+
+                   handleSourcrModelNavigationVol2(tempArry, item.roleName);
+                 }
+
+                 // navigation.navigate(
+                 //   "RECEP_SOURCE_MODEL",
+                 //   {
+                 //     empId: item?.emp_id,
+                 //     headerTitle: item?.emp_name,
+                 //     loggedInEmpId: item.emp_id,
+                 //     type: "TEAM",
+                 //     moduleType: "home",
+                 //     headerTitle: "Source/Model",
+                 //     orgId: userData.orgId,
+                 //     role: userData.hrmsRole,
+                 //     branchList: userData.branchs.map(
+                 //       (a) => a.branchId
+                 //     ),
+                 //   }
+                 // );
+               }}
+               style={{
+                 transform: [{ translateX: translation }],
+               }}
+             />
+           </View>
+         </View>
+
+         {/*Source/Model View END */}
+         <View
+           style={[
+             { flexDirection: "row" },
+             // item.isOpenInner && {
+             //   borderRadius: 10,
+             //   borderWidth: 2,
+             //   borderColor: "#C62159",
+             //   marginHorizontal: 6,
+             //   overflow: "hidden",
+             // },
+           ]}
+         >
+           {/*RIGHT SIDE VIEW*/}
+           <View style={[styles.view6]}>
+             <View style={styles.view7}>
+               <RenderLevel1NameViewCRMVol2
+                 level={0}
+                 item={item}
+                 branchName={item.branchName}
+                 color={borderColor}
+                 receptionManager={true}
+                 navigation={navigation}
+                 titleClick={async (e) => {
+                   formateReportingUserDataForLevelN(
+                     item,
+                     index,
+                     crmVol2ReportingAllTree,
+                     hierarchyLevel
+                   );
+                 }}
+                 roleName={item.roleName}
+                 stopLocation={true}
+               />
+               <View
+                 style={{
+                   flex: 1,
+                   backgroundColor: "rgba(223,228,231,0.67)",
+                   alignItems: "center",
+                   flexDirection: "row",
+                 }}
+               >
+                 {[
+                   item.isOpenInner
+                     ? item.self.enquiryCount
+                     : item.total.enquiryCount || 0,
+
+                   item.isOpenInner
+                     ? item.self.bookingCount
+                     : item.total.bookingCount || 0,
+                   item.isOpenInner
+                     ? item.self.retailCount
+                     : item.total.retailCount || 0,
+                   item.isOpenInner
+                     ? item.self.lostCount
+                     : item.total.lostCount || 0,
+                 ].map((e, indexss) => {
+                   return (
+                     <Pressable
+                       onPress={() => {
+                         // todo redirections logic  first level
+                         // if (e > 0) {
+
+                         if (item.isOpenInner) {
+                           if (indexss === 0) {
+                             navigateToEmsVol2(item.self.enquiryLeads);
+                           } else if (indexss === 1) {
+                             navigateToEmsVol2(item.self.bookingLeads);
+                           } else if (indexss === 2) {
+                             navigateToEmsVol2(item.self.retailLeads);
+                           } else if (indexss === 3) {
+                             navigateToDropAnalysisVol2(item.self.lostLeads);
+                           }
+                         } else {
+                           if (indexss === 0) {
+                             navigateToEmsVol2(item.total.enquiryLeads);
+                           } else if (indexss === 1) {
+                             navigateToEmsVol2(item.total.bookingLeads);
+                           } else if (indexss === 2) {
+                             navigateToEmsVol2(item.total.retailLeads);
+                           } else if (indexss === 3) {
+                             // todo navigate to lost
+
+                             navigateToDropAnalysisVol2(item.total.lostLeads);
+                           }
+                         }
+                         // }
+                       }}
+                     >
+                       <View
+                         style={{
+                           width: 55,
+                           height: 30,
+                           justifyContent: "center",
+                           alignItems: "center",
+                         }}
+                       >
+                         <Text
+                           style={{
+                             fontSize: 16,
+                             fontWeight: "700",
+                             textDecorationLine: e > 0 ? "underline" : "none",
+                             // marginLeft: 50,
+                           }}
+                         >
+                           {e || 0}
+                         </Text>
+                       </View>
+                     </Pressable>
+                   );
+                 })}
+               </View>
+             </View>
+             {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+           </View>
+         </View>
+         {/* {item.isOpenInner && renderCRMTreeChild()} */}
+
+         {item.isOpenInner &&
+           item.innerData.length > 0 &&
+           item.innerData.map((innerItem1, innerIndex1) => {
+             return renderDynamicTreeReportingUser(
+               item.innerData[innerIndex1],
+               innerIndex1,
+               item.innerData,
+               levelColors,
+               hierarchyLevel + 1
+             );
+           })}
+       </View>
+     );
+   };
+
+  const renderDynamicTree = (item, index, allData, levelColors, newLevel) => {
+    const hierarchyLevel = newLevel;
+    const borderColor = levelColors[hierarchyLevel % levelColors.length];
+
+    return (
+      <View
+        key={`${item.empName} ${index}`}
+        style={[
+          {
+            // borderColor: item.isOpenInner ? borderColor : "",
+            // borderWidth: item.isOpenInner ? 2 : 0,
+            // borderRadius: 10,
+            // margin: item.isOpenInner ? 10 : 0,
+          },
+          item.isOpenInner && {
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: borderColor,
+            backgroundColor: "#FFFFFF",
+          },
+        ]}
+        // style={{
+        //   borderColor: item.isOpenInner ? borderColor : "",
+        //   borderWidth: item.isOpenInner ? 2 : 0,
+        //   borderRadius: 10,
+        //   margin: item.isOpenInner ? 10 : 0,
+        // }}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View
+            style={{
+              paddingHorizontal: 8,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 12,
+              // width: Dimensions.get("screen").width - 28,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "capitalize",
+              }}
+            >
+              {item?.empName}
+              {"  "}
+              {"-   " + item?.roleName}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", marginTop: 12 }}>
+            {item?.childCount > 0 && (
+              // <Animated.View
+              //   style={{
+              //     transform: [{ translateX: translation }],
+              //   }}
+              // >
+              <View
+                style={{
+                  backgroundColor: "lightgrey",
+                  flexDirection: "row",
+                  paddingHorizontal: 7,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  // marginBottom: 5,
+                  alignSelf: "center",
+                  marginLeft: 7,
+                  // transform: [{ translateX: translation }],
+                }}
+              >
+                <MaterialIcons name="person" size={15} color={Colors.BLACK} />
+                <Text>{item?.childCount}</Text>
+              </View>
+              // </Animated.View>
+            )}
+            <Pressable
+              style={{ alignSelf: "center" }}
+              onPress={() => {
+                if (!item.isOpenInner) {
+                  let tempArry = [];
+                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads);
+                  Array.prototype.push.apply(tempArry, item.total.bookingLeads);
+                  Array.prototype.push.apply(tempArry, item.total.retailLeads);
+                  Array.prototype.push.apply(tempArry, item.total.lostLeads);
+
+                  handleSourcrModelNavigationVol2(tempArry, item.roleName);
+                } else {
+                  let tempArry = [];
+                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads);
+                  Array.prototype.push.apply(tempArry, item.self.bookingLeads);
+                  Array.prototype.push.apply(tempArry, item.self.retailLeads);
+                  Array.prototype.push.apply(tempArry, item.self.lostLeads);
+
+                  handleSourcrModelNavigationVol2(tempArry, item.roleName);
+                }
+                // handleSourceModalNavigation(item, item.emp_id, [])
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: Colors.BLUE,
+                  marginLeft: 8,
+                  paddingRight: 12,
+                }}
+              >
+                Source/Model
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {/*Source/Model View END */}
+        <View
+          style={[
+            { flexDirection: "row" },
+            // item.isOpenInner && {
+            //   borderRadius: 10,
+            //   borderWidth: 2,
+            //   borderColor: "#C62159",
+            //   marginHorizontal: 6,
+            //   overflow: "hidden",
+            // },
+          ]}
+        >
+          {/*RIGHT SIDE VIEW*/}
+          <View style={[styles.view6]}>
+            <View style={styles.view7}>
+              <RenderLevel1NameViewCRMVol2
+                level={0}
+                item={item}
+                branchName={item.branchName}
+                color={borderColor}
+                receptionManager={true}
+                navigation={navigation}
+                titleClick={async (e) => {
+                  // setIsViewExpanded(!isViewExpanded);
+                  // if (userData.hrmsRole == "CRM") {
+                    oncllickOfEmployeeForCRm(item, index, allData, newLevel);
+                  // } else {
+                  //   oncllickOfEmployee(item, index, allData, newLevel);
+                  // }
+                }}
+                roleName={item.roleName}
+                stopLocation={true}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "rgba(223,228,231,0.67)",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                {[
+                  item.isOpenInner
+                    ? item.self.enquiryCount
+                    : item.total.enquiryCount || 0,
+
+                  item.isOpenInner
+                    ? item.self.bookingCount
+                    : item.total.bookingCount || 0,
+                  item.isOpenInner
+                    ? item.self.retailCount
+                    : item.total.retailCount || 0,
+                  item.isOpenInner
+                    ? item.self.lostCount
+                    : item.total.lostCount || 0,
+                ].map((e, indexss) => {
+                  return (
+                    <Pressable
+                      onPress={() => {
+                        // todo redirections logic  first level
+                        // if (e > 0) {
+
+                        if (item.isOpenInner) {
+                          if (indexss === 0) {
+                            navigateToEmsVol2(item.self.enquiryLeads);
+                          } else if (indexss === 1) {
+                            navigateToEmsVol2(item.self.bookingLeads);
+                          } else if (indexss === 2) {
+                            navigateToEmsVol2(item.self.retailLeads);
+                          } else if (indexss === 3) {
+                            navigateToDropAnalysisVol2(item.self.lostLeads);
+                          }
+                        } else {
+                          if (indexss === 0) {
+                            navigateToEmsVol2(item.total.enquiryLeads);
+                          } else if (indexss === 1) {
+                            navigateToEmsVol2(item.total.bookingLeads);
+                          } else if (indexss === 2) {
+                            navigateToEmsVol2(item.total.retailLeads);
+                          } else if (indexss === 3) {
+                            // todo navigate to lost
+
+                            navigateToDropAnalysisVol2(item.total.lostLeads);
+                          }
+                        }
+                        // }
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 55,
+                          height: 30,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "700",
+                            textDecorationLine: e > 0 ? "underline" : "none",
+                            // marginLeft: 50,
+                          }}
+                        >
+                          {e || 0}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+            {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+          </View>
+        </View>
+        {/* {item.isOpenInner && renderCRMTreeChild()} */}
+
+        {item.isOpenInner &&
+          item.innerData.length > 0 &&
+          item.innerData.map((innerItem1, innerIndex1) => {
+            return renderDynamicTree(
+              item.innerData[innerIndex1],
+              innerIndex1,
+              item.innerData,
+              levelColors,
+              hierarchyLevel + 1
+            );
+          })}
+      </View>
+    );
+  };
+  
+
+
+  const formateNonReportingUserData = async (
+    item,
+    index,
+    originalData,
+    heirarchyLevel
+  ) => {
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+    // let modifiedData =  [...crmVol2ReportingData];
+    let modifiedData = _.cloneDeep(originalData);
+    let id = "";
+    let data = [];
+    let findLevel1Id = modifiedData.map((itemInner, indexInner) => {
+      if (itemInner.selfUser.empId == item.empId) {
+        id = itemInner.level1[0].empId;
+        data = itemInner.allTreeData;
+      }
+    });
+    setCrmVol2ReportingAllTree(data);
+
+    let findInnderDataLevel1 = data.filter(
+      (item2, index2) => item2.empId == id
+    );
+
+    for (let index = 0; index < modifiedData.length; index++) {
+      const element = modifiedData[index];
+      if (element.selfUser.empId == item.empId) {
+        element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+        element.selfUser.innerData = findInnderDataLevel1;
+      } else {
+        element.selfUser.isOpenInner = false;
+        element.selfUser.innerData = [];
+      }
+    }
+
+    setCrmVol2NonReportingData(modifiedData);
+  };
+
+
+  const formateReportingUserData = async (
+    item,
+    index,
+    originalData,
+    heirarchyLevel
+  ) => {
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+    // let modifiedData =  [...crmVol2ReportingData];
+    let modifiedData = _.cloneDeep(originalData);
+    let id = "";
+    let data = [];
+    let findLevel1Id = modifiedData.map((itemInner, indexInner) => {
+      if (itemInner.selfUser.empId == item.empId) {
+        id = itemInner.level1[0].empId;
+        data = itemInner.allTreeData;
+      }
+    });
+    setCrmVol2ReportingAllTree(data);
+
+    let findInnderDataLevel1 = data.filter(
+      (item2, index2) => item2.empId == id
+    );
+
+    for (let index = 0; index < modifiedData.length; index++) {
+      const element = modifiedData[index];
+      if (element.selfUser.empId == item.empId) {
+        element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+        element.selfUser.innerData = findInnderDataLevel1;
+      } else {
+        element.selfUser.isOpenInner = false;
+        element.selfUser.innerData = [];
+      }
+    }
+
+    setCrmVol2ReportingData(modifiedData);
+  };
+
+
+
+  const formateReportingUserDataForLevelN = async (
+    item,
+    index,
+    originalData,
+    heirarchyLevel
+  ) => {
+    let modifiedData = _.cloneDeep(originalData);
+
+    let filtrData = modifiedData.filter(
+      (itemInn) =>
+        itemInn.managerId != itemInn.empId && itemInn.managerId == item.empId
+    );
+
+    (await item.isOpenInner)
+      ? ((item.isOpenInner = false), (item.innerData = []))
+      : ((item.isOpenInner = true), item.innerData.push(...filtrData));
+
+    setCrmVol2ReportingData([...crmVol2ReportingData]);
+  };
+  const oncllickOfEmployeeForCRm = async (
+    item = [],
+    index,
+    allData,
+    herirarchyLevel
+  ) => {
+    let modifeidArray = [...crmVol2AlluserData];
+    let storeTemp = [...crmVol2Level1];
+
+    // let modifiedData = _.cloneDeep(originalData);
+    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", item.empId);
+
+    // for (let index = 0; index < modifiedData.length; index++) {
+    //   const element = modifiedData[index];
+
+    //   if (element.selfUser.empId == item.empId) {
+    //     element.selfUser.isOpenInner = !element.selfUser.isOpenInner;
+    //   }
+
+    // }
+
+    let tempNewArray = await modifeidArray.filter(
+      (i) => i.managerId != i.empId && i.managerId == item.empId
+    );
+
+    (await item.isOpenInner)
+      ? ((item.isOpenInner = false), (item.innerData = []))
+      : ((item.isOpenInner = true), item.innerData.push(...tempNewArray));
+
+    // Array.prototype.push.apply(storeTemp, tempNewArray)
+
+    await setCrmVol2Level1(storeTemp);
+  };
   const renderCRMTree = () => {
     
     
@@ -5171,9 +6066,11 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={checkIsSelfManager()
-                                          ? ""
-                                          : item.branch}
+                                        branchName={
+                                          checkIsSelfManager()
+                                            ? ""
+                                            : item.branch
+                                        }
                                         color={"#C62159"}
                                         receptionManager={true}
                                         navigation={navigation}
@@ -5227,14 +6124,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       </ScrollView>
                     </View>
                     {/* {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null} */}
-                          
-                      {!selector.saveCRMfilterObj.selectedempId
-                        ? renderCRMTreeVOl2()
-                        : selector.saveCRMfilterObj?.selectedDesignation &&
-                          selector.saveCRMfilterObj?.selectedDesignation[0] ===
+
+                    {!selector.saveCRMfilterObj.selectedempId
+                      ? renderCRMTreeVOl2()
+                      : selector.saveCRMfilterObj?.selectedDesignation &&
+                        selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
-                          ? renderCRMTreeVOl2()
-                          : renderCRMTreeVOl2()}
+                      ? renderCRMtNewTreeVol2_filter()
+                      : renderCRMtNewTreeVol2_filter()}
 
                     {/* vol 1 working code start */}
                     {/* {!selector.saveCRMfilterObj.selectedempId
@@ -5244,7 +6141,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           "CRM"
                       ? renderCRMTreeFilter()
                       : renderCRETreeFilter()} */}
-                      {/* vol 1 working code end  */}
+                    {/* vol 1 working code end  */}
 
                     {/* Grand Total Section */}
                     {totalOfTeam && (

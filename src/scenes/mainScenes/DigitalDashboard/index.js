@@ -485,14 +485,14 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       Promise.all([
        
         dispatch(getOrganaizationHirarchyList(payload)),
-        dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
-        dispatch(
-          getVehicalModalList({
-            bu: jsonObj.orgId,
-            dropdownType: "model",
-            parentId: 0,
-          })
-        ),
+        // dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
+        // dispatch(
+        //   getVehicalModalList({
+        //     bu: jsonObj.orgId,
+        //     dropdownType: "model",
+        //     parentId: 0,
+        //   })
+        // ),
         // dispatch(
         //   getDealerRanking({
         //     payload: {
@@ -659,18 +659,18 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
         empId: jsonObj.empId,
       };
       if (isTeamPresent) {
-        dispatch(
-          getTargetParametersData({
-            ...payload,
-            pageNo: 0,
-            size: 5,
-          })
-        ),
-          getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
-            .then((x) => {})
-            .catch((y) => {});
+        // dispatch(
+        //   getTargetParametersData({
+        //     ...payload,
+        //     pageNo: 0,
+        //     size: 5,
+        //   })
+        // ),
+          // getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+          //   .then((x) => {})
+          //   .catch((y) => {});
       } else {
-        getTargetParametersDataFromServer(payload).catch((y) => {});
+        // getTargetParametersDataFromServer(payload).catch((y) => {});
       }
     }
   };
@@ -711,8 +711,8 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       // dispatch(getLostDropChartData(payload))
     ]).then(() => {});
 
-    getTaskTableDataFromServer(empId, payload);
-    getTargetParametersDataFromServer(payload).catch((y) => {});
+    // getTaskTableDataFromServer(empId, payload);
+    // getTargetParametersDataFromServer(payload).catch((y) => {});
   };
 
   const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -757,16 +757,16 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       pageNo: 0,
       size: 5,
     };
-    Promise.allSettled([
-      dispatch(getTargetParametersData(payload1)),
-      dispatch(
-        !isTeamPresentLocal
-          ? getTargetParametersEmpData(payload1)
-          : getTargetParametersEmpDataInsights(payload1)
-      ),
-    ])
-      .then(() => {})
-      .catch((y) => {});
+    // Promise.allSettled([
+    //   dispatch(getTargetParametersData(payload1)),
+    //   dispatch(
+    //     !isTeamPresentLocal
+    //       ? getTargetParametersEmpData(payload1)
+    //       : getTargetParametersEmpDataInsights(payload1)
+    //   ),
+    // ])
+    //   .then(() => {})
+    //   .catch((y) => {});
   };
 
   const getAllTargetParametersDataFromServer = async (payload, orgId) => {
@@ -816,18 +816,18 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
       //   ? selector.filterIds.levelSelected
       //   : null;
     }
-    Promise.allSettled([
-      //dispatch(getTargetParametersAllData(payload1)),
-      dispatch(getTotalTargetParametersData(payload2)),
-      dispatch(getNewTargetParametersAllData(payload2)),
-      dispatch(
-        isTeamPresentLocal
-          ? getTargetParametersEmpDataInsights(payload1)
-          : getTargetParametersEmpData(payload1)
-      ),
-    ])
-      .then(() => {})
-      .catch((y) => {});
+    // Promise.allSettled([
+    //   //dispatch(getTargetParametersAllData(payload1)),
+    //   dispatch(getTotalTargetParametersData(payload2)),
+    //   dispatch(getNewTargetParametersAllData(payload2)),
+    //   dispatch(
+    //     isTeamPresentLocal
+    //       ? getTargetParametersEmpDataInsights(payload1)
+    //       : getTargetParametersEmpData(payload1)
+    //   ),
+    // ])
+    //   .then(() => {})
+    //   .catch((y) => {});
   };
 
   useEffect(() => {

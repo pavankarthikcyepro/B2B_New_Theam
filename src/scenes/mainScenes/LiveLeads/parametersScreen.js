@@ -1433,6 +1433,7 @@ const ParametersScreen = ({ route }) => {
             param: paramName === "INVOICE" ? "Retail" : paramName,
             moduleType: "live-leads",
             employeeDetail: employeeDetail,
+            screenName: "DEFAULT",
             // screenName: "",
             // selectedEmpId: "",
             // startDate: "",

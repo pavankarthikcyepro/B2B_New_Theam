@@ -851,6 +851,23 @@ export const getCRM_ReceptionistDashboradVol2 = createAsyncThunk(
   }
 );
 
+
+
+export const getCRM_ReceptionistDashboradVol2_Digital = createAsyncThunk(
+  "HOME/getCRM_ReceptionistDashboradVol2_Digital",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.RECEPTIONIST_DASHBOARDV2(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 // for digital dashboard
 export const getCRM_ReceptionistManagerDataDigital = createAsyncThunk(
   "HOME/getCRM_ReceptionistManagerDataDigital",
@@ -1172,14 +1189,14 @@ export const homeSlice = createSlice({
 
     },
     digitalDashboard_Vol2: {
-      // RetailCount: 0,
-      // bookingsCount: 0,
-      // consultantList: [],
-      // totalAllocatedCount: 0,
-      // totalDroppedCount: 0,
-      // contactsCount: 0,
-      // enquirysCount: 0,
-      // totalLostCount: 0,
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
       fullResponse: {},
 
     },
@@ -1301,6 +1318,17 @@ export const homeSlice = createSlice({
       fullResponse: {},
     },
     receptionistData_CRM_vol2: {
+      RetailCount: 0,
+      bookingsCount: 0,
+      consultantList: [],
+      totalAllocatedCount: 0,
+      totalDroppedCount: 0,
+      contactsCount: 0,
+      enquirysCount: 0,
+      totalLostCount: 0,
+      fullResponse: {},
+    },
+    receptionistData_CRM_vol2_digital: {
       RetailCount: 0,
       bookingsCount: 0,
       consultantList: [],
@@ -1564,15 +1592,26 @@ export const homeSlice = createSlice({
           totalLostCount: 0,
           fullResponse: {},
         },
+        state.receptionistData_CRM_vol2_digital= {
+        RetailCount: 0,
+        bookingsCount: 0,
+        consultantList: [],
+        totalAllocatedCount: 0,
+        totalDroppedCount: 0,
+        contactsCount: 0,
+        enquirysCount: 0,
+        totalLostCount: 0,
+        fullResponse: {},
+      },
         state.digitalDashboard_Vol2 = {
-          // RetailCount: 0,
-          // bookingsCount: 0,
-          // consultantList: [],
-          // totalAllocatedCount: 0,
-          // totalDroppedCount: 0,
-          // contactsCount: 0,
-          // enquirysCount: 0,
-          // totalLostCount: 0,
+          RetailCount: 0,
+          bookingsCount: 0,
+          consultantList: [],
+          totalAllocatedCount: 0,
+          totalDroppedCount: 0,
+          contactsCount: 0,
+          enquirysCount: 0,
+          totalLostCount: 0,
           fullResponse: {},
 
         }, 
@@ -2311,6 +2350,27 @@ export const homeSlice = createSlice({
       .addCase(getCRM_ReceptionistDashboradVol2.rejected, (state, action) => { state.isLoading = false; })
 
 
+
+      // CRM receptionist Dashboard
+      .addCase(getCRM_ReceptionistDashboradVol2_Digital.pending, (state) => { state.isLoading = true; })
+      .addCase(getCRM_ReceptionistDashboradVol2_Digital.fulfilled, (state, action) => {
+        const dataObj = action.payload;
+        state.isLoading = false;
+        state.receptionistData_CRM_vol2_digital = {
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
+          fullResponse: dataObj
+        };
+      })
+      .addCase(getCRM_ReceptionistDashboradVol2_Digital.rejected, (state, action) => { state.isLoading = false; })
+
+
       // for digital dashboard filter case
       .addCase(getCRM_ReceptionistManagerDataDigital.pending, (state) => { })
       .addCase(getCRM_ReceptionistManagerDataDigital.fulfilled, (state, action) => {
@@ -2335,14 +2395,14 @@ export const homeSlice = createSlice({
       .addCase(get_xrole_SalesManagerDigitalTeam_Vol2.fulfilled, (state, action) => {
         const dataObj = action.payload;
         state.digitalDashboard_Vol2 = {
-          // RetailCount: dataObj.totalRetailCount,
-          // bookingsCount: dataObj.totalBookingCount,
-          // consultantList: dataObj.manager,
-          // totalAllocatedCount: dataObj.enquirysCount,
-          // totalDroppedCount: dataObj.totalDroppedCount,
-          // contactsCount: dataObj.totalPreInquiryCount,
-          // enquirysCount: dataObj.totalEnquiryCount,
-          // totalLostCount: dataObj.totalLostCount,
+          RetailCount: dataObj.totalRetailCount,
+          bookingsCount: dataObj.totalBookingCount,
+          consultantList: dataObj.manager,
+          totalAllocatedCount: dataObj.enquirysCount,
+          totalDroppedCount: dataObj.totalDroppedCount,
+          contactsCount: dataObj.totalPreInquiryCount,
+          enquirysCount: dataObj.totalEnquiryCount,
+          totalLostCount: dataObj.totalLostCount,
           fullResponse: dataObj
         };
       })

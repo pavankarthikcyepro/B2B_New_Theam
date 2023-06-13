@@ -317,7 +317,7 @@ const LeadsScreen = ({ route, navigation }) => {
             const newArr = path.map((v) => ({ ...v, checked: false }));
             setTempStore(newArr);
             if (route.params) {
-
+              console.log("manthan jjjs ", route?.params);
               // managerFilter(newArr);
               if (route?.params?.screenName === "DEFAULT") {
                 defualtCall(newArr, leadStage, leadStatus, false);
