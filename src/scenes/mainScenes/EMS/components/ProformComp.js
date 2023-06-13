@@ -4043,14 +4043,15 @@ export const ProformaComp = ({
                 keyboardType="number-pad"
                 value={selector.for_accessories}
                 TitleText={"Foc Accessories:"}
-                onChangeText={(text) =>
+                onChangeText={(text) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "FOR_ACCESSORIES",
                       text: text,
                     })
-                  )
-                }
+                  );
+                  setSelectedPaidAccessoriesList([]);
+                }}
               />
               {/* <Text style={GlobalStyle.underline}></Text> */}
 
