@@ -418,20 +418,38 @@ export const MyTaskNewItem = ({
               iconName={"phone-outline"}
               onPress={() => {
                 // if (from == "MY_TASKS") {
-                //   navigator.navigate(
-                //     AppNavigator.MyTasksStackIdentifiers.webCallScreen,
-                //     {
-                //       phone,
-                //       uniqueId,
-                //     }
+                //   const employeeData = await AsyncStore.getData(
+                //     AsyncStore.Keys.LOGIN_EMPLOYEE
                 //   );
+                //   if (employeeData) {
+                //     const jsonObj = JSON.parse(employeeData);
+                //     if (jsonObj.orgName.includes("BikeWo Corporation")) {
+                //       callNumber(phone);
+                //     } else {
+                //       navigator.navigate(
+                //         AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                //         {
+                //           phone,
+                //           uniqueId,
+                //         }
+                //       );
+                //     }
+                //   } else {
+                //     navigator.navigate(
+                //       AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                //       {
+                //         phone,
+                //         uniqueId,
+                //       }
+                //     );
+                //   }
                 // } else {
-                  callWebViewRecord({
-                    navigator,
-                    phone,
-                    uniqueId,
-                    type,
-                  });
+                callWebViewRecord({
+                  navigator,
+                  phone,
+                  uniqueId,
+                  type,
+                });
                 // }
                 return;
                 if (onlylead) {

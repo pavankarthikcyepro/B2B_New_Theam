@@ -368,7 +368,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
           {isHoursVisible ? (
             <View style={styles.itemTopRow}>
               <View style={styles.hourContainer}>
-                <Text style={styles.hourText}>{`Last follow up >${checkForEnqFollow(
+                <Text
+                  style={styles.hourText}
+                >{`Last follow up >${checkForEnqFollow(
                   item,
                   section
                 )}hrs`}</Text>
@@ -404,13 +406,17 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             {/* <TouchableOpacity
               activeOpacity={0.6}
               onPress={() => {
-                navigation.navigate(
-                  AppNavigator.MyTasksStackIdentifiers.webCallScreen,
-                  {
-                    phone: mobileNo,
-                    uniqueId: item.taskId,
-                  }
-                );
+                if (userData.orgName.includes("BikeWo Corporation")) {
+                  callNumber(mobileNo);
+                } else {
+                  navigation.navigate(
+                    AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                    {
+                      phone: mobileNo,
+                      uniqueId: item.taskId,
+                    }
+                  );
+                }
               }}
               style={styles.iconBoxView}
             >
@@ -425,58 +431,67 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
               </View>
               <Text style={styles.iconText}>Call</Text>
             </TouchableOpacity>
-            <View style={styles.iconDivider} />
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.recordedCalls,
-                  {
-                    taskId: item.taskId,
-                  }
-                );
-              }}
-              style={styles.iconBoxView}
-            >
-              <View style={styles.iconView}>
-                <IconButton
-                  icon={"play"}
-                  size={20}
-                  style={styles.playIcon}
-                  color={activeColor}
-                />
-              </View>
-              <Text numberOfLines={1} style={styles.iconText}>
-                Recordings
-              </Text>
-            </TouchableOpacity>
             <View style={styles.iconDivider} /> */}
-            <TouchableOpacity
-              onPress={() => openMap(item.lat, item.lon)}
-              activeOpacity={0.6}
-              style={styles.iconBoxView}
-              disabled={!isIconEnable("location", item)}
-            >
-              <View style={styles.iconView}>
-                <IconButton
-                  icon={"map-marker"}
-                  size={18}
-                  style={styles.playIcon}
-                  color={
-                    isIconEnable("location", item) ? activeColor : disabledColor
-                  }
-                />
-              </View>
-              <Text
-                style={[
-                  styles.iconText,
-                  !isIconEnable("location", item) ? styles.disabledText : "",
-                ]}
-              >
-                Geo
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.iconDivider} />
+            {userData.orgName !== "BikeWo Corporation" ? (
+              <>
+                {/* <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => {
+                    navigation.navigate(
+                      AppNavigator.EmsStackIdentifiers.recordedCalls,
+                      {
+                        taskId: item.taskId,
+                      }
+                    );
+                  }}
+                  style={styles.iconBoxView}
+                >
+                  <View style={styles.iconView}>
+                    <IconButton
+                      icon={"play"}
+                      size={20}
+                      style={styles.playIcon}
+                      color={activeColor}
+                    />
+                  </View>
+                  <Text numberOfLines={1} style={styles.iconText}>
+                    Recordings
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.iconDivider} /> */}
+                <TouchableOpacity
+                  onPress={() => openMap(item.lat, item.lon)}
+                  activeOpacity={0.6}
+                  style={styles.iconBoxView}
+                  disabled={!isIconEnable("location", item)}
+                >
+                  <View style={styles.iconView}>
+                    <IconButton
+                      icon={"map-marker"}
+                      size={18}
+                      style={styles.playIcon}
+                      color={
+                        isIconEnable("location", item)
+                          ? activeColor
+                          : disabledColor
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.iconText,
+                      !isIconEnable("location", item)
+                        ? styles.disabledText
+                        : "",
+                    ]}
+                  >
+                    Geo
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.iconDivider} />
+              </>
+            ) : null}
+
             <View style={styles.iconBoxView}>
               <View style={styles.iconView}>
                 <IconButton
