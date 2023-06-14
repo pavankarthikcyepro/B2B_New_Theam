@@ -685,9 +685,13 @@ const DropAnalysisScreen = ({ route, navigation }) => {
             //   setIsManager(true);
             // }
 
-              if (jsonObj?.isTeam.toLowerCase().includes("y")) {
-                    setIsManager(true);
-                 }
+              if (
+                jsonObj?.isTeam.toLowerCase().includes("y") ||
+                (jsonObj.orgName == "BikeWo Corporation" &&
+                  jsonObj.isSelfManager == "Y")
+              ) {
+                setIsManager(true);
+              }
 
             // await setEmployeeName(jsonObj.empName)
             // await setEmployeeId(jsonObj.empId)
