@@ -6671,7 +6671,8 @@ const ParametersScreen = ({ route }) => {
                           )
                             ? selector.saveLiveleadObject?.selectedempId[0]
                             : selector.login_employee_details.empId,
-                          type: selector.isDSE ? "SELF" : "INSIGHTS",
+                          // type: selector.isDSE ? "SELF" : "INSIGHTS",
+                          type: "INSIGHTS",
                           moduleType: "live-leads",
                           orgId: selector.login_employee_details.orgId,
                           isOpenner: false,
