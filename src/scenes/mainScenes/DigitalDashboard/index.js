@@ -1418,11 +1418,11 @@ const DigitalDashBoardScreen = ({ route, navigation }) => {
                         selector.saveCRMfilterObj?.selectedDesignation[0] ===
                           "CRM"
                         ? selector.receptionistData_CRM_vol2_digital
-                            .fullResponse?.self?.selfUser.total.lostCount || 0
+                            .fullResponse?.self?.selfUser.total.retailCount || 0
                         : selector.receptionistData_CRM_vol2_digital
-                            .fullResponse?.self?.selfUser.total.lostCount || 0
+                            .fullResponse?.self?.selfUser.total.retailCount || 0
                       : selector.digitalDashboard_Vol2?.fullResponse
-                          ?.totalBookingCount || 0}
+                          ?.totalRetailCount || 0}
                   </Text>
                 </View>
               </TouchableOpacity>

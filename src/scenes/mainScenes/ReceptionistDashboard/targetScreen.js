@@ -13,7 +13,7 @@ import { Colors } from "../../../styles";
 import { LoaderComponent } from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 import * as AsyncStore from "../../../asyncStore";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -173,13 +173,15 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
   const [crmVol2NonReportingData, setCrmVol2NonReportingData] = useState([])
   const [isCRM_Non_reportingVol2Level0Expanded, seIsCRM_Non_reportingVol2Level0Expanded] = useState(false);
   const [isRecepVol2Level0Expanded, setIsRecepVol2Level0Expanded] = useState(false);
-
+  const [crmVol2Level0_filter, setCrmVol2Level0_filter] = useState([]);
   const [userData, setUserData] = useState({
     empId: 0,
     empName: "",
     hrmsRole: "",
     orgId: 0,
     branchs: [],
+    isSelfManager: "N",
+    orgName: "",
   });
   const scrollViewRef = useRef();
   const paramsMetadata = [
@@ -446,6 +448,8 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
         branchs: jsonObj.branchs,
+        isSelfManager: jsonObj.isSelfManager,
+        orgName: jsonObj.orgName,
       });
       if (true) {
         // getReceptionManagerTeam(jsonObj);
@@ -766,6 +770,47 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
 
   }, [selector.receptionistData_CRM_vol2])
+
+
+
+  useEffect(() => {
+    if (
+      !_.isEmpty(selector.receptionist_Dashboard_Vol2?.fullResponse) &&
+      _.isEmpty(selector.saveCRMfilterObj.selectedempId) &&
+      selector.receptionist_Dashboard_Vol2?.fullResponse !== undefined
+    ) {
+      let crmUserData = [];
+      let crmUserDataNonReporting = [];
+      let tempCrm =
+        selector.receptionist_Dashboard_Vol2?.fullResponse.crmusers.map(
+          (item) => {
+            crmUserData.push(item);
+          }
+        );
+
+      setCrmVol2Level0(crmUserData);
+
+      let tempCRE =
+        selector.receptionist_Dashboard_Vol2?.fullResponse.creusers.map(
+          (item) => {
+            crmUserDataNonReporting.push(item);
+          }
+        );
+
+      setCrmVol2NonReportingData(crmUserDataNonReporting);
+    }
+
+    if (selector.receptionist_Dashboard_Vol2) {
+      let totalKey1 = selector?.receptionist_Dashboard_Vol2?.enquirysCount;
+      let totalKey2 = selector?.receptionist_Dashboard_Vol2?.bookingsCount;
+      let totalKey3 = selector?.receptionist_Dashboard_Vol2?.RetailCount;
+      let totalKey4 = selector?.receptionist_Dashboard_Vol2?.totalLostCount;
+
+      let total = [totalKey1, totalKey2, totalKey3, totalKey4];
+      setTotalofTeam(total);
+    }
+  }, [selector.receptionist_Dashboard_Vol2]);
+
 
   const getDataBasedOnfilter = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -1263,10 +1308,10 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
             index === 0
               ? Colors.PURPLE
               : index === 2
-                ? Colors.RED
-                : index === 3
-                  ? Colors.YELLOW
-                  : Colors.BLUE_V2,
+              ? Colors.RED
+              : index === 3
+              ? Colors.YELLOW
+              : Colors.BLUE_V2,
           borderWidth: 1,
           borderRadius: 10,
           justifyContent: "center",
@@ -1298,108 +1343,164 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       ?.selectedDesignation[0] === "Reception"
                   ) {
                     item.id === 0
-                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
-                         > 0 &&
-                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalEnquiryCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalEnquiryLeads
+                        )
                       : item.id === 1
-                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
-                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
-                        : item.id === 2
-                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
-                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
-                          : item.id === 3
-                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
-                            navigateToDropAnalysisVol2(
-                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
-                            )
-                            : null;
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalBookingLeads
+                        )
+                      : item.id === 2
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalRetailCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalRetailLeads
+                        )
+                      : item.id === 3
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalLostCount > 0 &&
+                        navigateToDropAnalysisVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalLostLeads
+                        )
+                      : null;
                   } else {
                     item.id === 0
-                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
-                      > 0 &&
-                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalEnquiryCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalEnquiryLeads
+                        )
                       : item.id === 1
-                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
-                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
-                        : item.id === 2
-                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
-                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
-                          : item.id === 3
-                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
-                            navigateToDropAnalysisVol2(
-                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
-                            )
-                            : null;
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalBookingLeads
+                        )
+                      : item.id === 2
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalRetailCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalRetailLeads
+                        )
+                      : item.id === 3
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalLostCount > 0 &&
+                        navigateToDropAnalysisVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalLostLeads
+                        )
+                      : null;
                   }
                 } else {
                   if (userData.hrmsRole === "CRM") {
                     item.id === 0
-                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
-                      > 0 &&
-                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalEnquiryCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalEnquiryLeads
+                        )
                       : item.id === 1
-                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
-                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
-                        : item.id === 2
-                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
-                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
-                          : item.id === 3
-                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
-                            navigateToDropAnalysisVol2(
-                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
-                            )
-                            : null;
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalBookingLeads
+                        )
+                      : item.id === 2
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalRetailCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalRetailLeads
+                        )
+                      : item.id === 3
+                      ? selector.receptionistData_CRM_vol2?.fullResponse
+                          ?.totalLostCount > 0 &&
+                        navigateToDropAnalysisVol2(
+                          selector.receptionistData_CRM_vol2?.fullResponse
+                            ?.totalLostLeads
+                        )
+                      : null;
                   } else {
                     item.id === 0
-                      ? selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
-                      > 0 &&
-                      navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
+                      ? selector.receptionist_Dashboard_Vol2?.fullResponse
+                          ?.totalEnquiryCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionist_Dashboard_Vol2?.fullResponse
+                            ?.totalEnquiryLeads
+                        )
                       : item.id === 1
-                        ? selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount > 0 &&
-                        navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
-                        : item.id === 2
-                          ? selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount > 0 &&
-                          navigateToEmsVol2(selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
-                          : item.id === 3
-                            ? selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount > 0 &&
-                            navigateToDropAnalysisVol2(
-                              selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads
-                            )
-                            : null;
+                      ? selector.receptionist_Dashboard_Vol2?.fullResponse
+                          ?.totalBookingCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionist_Dashboard_Vol2?.fullResponse
+                            ?.totalBookingLeads
+                        )
+                      : item.id === 2
+                      ? selector.receptionist_Dashboard_Vol2?.fullResponse
+                          ?.totalRetailCount > 0 &&
+                        navigateToEmsVol2(
+                          selector.receptionist_Dashboard_Vol2?.fullResponse
+                            ?.totalRetailLeads
+                        )
+                      : item.id === 3
+                      ? selector.receptionist_Dashboard_Vol2?.fullResponse
+                          ?.totalLostCount > 0 &&
+                        navigateToDropAnalysisVol2(
+                          selector.receptionist_Dashboard_Vol2?.fullResponse
+                            ?.totalLostLeads
+                        )
+                      : null;
                   }
                 }
               }
             }}
           >
             {selector.saveReceptionistfilterObj?.selectedDesignation &&
-              selector.saveReceptionistfilterObj?.selectedDesignation[0] ===
+            selector.saveReceptionistfilterObj?.selectedDesignation[0] ===
               "Reception" ? (
               item.id === 0 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                      selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount
+                    selector.receptionistData_CRM_vol2?.fullResponse
+                      ?.totalEnquiryCount
                   }{" "}
                 </Text>
               ) : item.id === 1 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                        selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount 
+                    selector.receptionistData_CRM_vol2?.fullResponse
+                      ?.totalBookingCount
                   }{" "}
                 </Text>
               ) : item.id === 2 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                          selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount
+                    selector.receptionistData_CRM_vol2?.fullResponse
+                      ?.totalRetailCount
                   }{" "}
                 </Text>
               ) : item.id === 3 ? (
                 <Text style={styles.txt10}>
                   {" "}
                   {
-                            selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount
+                    selector.receptionistData_CRM_vol2?.fullResponse
+                      ?.totalLostCount
                   }{" "}
                 </Text>
               ) : (
@@ -1409,22 +1510,22 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
               item.id === 0 ? (
                 <Text style={styles.txt10}>
                   {" "}
-                    {selector.receptionistData_CRM_vol2.enquirysCount}{" "}
+                  {selector.receptionistData_CRM_vol2.enquirysCount}{" "}
                 </Text>
               ) : item.id === 1 ? (
                 <Text style={styles.txt10}>
                   {" "}
-                      {selector.receptionistData_CRM_vol2.bookingsCount}{" "}
+                  {selector.receptionistData_CRM_vol2.bookingsCount}{" "}
                 </Text>
               ) : item.id === 2 ? (
                 <Text style={styles.txt10}>
                   {" "}
-                        {selector.receptionistData_CRM_vol2.RetailCount}{" "}
+                  {selector.receptionistData_CRM_vol2.RetailCount}{" "}
                 </Text>
               ) : item.id === 3 ? (
                 <Text style={styles.txt10}>
                   {" "}
-                          {selector.receptionistData_CRM_vol2.totalLostCount}{" "}
+                  {selector.receptionistData_CRM_vol2.totalLostCount}{" "}
                 </Text>
               ) : (
                 <Text style={styles.txt10}>0</Text>
@@ -1432,22 +1533,34 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
             ) : item.id === 0 ? (
               <Text style={styles.txt10}>
                 {" "}
-                    {selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryCount}{" "}
+                {
+                  selector.receptionist_Dashboard_Vol2?.fullResponse
+                    ?.totalEnquiryCount
+                }{" "}
               </Text>
             ) : item.id === 1 ? (
               <Text style={styles.txt10}>
                 {" "}
-                      {selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingCount}{" "}
+                {
+                  selector.receptionist_Dashboard_Vol2?.fullResponse
+                    ?.totalBookingCount
+                }{" "}
               </Text>
             ) : item.id === 2 ? (
               <Text style={styles.txt10}>
                 {" "}
-                        {selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailCount}{" "}
+                {
+                  selector.receptionist_Dashboard_Vol2?.fullResponse
+                    ?.totalRetailCount
+                }{" "}
               </Text>
             ) : item.id === 3 ? (
               <Text style={styles.txt10}>
                 {" "}
-                          {selector.receptionistData_CRM_vol2?.fullResponse?.totalLostCount}{" "}
+                {
+                  selector.receptionist_Dashboard_Vol2?.fullResponse
+                    ?.totalLostCount
+                }{" "}
               </Text>
             ) : (
               <Text style={styles.txt10}>0</Text>
@@ -1875,7 +1988,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           <RenderLevel1NameViewCRM
                             level={0}
                             item={item}
-                            branchName={item.branch}
+                            branchName={checkIsSelfManager() ? "" : item.branch}
                             color={Colors.CORAL}
                             receptionManager={true}
                             navigation={navigation}
@@ -2149,7 +2262,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           <RenderLevel1NameViewCRM
                             level={0}
                             item={item}
-                            branchName={item.branch}
+                            branchName={checkIsSelfManager() ? "" : item.branch}
                             color={"#2C97DE"}
                             receptionManager={true}
                             navigation={navigation}
@@ -2402,7 +2515,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager() ? "" : item.branch}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -2716,7 +2829,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager() ? "" : item.branch}
                         color={Colors.CORAL}
                         receptionManager={true}
                         navigation={navigation}
@@ -3006,7 +3119,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager() ? "" : item.branch}
                         color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
@@ -3252,7 +3365,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager() ? "" : item.branch}
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
@@ -3544,7 +3657,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager() ? "" : item.branch}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -3800,7 +3913,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager() ? "" : item.branch}
                         color={Colors.CORAL}
                         receptionManager={true}
                         navigation={navigation}
@@ -4067,7 +4180,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager() ? "" : item.branch}
                         color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
@@ -4097,7 +4210,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                               onPress={() => {
                                 // todo redirections logic filter UI
                                 // if (e > 0) {
-                                // todo manthan
+
                                 if (indexss === 0) {
                                   navigateToEMS(
                                     "ENQUIRY",
@@ -4327,10 +4440,12 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-
-
-
-                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <View
                     style={{
                       paddingHorizontal: 8,
@@ -4353,62 +4468,80 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       {"-   " + item?.roleName}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: "row", marginTop: 12, }}>
-                    {item?.childCount >
-                      0 && (
-                        // <Animated.View
-                        //   style={{
-                        //     transform: [{ translateX: translation }],
-                        //   }}
-                        // >
-                        <View
-                          style={{
-                            backgroundColor: "lightgrey",
-                            flexDirection: "row",
-                            paddingHorizontal: 7,
-                            borderRadius: 10,
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            // marginBottom: 5,
-                            alignSelf: "center",
-                            marginLeft: 7,
-                            // transform: [{ translateX: translation }],
-                          }}
-                        >
-                          <MaterialIcons
-                            name="person"
-                            size={15}
-                            color={Colors.BLACK}
-                          />
-                          <Text>
-                            {
-                              item?.childCount
-                            }
-                          </Text>
-                        </View>
-                        // </Animated.View>
-                      )}
+                  <View style={{ flexDirection: "row", marginTop: 12 }}>
+                    {item?.childCount > 0 && (
+                      // <Animated.View
+                      //   style={{
+                      //     transform: [{ translateX: translation }],
+                      //   }}
+                      // >
+                      <View
+                        style={{
+                          backgroundColor: "lightgrey",
+                          flexDirection: "row",
+                          paddingHorizontal: 7,
+                          borderRadius: 10,
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          // marginBottom: 5,
+                          alignSelf: "center",
+                          marginLeft: 7,
+                          // transform: [{ translateX: translation }],
+                        }}
+                      >
+                        <MaterialIcons
+                          name="person"
+                          size={15}
+                          color={Colors.BLACK}
+                        />
+                        <Text>{item?.childCount}</Text>
+                      </View>
+                      // </Animated.View>
+                    )}
                     <Pressable
                       style={{ alignSelf: "center" }}
                       onPress={() => {
                         if (!isRecepVol2Level0Expanded) {
                           let tempArry = [];
-                          Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
-                          Array.prototype.push.apply(tempArry, item.total.bookingLeads)
-                          Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                          Array.prototype.push.apply(tempArry, item.total.lostLeads)
-
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.total.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.total.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.total.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.total.lostLeads
+                          );
 
                           // handleSourcrModelNavigationVol2(item, tempArry,)
-                          handleNavigationTOSourcrModelVol2(item, tempArry)
+                          handleNavigationTOSourcrModelVol2(item, tempArry);
                         } else {
                           let tempArry = [];
-                          Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
-                          Array.prototype.push.apply(tempArry, item.self.bookingLeads)
-                          Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                          Array.prototype.push.apply(tempArry, item.self.lostLeads)
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.self.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.self.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.self.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.self.lostLeads
+                          );
 
-                          handleNavigationTOSourcrModelVol2(item, tempArry)
+                          handleNavigationTOSourcrModelVol2(item, tempArry);
                         }
                         // handleSourceModalNavigation(item, item.emp_id, [])
                       }}
@@ -4451,12 +4584,17 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRMVol2
                         level={0}
                         item={item}
-                        branchName={getBranchName(item?.branchName)}
+                        branchName={
+                          checkIsSelfManager()
+                            ? ""
+                            : getBranchName(item?.branchName)
+                        }
                         color={Colors.CORAL}
                         titleClick={async () => {
-
-                          seIsCRM_Non_reportingVol2Level0Expanded(false)
-                          setIsRecepVol2Level0Expanded(!isRecepVol2Level0Expanded);
+                          seIsCRM_Non_reportingVol2Level0Expanded(false);
+                          setIsRecepVol2Level0Expanded(
+                            !isRecepVol2Level0Expanded
+                          );
                           return;
                         }}
                       />
@@ -4481,13 +4619,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                         {[
-                          
-                          isRecepVol2Level0Expanded ? item.self.enquiryCount : item?.total?.enquiryCount || 0,
+                          isRecepVol2Level0Expanded
+                            ? item.self.enquiryCount
+                            : item?.total?.enquiryCount || 0,
 
-                          isRecepVol2Level0Expanded ? item.self.bookingCount : item?.total?.bookingCount || 0,
-                          isRecepVol2Level0Expanded ? item.self.retailCount : item?.total?.retailCount || 0,
-                          isRecepVol2Level0Expanded ? item.self.lostCount : item?.total?.lostCount || 0,
-
+                          isRecepVol2Level0Expanded
+                            ? item.self.bookingCount
+                            : item?.total?.bookingCount || 0,
+                          isRecepVol2Level0Expanded
+                            ? item.self.retailCount
+                            : item?.total?.retailCount || 0,
+                          isRecepVol2Level0Expanded
+                            ? item.self.lostCount
+                            : item?.total?.lostCount || 0,
                         ].map((e, index) => {
                           return (
                             <Pressable
@@ -4495,25 +4639,31 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                                 if (e > 0) {
                                   if (isRecepVol2Level0Expanded) {
                                     if (index === 0) {
-                                      navigateToEmsVol2(item.self.enquiryLeads)
-
+                                      navigateToEmsVol2(item.self.enquiryLeads);
                                     } else if (index === 1) {
-                                      navigateToEmsVol2(item.self.bookingLeads)
+                                      navigateToEmsVol2(item.self.bookingLeads);
                                     } else if (index === 2) {
-                                      navigateToEmsVol2(item.self.retailLeads)
+                                      navigateToEmsVol2(item.self.retailLeads);
                                     } else if (index === 3) {
-                                      navigateToDropAnalysisVol2(item.self.lostLeads)
+                                      navigateToDropAnalysisVol2(
+                                        item.self.lostLeads
+                                      );
                                     }
                                   } else {
                                     if (index === 0) {
-                                      navigateToEmsVol2(item.total.enquiryLeads)
-
+                                      navigateToEmsVol2(
+                                        item.total.enquiryLeads
+                                      );
                                     } else if (index === 1) {
-                                      navigateToEmsVol2(item.total.bookingLeads)
+                                      navigateToEmsVol2(
+                                        item.total.bookingLeads
+                                      );
                                     } else if (index === 2) {
-                                      navigateToEmsVol2(item.total.retailLeads)
+                                      navigateToEmsVol2(item.total.retailLeads);
                                     } else if (index === 3) {
-                                      navigateToDropAnalysisVol2(item.total.lostLeads)
+                                      navigateToDropAnalysisVol2(
+                                        item.total.lostLeads
+                                      );
                                     }
                                   }
                                 }
@@ -4582,13 +4732,42 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
     );
   }
 
+
+  
+  const oncllickOfEmployee = async (
+    item = [],
+    index,
+    allData,
+    herirarchyLevel
+  ) => {
+    let modifeidArray = [...crmVol2AlluserData];
+    let storeTemp = [...crmVol2Level1];
+
+    //   let temp = modifeidArray.map((itemLocal, indexLocal) =>
+    //     index == indexLocal ?
+    //       { ...itemLocal, isOpenInner: true } : { ...itemLocal, isOpenInner: false }
+    //   )
+
+    let tempNewArray = await modifeidArray.filter(
+      (i) => i.managerId != i.empId && i.managerId == item.empId
+    );
+
+    (await item.isOpenInner)
+      ? ((item.isOpenInner = false), (item.innerData = []))
+      : ((item.isOpenInner = true), item.innerData.push(...tempNewArray));
+
+    // Array.prototype.push.apply(storeTemp, tempNewArray)
+
+    await setCrmVol2Level1(storeTemp);
+  };
+
   const oncllickOfEmployeeForCRm = async (item = [], index, allData, herirarchyLevel) => {
 
     let modifeidArray = [...crmVol2AlluserData];
     let storeTemp = [...crmVol2Level1];
 
     // let modifiedData = _.cloneDeep(originalData);
-    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", item.empId);
+    
 
     // for (let index = 0; index < modifiedData.length; index++) {
     //   const element = modifiedData[index];
@@ -4618,8 +4797,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
   
 
   const renderCRMNewTreeLevel1 = () => {
-    // todo manthan
-
+  
     return (
       <View
       // style={{ height: selector.isMD ? "81%" : "80%" }}
@@ -4638,7 +4816,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
   const formateReportingUserData = async (item, index, originalData, heirarchyLevel) => {
 
-    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+   
     // let modifiedData =  [...crmVol2ReportingData];
     let modifiedData = _.cloneDeep(originalData);
     let id = "";
@@ -4710,16 +4888,14 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
             backgroundColor: "#FFFFFF",
           },
         ]}
-      // style={{
-      //   borderColor: item.isOpenInner ? borderColor : "",
-      //   borderWidth: item.isOpenInner ? 2 : 0,
-      //   borderRadius: 10,
-      //   margin: item.isOpenInner ? 10 : 0,
-      // }}
+        // style={{
+        //   borderColor: item.isOpenInner ? borderColor : "",
+        //   borderWidth: item.isOpenInner ? 2 : 0,
+        //   borderRadius: 10,
+        //   margin: item.isOpenInner ? 10 : 0,
+        // }}
       >
-
-
-        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View
             style={{
               paddingHorizontal: 8,
@@ -4742,63 +4918,51 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
               {"-   " + item?.roleName}
             </Text>
           </View>
-          <View style={{ flexDirection: "row", marginTop: 12, }}>
-            {item?.childCount >
-              0 && (
-                // <Animated.View
-                //   style={{
-                //     transform: [{ translateX: translation }],
-                //   }}
-                // >
-                <View
-                  style={{
-                    backgroundColor: "lightgrey",
-                    flexDirection: "row",
-                    paddingHorizontal: 7,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    // marginBottom: 5,
-                    alignSelf: "center",
-                    marginLeft: 7,
-                    // transform: [{ translateX: translation }],
-                  }}
-                >
-                  <MaterialIcons
-                    name="person"
-                    size={15}
-                    color={Colors.BLACK}
-                  />
-                  <Text>
-                    {
-                      item?.childCount
-                    }
-                  </Text>
-                </View>
-                // </Animated.View>
-              )}
+          <View style={{ flexDirection: "row", marginTop: 12 }}>
+            {item?.childCount > 0 && (
+              // <Animated.View
+              //   style={{
+              //     transform: [{ translateX: translation }],
+              //   }}
+              // >
+              <View
+                style={{
+                  backgroundColor: "lightgrey",
+                  flexDirection: "row",
+                  paddingHorizontal: 7,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  // marginBottom: 5,
+                  alignSelf: "center",
+                  marginLeft: 7,
+                  // transform: [{ translateX: translation }],
+                }}
+              >
+                <MaterialIcons name="person" size={15} color={Colors.BLACK} />
+                <Text>{item?.childCount}</Text>
+              </View>
+              // </Animated.View>
+            )}
             <SourceModelView
               onClick={() => {
                 if (!item.isOpenInner) {
-
                   let tempArry = [];
-                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
-                  Array.prototype.push.apply(tempArry, item.total.bookingLeads)
-                  Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                  Array.prototype.push.apply(tempArry, item.total.lostLeads)
+                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads);
+                  Array.prototype.push.apply(tempArry, item.total.bookingLeads);
+                  Array.prototype.push.apply(tempArry, item.total.retailLeads);
+                  Array.prototype.push.apply(tempArry, item.total.lostLeads);
 
-
-                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                  handleNavigationTOSourcrModelVol2(item, tempArry);
                 } else {
                   let tempArry = [];
-                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
-                  Array.prototype.push.apply(tempArry, item.self.bookingLeads)
-                  Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                  Array.prototype.push.apply(tempArry, item.self.lostLeads)
+                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads);
+                  Array.prototype.push.apply(tempArry, item.self.bookingLeads);
+                  Array.prototype.push.apply(tempArry, item.self.retailLeads);
+                  Array.prototype.push.apply(tempArry, item.self.lostLeads);
 
-                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                  handleNavigationTOSourcrModelVol2(item, tempArry);
                 }
-
 
                 // navigation.navigate(
                 //   "RECEP_SOURCE_MODEL",
@@ -4817,9 +4981,11 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                 //   }
                 // );
               }}
-              style={{
-                // transform: [{ translateX: translation }],
-              }}
+              style={
+                {
+                  // transform: [{ translateX: translation }],
+                }
+              }
             />
           </View>
         </View>
@@ -4847,13 +5013,15 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
               <RenderLevel1NameViewCRMVol2
                 level={0}
                 item={item}
-                branchName={getBranchName(item?.branchId)}
+                branchName={
+                  checkIsSelfManager() ? "" : getBranchName(item?.branchId)
+                }
                 color={borderColor}
                 titleClick={async () => {
                   if (userData.hrmsRole == "CRM") {
                     oncllickOfEmployeeForCRm(item, index, allData, newLevel);
                   } else {
-                    // oncllickOfEmployee(item, index, allData, newLevel);
+                    oncllickOfEmployee(item, index, allData, newLevel);
                   }
                 }}
               />
@@ -4878,13 +5046,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                 {[
-                  
-                  item.isOpenInner ? item.self.enquiryCount : item.total.enquiryCount || 0,
+                  item.isOpenInner
+                    ? item.self.enquiryCount
+                    : item.total.enquiryCount || 0,
 
-                  item.isOpenInner ? item.self.bookingCount : item.total.bookingCount || 0,
-                  item.isOpenInner ? item.self.retailCount : item.total.retailCount || 0,
-                  item.isOpenInner ? item.self.lostCount : item.total.lostCount || 0,
-
+                  item.isOpenInner
+                    ? item.self.bookingCount
+                    : item.total.bookingCount || 0,
+                  item.isOpenInner
+                    ? item.self.retailCount
+                    : item.total.retailCount || 0,
+                  item.isOpenInner
+                    ? item.self.lostCount
+                    : item.total.lostCount || 0,
                 ].map((e, index) => {
                   return (
                     <Pressable
@@ -4892,26 +5066,23 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         if (e > 0) {
                           if (item.isOpenInner) {
                             if (index === 0) {
-                              navigateToEmsVol2(item.self.enquiryLeads)
-
+                              navigateToEmsVol2(item.self.enquiryLeads);
                             } else if (index === 1) {
-                              navigateToEmsVol2(item.self.bookingLeads)
+                              navigateToEmsVol2(item.self.bookingLeads);
                             } else if (index === 2) {
-                              navigateToEmsVol2(item.total.retailLeads)
+                              navigateToEmsVol2(item.total.retailLeads);
                             } else if (index === 3) {
-                              navigateToDropAnalysisVol2(item.total.lostLeads)
+                              navigateToDropAnalysisVol2(item.total.lostLeads);
                             }
                           } else {
                             if (index === 0) {
-                              navigateToEmsVol2(item.total.enquiryLeads)
-
+                              navigateToEmsVol2(item.total.enquiryLeads);
                             } else if (index === 1) {
-                              navigateToEmsVol2(item.total.bookingLeads)
+                              navigateToEmsVol2(item.total.bookingLeads);
                             } else if (index === 2) {
-                              navigateToEmsVol2(item.total.retailLeads)
+                              navigateToEmsVol2(item.total.retailLeads);
                             } else if (index === 3) {
-                              navigateToDropAnalysisVol2(item.total.lostLeads)
-
+                              navigateToDropAnalysisVol2(item.total.lostLeads);
                             }
                           }
                         }
@@ -4943,8 +5114,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           style={{
                             fontSize: 16,
                             fontWeight: "700",
-                            textDecorationLine:
-                              e > 0 ? "underline" : "none",
+                            textDecorationLine: e > 0 ? "underline" : "none",
                             // marginLeft: 50,
                           }}
                         >
@@ -5008,15 +5178,14 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
             backgroundColor: "#FFFFFF",
           },
         ]}
-      // style={{
-      //   borderColor: item.isOpenInner ? borderColor : "",
-      //   borderWidth: item.isOpenInner ? 2 : 0,
-      //   borderRadius: 10,
-      //   margin: item.isOpenInner ? 10 : 0,
-      // }}
+        // style={{
+        //   borderColor: item.isOpenInner ? borderColor : "",
+        //   borderWidth: item.isOpenInner ? 2 : 0,
+        //   borderRadius: 10,
+        //   margin: item.isOpenInner ? 10 : 0,
+        // }}
       >
-
-        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View
             style={{
               paddingHorizontal: 8,
@@ -5039,63 +5208,51 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
               {"-   " + item?.roleName}
             </Text>
           </View>
-          <View style={{ flexDirection: "row", marginTop: 12, }}>
-            {item?.childCount >
-              0 && (
-                // <Animated.View
-                //   style={{
-                //     transform: [{ translateX: translation }],
-                //   }}
-                // >
-                <View
-                  style={{
-                    backgroundColor: "lightgrey",
-                    flexDirection: "row",
-                    paddingHorizontal: 7,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    // marginBottom: 5,
-                    alignSelf: "center",
-                    marginLeft: 7,
-                    // transform: [{ translateX: translation }],
-                  }}
-                >
-                  <MaterialIcons
-                    name="person"
-                    size={15}
-                    color={Colors.BLACK}
-                  />
-                  <Text>
-                    {
-                      item?.childCount
-                    }
-                  </Text>
-                </View>
-                // </Animated.View>
-              )}
+          <View style={{ flexDirection: "row", marginTop: 12 }}>
+            {item?.childCount > 0 && (
+              // <Animated.View
+              //   style={{
+              //     transform: [{ translateX: translation }],
+              //   }}
+              // >
+              <View
+                style={{
+                  backgroundColor: "lightgrey",
+                  flexDirection: "row",
+                  paddingHorizontal: 7,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  // marginBottom: 5,
+                  alignSelf: "center",
+                  marginLeft: 7,
+                  // transform: [{ translateX: translation }],
+                }}
+              >
+                <MaterialIcons name="person" size={15} color={Colors.BLACK} />
+                <Text>{item?.childCount}</Text>
+              </View>
+              // </Animated.View>
+            )}
             <SourceModelView
               onClick={() => {
                 if (!item.isOpenInner) {
-
                   let tempArry = [];
-                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads)
-                  Array.prototype.push.apply(tempArry, item.total.bookingLeads)
-                  Array.prototype.push.apply(tempArry, item.total.retailLeads)
-                  Array.prototype.push.apply(tempArry, item.total.lostLeads)
+                  Array.prototype.push.apply(tempArry, item.total.enquiryLeads);
+                  Array.prototype.push.apply(tempArry, item.total.bookingLeads);
+                  Array.prototype.push.apply(tempArry, item.total.retailLeads);
+                  Array.prototype.push.apply(tempArry, item.total.lostLeads);
 
-
-                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                  handleNavigationTOSourcrModelVol2(item, tempArry);
                 } else {
                   let tempArry = [];
-                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads)
-                  Array.prototype.push.apply(tempArry, item.self.bookingLeads)
-                  Array.prototype.push.apply(tempArry, item.self.retailLeads)
-                  Array.prototype.push.apply(tempArry, item.self.lostLeads)
+                  Array.prototype.push.apply(tempArry, item.self.enquiryLeads);
+                  Array.prototype.push.apply(tempArry, item.self.bookingLeads);
+                  Array.prototype.push.apply(tempArry, item.self.retailLeads);
+                  Array.prototype.push.apply(tempArry, item.self.lostLeads);
 
-                  handleNavigationTOSourcrModelVol2(item, tempArry)
+                  handleNavigationTOSourcrModelVol2(item, tempArry);
                 }
-
 
                 // navigation.navigate(
                 //   "RECEP_SOURCE_MODEL",
@@ -5114,9 +5271,11 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                 //   }
                 // );
               }}
-              style={{
-                // transform: [{ translateX: translation }],
-              }}
+              style={
+                {
+                  // transform: [{ translateX: translation }],
+                }
+              }
             />
           </View>
         </View>
@@ -5145,10 +5304,17 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
               <RenderLevel1NameViewCRMVol2
                 level={0}
                 item={item}
-                branchName={getBranchName(item?.branchId)}
+                branchName={
+                  checkIsSelfManager() ? "" : getBranchName(item?.branchId)
+                }
                 color={borderColor}
                 titleClick={async () => {
-                  formateReportingUserDataForLevelN(item, index, crmVol2ReportingAllTree, hierarchyLevel)
+                  formateReportingUserDataForLevelN(
+                    item,
+                    index,
+                    crmVol2ReportingAllTree,
+                    hierarchyLevel
+                  );
                 }}
               />
               <View
@@ -5172,13 +5338,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                 {[
-              
-                  item.isOpenInner ? item.self.enquiryCount : item.total.enquiryCount || 0,
+                  item.isOpenInner
+                    ? item.self.enquiryCount
+                    : item.total.enquiryCount || 0,
 
-                  item.isOpenInner ? item.self.bookingCount : item.total.bookingCount || 0,
-                  item.isOpenInner ? item.self.retailCount : item.total.retailCount || 0,
-                  item.isOpenInner ? item.self.lostCount : item.total.lostCount || 0,
-
+                  item.isOpenInner
+                    ? item.self.bookingCount
+                    : item.total.bookingCount || 0,
+                  item.isOpenInner
+                    ? item.self.retailCount
+                    : item.total.retailCount || 0,
+                  item.isOpenInner
+                    ? item.self.lostCount
+                    : item.total.lostCount || 0,
                 ].map((e, index) => {
                   return (
                     <Pressable
@@ -5186,26 +5358,23 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         if (e > 0) {
                           if (item.isOpenInner) {
                             if (index === 0) {
-                              navigateToEmsVol2(item.self.enquiryLeads)
-
+                              navigateToEmsVol2(item.self.enquiryLeads);
                             } else if (index === 1) {
-                              navigateToEmsVol2(item.self.bookingLeads)
+                              navigateToEmsVol2(item.self.bookingLeads);
                             } else if (index === 2) {
-                              navigateToEmsVol2(item.self.retailLeads)
+                              navigateToEmsVol2(item.self.retailLeads);
                             } else if (index === 3) {
-                              navigateToDropAnalysisVol2(item.self.lostLeads)
+                              navigateToDropAnalysisVol2(item.self.lostLeads);
                             }
                           } else {
                             if (index === 0) {
-                              navigateToEmsVol2(item.total.enquiryLeads)
-
+                              navigateToEmsVol2(item.total.enquiryLeads);
                             } else if (index === 1) {
-                              navigateToEmsVol2(item.total.bookingLeads)
+                              navigateToEmsVol2(item.total.bookingLeads);
                             } else if (index === 2) {
-                              navigateToEmsVol2(item.total.retailLeads)
+                              navigateToEmsVol2(item.total.retailLeads);
                             } else if (index === 3) {
-                              navigateToDropAnalysisVol2(item.total.lostLeads)
-
+                              navigateToDropAnalysisVol2(item.total.lostLeads);
                             }
                           }
                         }
@@ -5237,8 +5406,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           style={{
                             fontSize: 16,
                             fontWeight: "700",
-                            textDecorationLine:
-                              e > 0 ? "underline" : "none",
+                            textDecorationLine: e > 0 ? "underline" : "none",
                             // marginLeft: 50,
                           }}
                         >
@@ -5282,7 +5450,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
   }
 
   const renderCRMReportingUserTreeVol2 = () => {
-    // todo manthan
+ 
     const borderColor = color[4 % color.length];
     return (
       <View
@@ -5300,8 +5468,12 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-
-                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <View
                     style={{
                       paddingHorizontal: 8,
@@ -5324,65 +5496,87 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       {"-   " + item.selfUser?.roleName}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: "row", marginTop: 12, }}>
-                    {item.selfUser?.childCount >
-                      0 && (
-                        // <Animated.View
-                        //   style={{
-                        //     transform: [{ translateX: translation }],
-                        //   }}
-                        // >
-                        <View
-                          style={{
-                            backgroundColor: "lightgrey",
-                            flexDirection: "row",
-                            paddingHorizontal: 7,
-                            borderRadius: 10,
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            // marginBottom: 5,
-                            alignSelf: "center",
-                            marginLeft: 7,
-                            // transform: [{ translateX: translation }],
-                          }}
-                        >
-                          <MaterialIcons
-                            name="person"
-                            size={15}
-                            color={Colors.BLACK}
-                          />
-                          <Text>
-                            {
-                              item.selfUser?.childCount
-                            }
-                          </Text>
-                        </View>
-                        // </Animated.View>
-                      )}
+                  <View style={{ flexDirection: "row", marginTop: 12 }}>
+                    {item.selfUser?.childCount > 0 && (
+                      // <Animated.View
+                      //   style={{
+                      //     transform: [{ translateX: translation }],
+                      //   }}
+                      // >
+                      <View
+                        style={{
+                          backgroundColor: "lightgrey",
+                          flexDirection: "row",
+                          paddingHorizontal: 7,
+                          borderRadius: 10,
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          // marginBottom: 5,
+                          alignSelf: "center",
+                          marginLeft: 7,
+                          // transform: [{ translateX: translation }],
+                        }}
+                      >
+                        <MaterialIcons
+                          name="person"
+                          size={15}
+                          color={Colors.BLACK}
+                        />
+                        <Text>{item.selfUser?.childCount}</Text>
+                      </View>
+                      // </Animated.View>
+                    )}
                     <Pressable
                       style={{ alignSelf: "flex-end" }}
                       onPress={() => {
                         if (!item.selfUser.isOpenInner) {
-                          console.log("manthan ooo >> ", JSON.stringify(item));
                           let tempArry = [];
-                          
-                          Array.prototype.push.apply(tempArry, item?.selfUser.total.enquiryLeads)
-                          Array.prototype.push.apply(tempArry, item?.selfUser.total.bookingLeads)
-                          Array.prototype.push.apply(tempArry, item?.selfUser.total.retailLeads)
-                          Array.prototype.push.apply(tempArry, item?.selfUser.total.lostLeads)
 
-
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.total.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.total.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.total.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.total.lostLeads
+                          );
 
                           // handleSourcrModelNavigationVol2(item, tempArry,)
-                          handleNavigationTOSourcrModelVol2(item?.selfUser, tempArry)
+                          handleNavigationTOSourcrModelVol2(
+                            item?.selfUser,
+                            tempArry
+                          );
                         } else {
                           let tempArry = [];
-                          Array.prototype.push.apply(tempArry, item?.selfUser.self.enquiryLeads)
-                          Array.prototype.push.apply(tempArry, item?.selfUser.self.bookingLeads)
-                          Array.prototype.push.apply(tempArry, item?.selfUser.self.retailLeads)
-                          Array.prototype.push.apply(tempArry, item?.selfUser.self.lostLeads)
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.self.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.self.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.self.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item?.selfUser.self.lostLeads
+                          );
 
-                          handleNavigationTOSourcrModelVol2(item?.selfUser, tempArry)
+                          handleNavigationTOSourcrModelVol2(
+                            item?.selfUser,
+                            tempArry
+                          );
                         }
                         // handleSourceModalNavigation(item, item.emp_id, [])
                       }}
@@ -5426,10 +5620,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRMVol2
                         level={0}
                         item={item.selfUser}
-                        branchName={getBranchName(item?.selfUser.branchName)}
+                        branchName={
+                          checkIsSelfManager()
+                            ? ""
+                            : getBranchName(item?.selfUser.branchName)
+                        }
                         color={Colors.CORAL}
                         titleClick={async () => {
-                          formateReportingUserData(item.selfUser, index, crmVol2ReportingData, 0);
+                          formateReportingUserData(
+                            item.selfUser,
+                            index,
+                            crmVol2ReportingData,
+                            0
+                          );
                         }}
                       />
                       <View
@@ -5453,13 +5656,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                         {[
-                         
-                          item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.enquiryCount
+                            : item.selfUser.total.enquiryCount || 0,
 
-                          item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
-                          item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
-                          item.selfUser.isOpenInner ? item.selfUser.self.lostCount : item.selfUser.total.lostCount || 0,
-
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.bookingCount
+                            : item.selfUser.total.bookingCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.retailCount
+                            : item.selfUser.total.retailCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.lostCount
+                            : item.selfUser.total.lostCount || 0,
                         ].map((e, index) => {
                           return (
                             <Pressable
@@ -5467,25 +5676,39 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                                 if (e > 0) {
                                   if (item.selfUser.isOpenInner) {
                                     if (index === 0) {
-                                      navigateToEmsVol2(item.selfUser.self.enquiryLeads)
-
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.enquiryLeads
+                                      );
                                     } else if (index === 1) {
-                                      navigateToEmsVol2(item.selfUser.self.bookingLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.bookingLeads
+                                      );
                                     } else if (index === 2) {
-                                      navigateToEmsVol2(item.selfUser.self.retailLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.retailLeads
+                                      );
                                     } else if (index === 3) {
-                                      navigateToDropAnalysisVol2(item.selfUser.self.lostLeads)
+                                      navigateToDropAnalysisVol2(
+                                        item.selfUser.self.lostLeads
+                                      );
                                     }
                                   } else {
                                     if (index === 0) {
-                                      navigateToEmsVol2(item.selfUser.total.enquiryLeads)
-
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.enquiryLeads
+                                      );
                                     } else if (index === 1) {
-                                      navigateToEmsVol2(item.selfUser.total.bookingLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.bookingLeads
+                                      );
                                     } else if (index === 2) {
-                                      navigateToEmsVol2(item.selfUser.total.retailLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.retailLeads
+                                      );
                                     } else if (index === 3) {
-                                      navigateToDropAnalysisVol2(item.selfUser.total.lostLeads)
+                                      navigateToDropAnalysisVol2(
+                                        item.selfUser.total.lostLeads
+                                      );
                                     }
                                   }
                                 }
@@ -5544,7 +5767,8 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
+                {item.selfUser.isOpenInner &&
+                  renderReportingUserTree(item.selfUser)}
               </View>
             );
             // }
@@ -5576,7 +5800,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
   const formateNonReportingUserData = async (item, index, originalData, heirarchyLevel) => {
 
-    // console.log("manthan {...selector.receptionistDataV3CRM.fullResponse} ", { ...selector.receptionistDataV3CRM.fullResponse });
+   
     // let modifiedData =  [...crmVol2ReportingData];
     let modifiedData = _.cloneDeep(originalData);
     let id = "";
@@ -5613,7 +5837,7 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
 
 
   const renderCRMNonReportingUserTreeVol2 = () => {
-    // todo manthan
+   
     const borderColor = color[4 % color.length];
     return (
       <View
@@ -5631,7 +5855,12 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                   backgroundColor: "#FFFFFF",
                 }}
               >
-                <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <View
                     style={{
                       paddingHorizontal: 8,
@@ -5654,63 +5883,87 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       {"-   " + item.selfUser?.roleName}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: "row", marginTop: 12, }}>
-                    {item.selfUser?.childCount >
-                      0 && (
-                        // <Animated.View
-                        //   style={{
-                        //     transform: [{ translateX: translation }],
-                        //   }}
-                        // >
-                        <View
-                          style={{
-                            backgroundColor: "lightgrey",
-                            flexDirection: "row",
-                            paddingHorizontal: 7,
-                            borderRadius: 10,
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            // marginBottom: 5,
-                            alignSelf: "center",
-                            marginLeft: 7,
-                            // transform: [{ translateX: translation }],
-                          }}
-                        >
-                          <MaterialIcons
-                            name="person"
-                            size={15}
-                            color={Colors.BLACK}
-                          />
-                          <Text>
-                            {
-                              item.selfUser?.childCount
-                            }
-                          </Text>
-                        </View>
-                        // </Animated.View>
-                      )}
+                  <View style={{ flexDirection: "row", marginTop: 12 }}>
+                    {item.selfUser?.childCount > 0 && (
+                      // <Animated.View
+                      //   style={{
+                      //     transform: [{ translateX: translation }],
+                      //   }}
+                      // >
+                      <View
+                        style={{
+                          backgroundColor: "lightgrey",
+                          flexDirection: "row",
+                          paddingHorizontal: 7,
+                          borderRadius: 10,
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          // marginBottom: 5,
+                          alignSelf: "center",
+                          marginLeft: 7,
+                          // transform: [{ translateX: translation }],
+                        }}
+                      >
+                        <MaterialIcons
+                          name="person"
+                          size={15}
+                          color={Colors.BLACK}
+                        />
+                        <Text>{item.selfUser?.childCount}</Text>
+                      </View>
+                      // </Animated.View>
+                    )}
                     <Pressable
                       style={{ alignSelf: "flex-end" }}
                       onPress={() => {
                         if (!item.selfUser.isOpenInner) {
                           let tempArry = [];
-                          
-                          Array.prototype.push.apply(tempArry, item.selfUser.total.enquiryLeads)
-                          Array.prototype.push.apply(tempArry, item.selfUser.total.bookingLeads)
-                          Array.prototype.push.apply(tempArry, item.selfUser.total.retailLeads)
-                          Array.prototype.push.apply(tempArry, item.selfUser.total.lostLeads)
 
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.total.lostLeads
+                          );
 
                           // handleSourcrModelNavigationVol2(item, tempArry,)
-                          handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
+                          handleNavigationTOSourcrModelVol2(
+                            item.selfUser,
+                            tempArry
+                          );
                         } else {
                           let tempArry = [];
-                          Array.prototype.push.apply(tempArry, item.selfUser.self.enquiryLeads)
-                          Array.prototype.push.apply(tempArry, item.selfUser.self.bookingLeads)
-                          Array.prototype.push.apply(tempArry, item.selfUser.self.retailLeads)
-                          Array.prototype.push.apply(tempArry, item.selfUser.self.lostLeads)
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.enquiryLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.bookingLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.retailLeads
+                          );
+                          Array.prototype.push.apply(
+                            tempArry,
+                            item.selfUser.self.lostLeads
+                          );
 
-                          handleNavigationTOSourcrModelVol2(item.selfUser, tempArry)
+                          handleNavigationTOSourcrModelVol2(
+                            item.selfUser,
+                            tempArry
+                          );
                         }
                         // handleSourceModalNavigation(item, item.emp_id, [])
                       }}
@@ -5753,10 +6006,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRMVol2
                         level={0}
                         item={item.selfUser}
-                        branchName={getBranchName(item?.selfUser.branchName)}
+                        branchName={
+                          checkIsSelfManager()
+                            ? ""
+                            : getBranchName(item?.selfUser.branchName)
+                        }
                         color={borderColor}
                         titleClick={async () => {
-                          formateNonReportingUserData(item.selfUser, index, crmVol2NonReportingData, 0);
+                          formateNonReportingUserData(
+                            item.selfUser,
+                            index,
+                            crmVol2NonReportingData,
+                            0
+                          );
                         }}
                       />
                       <View
@@ -5780,13 +6042,19 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                           selector.receptionist_self_data?.RetailCount || 0,
                         ]. */}
                         {[
-                        
-                          item.selfUser.isOpenInner ? item.selfUser.self.enquiryCount : item.selfUser.total.enquiryCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.enquiryCount
+                            : item.selfUser.total.enquiryCount || 0,
 
-                          item.selfUser.isOpenInner ? item.selfUser.self.bookingCount : item.selfUser.total.bookingCount || 0,
-                          item.selfUser.isOpenInner ? item.selfUser.self.retailCount : item.selfUser.total.retailCount || 0,
-                          item.selfUser.isOpenInner ? item.selfUser.self.lostCount : item.selfUser.total.lostCount || 0,
-
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.bookingCount
+                            : item.selfUser.total.bookingCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.retailCount
+                            : item.selfUser.total.retailCount || 0,
+                          item.selfUser.isOpenInner
+                            ? item.selfUser.self.lostCount
+                            : item.selfUser.total.lostCount || 0,
                         ].map((e, index) => {
                           return (
                             <Pressable
@@ -5794,25 +6062,39 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                                 if (e > 0) {
                                   if (item.selfUser.isOpenInner) {
                                     if (index === 0) {
-                                      navigateToEmsVol2(item.selfUser.self.enquiryLeads)
-
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.enquiryLeads
+                                      );
                                     } else if (index === 1) {
-                                      navigateToEmsVol2(item.selfUser.self.bookingLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.bookingLeads
+                                      );
                                     } else if (index === 2) {
-                                      navigateToEmsVol2(item.selfUser.self.retailLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.self.retailLeads
+                                      );
                                     } else if (index === 3) {
-                                      navigateToDropAnalysisVol2(item.selfUser.self.lostLeads)
+                                      navigateToDropAnalysisVol2(
+                                        item.selfUser.self.lostLeads
+                                      );
                                     }
                                   } else {
                                     if (index === 0) {
-                                      navigateToEmsVol2(item.selfUser.total.enquiryLeads)
-
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.enquiryLeads
+                                      );
                                     } else if (index === 1) {
-                                      navigateToEmsVol2(item.selfUser.total.bookingLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.bookingLeads
+                                      );
                                     } else if (index === 2) {
-                                      navigateToEmsVol2(item.selfUser.total.retailLeads)
+                                      navigateToEmsVol2(
+                                        item.selfUser.total.retailLeads
+                                      );
                                     } else if (index === 3) {
-                                      navigateToDropAnalysisVol2(item.selfUser.total.lostLeads)
+                                      navigateToDropAnalysisVol2(
+                                        item.selfUser.total.lostLeads
+                                      );
                                     }
                                   }
                                 }
@@ -5871,9 +6153,9 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                   </View>
                 </View>
-                {item.selfUser.isOpenInner && renderReportingUserTree(item.selfUser)}
+                {item.selfUser.isOpenInner &&
+                  renderReportingUserTree(item.selfUser)}
               </View>
-
             );
             // }
           })}
@@ -5881,6 +6163,619 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
       </View>
     );
   };
+
+   const checkIsSelfManager = () => {
+     if (
+       userData?.orgName?.includes("BikeWo Corporation") &&
+       userData.isSelfManager == "Y"
+     ) {
+       return true;
+     }
+     return false;
+   };
+
+
+   const renderCRMtNewTreeVol2_filter = () => {
+   
+
+     return (
+       <View
+       // style={{ height: selector.isMD ? "81%" : "80%" }}
+       >
+         {crmVol2Level0_filter?.length > 0 &&
+           crmVol2Level0_filter?.map((item, index) => {
+             // if (item.empId === userData.empId) {
+             return (
+               <View
+                 key={`${item.empName} ${index}`}
+                 style={{
+                   borderRadius: 10,
+                   borderWidth: isViewExpanded ? 2 : 0,
+                   borderColor: "#C62159",
+                   backgroundColor: "#FFFFFF",
+                 }}
+               >
+                 <View
+                   style={{
+                     flexDirection: "row",
+                     justifyContent: "space-between",
+                   }}
+                 >
+                   <View
+                     style={{
+                       paddingHorizontal: 8,
+                       display: "flex",
+                       flexDirection: "row",
+                       justifyContent: "space-between",
+                       marginTop: 12,
+                       // width: Dimensions.get("screen").width - 28,
+                     }}
+                   >
+                     <Text
+                       style={{
+                         fontSize: 12,
+                         fontWeight: "600",
+                         textTransform: "capitalize",
+                       }}
+                     >
+                       {item?.empName}
+                       {"  "}
+                       {"-   " + item?.roleName}
+                     </Text>
+                   </View>
+                   <View style={{ flexDirection: "row", marginTop: 12 }}>
+                     {item?.childCount > 0 && (
+                       <Animated.View
+                         style={{
+                           transform: [{ translateX: translation }],
+                         }}
+                       >
+                         <View
+                           style={{
+                             backgroundColor: "lightgrey",
+                             flexDirection: "row",
+                             paddingHorizontal: 7,
+                             borderRadius: 10,
+                             alignItems: "center",
+                             justifyContent: "space-between",
+                             // marginBottom: 5,
+                             alignSelf: "center",
+                             marginLeft: 7,
+                             // transform: [{ translateX: translation }],
+                           }}
+                         >
+                           <MaterialIcons
+                             name="person"
+                             size={15}
+                             color={Colors.BLACK}
+                           />
+                           <Text>{item?.childCount}</Text>
+                         </View>
+                       </Animated.View>
+                     )}
+                     <SourceModelView
+                       onClick={() => {
+                         if (!isViewExpanded) {
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.total.lostLeads
+                           );
+
+                           handleSourcrModelNavigationVol2(
+                             tempArry,
+                             item.roleName
+                           );
+                         } else {
+                           let tempArry = [];
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.enquiryLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.bookingLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.retailLeads
+                           );
+                           Array.prototype.push.apply(
+                             tempArry,
+                             item.self.lostLeads
+                           );
+
+                           handleSourcrModelNavigationVol2(
+                             tempArry,
+                             item.roleName
+                           );
+                         }
+
+                         // navigation.navigate(
+                         //   "RECEP_SOURCE_MODEL",
+                         //   {
+                         //     empId: item?.emp_id,
+                         //     headerTitle: item?.emp_name,
+                         //     loggedInEmpId: item.emp_id,
+                         //     type: "TEAM",
+                         //     moduleType: "home",
+                         //     headerTitle: "Source/Model",
+                         //     orgId: userData.orgId,
+                         //     role: userData.hrmsRole,
+                         //     branchList: userData.branchs.map(
+                         //       (a) => a.branchId
+                         //     ),
+                         //   }
+                         // );
+                       }}
+                       style={{
+                         transform: [{ translateX: translation }],
+                       }}
+                     />
+                   </View>
+                 </View>
+
+                 {/*Source/Model View END */}
+                 <View
+                   style={[
+                     { flexDirection: "row" },
+                     item.isOpenInner && {
+                       borderRadius: 10,
+                       borderWidth: 2,
+                       borderColor: "#C62159",
+                       marginHorizontal: 6,
+                       overflow: "hidden",
+                     },
+                   ]}
+                 >
+                   {/*RIGHT SIDE VIEW*/}
+                   <View style={[styles.view6]}>
+                     <View style={styles.view7}>
+                       <RenderLevel1NameViewCRMVol2
+                         level={0}
+                         item={item}
+                         branchName={
+                           checkIsSelfManager() ? "" : item.branchName
+                         }
+                         color={"#C62159"}
+                         receptionManager={true}
+                         navigation={navigation}
+                         titleClick={async (e) => {
+                           setIsViewExpanded(!isViewExpanded);
+                           // formateFirstLevelData(item);
+                         }}
+                         roleName={item.roleName}
+                         stopLocation={true}
+                       />
+                       <View
+                         style={{
+                           flex: 1,
+                           backgroundColor: "rgba(223,228,231,0.67)",
+                           alignItems: "center",
+                           flexDirection: "row",
+                         }}
+                       >
+                         {[
+                           isViewExpanded
+                             ? item.self.enquiryCount
+                             : item.total.enquiryCount || 0,
+
+                           isViewExpanded
+                             ? item.self.bookingCount
+                             : item.total.bookingCount || 0,
+                           isViewExpanded
+                             ? item.self.retailCount
+                             : item.total.retailCount || 0,
+                           isViewExpanded
+                             ? item.self.lostCount
+                             : item.total.lostCount || 0,
+                         ].map((e, indexss) => {
+                           return (
+                             <Pressable
+                               onPress={() => {
+                                 // todo redirections logic  first level
+                                 if (e > 0) {
+                                   if (isViewExpanded) {
+                                     if (indexss === 0) {
+                                       navigateToEmsVol2(
+                                         item.self.enquiryLeads
+                                       );
+                                     } else if (indexss === 1) {
+                                       navigateToEmsVol2(
+                                         item.self.bookingLeads
+                                       );
+                                     } else if (indexss === 2) {
+                                       navigateToEmsVol2(item.self.retailLeads);
+                                     } else if (indexss === 3) {
+                                       navigateToDropAnalysisVol2(
+                                         item.self.lostLeads
+                                       );
+                                     }
+                                   } else {
+                                     if (indexss === 0) {
+                                       navigateToEmsVol2(
+                                         item.total.enquiryLeads
+                                       );
+                                     } else if (indexss === 1) {
+                                       navigateToEmsVol2(
+                                         item.total.bookingLeads
+                                       );
+                                     } else if (indexss === 2) {
+                                       navigateToEmsVol2(
+                                         item.total.retailLeads
+                                       );
+                                     } else if (indexss === 3) {
+                                       // todo navigate to lost
+
+                                       navigateToDropAnalysisVol2(
+                                         item.total.lostLeads
+                                       );
+                                     }
+                                   }
+                                 }
+                               }}
+                             >
+                               <View
+                                 style={{
+                                   width: 55,
+                                   height: 30,
+                                   justifyContent: "center",
+                                   alignItems: "center",
+                                 }}
+                               >
+                                 <Text
+                                   style={{
+                                     fontSize: 16,
+                                     fontWeight: "700",
+                                     textDecorationLine:
+                                       e > 0 ? "underline" : "none",
+                                     // marginLeft: 50,
+                                   }}
+                                 >
+                                   {e || 0}
+                                 </Text>
+                               </View>
+                             </Pressable>
+                           );
+                         })}
+                       </View>
+                     </View>
+                     {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                   </View>
+                 </View>
+                 {isViewExpanded && renderCRMNewTreeLevel1()}
+               </View>
+             );
+             // }
+           })}
+         {/* {renderCREFirstLevel()} */}
+         {/* {renderCRMNonReportingUserTreeVol2()} */}
+       </View>
+     );
+   };
+
+    const renderCRMTreeVOl2 = () => {
+      return (
+        <View
+        // style={{ height: selector.isMD ? "81%" : "80%" }}
+        >
+          {crmVol2Level0?.length > 0 &&
+            crmVol2Level0?.map((item, index) => {
+              // if (item.emp_id === userData.empId) {
+              return (
+                <View
+                  key={`${item?.self?.selfUser?.empName} ${index}`}
+                  style={{
+                    borderColor:
+                      isViewExpanded && indexLocalFirstLevel === index
+                        ? Colors.PINK
+                        : "",
+                    borderWidth:
+                      isViewExpanded && indexLocalFirstLevel === index ? 1 : 0,
+                    borderRadius: 10,
+                    margin:
+                      isViewExpanded && indexLocalFirstLevel === index ? 10 : 0,
+                  }}
+                >
+                  <View
+                    style={{
+                      paddingHorizontal: 8,
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 12,
+                      width: Dimensions.get("screen").width - 28,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {item?.self?.selfUser?.empName}
+                        {"  "}
+                        {"-   " + item?.self?.selfUser?.roleName}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}></View>
+                    <View style={{ flexDirection: "row" }}>
+                      {selector.receptionistData?.fullResponse?.childUserCount >
+                        0 && (
+                        <Animated.View
+                          style={{
+                            transform: [{ translateX: translation }],
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "lightgrey",
+                              flexDirection: "row",
+                              paddingHorizontal: 7,
+                              borderRadius: 10,
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                              alignSelf: "flex-start",
+                              marginLeft: 7,
+                              // transform: [{ translateX: translation }],
+                            }}
+                          >
+                            <MaterialIcons
+                              name="person"
+                              size={15}
+                              color={Colors.BLACK}
+                            />
+                            <Text>
+                              {
+                                selector.receptionistData?.fullResponse?.CRM[
+                                  index
+                                ].data.childUserCount
+                              }
+                            </Text>
+                          </View>
+                        </Animated.View>
+                      )}
+                      <SourceModelView
+                        onClick={() => {
+                          if (!isViewExpanded) {
+                            let tempArry = [];
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.total.enquiryLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.total.bookingLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.total.retailLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.total.lostLeads
+                            );
+
+                            handleSourcrModelNavigationVol2(tempArry, item);
+                          } else {
+                            let tempArry = [];
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.self.enquiryLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.self.bookingLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.self.retailLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              item?.self?.selfUser.self.lostLeads
+                            );
+
+                            handleSourcrModelNavigationVol2(tempArry, item);
+                          }
+
+                          // navigation.navigate(
+                          //   "RECEP_SOURCE_MODEL",
+                          //   {
+                          //     empId: item?.emp_id,
+                          //     headerTitle: item?.emp_name,
+                          //     loggedInEmpId: item.emp_id,
+                          //     type: "TEAM",
+                          //     moduleType: "home",
+                          //     headerTitle: "Source/Model",
+                          //     orgId: userData.orgId,
+                          //     role: userData.hrmsRole,
+                          //     branchList: userData.branchs.map(
+                          //       (a) => a.branchId
+                          //     ),
+                          //   }
+                          // );
+                        }}
+                        style={{
+                          transform: [{ translateX: translation }],
+                        }}
+                      />
+                    </View>
+                  </View>
+
+                  {/*Source/Model View END */}
+                  <View
+                    style={[
+                      { flexDirection: "row" },
+                      item?.self?.selfUser?.isOpenInner && {
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: "#C62159",
+                        marginHorizontal: 6,
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
+                    {/*RIGHT SIDE VIEW*/}
+                    <View style={[styles.view6]}>
+                      <View style={styles.view7}>
+                        <RenderLevel1NameViewCRMVol2
+                          level={0}
+                          item={item?.self?.selfUser}
+                          branchName={
+                            checkIsSelfManager()
+                              ? ""
+                              : item?.self?.selfUser?.branchName
+                          }
+                          color={"#C62159"}
+                          receptionManager={true}
+                          navigation={navigation}
+                          titleClick={async (e) => {
+                            onCRMClickedVol2(
+                              item?.self?.selfUser,
+                              crmVol2Level0
+                            );
+                          }}
+                          roleName={item?.self?.selfUser?.roleName}
+                          stopLocation={true}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            backgroundColor: "rgba(223,228,231,0.67)",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {/* {[
+                            isViewExpanded ? item.contactCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalEnquiryCount : 0 || 0,
+                        isViewExpanded ? item.enquiryCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalBookingCount : 0 || 0,
+                        isViewExpanded ? item.bookingCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalRetailCount : 0 || 0,
+                        isViewExpanded ? item.retailCount : crmFirstLevelTotalData ? crmFirstLevelTotalData?.totalLostCount : 0 || 0,
+                        ] */}
+                          {/* {[
+                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].enquiryCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalEnquiryCount : 0 || 0,
+                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].bookingCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalBookingCount : 0 || 0,
+                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].retailCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalRetailCount : 0 || 0,
+                          isViewExpanded && indexLocalFirstLevel === index ? crmFirstLevelDataOwn[index].droppedCount : crmFirstLevelTotalData ? crmFirstLevelTotalData[index]?.totalLostCount : 0 || 0,
+                        ] */}
+
+                          {[
+                            (!item?.self?.selfUser?.isOpenInner &&
+                              item?.self.selfUser.total.enquiryCount) ||
+                              item?.self.selfUser.self.enquiryCount ||
+                              0,
+                            (!item?.self?.selfUser?.isOpenInner &&
+                              item?.self.selfUser.total.bookingCount) ||
+                              item?.self.selfUser.self.bookingCount ||
+                              0,
+                            (!item?.self?.selfUser?.isOpenInner &&
+                              item?.self.selfUser.total.retailCount) ||
+                              item?.self.selfUser.self.retailCount ||
+                              0,
+                            (!item?.self?.selfUser?.isOpenInner &&
+                              item?.self.selfUser.total.lostCount) ||
+                              item?.self.selfUser.self.lostCount ||
+                              0,
+                          ].map((e, indexss) => {
+                            return (
+                              <Pressable
+                                onPress={() => {
+                                  // todo redirections logic  first level
+                                  if (e > 0) {
+                                    if (!item?.self?.selfUser?.isOpenInner) {
+                                      if (indexss === 0) {
+                                        navigateToEmsVol2(
+                                          item?.self.selfUser.total.enquiryLeads
+                                        );
+                                      } else if (indexss === 1) {
+                                        navigateToEMS(
+                                          item?.self.selfUser.total.bookingLeads
+                                        );
+                                      } else if (indexss === 2) {
+                                        navigateToEMS(
+                                          item?.self.selfUser.total.retailLeads
+                                        );
+                                      } else if (indexss === 3) {
+                                        navigateToDropAnalysisVol2(
+                                          item?.self.selfUser.total.lostLeads
+                                        );
+                                      }
+                                    } else {
+                                      if (indexss === 0) {
+                                        navigateToEmsVol2(
+                                          item?.self.selfUser.self.enquiryLeads
+                                        );
+                                      } else if (indexss === 1) {
+                                        navigateToEMS(
+                                          item?.self.selfUser.self.bookingLeads
+                                        );
+                                      } else if (indexss === 2) {
+                                        navigateToEMS(
+                                          item?.self.selfUser.self.retailLeads
+                                        );
+                                      } else if (indexss === 3) {
+                                        navigateToDropAnalysisVol2(
+                                          item?.self.selfUser.self.lostLeads
+                                        );
+                                      }
+                                    }
+                                  }
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    width: 55,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: "700",
+                                      textDecorationLine:
+                                        e > 0 ? "underline" : "none",
+                                      // marginLeft: 50,
+                                    }}
+                                  >
+                                    {e || 0}
+                                  </Text>
+                                </View>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </View>
+                      {item?.self?.selfUser?.isOpenInner &&
+                        renderCRMNewTreeLevel1()}
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
+                    </View>
+                  </View>
+                </View>
+              );
+              // }
+            })}
+          {renderCRMNonReportingUserTreeVol2()}
+        </View>
+      );
+    };
 
 
   return (
@@ -6053,7 +6948,11 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={item.branch}
+                                        branchName={
+                                          checkIsSelfManager()
+                                            ? ""
+                                            : item.branch
+                                        }
                                         color={"#C62159"}
                                         receptionManager={true}
                                         navigation={navigation}
@@ -6108,13 +7007,23 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                     </View>
                     {/* {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null} */}
                     {!selector.saveReceptionistfilterObj.selectedempId
+                      ? renderCRMTreeVOl2()
+                      : selector.saveReceptionistfilterObj
+                          ?.selectedDesignation &&
+                        selector.saveReceptionistfilterObj
+                          ?.selectedDesignation[0] === "Reception"
+                      ? renderReceptionistCRMVol2()
+                      : null}
+
+                    {/* vol1 woriking code  */}
+                    {/* {!selector.saveReceptionistfilterObj.selectedempId
                       ? renderCRMTree()
                       : selector.saveReceptionistfilterObj
                           ?.selectedDesignation &&
                         selector.saveReceptionistfilterObj
                           ?.selectedDesignation[0] === "Reception"
                       ? renderCRMTreeFilter()
-                      : null}
+                      : null} */}
                     {/* // : renderCRMTreeFilterApplied()}  */}
                     {/* Grand Total Section */}
                     {totalOfTeam && (
@@ -6468,7 +7377,9 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                                     <RenderLevel1NameView
                                       level={0}
                                       item={item}
-                                      branchName={item.branch}
+                                      branchName={
+                                        checkIsSelfManager() ? "" : item.branch
+                                      }
                                       color={"#C62159"}
                                       receptionManager={true}
                                       navigation={navigation}
@@ -6521,196 +7432,210 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                         })}
                     </ScrollView>
                   </View>
-                        {/* new code for vol2 CRM receptionsit dashboard start */}
-                          {renderReceptionistCRMVol2()}
+                  {/* new code for vol2 CRM receptionsit dashboard start */}
+                  {renderReceptionistCRMVol2()}
 
-                        {totalOfTeam && (
+                  {totalOfTeam && (
+                    <View
+                      style={{
+                        width: Dimensions.get("screen").width - 35,
+                        marginTop: 20,
+                      }}
+                    >
+                      <View style={{ alignItems: "flex-end" }}>
+                        <SourceModelView
+                          onClick={() => {
+                            let tempArry = [];
+                            Array.prototype.push.apply(
+                              tempArry,
+                              selector.receptionistData_CRM_vol2?.fullResponse
+                                ?.totalEnquiryLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              selector.receptionistData_CRM_vol2?.fullResponse
+                                ?.totalBookingLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              selector.receptionistData_CRM_vol2?.fullResponse
+                                ?.totalRetailLeads
+                            );
+                            Array.prototype.push.apply(
+                              tempArry,
+                              selector.receptionistData_CRM_vol2?.fullResponse
+                                ?.totalLostLeads
+                            );
+                           
+                            let item = {
+                              empName: "Grand Total",
+                              roleName: "",
+                            };
+                            handleNavigationTOSourcrModelVol2(item, tempArry);
+                            // if (
+                            //   selector.saveReceptionistfilterObj.selectedempId
+                            // ) {
+                            //   navigation.navigate(
+                            //     "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                            //     {
+                            //       empId:
+                            //         selector.saveReceptionistfilterObj
+                            //           .selectedempId[0],
+                            //       loggedInEmpId:
+                            //         selector.saveReceptionistfilterObj
+                            //           .selectedempId[0],
+                            //       // type: "TEAM",
+                            //       moduleType: "ReceptionistDashboard",
+                            //       headerTitle: "Source/Model",
+                            //       orgId: userData.orgId,
+                            //       role: selector.saveReceptionistfilterObj
+                            //         ?.selectedDesignation[0],
+                            //       branchList: userData.branchs.map(
+                            //         (a) => a.branchId
+                            //       ),
+                            //       // empList: selector.saveCRMfilterObj.selectedempId,
+                            //       self: true,
+                            //     }
+                            //   );
+                            // } else {
+                            //   if (userData.hrmsRole === "CRM") {
+                            //     navigation.navigate(
+                            //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                            //       {
+                            //         empId: userData.empId,
+                            //         headerTitle: "Source/Model",
+                            //         loggedInEmpId: userData.empId,
+                            //         orgId: userData.orgId,
+                            //         role: "CRM",
+                            //         moduleType: "ReceptionistDashboard",
+                            //         dashboardType: "reception",
+                            //         self: false,
+                            //       }
+                            //     );
+                            //   } else {
+                            //     navigation.navigate(
+                            //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
+                            //       {
+                            //         empId: userData.empId,
+                            //         headerTitle: "Source/Model",
+                            //         loggedInEmpId: userData.empId,
+                            //         orgId: userData.orgId,
+                            //         role: "xrole",
+                            //         moduleType: "ReceptionistDashboard",
+                            //       }
+                            //     );
+                            //   }
+                            // }
+                          }}
+                          style={{
+                            transform: [{ translateX: translation }],
+                          }}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          height: 40,
+                          backgroundColor: Colors.RED,
+                        }}
+                      >
                         <View
                           style={{
-                            width: Dimensions.get("screen").width - 35,
-                            marginTop: 20,
+                            width: 100,
+                            justifyContent: "space-around",
+                            flexDirection: "row",
+                            backgroundColor: Colors.RED,
                           }}
                         >
-                          <View style={{ alignItems: "flex-end" }}>
-                            <SourceModelView
-                              onClick={() => {
-                                let tempArry = [];
-                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
-                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
-                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
-                                Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads)
-                                console.log("manthan jjjd ", tempArry);
-                                let item = {
-                                  empName:"Grand Total",
-                                  roleName:""
-                                }
-                                handleNavigationTOSourcrModelVol2(item,tempArry)
-                                // if (
-                                //   selector.saveReceptionistfilterObj.selectedempId
-                                // ) {
-                                //   navigation.navigate(
-                                //     "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                //     {
-                                //       empId:
-                                //         selector.saveReceptionistfilterObj
-                                //           .selectedempId[0],
-                                //       loggedInEmpId:
-                                //         selector.saveReceptionistfilterObj
-                                //           .selectedempId[0],
-                                //       // type: "TEAM",
-                                //       moduleType: "ReceptionistDashboard",
-                                //       headerTitle: "Source/Model",
-                                //       orgId: userData.orgId,
-                                //       role: selector.saveReceptionistfilterObj
-                                //         ?.selectedDesignation[0],
-                                //       branchList: userData.branchs.map(
-                                //         (a) => a.branchId
-                                //       ),
-                                //       // empList: selector.saveCRMfilterObj.selectedempId,
-                                //       self: true,
-                                //     }
-                                //   );
-                                // } else {
-                                //   if (userData.hrmsRole === "CRM") {
-                                //     navigation.navigate(
-                                //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                //       {
-                                //         empId: userData.empId,
-                                //         headerTitle: "Source/Model",
-                                //         loggedInEmpId: userData.empId,
-                                //         orgId: userData.orgId,
-                                //         role: "CRM",
-                                //         moduleType: "ReceptionistDashboard",
-                                //         dashboardType: "reception",
-                                //         self: false,
-                                //       }
-                                //     );
-                                //   } else {
-                                //     navigation.navigate(
-                                //       "RECEP_SOURCE_MODEL_RECEPTIONIST",
-                                //       {
-                                //         empId: userData.empId,
-                                //         headerTitle: "Source/Model",
-                                //         loggedInEmpId: userData.empId,
-                                //         orgId: userData.orgId,
-                                //         role: "xrole",
-                                //         moduleType: "ReceptionistDashboard",
-                                //       }
-                                //     );
-                                //   }
-                                // }
-                              }}
-                              style={{
-                                transform: [{ translateX: translation }],
-                              }}
-                            />
-                          </View>
+                          <View />
                           <View
                             style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text
+                              style={[
+                                styles.grandTotalText,
+                                {
+                                  color: Colors.WHITE,
+                                  fontSize: 12,
+                                },
+                              ]}
+                            >
+                              Total
+                            </Text>
+                          </View>
+                          <View style={{ alignSelf: "flex-end" }}>
+                            <View
+                              style={{
+                                paddingRight: 2,
+                                height: 20,
+                                justifyContent: "center",
+                                marginLeft: 10,
+                              }}
+                            >
+                              <Text style={styles.txt7}></Text>
+                            </View>
+
+                            <View
+                              style={{
+                                height: 20,
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={styles.txt7}></Text>
+                            </View>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            minHeight: 40,
+                            flexDirection: "column",
+                          }}
+                        >
+                          <View
+                            style={{
+                              minHeight: 40,
                               flexDirection: "row",
-                              height: 40,
-                              backgroundColor: Colors.RED,
                             }}
                           >
                             <View
                               style={{
-                                width: 100,
-                                justifyContent: "space-around",
                                 flexDirection: "row",
-                                backgroundColor: Colors.RED,
+                                alignItems: "center",
                               }}
                             >
-                              <View />
-                              <View
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Text
-                                  style={[
-                                    styles.grandTotalText,
-                                    {
-                                      color: Colors.WHITE,
-                                      fontSize: 12,
-                                    },
-                                  ]}
-                                >
-                                  Total
-                                </Text>
-                              </View>
-                              <View style={{ alignSelf: "flex-end" }}>
-                                <View
-                                  style={{
-                                    paddingRight: 2,
-                                    height: 20,
-                                    justifyContent: "center",
-                                    marginLeft:10
-                                  }}
-                                >
-                                  <Text style={styles.txt7}></Text>
-                                </View>
-
-                                <View
-                                  style={{
-                                    height: 20,
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Text style={styles.txt7}></Text>
-                                </View>
-                              </View>
-                            </View>
-                            <View
-                              style={{
-                                minHeight: 40,
-                                flexDirection: "column",
-                              }}
-                            >
-                              <View
-                                style={{
-                                  minHeight: 40,
-                                  flexDirection: "row",
-                                }}
-                              >
-                                <View
-                                  style={{
-
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  {totalOfTeam.map((e) => {
-                                    return (
-                                      <View
-                                        style={{
-                                          width: 55,
-                                          height: 30,
-                                          justifyContent: "center",
-                                          alignItems: "center", 
-                                          marginLeft:10
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 16,
-                                            fontWeight: "700",
-                                            color: Colors.WHITE,
-                                          }}
-                                        >
-                                          {e || 0}
-                                        </Text>
-                                      </View>
-                                    );
-                                  })}
-
-                                </View>
-                              </View>
+                              {totalOfTeam.map((e) => {
+                                return (
+                                  <View
+                                    style={{
+                                      width: 55,
+                                      height: 30,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      marginLeft: 10,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 16,
+                                        fontWeight: "700",
+                                        color: Colors.WHITE,
+                                      }}
+                                    >
+                                      {e || 0}
+                                    </Text>
+                                  </View>
+                                );
+                              })}
                             </View>
                           </View>
                         </View>
-                      )}
-                      {/* new code for vol2 CRM receptionsit dashboard end */}
+                      </View>
+                    </View>
+                  )}
+                  {/* new code for vol2 CRM receptionsit dashboard end */}
 
                   {/* for CRM login Receptionist dashboard  */}
                   {/* {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null} */}
@@ -6930,17 +7855,109 @@ const ReceptionistDashBoardTargetScreen = ({ route }) => {
                               <SourceModelView
                                 style={{ alignSelf: "flex-end" }}
                                 onClick={() => {
-                                  let tempArry = [];
-                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalEnquiryLeads)
-                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalBookingLeads)
-                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalRetailLeads)
-                                  Array.prototype.push.apply(tempArry, selector.receptionistData_CRM_vol2?.fullResponse?.totalLostLeads)
-                                  
-                                  let item = {
-                                    empName: "Source/Model",
-                                    roleName: ""
+                                
+                                  if (
+                                    selector.saveReceptionistfilterObj
+                                      .selectedempId
+                                  ) {
+                                      let tempArry = [];
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionistData_CRM_vol2
+                                          ?.fullResponse?.totalEnquiryLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionistData_CRM_vol2
+                                          ?.fullResponse?.totalBookingLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionistData_CRM_vol2
+                                          ?.fullResponse?.totalRetailLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionistData_CRM_vol2
+                                          ?.fullResponse?.totalLostLeads
+                                      );
+
+                                      let item = {
+                                        empName: "Source/Model",
+                                        roleName: "",
+                                      };
+                                      handleNavigationTOSourcrModelVol2(
+                                        item,
+                                        tempArry
+                                      );
+                                  } else {
+                                    if (userData.hrmsRole === "CRM") {
+                                        let tempArry = [];
+                                        Array.prototype.push.apply(
+                                          tempArry,
+                                          selector.receptionistData_CRM_vol2
+                                            ?.fullResponse?.totalEnquiryLeads
+                                        );
+                                        Array.prototype.push.apply(
+                                          tempArry,
+                                          selector.receptionistData_CRM_vol2
+                                            ?.fullResponse?.totalBookingLeads
+                                        );
+                                        Array.prototype.push.apply(
+                                          tempArry,
+                                          selector.receptionistData_CRM_vol2
+                                            ?.fullResponse?.totalRetailLeads
+                                        );
+                                        Array.prototype.push.apply(
+                                          tempArry,
+                                          selector.receptionistData_CRM_vol2
+                                            ?.fullResponse?.totalLostLeads
+                                        );
+
+                                        let item = {
+                                          empName: "Source/Model",
+                                          roleName: "",
+                                        };
+                                        handleNavigationTOSourcrModelVol2(
+                                          item,
+                                          tempArry
+                                        );
+                                    } else {
+                                      let tempArry = [];
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionist_Dashboard_Vol2
+                                          ?.fullResponse?.totalEnquiryLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionist_Dashboard_Vol2
+                                          ?.fullResponse?.totalBookingLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionist_Dashboard_Vol2
+                                          ?.fullResponse?.totalRetailLeads
+                                      );
+                                      Array.prototype.push.apply(
+                                        tempArry,
+                                        selector.receptionist_Dashboard_Vol2
+                                          ?.fullResponse?.totalLostLeads
+                                      );
+
+                                      let item = {
+                                        empName: "Source/Model",
+                                        roleName: "",
+                                      };
+                                      handleNavigationTOSourcrModelVol2(
+                                        item,
+                                        tempArry
+                                      );
+                                    }
                                   }
-                                  handleNavigationTOSourcrModelVol2(item, tempArry)
+
+
+                                  //vol1 working code
                                   // if (
                                   //   selector.saveReceptionistfilterObj
                                   //     .selectedempId
@@ -7634,29 +8651,60 @@ export const RenderLevel1NameViewCRMVol2 = ({
       }}
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity
-          disabled={disable}
+        <View
           style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
+            flexDirection: "row",
+            alignContent: "center",
             alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
           }}
-          onPress={titleClick}
         >
-          <Text
+          <TouchableOpacity
+            disabled={disable}
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
+            onPress={titleClick}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+          {item.isExpand ? (
+            // <AntDesign
+            // style = {{
+            //   marginTop: 5,
+            //   marginBottom: 5,
+            //   marginStart: 5,
+            // // tinitColor:color
+            // }}
+            // size={16}
+            // color={color}
+            //   name="team"
+            // />
+            <Ionicons
+              style={{
+                marginTop: 5,
+                marginBottom: 5,
+                marginStart: 5,
+              }}
+              size={18}
+              color={color}
+              name="md-people-sharp"
+            />
+          ) : null}
+        </View>
         {level === 0 && !!item?.branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton

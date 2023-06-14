@@ -60,6 +60,7 @@ import {
   get_xrole_SalesManagerReceptinistTeam,
   getCRM_ReceptionistDashborad,
   getCRM_ReceptionistDashboradVol2,
+  get_xrole_SalesManagerReceptionistTeam_Vol2,
 } from "../../../redux/homeReducer";
 import { getCallRecordingCredentials } from "../../../redux/callRecordingReducer";
 import { updateData, updateIsManager } from "../../../redux/sideMenuReducer";
@@ -488,7 +489,10 @@ const ReceptionistDashboardScreen = ({ route, navigation }) => {
         }
       } else {
         if (!selector.saveReceptionistfilterObj.selectedempId) {
-          dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole));
+            dispatch(get_xrole_SalesManagerReceptionistTeam_Vol2(payloadXrole));
+
+          // old code vol1 receptionsit dashboard sales login
+          // dispatch(get_xrole_SalesManagerReceptinistTeam(payloadXrole));
         }
       }
 

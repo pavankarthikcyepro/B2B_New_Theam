@@ -37,7 +37,7 @@ import URL from "../../../networking/endpoints";
 import { client } from "../../../networking/client";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import _ from "lodash";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 const receptionistRole = ["Reception", "Tele Caller", "CRE"];
 const crmRole = ["CRM"];
 const screenWidth = Dimensions.get("window").width;
@@ -8692,29 +8692,61 @@ export const RenderLevel1NameViewCRMVol2 = ({
       }}
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity
-          disabled={disable}
+        <View
           style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
+            flexDirection: "row",
+            alignContent: "center",
             alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
           }}
-          onPress={titleClick}
         >
-          <Text
+          <TouchableOpacity
+            disabled={disable}
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
+            onPress={titleClick}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+          {item.isExpand ? (
+            // <AntDesign
+            // style = {{
+            //   marginTop: 5,
+            //   marginBottom: 5,
+            //   marginStart: 5,
+            // // tinitColor:color
+            // }}
+            // size={16}
+            // color={color}
+            //   name="team"
+            // />
+            <Ionicons
+              style={{
+                marginTop: 5,
+                marginBottom: 5,
+                marginStart: 5,
+              }}
+              size={18}
+              color={color}
+              name="md-people-sharp"
+            />
+          ) : null}
+        </View>
+
         {level === 0 && !!item?.branchName && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton

@@ -13,7 +13,7 @@ import { Colors } from "../../../../styles";
 import { LoaderComponent } from "../../../../components";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 import * as AsyncStore from "../../../../asyncStore";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -8680,29 +8680,61 @@ export const RenderLevel1NameViewCRM = ({
       <View
         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
       >
-        <TouchableOpacity
-          disabled={disable}
+        <View
           style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
+            flexDirection: "row",
+            alignContent: "center",
             alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
           }}
-          onPress={titleClick}
         >
-          <Text
+          <TouchableOpacity
+            disabled={disable}
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+              marginStart: 15,
             }}
+            onPress={titleClick}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+          {item.isExpand ? (
+            // <AntDesign
+            // style = {{
+            //   marginTop: 5,
+            //   marginBottom: 5,
+            //   marginStart: 5,
+            // // tinitColor:color
+            // }}
+            // size={16}
+            // color={color}
+            //   name="team"
+            // />
+            <Ionicons
+              style={{
+                marginTop: 5,
+                marginBottom: 5,
+                marginStart: 5,
+              }}
+              size={18}
+              color={color}
+              name="md-people-sharp"
+            />
+          ) : null}
+        </View>
         {/* {level === 0 && !!branchName && ( */}
         {branchName ? (
           <TouchableOpacity

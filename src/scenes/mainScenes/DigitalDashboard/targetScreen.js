@@ -13,7 +13,7 @@ import { Colors } from "../../../styles";
 import { LoaderComponent } from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 import * as AsyncStore from "../../../asyncStore";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -2845,7 +2845,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                        <RenderLevel1NameViewCRMVol2
                          level={0}
                          item={item}
-                         branchName={item.branchName}
+                         branchName={
+                           checkIsSelfManager() ? "" : item.branchName
+                         }
                          color={"#C62159"}
                          receptionManager={true}
                          navigation={navigation}
@@ -3376,10 +3378,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                             item.selfUser.total.lostLeads
                           );
 
-                          handleSourcrModelNavigationVol2(
-                            tempArry,
-                            item
-                          );
+                          handleSourcrModelNavigationVol2(tempArry, item);
                         } else {
                           let tempArry = [];
                           Array.prototype.push.apply(
@@ -3448,7 +3447,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRMVol2
                         level={0}
                         item={item.selfUser}
-                        branchName={item.selfUser.branchName}
+                        branchName={
+                          checkIsSelfManager() ? "" : item.selfUser.branchName
+                        }
                         color={borderColor}
                         receptionManager={true}
                         navigation={navigation}
@@ -3761,7 +3762,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                        <RenderLevel1NameViewCRMVol2
                          level={0}
                          item={item.selfUser}
-                         branchName={item.selfUser.branchName}
+                         branchName={
+                           checkIsSelfManager() ? "" : item.selfUser.branchName
+                         }
                          color={borderColor}
                          receptionManager={true}
                          navigation={navigation}
@@ -4057,7 +4060,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                <RenderLevel1NameViewCRMVol2
                  level={0}
                  item={item}
-                 branchName={item.branchName}
+                 branchName={checkIsSelfManager() ? "" : item.branchName}
                  color={borderColor}
                  receptionManager={true}
                  navigation={navigation}
@@ -4305,14 +4308,14 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
               <RenderLevel1NameViewCRMVol2
                 level={0}
                 item={item}
-                branchName={item.branchName}
+                branchName={checkIsSelfManager() ? "" : item.branchName}
                 color={borderColor}
                 receptionManager={true}
                 navigation={navigation}
                 titleClick={async (e) => {
                   // setIsViewExpanded(!isViewExpanded);
                   // if (userData.hrmsRole == "CRM") {
-                    oncllickOfEmployeeForCRm(item, index, allData, newLevel);
+                  oncllickOfEmployeeForCRm(item, index, allData, newLevel);
                   // } else {
                   //   oncllickOfEmployee(item, index, allData, newLevel);
                   // }
@@ -7433,29 +7436,60 @@ export const RenderLevel1NameViewCRMVol2 = ({
       <View
         style={{ width: 60, justifyContent: "center", alignItems: "center" }}
       >
-        <TouchableOpacity
-          disabled={disable}
+        <View
           style={{
-            width: 30,
-            height: 30,
-            justifyContent: "center",
+            flexDirection: "row",
+            alignContent: "center",
             alignItems: "center",
-            backgroundColor: color,
-            borderRadius: 20,
-            marginTop: 5,
-            marginBottom: 5,
           }}
-          onPress={titleClick}
         >
-          <Text
+          <TouchableOpacity
+            disabled={disable}
             style={{
-              fontSize: 14,
-              color: "#fff",
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
             }}
+            onPress={titleClick}
           >
-            {item?.empName?.charAt(0)}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+          {item.isExpand ? (
+            // <AntDesign
+            // style = {{
+            //   marginTop: 5,
+            //   marginBottom: 5,
+            //   marginStart: 5,
+            // // tinitColor:color
+            // }}
+            // size={16}
+            // color={color}
+            //   name="team"
+            // />
+            <Ionicons
+              style={{
+                marginTop: 5,
+                marginBottom: 5,
+                marginStart: 5,
+              }}
+              size={18}
+              color={color}
+              name="md-people-sharp"
+            />
+          ) : null}
+        </View>
         {/* {level === 0 && !!branchName && ( */}
         {branchName ? (
           <TouchableOpacity
