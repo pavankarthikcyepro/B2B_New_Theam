@@ -77,18 +77,18 @@ const LocalButtonComp = ({ title, onPress, disabled, color }) => {
   );
 };
 const months = [
-  { name: "January", id: 1 },
-  { name: "February", id: 2 },
-  { name: "March", id: 3 },
-  { name: "April", id: 4 },
-  { name: "May", id: 5 },
-  { name: "June", id: 6 },
-  { name: "July", id: 7 },
-  { name: "August", id: 8 },
-  { name: "September", id: 9 },
-  { name: "October", id: 10 },
-  { name: "November", id: 11 },
-  { name: "December", id: 12 },
+  { name: "January", id: 1, index: "01" },
+  { name: "February", id: 2, index: "02" },
+  { name: "March", id: 3, index: "03" },
+  { name: "April", id: 4, index: "04" },
+  { name: "May", id: 5, index: "05" },
+  { name: "June", id: 6, index: "06" },
+  { name: "July", id: 7, index: "07" },
+  { name: "August", id: 8, index: "08" },
+  { name: "September", id: 9, index: "09" },
+  { name: "October", id: 10, index: "10" },
+  { name: "November", id: 11, index: "11" },
+  { name: "December", id: 12, index: "12" },
 ];
 export const Vehicle_Types = [
   {
@@ -860,7 +860,7 @@ const EvaluationForm = ({ route, navigation }) => {
   ]);
 
   const [customerExpectedPrice, setCustomerExpectedPrice] = useState("");
-  const [evaluatorOfferedPrice, setEvaluatorOfferedPrice] = useState("");
+  const [evaluatorOfferedPrice, setEvaluatorOfferedPrice] = useState(0);
   const [managerApprovedPrice, setManagerApprovedPrice] = useState("");
   const [priceGap, setPriceGap] = useState("");
   const [approvalExpiryDate, setApprovalExpiryDate] = useState("");
@@ -1019,6 +1019,8 @@ const EvaluationForm = ({ route, navigation }) => {
   const [submitButtonPressed, setSubmitButtonPressed] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [initialData, setInitialData] = useState(null);
+  const [userData, setUserData] = useState(null);
+
   let scrollRef = useRef(null);
 
   useEffect(() => {
@@ -1027,6 +1029,13 @@ const EvaluationForm = ({ route, navigation }) => {
     getCheckList();
     getModalList();
   }, []);
+
+  useEffect(() => {
+    console.log("Input ", route.params);
+    if (route.params) {
+      getCurrentEvaluation(route.params.universalId);
+    }
+  }, [route.params]);
 
   // Set Address
   useEffect(() => {
@@ -1093,7 +1102,6 @@ const EvaluationForm = ({ route, navigation }) => {
       setKmsDriven(evaluationTemp.distanceDriven);
       setNoOfChallanPending(evaluationTemp.challanPending);
       setNoOwners(evaluationTemp.NoOfOwners);
-      setFrontRightSelected(evaluationTemp.frontright);
       setFrontRightSelected(evaluationTemp.frontright);
       setRearLeftSelected(evaluationTemp.rearleft);
       setRearRightSelected(evaluationTemp.rearright);
@@ -1213,6 +1221,7 @@ const EvaluationForm = ({ route, navigation }) => {
       );
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
+        setUserData(jsonObj);
         const response = await client.get(
           URL.GET_ALL_EVALUATION(jsonObj.orgId)
         );
@@ -1226,11 +1235,9 @@ const EvaluationForm = ({ route, navigation }) => {
     }
   };
 
-  const getCurrentEvaluation = async () => {
+  const getCurrentEvaluation = async (universalId) => {
     try {
-      const response = await client.get(
-        URL.GET_EVALUATION("18-286-17e760b5-6bf7-429d-ab82-7b096d7bef5b")
-      );
+      const response = await client.get(URL.GET_EVALUATION(universalId));
       const json = await response.json();
       if (response.ok) {
         setInitialData(json);
@@ -1337,46 +1344,62 @@ const EvaluationForm = ({ route, navigation }) => {
     setOpenAccordian("2");
   };
 
+  function formatRefurbishmentData(data) {
+    const formattedItems = data.Items.map((item) => {
+      return { item: item.items, cost: item.cost };
+    });
+
+    const formattedExpenses = data.AdditionalExpenses.map((expense) => {
+      return { item: expense.items, cost: expense.cost };
+    });
+
+    return [...formattedItems, ...formattedExpenses];
+  }
+
   const handleValidation = () => {
     const newErrors = {};
     let isValid = true;
+    console.log(
+      "Refurbishment",
+      JSON.stringify(formatRefurbishmentData(Refurbishment))
+    );
 
     // Validate First Name
-    if (firstName.trim() === "") {
-      newErrors.firstName = "First Name is required";
-      isValid = false;
-    }
+    // if (firstName.trim() === "") {
+    //   newErrors.firstName = "First Name is required";
+    //   isValid = false;
+    // }
 
-    // Validate Last Name
-    if (lastName.trim() === "") {
-      newErrors.lastName = "Last Name is required";
-      isValid = false;
-    }
+    // // Validate Last Name
+    // if (lastName.trim() === "") {
+    //   newErrors.lastName = "Last Name is required";
+    //   isValid = false;
+    // }
 
     // Validate Date of Birth
-    if (dateOfBirth.trim() === "") {
-      newErrors.dateOfBirth = "Date of Birth is required";
-      isValid = false;
-    } else {
-      // Add additional validation logic for date format or range if needed
-    }
+    // if (dateOfBirth.trim() === "") {
+    //   newErrors.dateOfBirth = "Date of Birth is required";
+    //   isValid = false;
+    // } else {
+    //   // Add additional validation logic for date format or range if needed
+    // }
 
     // Validate Mobile Number
-    if (mobileNumber.trim() === "") {
-      newErrors.mobileNumber = "Mobile Number is required";
-      isValid = false;
-    } else {
-      if (mobileNumber.trim().length === 10) {
-        newErrors.mobileNumber = "Length of Mobile Number must be 10";
-        isValid = false;
-      }
-      // Add additional validation logic for mobile number format if needed
-    }
+    // if (mobileNumber.trim() === "") {
+    //   newErrors.mobileNumber = "Mobile Number is required";
+    //   isValid = false;
+    // } else {
+    //   if (mobileNumber.trim().length === 10) {
+    //     newErrors.mobileNumber = "Length of Mobile Number must be 10";
+    //     isValid = false;
+    //   }
+    //   // Add additional validation logic for mobile number format if needed
+    // }
 
-    if (communicationAddress.pincode.trim() === "") {
-      newErrors.cpincode = "Pincode is required";
-      isValid = false;
-    }
+    // if (communicationAddress.pincode.trim() === "") {
+    //   newErrors.cpincode = "Pincode is required";
+    //   isValid = false;
+    // }
 
     if (pincode.trim() === "") {
       newErrors.ppincode = "Pincode is required";
@@ -1522,7 +1545,8 @@ const EvaluationForm = ({ route, navigation }) => {
     }
 
     // Validate Evaluator Offered Price
-    if (evaluatorOfferedPrice.trim() === "") {
+    console.log(evaluatorOfferedPrice);
+    if (evaluatorOfferedPrice === 0) {
       newErrors.evaluatorOfferedPrice = "Evaluator Offered Price is required";
     }
 
@@ -1590,6 +1614,8 @@ const EvaluationForm = ({ route, navigation }) => {
     if (!_.isEmpty(newErrors)) {
       showAlertMessage("Provide the required fields");
       setSubmitButtonPressed(true);
+    } else {
+      update();
     }
   };
 
@@ -2038,15 +2064,16 @@ const EvaluationForm = ({ route, navigation }) => {
       };
     });
   }
-  const update = () => {
+  const update = async () => {
     const tempImages = otherImages.length > 0 ? convertData(otherImages) : [];
-
+    const selectedMonth = months.filter((i) => i.name === month)[0];
+    const refurbishmentData = formatRefurbishmentData(Refurbishment);
     const Payload = {
       id: 0,
       nameOnRC: nameOnRc,
       registrationNumber: rcNumber,
       mobileNum: mobileNumber,
-      customerId: "18-286-ca9d9470-478b-43df-9ffa-4a57b6644470",
+      customerId: route.params.universalId,
       regValidity: regnValidUpto,
       regDistrict: registrationDistrict,
       regCity: registrationCity,
@@ -2133,7 +2160,7 @@ const EvaluationForm = ({ route, navigation }) => {
       otherImages: tempImages,
       model: model,
       varient: variant,
-      yearMonthOfManufacturing: yearMonthOfManufacturing,
+      yearMonthOfManufacturing: month ? selectedMonth?.index + "-" + year : "",
       vehicleType: vehicleType,
       typeOfBody: typeOfBody,
       kmDriven: kmsDriven,
@@ -2158,7 +2185,7 @@ const EvaluationForm = ({ route, navigation }) => {
       role: "Evaluator",
       totalRefurbishmentCost: null,
       evalutionStatus: "EvalutionSubmitted",
-      evalutorId: 955,
+      evalutorId: userData.empId,
       VehicleExterior: "",
       DrivingYourTestDrive: "",
       InTheDiversseat: "",
@@ -2217,12 +2244,17 @@ const EvaluationForm = ({ route, navigation }) => {
       challanAmountCost: null,
       ccClearanceExpense: "no",
       ccClearanceExpenseCost: null,
-      otherCharges: [],
+      otherCharges: refurbishmentData ? refurbishmentData : [],
       custExpectedPrice: customerExpectedPrice,
       evaluatorOfferPrice: evaluatorOfferedPrice,
-      managerId: 942,
+      managerId: userData.approverId,
       carExchangeEvalutionCosts: [],
     };
+    const response = await client.post(URL.SAVE_EVALUATION(), Payload);
+    const json = await response.json();
+    if (response.ok) {
+      alert("DONE");
+    }
   };
 
   const getTotalCost = (data) => {
@@ -2430,14 +2462,178 @@ const EvaluationForm = ({ route, navigation }) => {
       });
   };
 
-  const saveData = async () => {
+  const autoSaveData = async () => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
+      const selectedMonth = months.filter((i) => i.name === month)[0];
+
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
-        const response = await client.post(URL.EVALUATION_AUTOSAVE());
+        let evaluationTemp = initialData;
+        const savedData = {
+          registrationNumber: rcNumber,
+          nameonRC: nameOnRc,
+          variant: variant,
+          fuelType: fuelType,
+          transmission: transmission,
+          chassisNumber: "",
+          engineNumber: engineNumber,
+          yearOfManufacturing: month ? selectedMonth?.index + "-" + year : "",
+          dateOfRegistration: dateOfRegistration,
+          registrationValidity: regnValidUpto,
+          pincode: pincode,
+          belt: true,
+          airconditioning: "",
+          remarks1: "",
+          bodyrust: "",
+          registrationState: registrationDistrict,
+          registrationDistrict: registrationDistrict,
+          registrationCity: registrationCity,
+          emission: emission,
+          Interior: "",
+          Trunk: "",
+          Exterior: "",
+          role: "",
+          managerId: "",
+          Engineroomcleaning: "no",
+          evaluatorId: "",
+          UnderneathVehicle: "",
+          InTheDiversseat: "",
+          cruisecontrol: "",
+          DrivingYourTestDrive: "",
+          vehicletype: vehicleType,
+          typeofbody: typeOfBody,
+          distanceDriven: kmsDriven,
+          NoOfOwners: noOwners,
+          floorcovering: "",
+          challanPending: noOfChallanPending,
+          exhaustpipe: "",
+          VehicleExterior: "",
+          bumper: "",
+          vehicleServiceCost: "",
+          EngineandtransmissionCost: null,
+          oilChangesCost: null,
+          steeringandfluid: null,
+          coolantandfilter: null,
+          removalstains: null,
+          drycleaning: null,
+          engineroomcleaning: null,
+          challenamount: null,
+          CCClearance: null,
+          pollutioncertificate: null,
+          managerid: "",
+          frontright: frontRightSelected,
+          frontleft: frontLeftSelected,
+          rearright: rearRightSelected,
+          rearleft: rearLeftSelected,
+          sparediskwheel: spareDiskWheelSelected,
+          sparealliwheel: spareAlliWheelSelected,
+          majorAccident: anyMajorAccidentSelected,
+          majorAccidentRemarks: "",
+          minorAccident: anyMinorAccidentSelected,
+          minorAccidentRemarks: "",
+          hypothetication: hypothecatedTo,
+          hypotheticatedBranch: hypothecatedBranch,
+          insuranceType: insuranceType,
+          generalappearence: "",
+          Engine: "",
+          engine: "",
+          colour: colour,
+          remarks: "",
+          insuranceCompanyName: insuranceCompanyName,
+          policyNumber: policyNumber,
+          insuranceFrom: insuranceFromDate,
+          insuranceTo: insuranceToDate, //Left
+          carFrontImgName: frontSideImage.name,
+          carFrontImg: frontSideImage.url,
+          dashboard: "",
+          carBackImgName: backSideImage.name,
+          carBackImg: backSideImage.url,
+          carLeftImgName: leftSideImage.name,
+          carLeftImg: leftSideImage.url,
+          carRightImgName: rightSideImage.name,
+          carRightImg: rightSideImage.url,
+          speedoMeterImgName: speedometerImage.name,
+          speedoMeterImg: speedometerImage.url,
+          chassisImgName: chassisImage.name,
+          chassisImg: chassisImage.url,
+          VehicleServiceCost: "",
+          interiorImg: "",
+          Pollutioncertificate: "no",
+          vinPlateImg: "",
+          rcFrontName: rcFrontImage.name,
+          rcFrontImg: rcFrontImage.url,
+          Drycleaning: "no",
+          RubbingPolishingCost: "no",
+          CCClearances: "no",
+          SpareKeysCost: "no",
+          Challenamount: "no",
+          otherCharges: "",
+          otherImages: "",
+          Engineandtransmission: "no",
+          RegistrationCost: "no",
+          Vehicletransfercharges: "no",
+          Removalstains: "no",
+          Nocclearance: "no",
+          Coolantandfilter: "no",
+          Steeringandfluid: "no",
+          rcBackName: rcBackImage.name,
+          rcBackImg: rcBackImage.url,
+          insuranceName: insuranceCopyImage.name,
+          insuranceImg: insuranceCopyImage.url,
+          InsuranceCost: "no",
+          interiorFrontName: interiorFrontImage.name,
+          interiorFrontImg: interiorFrontImage.url,
+          interiorBackName: interiorBackImage.name,
+          interiorBackImg: interiorBackImage.url,
+          invoiceName: invoiceImage.name,
+          invoiceImg: invoiceImage.url,
+          extraFitmentName: extraFitmentImage.name,
+          extraFitmentImg: extraFitmentImage.url,
+          functionsName: functionsImage.name,
+          functionsImg: functionsImage.url,
+          getcardetails: "",
+          scratchName: scratchDamageImage.name,
+          scratchImg: scratchDamageImage.url,
+          dentName: dentDamageImage.name,
+          dentImg: dentDamageImage.url,
+          breaksDmgName: breakDamageImage.name,
+          breaksDmgImg: breakDamageImage.url,
+          numberPlateName: numberPlateImage.name,
+          numberPlateImg: numberPlateImage.url,
+          oldCarNocName: oldCarNOCImage.name,
+          oldCarNocImg: oldCarNOCImage.url,
+          periodicServiceValue: "",
+          insuranceValue: "",
+          spareKeysValue: "",
+          registrationValue: "",
+          rubbingPolishingValue: "",
+          mobileNum: mobileNumber2,
+          otherDocfieldName: "",
+          periodicService: "no",
+          interiorCleaningValue: "",
+          interiorCleaningCost: "",
+          pollutionCertificateValue: "",
+          pollutionCertificateCost: "",
+          entertextfield: "",
+          priceGap: priceGap,
+          acceptCost: "",
+          rejectCost: "",
+          evaluatorofferedprice: "",
+          otherImagesDoc: [],
+          otherfieldsDoc: [],
+          refurbishmentItems: [],
+          refurbishmentAdditionalItems: [],
+        };
+        evaluationTemp.profileControls = savedData;
+        const payload = {
+          data: evaluationTemp,
+          status: "Active",
+          universalId: route.params.universalId,
+        };
+        const response = await client.post(URL.EVALUATION_AUTOSAVE(), payload);
         const json = await response.json();
         if (response.ok) {
         }
@@ -2445,20 +2641,20 @@ const EvaluationForm = ({ route, navigation }) => {
     } catch (error) {}
   };
 
-  const autoSaveData = async () => {
-    try {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const response = await client.post(URL.EVALUATION_AUTOSAVE());
-        const json = await response.json();
-        if (response.ok) {
-        }
-      }
-    } catch (error) {}
-  };
+  // const autoSaveData = async () => {
+  //   try {
+  //     let employeeData = await AsyncStore.getData(
+  //       AsyncStore.Keys.LOGIN_EMPLOYEE
+  //     );
+  //     if (employeeData) {
+  //       const jsonObj = JSON.parse(employeeData);
+  //       const response = await client.post(URL.EVALUATION_AUTOSAVE());
+  //       const json = await response.json();
+  //       if (response.ok) {
+  //       }
+  //     }
+  //   } catch (error) {}
+  // };
 
   return (
     <View style={[{ flex: 1 }]}>
@@ -3147,7 +3343,7 @@ const EvaluationForm = ({ route, navigation }) => {
                   <CustomEvaluationDropDown
                     label="Model"
                     buttonText="Select Model"
-                    value={brand}
+                    value={model}
                     onPress={() => {
                       showDropDownModelMethod("Model");
                     }}
@@ -3172,7 +3368,7 @@ const EvaluationForm = ({ route, navigation }) => {
                     mandatory={true}
                     value={colour}
                     onChangeText={(text) => {
-                      setInsuranceCompanyName(text);
+                      setColour(text);
                       setErrors({
                         ...errors,
                         ...(errors.colour = ""),

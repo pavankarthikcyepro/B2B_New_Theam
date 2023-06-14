@@ -38,7 +38,7 @@ const CustomRadioButton = (props) => {
           onPress={() => onPress("20")}
         />
       </View>
-      {mandatory && status && (
+      {mandatory && status === "" && (
         <Text style={styles.error}>{label + "is Required"}</Text>
       )}
     </View>

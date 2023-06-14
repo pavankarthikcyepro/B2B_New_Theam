@@ -1085,6 +1085,11 @@ const URL = {
   EVALUATION_DROP_DOWN: (orgId) => {
     return downloadFile + `/get-followup/${orgId}/Evaluation`;
   },
+  SAVE_EVALUATION: ()=>{
+    return (
+      baseUrl + "ops/evalutionoldcar/saveevalutionoldcar"
+    );
+  }
 };
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

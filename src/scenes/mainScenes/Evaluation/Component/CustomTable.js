@@ -9,14 +9,14 @@ const Table = (props) => {
     <View style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.labelText}>{label}</Text>
-        <Text style={styles.labelText}>{"Variable(Yes/No)"}</Text>
+        {/* <Text style={styles.labelText}>{"Variable(Yes/No)"}</Text> */}
         <Text style={styles.labelText}>{"Cost"}</Text>
       </View>
       {data.map((item, index) => {
         return (
           <View style={styles.row}>
             <Text style={styles.column}>{item.items}</Text>
-            <View style={{ flexDirection: "row", paddingHorizontal: 5 }}>
+            {/* <View style={{ flexDirection: "row", paddingHorizontal: 5 }}>
               <RadioTextItem2
                 label={"Yes"}
                 value={"yes"}
@@ -29,7 +29,7 @@ const Table = (props) => {
                 status={item.status !== "Active" ? true : false}
                 onPress={() => onPress({ id: item.id, status: false })}
               />
-            </View>
+            </View> */}
             <TextInput
               value={item.cost}
               keyboardType={"number-pad"}
