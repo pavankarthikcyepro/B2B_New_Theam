@@ -1320,9 +1320,12 @@ const TestDriveScreen = ({ route, navigation }) => {
   }
 
   const closeTask = (from) => {
+    if (selector.isLoading) {
+      return;
+    }
     setIsClosedClicked(true);
     setIsSubmitPress(true);
-    setIsisReopenSubmitVisible(false)
+    setIsisReopenSubmitVisible(false);
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -1390,38 +1393,36 @@ const TestDriveScreen = ({ route, navigation }) => {
     if (userData.isOtp === "Y") {
       generateOtpToCloseTask();
       if (from === "reopen") {
-        setIschangeScreen(false)
-        reSubmitClick("ASSIGNED", "Test Drive Approval")
+        setIschangeScreen(false);
+        reSubmitClick("ASSIGNED", "Test Drive Approval");
       } else {
-        setIschangeScreen(true)
+        setIschangeScreen(true);
       }
     } else {
-
       if (from === "reopen") {
+        setIschangeScreen(true);
 
-        setIschangeScreen(true)
-
-        reSubmitClick("ASSIGNED", "Test Drive Approval")
+        reSubmitClick("ASSIGNED", "Test Drive Approval");
         setIsCloseSelected(false);
-        isViewMode2("reopen")
-        setIsisReopenSubmitVisible(true)
+        isViewMode2("reopen");
+        setIsisReopenSubmitVisible(true);
         return;
       } else {
-
         submitClicked("CLOSED", "Test Drive");
 
-        // need to check in org with no otp configure 
-        if (storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive") {
+        // need to check in org with no otp configure
+        if (
+          storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive"
+        ) {
           let payloadForWorkFLow = {
             entityId: selector.task_details_response.entityId,
-            taskName: "Re Test Drive"
-          }
+            taskName: "Re Test Drive",
+          };
           // reTestDrivePutCallWorkFlowHistory() //need to call after we get response for getDetailsWrokflowTask
           // postWorkFlowTaskHistory()// need to call after we get response for getDetailsWrokflowTask
-          dispatch(getDetailsWrokflowTask(payloadForWorkFLow)) //todo need to check and pass entityId
+          dispatch(getDetailsWrokflowTask(payloadForWorkFLow)); //todo need to check and pass entityId
         }
       }
-
     }
     reTestDrivePutCallupdateList("CLOSED");
     setIsCloseSelected(true);
