@@ -79,6 +79,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [otherReason, setOtherReason] = useState('');
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
+  const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
@@ -416,6 +417,17 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     return false;
   }
 
+  const convertToDefaultDateTime = (date, time = "") => {
+    if (date || time) {
+      let newDateFormate = date
+        ? moment(date, "DD/MM/YYYY").format("MM/DD/YYYY")
+        : moment().format("MM/DD/YYYY");
+      return new Date(`${newDateFormate} ${time}`);
+    } else {
+      return new Date(Date.now());
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container]}>
       <DropDownComponant
@@ -442,7 +454,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         mode={"date"}
         minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
-        value={new Date(Date.now())}
+        value={defaultDateTime}
         onChange={(event, selectedDate) => {
           if (Platform.OS === "android") {
             //setDatePickerVisible(false);
@@ -469,28 +481,28 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-                <View>
+              <View>
+                <DropDownSelectionItem
+                  label={"Model"}
+                  disabled={isViewMode()}
+                  value={selector.model}
+                  onPress={() =>
+                    setDropDownDataForModel("MODEL", "Select Model")
+                  }
+                />
+
+                {identifier === "ENQUIRY_FOLLOW_UP" && (
                   <DropDownSelectionItem
-                    label={"Model"}
+                    label={"Varient"}
                     disabled={isViewMode()}
-                    value={selector.model}
+                    value={selector.varient}
                     onPress={() =>
-                      setDropDownDataForModel("MODEL", "Select Model")
+                      setDropDownDataForModel("VARIENT", "Select Varient")
                     }
                   />
-
-                  {identifier === "ENQUIRY_FOLLOW_UP" && (
-                    <DropDownSelectionItem
-                      label={"Varient"}
-                      disabled={isViewMode()}
-                      value={selector.varient}
-                      onPress={() =>
-                        setDropDownDataForModel("VARIENT", "Select Varient")
-                      }
-                    />
-                  )}
-                </View>
-              )}
+                )}
+              </View>
+            )}
 
             {/* <TextinputComp
               style={styles.textInputStyle}
@@ -637,10 +649,15 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               // label={"Actual Start Date"}
               disabled={isViewMode()}
               value={selector.actual_start_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              onPress={() => {
+                setDefaultDateTime(
+                  convertToDefaultDateTime(selector.actual_start_time)
+                );
+                dispatch(setDatePicker("ACTUAL_START_TIME"));
+              }}
+              //  value={selector.expected_delivery_date}
+              // onPress={() =>
+              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text
               style={[
@@ -648,7 +665,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 {
                   backgroundColor:
                     isSubmitPress &&
-                      (selector.actual_start_time === "" || isDateError)
+                    (selector.actual_start_time === "" || isDateError)
                       ? "red"
                       : "rgba(208, 212, 214, 0.7)",
                 },
