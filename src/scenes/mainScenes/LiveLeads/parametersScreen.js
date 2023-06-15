@@ -9931,7 +9931,7 @@ export const RenderLevel1NameViewCRM = ({
       }}
     >
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           disabled={disable}
           style={{
             width: 30,
@@ -9953,7 +9953,61 @@ export const RenderLevel1NameViewCRM = ({
           >
             {item?.emp_name?.charAt(0)}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            disabled={disable}
+            style={{
+              width: 30,
+              height: 30,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+              borderRadius: 20,
+              marginTop: 5,
+              marginBottom: 5,
+            }}
+            onPress={titleClick}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#fff",
+              }}
+            >
+              {item?.empName?.charAt(0)}
+            </Text>
+          </TouchableOpacity>
+          {item.childCount > 0 ? (
+            // <AntDesign
+            // style = {{
+            //   marginTop: 5,
+            //   marginBottom: 5,
+            //   marginStart: 5,
+            // // tinitColor:color
+            // }}
+            // size={16}
+            // color={color}
+            //   name="team"
+            // />
+            <Ionicons
+              style={{
+                marginTop: 5,
+                marginBottom: 5,
+                marginStart: 5,
+              }}
+              size={18}
+              color={color}
+              name="md-people-sharp"
+            />
+          ) : null}
+        </View>
         {level === 0 && !!item.branch && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <IconButton

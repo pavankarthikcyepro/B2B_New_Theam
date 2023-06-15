@@ -28,7 +28,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { LoaderComponent } from "../../../../components";
 // import { ScrollView } from "react-native-gesture-handler";
 import Lottie from "lottie-react-native";
-
+import Ionicons from "react-native-vector-icons/Ionicons";
 import {
   getEmployeesDropDownData,
   addTargetMapping,
@@ -306,6 +306,7 @@ const MainParamScreen = ({ route, navigation }) => {
                   branch: json1?.data[0]?.branch || input.branchId,
                   recordId: json1?.data[0]?.id,
                   empName: json1?.data[0]?.empName || input.empName,
+                  childCount: json1?.data[0]?.childCount || input.childCount,
                 };
 
                 setFilterParameters([newArr[0]]);
@@ -2200,15 +2201,40 @@ const MainParamScreen = ({ route, navigation }) => {
                                 width: Dimensions.get("screen").width - 28,
                               }}
                             >
-                              <Text
-                                style={{
-                                  fontSize: 12,
-                                  fontWeight: "600",
-                                  textTransform: "capitalize",
-                                }}
-                              >
-                                {item?.empName}
-                              </Text>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: "600",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  {item?.empName}
+                                  {item.childCount > 0 ? "  |" : ""}
+                                </Text>
+                                {item.childCount > 0 && (
+                                  <View
+                                    style={{
+                                      backgroundColor: "lightgrey",
+                                      flexDirection: "row",
+                                      paddingHorizontal: 7,
+                                      borderRadius: 10,
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      marginBottom: 5,
+                                      alignSelf: "flex-start",
+                                      marginLeft: 7,
+                                    }}
+                                  >
+                                    <MaterialIcons
+                                      name="person"
+                                      size={15}
+                                      color={Colors.BLACK}
+                                    />
+                                    <Text>{item.childCount}</Text>
+                                  </View>
+                                )}
+                              </View>
                             </View>
                             {/*Source/Model View END */}
                             <View style={[{ flexDirection: "row" }]}>
@@ -4075,29 +4101,83 @@ export const RenderLevel1NameView = ({
             />
           </View>
         ) : (
-          <TouchableOpacity
-            disabled={disable}
+          // <TouchableOpacity
+          //   disabled={disable}
+          //   style={{
+          //     width: 30,
+          //     height: 30,
+          //     justifyContent: "center",
+          //     alignItems: "center",
+          //     backgroundColor: color,
+          //     borderRadius: 20,
+          //     marginTop: 5,
+          //     marginBottom: 5,
+          //   }}
+          //   onPress={titleClick}
+          // >
+          //   <Text
+          //     style={{
+          //       fontSize: 14,
+          //       color: "#fff",
+          //     }}
+          //   >
+          //     {item?.empName?.charAt(0)}
+          //   </Text>
+          // </TouchableOpacity>
+          <View
             style={{
-              width: 30,
-              height: 30,
-              justifyContent: "center",
+              flexDirection: "row",
+              alignContent: "center",
               alignItems: "center",
-              backgroundColor: color,
-              borderRadius: 20,
-              marginTop: 5,
-              marginBottom: 5,
             }}
-            onPress={titleClick}
           >
-            <Text
+            <TouchableOpacity
+              disabled={disable}
               style={{
-                fontSize: 14,
-                color: "#fff",
+                width: 30,
+                height: 30,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: color,
+                borderRadius: 20,
+                marginTop: 5,
+                marginBottom: 5,
               }}
+              onPress={titleClick}
             >
-              {item?.empName?.charAt(0)}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#fff",
+                }}
+              >
+                {item?.empName?.charAt(0)}
+              </Text>
+            </TouchableOpacity>
+            {item?.childCount > 0 ? (
+              // <AntDesign
+              // style = {{
+              //   marginTop: 5,
+              //   marginBottom: 5,
+              //   marginStart: 5,
+              // // tinitColor:color
+              // }}
+              // size={16}
+              // color={color}
+              //   name="team"
+              // />
+              <Ionicons
+                style={{
+                  marginTop: 5,
+                  marginBottom: 5,
+                  marginStart: 5,
+                }}
+                size={18}
+                color={color}
+                name="md-people-sharp"
+              />
+            ) : null}
+          </View>
         )}
         {branchName ? (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
