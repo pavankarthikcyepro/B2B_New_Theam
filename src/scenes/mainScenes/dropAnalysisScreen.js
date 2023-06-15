@@ -608,6 +608,19 @@ const DropAnalysisScreen = ({ route, navigation }) => {
         }
 
         if (route.params.fromScreen === "") {
+              const dateFormat = "YYYY-MM-DD";
+              const currentDate = moment().add(0, "day").format(dateFormat);
+              const CurrentMonthFirstDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .startOf("month")
+                .format(dateFormat);
+              const currentMonthLastDate = moment(currentDate, dateFormat)
+                .subtract(0, "months")
+                .endOf("month")
+                .format(dateFormat);
+              setFromDateState(CurrentMonthFirstDate);
+              setToDateState(currentMonthLastDate);
+
             getDropAnalysisWithFilterFromServer()
             setLeadsFilterDropDownText("All")
             setLeadsSubMenuFilterDropDownText("All");
