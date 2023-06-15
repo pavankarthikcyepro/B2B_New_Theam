@@ -38,7 +38,7 @@ const TableView = (props) => {
         <Text style={styles.cell}>Item 4</Text>
         <TextInput style={[styles.column, styles.input]} />
       </View> */}
-      <View style={styles.row}>
+      {/* <View style={styles.row}>
         <View style={{ justifyContent: "center" }}>
           <View>
             <Text style={styles.cell}>Item 5</Text>
@@ -58,7 +58,7 @@ const TableView = (props) => {
             onPress={() => {}}
           />
         </View>
-      </View>
+      </View> */}
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -31,6 +31,7 @@ import CustomSelection from "./Component/CustomSelection";
 import CustomUpload from "./Component/CustomUpload";
 import Table from "./Component/CustomTable";
 import TableView from "./Component/CustomTableView";
+import { MyTasksStackIdentifiers } from "../../../navigations/appNavigator";
 
 const LocalButtonComp = ({ title, onPress, disabled, color }) => {
   return (
@@ -78,7 +79,7 @@ const SAMPLELIST = [
   },
 ];
 
-const CheckListScreen = () => {
+const CheckListScreen = ({route,navigation}) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [showImagePicker, setShowImagePicker] = useState(false);
@@ -662,8 +663,15 @@ const CheckListScreen = () => {
       ],
     },
   ];
-  const [sampleData, setSampleData] = useState(data);
+  const [sampleData, setSampleData] = useState([]);
 
+  useEffect(() => {
+    if (route.params) {
+      console.log("route.params", route.params);
+      setSampleData(route.params.list);
+    }
+  }, [route.params]);
+  
   const editCheckList = (index, innerIndex, editIndex, text) => {
     const temp = sampleData;
     temp[index].subCategory[innerIndex].questions[editIndex].value = text;
@@ -807,17 +815,19 @@ const CheckListScreen = () => {
             >
               <LocalButtonComp
                 title={"Save as Draft"}
-                onPress={() => {}}
+                onPress={() => { navigation.navigate(MyTasksStackIdentifiers.evaluation, {
+                 checkListData: sampleData
+                });}}
                 disabled={false}
                 color={Colors.GRAY}
               />
-              <LocalButtonComp
+              {/* <LocalButtonComp
                 title={"Submit"}
                 onPress={() => {
                   console.log(JSON.stringify(sampleData));
                 }}
                 disabled={false}
-              />
+              /> */}
             </View>
           </View>
         </ScrollView>

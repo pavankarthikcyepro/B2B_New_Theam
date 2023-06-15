@@ -1020,11 +1020,11 @@ const EvaluationForm = ({ route, navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [initialData, setInitialData] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [checkList, setCheckList] = useState([]);
 
   let scrollRef = useRef(null);
 
   useEffect(() => {
-    getCurrentEvaluation();
     getOptions();
     getCheckList();
     getModalList();
@@ -1037,180 +1037,191 @@ const EvaluationForm = ({ route, navigation }) => {
     }
   }, [route.params]);
 
+  useEffect(() => {
+    if (route.params?.list) {
+      setCheckList(route.params?.list);
+    }
+  }, [route.params]);
+
   // Set Address
   useEffect(() => {
-    const tempCAddress = incomming.dmsLeadDto.dmsAddresses;
-    const getCAddress = tempCAddress.filter(
-      (item) => item.addressType === "Communication"
-    )[0];
-    setCommunication({
-      pincode: getCAddress.pincode,
-      isUrban: getCAddress.urban,
-      isRural: getCAddress.rural,
-      houseNo: getCAddress.houseNo,
-      street: getCAddress.street,
-      village: getCAddress.village,
-      city: getCAddress.city,
-      district: getCAddress.district,
-      state: getCAddress.state,
-      mandal: "",
-      country: getCAddress.county,
-    });
-    const getPAddress = tempCAddress.filter(
-      (item) => item.addressType === "Permanent"
-    )[0];
-    setPermanentAddress({
-      pincode: getPAddress.pincode,
-      isUrban: getPAddress.urban,
-      isRural: getPAddress.rural,
-      houseNo: getPAddress.houseNo,
-      street: getPAddress.street,
-      village: getPAddress.village,
-      city: getPAddress.city,
-      district: getPAddress.district,
-      state: getPAddress.state,
-      mandal: "",
-      country: getPAddress.county,
-    });
-  }, []);
+    if (initialData) {
+      const tempCAddress = initialData.dmsLeadDto.dmsAddresses;
+      const getCAddress = tempCAddress.filter(
+        (item) => item.addressType === "Communication"
+      )[0];
+      setCommunication({
+        pincode: getCAddress.pincode,
+        isUrban: getCAddress.urban,
+        isRural: getCAddress.rural,
+        houseNo: getCAddress.houseNo,
+        street: getCAddress.street,
+        village: getCAddress.village,
+        city: getCAddress.city,
+        district: getCAddress.district,
+        state: getCAddress.state,
+        mandal: "",
+        country: getCAddress.county,
+      });
+      const getPAddress = tempCAddress.filter(
+        (item) => item.addressType === "Permanent"
+      )[0];
+      setPermanentAddress({
+        pincode: getPAddress.pincode,
+        isUrban: getPAddress.urban,
+        isRural: getPAddress.rural,
+        houseNo: getPAddress.houseNo,
+        street: getPAddress.street,
+        village: getPAddress.village,
+        city: getPAddress.city,
+        district: getPAddress.district,
+        state: getPAddress.state,
+        mandal: "",
+        country: getPAddress.county,
+      });
+    }
+  }, [initialData]);
 
   useEffect(() => {
     if (initialData) {
       const temp = initialData.dmsAccountDto;
-      setFirstName(temp.firstName);
-      setLastName(temp.lastName);
-      setAlternateMobileNumber(temp.secondaryPhone);
-      setMobileNumber(temp.phone);
-      setEmail(temp.email);
-      setGender(temp.gender.charAt(0).toUpperCase() + temp.gender.slice(1));
-
+      if (temp) {
+        setFirstName(temp.firstName);
+        setLastName(temp.lastName);
+        setAlternateMobileNumber(temp.secondaryPhone);
+        setMobileNumber(temp.phone);
+        setEmail(temp.email);
+        setGender(temp.gender.charAt(0).toUpperCase() + temp.gender.slice(1));
+      }
       const evaluationTemp = initialData.profileControls;
-      setRcNumber(evaluationTemp.registrationNumber);
-      setVariant(evaluationTemp.variant);
-      setFuelType(evaluationTemp.fuelType);
-      setTransmission(evaluationTemp.transmission);
-      setEngineNumber(evaluationTemp.engineNumber);
-      setPincode(evaluationTemp.pincode);
-      setRegistrationCity(evaluationTemp.registrationCity);
-      setRegistrationDistrict(evaluationTemp.registrationDistrict);
-      setRegistrationState(evaluationTemp.registrationState);
-      setEmission(evaluationTemp.emission);
-      setDateOfRegistration(evaluationTemp.dateOfRegistration);
-      setRegnValidUpto(evaluationTemp.registrationValidity);
-      setVehicleType(evaluationTemp.vehicletype);
-      setTypeOfBody(evaluationTemp.typeofbody);
-      setKmsDriven(evaluationTemp.distanceDriven);
-      setNoOfChallanPending(evaluationTemp.challanPending);
-      setNoOwners(evaluationTemp.NoOfOwners);
-      setFrontRightSelected(evaluationTemp.frontright);
-      setRearLeftSelected(evaluationTemp.rearleft);
-      setRearRightSelected(evaluationTemp.rearright);
-      setSpareDiskWheelSelected(evaluationTemp.sparediskwheel);
-      setSpareAlliWheelSelected(evaluationTemp.sparealliwheel);
-      setAnyMinorAccidentSelected(evaluationTemp.minorAccident);
-      setAnyMajorAccidentSelected(evaluationTemp.majorAccident);
-      setHypothecatedTo(evaluationTemp.hypothetication);
-      setHypothecatedBranch(evaluationTemp.hypotheticatedBranch);
-      setLoanAmountDue(evaluationTemp.loanDue);
-      setInsuranceType(evaluationTemp.insuranceType);
-      setInsuranceCompanyName(evaluationTemp.insuranceCompanyName);
-      setPolicyNumber(evaluationTemp.policyNumber);
-      setInsuranceFromDate(evaluationTemp.insuranceFrom);
-      setInsuranceToDate(evaluationTemp.insuranceTo);
+      if (evaluationTemp) {
+        setRcNumber(evaluationTemp.registrationNumber);
+        setVariant(evaluationTemp.variant);
+        setFuelType(evaluationTemp.fuelType);
+        setTransmission(evaluationTemp.transmission);
+        setEngineNumber(evaluationTemp.engineNumber);
+        setPincode(evaluationTemp.pincode);
+        setRegistrationCity(evaluationTemp.registrationCity);
+        setRegistrationDistrict(evaluationTemp.registrationDistrict);
+        setRegistrationState(evaluationTemp.registrationState);
+        setEmission(evaluationTemp.emission);
+        setDateOfRegistration(evaluationTemp.dateOfRegistration);
+        setRegnValidUpto(evaluationTemp.registrationValidity);
+        setVehicleType(evaluationTemp.vehicletype);
+        setTypeOfBody(evaluationTemp.typeofbody);
+        setKmsDriven(evaluationTemp.distanceDriven);
+        setNoOfChallanPending(evaluationTemp.challanPending);
+        setNoOwners(evaluationTemp.NoOfOwners);
+        setFrontRightSelected(evaluationTemp.frontright);
+        setRearLeftSelected(evaluationTemp.rearleft);
+        setRearRightSelected(evaluationTemp.rearright);
+        setSpareDiskWheelSelected(evaluationTemp.sparediskwheel);
+        setSpareAlliWheelSelected(evaluationTemp.sparealliwheel);
+        setAnyMinorAccidentSelected(evaluationTemp.minorAccident);
+        setAnyMajorAccidentSelected(evaluationTemp.majorAccident);
+        setHypothecatedTo(evaluationTemp.hypothetication);
+        setHypothecatedBranch(evaluationTemp.hypotheticatedBranch);
+        setLoanAmountDue(evaluationTemp.loanDue || "");
+        setInsuranceType(evaluationTemp.insuranceType);
+        setInsuranceCompanyName(evaluationTemp.insuranceCompanyName);
+        setPolicyNumber(evaluationTemp.policyNumber);
+        setInsuranceFromDate(evaluationTemp.insuranceFrom);
+        setInsuranceToDate(evaluationTemp.insuranceTo);
 
-      setFrontSideImage({
-        name: evaluationTemp.carFrontImgName,
-        url: evaluationTemp.carFrontImg,
-      });
-      setBackSideImage({
-        name: evaluationTemp.carBackImgName,
-        url: evaluationTemp.carBackImg,
-      });
-      setLeftSideImage({
-        name: evaluationTemp.carLeftImgName,
-        url: evaluationTemp.carLeftImg,
-      });
-      setRightSideImage({
-        name: evaluationTemp.carRightImgName,
-        url: evaluationTemp.carRightImg,
-      });
-      setSpeedometerImage({
-        name: evaluationTemp.chassisImgName,
-        url: evaluationTemp.chassisImg,
-      });
-      setInteriorFrontImage({
-        name: evaluationTemp.interiorFrontName,
-        url: evaluationTemp.interiorFrontImg,
-      });
-      setInteriorBackImage({
-        name: evaluationTemp.interiorBackName,
-        url: evaluationTemp.interiorBackImg,
-      });
-      setExtraFitmentImage({
-        name: evaluationTemp.extraFitmentName,
-        url: evaluationTemp.extraFitmentImg,
-      });
+        setFrontSideImage({
+          name: evaluationTemp.carFrontImgName,
+          url: evaluationTemp.carFrontImg,
+        });
+        setBackSideImage({
+          name: evaluationTemp.carBackImgName,
+          url: evaluationTemp.carBackImg,
+        });
+        setLeftSideImage({
+          name: evaluationTemp.carLeftImgName,
+          url: evaluationTemp.carLeftImg,
+        });
+        setRightSideImage({
+          name: evaluationTemp.carRightImgName,
+          url: evaluationTemp.carRightImg,
+        });
+        setSpeedometerImage({
+          name: evaluationTemp.chassisImgName,
+          url: evaluationTemp.chassisImg,
+        });
+        setInteriorFrontImage({
+          name: evaluationTemp.interiorFrontName,
+          url: evaluationTemp.interiorFrontImg,
+        });
+        setInteriorBackImage({
+          name: evaluationTemp.interiorBackName,
+          url: evaluationTemp.interiorBackImg,
+        });
+        setExtraFitmentImage({
+          name: evaluationTemp.extraFitmentName,
+          url: evaluationTemp.extraFitmentImg,
+        });
 
-      setScratchDamageImage({
-        name: evaluationTemp.scratchName,
-        url: evaluationTemp.scratchImg,
-      });
-      setDentDamageImage({
-        name: evaluationTemp.dentName,
-        url: evaluationTemp.dentImg,
-      });
-      setFunctionsImage({
-        name: evaluationTemp.functionsName,
-        url: evaluationTemp.functionsImg,
-      });
-      setBreakDamageImage({
-        name: evaluationTemp.breaksDmgName,
-        url: evaluationTemp.breaksDmgImg,
-      });
-      setNumberPlateImage({
-        name: evaluationTemp.numberPlateName,
-        url: evaluationTemp.numberPlateImg,
-      });
+        setScratchDamageImage({
+          name: evaluationTemp.scratchName,
+          url: evaluationTemp.scratchImg,
+        });
+        setDentDamageImage({
+          name: evaluationTemp.dentName,
+          url: evaluationTemp.dentImg,
+        });
+        setFunctionsImage({
+          name: evaluationTemp.functionsName,
+          url: evaluationTemp.functionsImg,
+        });
+        setBreakDamageImage({
+          name: evaluationTemp.breaksDmgName,
+          url: evaluationTemp.breaksDmgImg,
+        });
+        setNumberPlateImage({
+          name: evaluationTemp.numberPlateName,
+          url: evaluationTemp.numberPlateImg,
+        });
 
-      setRcFrontImage({
-        name: evaluationTemp.rcFrontName,
-        url: evaluationTemp.rcFrontImg,
-      });
-      setRcBackImage({
-        name: evaluationTemp.rcBackName,
-        url: evaluationTemp.rcBackImg,
-      });
-      setInsuranceCopyImage({
-        name: evaluationTemp.insuranceName,
-        url: evaluationTemp.insuranceImg,
-      });
-      setInvoiceImage({
-        name: evaluationTemp.invoiceName,
-        url: evaluationTemp.invoiceImg,
-      });
-      setOldCarNOCImage({
-        name: evaluationTemp.oldCarNocName,
-        url: evaluationTemp.oldCarNocImg,
-      });
-      setCcImage({
-        name: "",
-        url: "",
-      });
-      setPollutionImage({
-        name: "",
-        url: "",
-      });
-      setIdProofImage({
-        name: "",
-        url: "",
-      });
-      setPanCardImage({
-        name: "",
-        url: "",
-      });
-      setMobileNumber2(evaluationTemp.mobileNum);
-      setPriceGap(evaluationTemp.priceGap);
-      setEvaluatorOfferedPrice(evaluationTemp.evaluatorofferedprice);
+        setRcFrontImage({
+          name: evaluationTemp.rcFrontName,
+          url: evaluationTemp.rcFrontImg,
+        });
+        setRcBackImage({
+          name: evaluationTemp.rcBackName,
+          url: evaluationTemp.rcBackImg,
+        });
+        setInsuranceCopyImage({
+          name: evaluationTemp.insuranceName,
+          url: evaluationTemp.insuranceImg,
+        });
+        setInvoiceImage({
+          name: evaluationTemp.invoiceName,
+          url: evaluationTemp.invoiceImg,
+        });
+        setOldCarNOCImage({
+          name: evaluationTemp.oldCarNocName,
+          url: evaluationTemp.oldCarNocImg,
+        });
+        setCcImage({
+          name: "",
+          url: "",
+        });
+        setPollutionImage({
+          name: "",
+          url: "",
+        });
+        setIdProofImage({
+          name: "",
+          url: "",
+        });
+        setPanCardImage({
+          name: "",
+          url: "",
+        });
+        setMobileNumber2(evaluationTemp.mobileNum);
+        setPriceGap(evaluationTemp.priceGap);
+        setEvaluatorOfferedPrice(evaluationTemp.evaluatorofferedprice);
+      }
     }
   }, [initialData]);
 
@@ -1245,7 +1256,193 @@ const EvaluationForm = ({ route, navigation }) => {
     } catch (error) {}
   };
 
-  const getCheckList = async () => {
+  useEffect(() => {
+    if (initialData) {
+      const intervalId = setInterval(() => {
+        autoSaveData(initialData);
+      }, 5000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [initialData]);
+
+  const autoSaveData = async (initialData) => {
+    try {
+      const selectedMonth = months.filter((i) => i.name === month)[0];
+      let evaluationTemp = initialData;
+      const savedData = {
+        registrationNumber: rcNumber,
+        nameonRC: nameOnRc,
+        variant: variant,
+        fuelType: fuelType,
+        transmission: transmission,
+        chassisNumber: "",
+        engineNumber: engineNumber,
+        yearOfManufacturing: month ? selectedMonth?.index + "-" + year : "",
+        dateOfRegistration: dateOfRegistration,
+        registrationValidity: regnValidUpto,
+        pincode: pincode,
+        belt: true,
+        airconditioning: "",
+        remarks1: "",
+        bodyrust: "",
+        registrationState: registrationDistrict,
+        registrationDistrict: registrationDistrict,
+        registrationCity: registrationCity,
+        emission: emission,
+        Interior: "",
+        Trunk: "",
+        Exterior: "",
+        role: "",
+        managerId: "",
+        Engineroomcleaning: "no",
+        evaluatorId: "",
+        UnderneathVehicle: "",
+        InTheDiversseat: "",
+        cruisecontrol: "",
+        DrivingYourTestDrive: "",
+        vehicletype: vehicleType,
+        typeofbody: typeOfBody,
+        distanceDriven: kmsDriven,
+        NoOfOwners: noOwners,
+        floorcovering: "",
+        challanPending: noOfChallanPending,
+        exhaustpipe: "",
+        VehicleExterior: "",
+        bumper: "",
+        vehicleServiceCost: "",
+        EngineandtransmissionCost: null,
+        oilChangesCost: null,
+        steeringandfluid: null,
+        coolantandfilter: null,
+        removalstains: null,
+        drycleaning: null,
+        engineroomcleaning: null,
+        challenamount: null,
+        CCClearance: null,
+        pollutioncertificate: null,
+        managerid: "",
+        frontright: frontRightSelected || "",
+        frontleft: frontLeftSelected || "",
+        rearright: rearRightSelected || "",
+        rearleft: rearLeftSelected || "",
+        sparediskwheel: spareDiskWheelSelected || "",
+        sparealliwheel: spareAlliWheelSelected || "",
+        majorAccident: anyMajorAccidentSelected || "",
+        majorAccidentRemarks: "",
+        minorAccident: anyMinorAccidentSelected || "",
+        minorAccidentRemarks: "",
+        hypothetication: hypothecatedTo,
+        hypotheticatedBranch: hypothecatedBranch,
+        insuranceType: insuranceType,
+        generalappearence: "",
+        Engine: "",
+        engine: "",
+        colour: colour,
+        remarks: "",
+        insuranceCompanyName: insuranceCompanyName,
+        policyNumber: policyNumber,
+        insuranceFrom: insuranceFromDate,
+        insuranceTo: insuranceToDate, //Left
+        carFrontImgName: frontSideImage ? frontSideImage.name : "",
+        carFrontImg: frontSideImage ? frontSideImage.url : "",
+        dashboard: "",
+        carBackImgName: backSideImage ? backSideImage.name : "",
+        carBackImg: backSideImage ? backSideImage.url : "",
+        carLeftImgName: leftSideImage ? leftSideImage.name : "",
+        carLeftImg: leftSideImage ? leftSideImage.url : "",
+        carRightImgName: rightSideImage ? rightSideImage.name : "",
+        carRightImg: rightSideImage ? rightSideImage.url : "",
+        speedoMeterImgName: speedometerImage ? speedometerImage.name : "",
+        speedoMeterImg: speedometerImage ? speedometerImage.url : "",
+        chassisImgName: chassisImage ? chassisImage.name : "",
+        chassisImg: chassisImage ? chassisImage.url : "",
+        VehicleServiceCost: "",
+        interiorImg: "",
+        Pollutioncertificate: "no",
+        vinPlateImg: "",
+        rcFrontName: rcFrontImage ? rcFrontImage.name : "",
+        rcFrontImg: rcFrontImage ? rcFrontImage.url : "",
+        Drycleaning: "no",
+        RubbingPolishingCost: "no",
+        CCClearances: "no",
+        SpareKeysCost: "no",
+        Challenamount: "no",
+        otherCharges: "",
+        otherImages: "",
+        Engineandtransmission: "no",
+        RegistrationCost: "no",
+        Vehicletransfercharges: "no",
+        Removalstains: "no",
+        Nocclearance: "no",
+        Coolantandfilter: "no",
+        Steeringandfluid: "no",
+        rcBackName: rcBackImage ? rcBackImage.name : "",
+        rcBackImg: rcBackImage ? rcBackImage.url : "",
+        insuranceName: insuranceCopyImage ? insuranceCopyImage.name : "",
+        insuranceImg: insuranceCopyImage ? insuranceCopyImage.url : "",
+        InsuranceCost: "no",
+        interiorFrontName: interiorFrontImage ? interiorFrontImage.name : "",
+        interiorFrontImg: interiorFrontImage ? interiorFrontImage.url : "",
+        interiorBackName: interiorBackImage ? interiorBackImage.name : "",
+        interiorBackImg: interiorBackImage ? interiorBackImage.url : "",
+        invoiceName: invoiceImage ? invoiceImage.name : "",
+        invoiceImg: invoiceImage ? invoiceImage.url : "",
+        extraFitmentName: extraFitmentImage ? extraFitmentImage.name : "",
+        extraFitmentImg: extraFitmentImage ? extraFitmentImage.url : "",
+        functionsName: functionsImage ? functionsImage.name : "",
+        functionsImg: functionsImage ? functionsImage.url : "",
+        getcardetails: "",
+        scratchName: scratchDamageImage ? scratchDamageImage.name : "",
+        scratchImg: scratchDamageImage ? scratchDamageImage.url : "",
+        dentName: dentDamageImage ? dentDamageImage.name : "",
+        dentImg: dentDamageImage ? dentDamageImage.url : "",
+        breaksDmgName: breakDamageImage ? breakDamageImage.name : "",
+        breaksDmgImg: breakDamageImage ? breakDamageImage.url : "",
+        numberPlateName: numberPlateImage ? numberPlateImage.name : "",
+        numberPlateImg: numberPlateImage ? numberPlateImage.url : "",
+        oldCarNocName: oldCarNOCImage ? oldCarNOCImage.name : "",
+        oldCarNocImg: oldCarNOCImage ? oldCarNOCImage.url : "",
+        periodicServiceValue: "",
+        insuranceValue: "",
+        spareKeysValue: "",
+        registrationValue: "",
+        rubbingPolishingValue: "",
+        mobileNum: mobileNumber2,
+        otherDocfieldName: "",
+        periodicService: "no",
+        interiorCleaningValue: "",
+        interiorCleaningCost: "",
+        pollutionCertificateValue: "",
+        pollutionCertificateCost: "",
+        entertextfield: "",
+        priceGap: priceGap,
+        acceptCost: "",
+        rejectCost: "",
+        evaluatorofferedprice: "",
+        otherImagesDoc: [],
+        otherfieldsDoc: formatRefurbishmentData2(Refurbishment),
+        refurbishmentItems: [],
+        refurbishmentAdditionalItems: [],
+      };
+      if (savedData) {
+        evaluationTemp.profileControls = savedData;
+        const payload = {
+          data: evaluationTemp,
+          status: "Active",
+          universalId: route.params.universalId,
+        };
+        const response = await client.post(URL.EVALUATION_AUTOSAVE(), payload);
+        const json = await response.json();
+        if (response.ok) {
+        }
+      }
+    } catch (error) {
+      console.log("Errro", error);
+    }
+  };
+
+  const getModalList = async () => {
     try {
       let employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -1264,6 +1461,48 @@ const EvaluationForm = ({ route, navigation }) => {
     } catch (error) {}
   };
 
+  const getCheckList = async () => {
+    try {
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const response = await client.get(URL.GET_CHECKLIST(1));
+        const json = await response.json();
+        if (response.ok) {
+          setCheckList(json);
+        }
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (Refurbishment && initialData?.profileControls) {
+      const data = initialData.profileControls.otherfieldsDoc;
+      const updatedJson = {
+        Items: addCostToItems(Refurbishment.Items, data),
+        AdditionalExpenses: addCostToItems(
+          Refurbishment.AdditionalExpenses,
+          data
+        ),
+      };
+      setRefurbishment(updatedJson);
+    }
+  }, [initialData]);
+  
+
+  function addCostToItems(items, data) {
+    for (let item of items) {
+      const matchingData = data.find((d) => d.id === item.id);
+      if (matchingData) {
+        item.cost = matchingData.cost;
+      }
+    }
+    return items;
+  }
+
+
   function addIsActive(v) {
     return { ...v, isSelected: false, name: v.otherMaker };
   }
@@ -1275,19 +1514,6 @@ const EvaluationForm = ({ route, navigation }) => {
     var regex = /^[a-zA-Z0-9_]+$/;
     return regex.test(input);
   }
-
-  const getModalList = async () => {
-    try {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const response = await client.get(URL.GET_CHECKLIST(1));
-        const json = await response.json();
-      }
-    } catch (error) {}
-  };
 
   const updateAddressDetails = (pincode, Label) => {
     if (pincode.length != 6) {
@@ -1356,14 +1582,38 @@ const EvaluationForm = ({ route, navigation }) => {
     return [...formattedItems, ...formattedExpenses];
   }
 
+  function formatRefurbishmentData2(data) {
+    const formattedItems = data.Items.map((item) => {
+      return { name: item.items, cost: item.cost,id : item.id };
+    });
+
+    const formattedExpenses = data.AdditionalExpenses.map((expense) => {
+      return { name: expense.items, cost: expense.cost, id: expense.id };
+    });
+
+    return [...formattedItems, ...formattedExpenses] || [];
+  }
+  function convertCheckListData(data) {
+    let result = [];
+    for (let category of data) {
+      for (let subcategory of category.subCategory) {
+        for (let question of subcategory.questions) {
+          if (question.value) {
+            result.push({
+              questionId: question.id,
+              isAvailable: "Yes",
+              remarks: question.value,
+            });
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   const handleValidation = () => {
     const newErrors = {};
     let isValid = true;
-    console.log(
-      "Refurbishment",
-      JSON.stringify(formatRefurbishmentData(Refurbishment))
-    );
-
     // Validate First Name
     // if (firstName.trim() === "") {
     //   newErrors.firstName = "First Name is required";
@@ -1545,7 +1795,6 @@ const EvaluationForm = ({ route, navigation }) => {
     }
 
     // Validate Evaluator Offered Price
-    console.log(evaluatorOfferedPrice);
     if (evaluatorOfferedPrice === 0) {
       newErrors.evaluatorOfferedPrice = "Evaluator Offered Price is required";
     }
@@ -1845,7 +2094,7 @@ const EvaluationForm = ({ route, navigation }) => {
         setInsuranceToDate(item);
         break;
       case "Insurance From Date":
-        setInsuranceToDate(item);
+        setInsuranceFromDate(item);
         break;
       case "Hypothication Completed Date":
         setHypothicationCompletedDate(item);
@@ -2068,6 +2317,8 @@ const EvaluationForm = ({ route, navigation }) => {
     const tempImages = otherImages.length > 0 ? convertData(otherImages) : [];
     const selectedMonth = months.filter((i) => i.name === month)[0];
     const refurbishmentData = formatRefurbishmentData(Refurbishment);
+    const checklist = convertCheckListData(checkList);
+    console.log("checklist", checklist);
     const Payload = {
       id: 0,
       nameOnRC: nameOnRc,
@@ -2181,7 +2432,7 @@ const EvaluationForm = ({ route, navigation }) => {
       noOfOwners: noOwners,
       colour: colour,
       transmission: transmission,
-      data: [],
+      data: checklist || [],
       role: "Evaluator",
       totalRefurbishmentCost: null,
       evalutionStatus: "EvalutionSubmitted",
@@ -2250,11 +2501,11 @@ const EvaluationForm = ({ route, navigation }) => {
       managerId: userData.approverId,
       carExchangeEvalutionCosts: [],
     };
-    const response = await client.post(URL.SAVE_EVALUATION(), Payload);
-    const json = await response.json();
-    if (response.ok) {
-      alert("DONE");
-    }
+    // const response = await client.post(URL.SAVE_EVALUATION(), Payload);
+    // const json = await response.json();
+    // if (response.ok) {
+    //   alert("DONE");
+    // }
   };
 
   const getTotalCost = (data) => {
@@ -2461,200 +2712,6 @@ const EvaluationForm = ({ route, navigation }) => {
         );
       });
   };
-
-  const autoSaveData = async () => {
-    try {
-      let employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      const selectedMonth = months.filter((i) => i.name === month)[0];
-
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        let evaluationTemp = initialData;
-        const savedData = {
-          registrationNumber: rcNumber,
-          nameonRC: nameOnRc,
-          variant: variant,
-          fuelType: fuelType,
-          transmission: transmission,
-          chassisNumber: "",
-          engineNumber: engineNumber,
-          yearOfManufacturing: month ? selectedMonth?.index + "-" + year : "",
-          dateOfRegistration: dateOfRegistration,
-          registrationValidity: regnValidUpto,
-          pincode: pincode,
-          belt: true,
-          airconditioning: "",
-          remarks1: "",
-          bodyrust: "",
-          registrationState: registrationDistrict,
-          registrationDistrict: registrationDistrict,
-          registrationCity: registrationCity,
-          emission: emission,
-          Interior: "",
-          Trunk: "",
-          Exterior: "",
-          role: "",
-          managerId: "",
-          Engineroomcleaning: "no",
-          evaluatorId: "",
-          UnderneathVehicle: "",
-          InTheDiversseat: "",
-          cruisecontrol: "",
-          DrivingYourTestDrive: "",
-          vehicletype: vehicleType,
-          typeofbody: typeOfBody,
-          distanceDriven: kmsDriven,
-          NoOfOwners: noOwners,
-          floorcovering: "",
-          challanPending: noOfChallanPending,
-          exhaustpipe: "",
-          VehicleExterior: "",
-          bumper: "",
-          vehicleServiceCost: "",
-          EngineandtransmissionCost: null,
-          oilChangesCost: null,
-          steeringandfluid: null,
-          coolantandfilter: null,
-          removalstains: null,
-          drycleaning: null,
-          engineroomcleaning: null,
-          challenamount: null,
-          CCClearance: null,
-          pollutioncertificate: null,
-          managerid: "",
-          frontright: frontRightSelected,
-          frontleft: frontLeftSelected,
-          rearright: rearRightSelected,
-          rearleft: rearLeftSelected,
-          sparediskwheel: spareDiskWheelSelected,
-          sparealliwheel: spareAlliWheelSelected,
-          majorAccident: anyMajorAccidentSelected,
-          majorAccidentRemarks: "",
-          minorAccident: anyMinorAccidentSelected,
-          minorAccidentRemarks: "",
-          hypothetication: hypothecatedTo,
-          hypotheticatedBranch: hypothecatedBranch,
-          insuranceType: insuranceType,
-          generalappearence: "",
-          Engine: "",
-          engine: "",
-          colour: colour,
-          remarks: "",
-          insuranceCompanyName: insuranceCompanyName,
-          policyNumber: policyNumber,
-          insuranceFrom: insuranceFromDate,
-          insuranceTo: insuranceToDate, //Left
-          carFrontImgName: frontSideImage.name,
-          carFrontImg: frontSideImage.url,
-          dashboard: "",
-          carBackImgName: backSideImage.name,
-          carBackImg: backSideImage.url,
-          carLeftImgName: leftSideImage.name,
-          carLeftImg: leftSideImage.url,
-          carRightImgName: rightSideImage.name,
-          carRightImg: rightSideImage.url,
-          speedoMeterImgName: speedometerImage.name,
-          speedoMeterImg: speedometerImage.url,
-          chassisImgName: chassisImage.name,
-          chassisImg: chassisImage.url,
-          VehicleServiceCost: "",
-          interiorImg: "",
-          Pollutioncertificate: "no",
-          vinPlateImg: "",
-          rcFrontName: rcFrontImage.name,
-          rcFrontImg: rcFrontImage.url,
-          Drycleaning: "no",
-          RubbingPolishingCost: "no",
-          CCClearances: "no",
-          SpareKeysCost: "no",
-          Challenamount: "no",
-          otherCharges: "",
-          otherImages: "",
-          Engineandtransmission: "no",
-          RegistrationCost: "no",
-          Vehicletransfercharges: "no",
-          Removalstains: "no",
-          Nocclearance: "no",
-          Coolantandfilter: "no",
-          Steeringandfluid: "no",
-          rcBackName: rcBackImage.name,
-          rcBackImg: rcBackImage.url,
-          insuranceName: insuranceCopyImage.name,
-          insuranceImg: insuranceCopyImage.url,
-          InsuranceCost: "no",
-          interiorFrontName: interiorFrontImage.name,
-          interiorFrontImg: interiorFrontImage.url,
-          interiorBackName: interiorBackImage.name,
-          interiorBackImg: interiorBackImage.url,
-          invoiceName: invoiceImage.name,
-          invoiceImg: invoiceImage.url,
-          extraFitmentName: extraFitmentImage.name,
-          extraFitmentImg: extraFitmentImage.url,
-          functionsName: functionsImage.name,
-          functionsImg: functionsImage.url,
-          getcardetails: "",
-          scratchName: scratchDamageImage.name,
-          scratchImg: scratchDamageImage.url,
-          dentName: dentDamageImage.name,
-          dentImg: dentDamageImage.url,
-          breaksDmgName: breakDamageImage.name,
-          breaksDmgImg: breakDamageImage.url,
-          numberPlateName: numberPlateImage.name,
-          numberPlateImg: numberPlateImage.url,
-          oldCarNocName: oldCarNOCImage.name,
-          oldCarNocImg: oldCarNOCImage.url,
-          periodicServiceValue: "",
-          insuranceValue: "",
-          spareKeysValue: "",
-          registrationValue: "",
-          rubbingPolishingValue: "",
-          mobileNum: mobileNumber2,
-          otherDocfieldName: "",
-          periodicService: "no",
-          interiorCleaningValue: "",
-          interiorCleaningCost: "",
-          pollutionCertificateValue: "",
-          pollutionCertificateCost: "",
-          entertextfield: "",
-          priceGap: priceGap,
-          acceptCost: "",
-          rejectCost: "",
-          evaluatorofferedprice: "",
-          otherImagesDoc: [],
-          otherfieldsDoc: [],
-          refurbishmentItems: [],
-          refurbishmentAdditionalItems: [],
-        };
-        evaluationTemp.profileControls = savedData;
-        const payload = {
-          data: evaluationTemp,
-          status: "Active",
-          universalId: route.params.universalId,
-        };
-        const response = await client.post(URL.EVALUATION_AUTOSAVE(), payload);
-        const json = await response.json();
-        if (response.ok) {
-        }
-      }
-    } catch (error) {}
-  };
-
-  // const autoSaveData = async () => {
-  //   try {
-  //     let employeeData = await AsyncStore.getData(
-  //       AsyncStore.Keys.LOGIN_EMPLOYEE
-  //     );
-  //     if (employeeData) {
-  //       const jsonObj = JSON.parse(employeeData);
-  //       const response = await client.post(URL.EVALUATION_AUTOSAVE());
-  //       const json = await response.json();
-  //       if (response.ok) {
-  //       }
-  //     }
-  //   } catch (error) {}
-  // };
 
   return (
     <View style={[{ flex: 1 }]}>
@@ -4236,7 +4293,9 @@ const EvaluationForm = ({ route, navigation }) => {
                   <LocalButtonComp
                     title={"Edit Checklist"}
                     onPress={() => {
-                      navigation.navigate(MyTasksStackIdentifiers.checkList);
+                      navigation.navigate(MyTasksStackIdentifiers.checkList, {
+                        list: checkList,
+                      });
                     }}
                     disabled={false}
                   />
