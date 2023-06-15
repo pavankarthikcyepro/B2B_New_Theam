@@ -333,6 +333,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [eventConfigRes, setEventConfigRes] = useState([]);
   const [isVip, setIsVip] = useState(null);
   const [isHni, setIsHni] = useState(null);
+  const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
 
   // todo
   useLayoutEffect(() => {
@@ -3203,6 +3204,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
+  const convertToDefaultDateTime = (date = "", time = "") => {
+    if (date || time) {
+      let newDateFormate = date
+        ? moment(date, "DD/MM/YYYY").format("MM/DD/YYYY")
+        : moment().format("MM/DD/YYYY");
+      return new Date(`${newDateFormate} ${time}`);
+    } else {
+      return new Date(Date.now());
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -3289,7 +3301,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={selector.showDatepicker}
         mode={"date"}
-        value={new Date(Date.now())}
+        value={defaultDateTime}
         minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
         onChange={(event, selectedDate) => {
@@ -3623,9 +3635,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         <DateSelectItem
                           label={"Date Of Birth"}
                           value={selector.dateOfBirth}
-                          onPress={() =>
-                            dispatch(setDatePicker("DATE_OF_BIRTH"))
-                          }
+                          onPress={() => {
+                            setDefaultDateTime(
+                              convertToDefaultDateTime(selector.dateOfBirth)
+                            );
+                            dispatch(setDatePicker("DATE_OF_BIRTH"));
+                          }}
                         />
                       </View>
                       <View style={{ width: "45%" }}>
@@ -3647,9 +3662,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <DateSelectItem
                       label={"Anniversary Date"}
                       value={selector.anniversaryDate}
-                      onPress={() =>
-                        dispatch(setDatePicker("ANNIVERSARY_DATE"))
-                      }
+                      onPress={() => {
+                        setDefaultDateTime(
+                          convertToDefaultDateTime(selector.anniversaryDate)
+                        );
+                        dispatch(setDatePicker("ANNIVERSARY_DATE"));
+                      }}
                     />
                   </View>
                 ) : null}
@@ -3893,9 +3911,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         ).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")
                   }
-                  onPress={() =>
-                    dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
-                  }
+                  onPress={() => {
+                    setDefaultDateTime(
+                      convertToDefaultDateTime(
+                        selector.expected_delivery_date
+                          ? moment(
+                              new Date(Number(selector.expected_delivery_date))
+                            ).format("DD/MM/YYYY")
+                          : ""
+                      )
+                    );
+                    dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"));
+                  }}
                 />
 
                 <DropDownSelectionItem
@@ -6030,7 +6057,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DateSelectItem
                     label={"Mth.Yr. of MFG"}
                     value={selector.r_mfg_year}
-                    onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
+                    onPress={() => {
+                      setDefaultDateTime(
+                        convertToDefaultDateTime(
+                          selector.r_mfg_year
+                            ? moment(selector.r_mfg_year, "MM-YYYY").format(
+                                "DD/MM/YYYY"
+                              )
+                            : ""
+                        )
+                      );
+                      dispatch(setDatePicker("R_MFG_YEAR"));
+                    }}
                   />
                   {/* <TextinputComp
                     style={styles.textInputStyle}
@@ -6140,14 +6178,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DateSelectItem
                     label={"Registration Date"}
                     value={selector.r_registration_date}
-                    onPress={() => dispatch(setDatePicker("R_REG_DATE"))}
+                    onPress={() => {
+                      setDefaultDateTime(
+                        convertToDefaultDateTime(selector.r_registration_date)
+                      );
+                      dispatch(setDatePicker("R_REG_DATE"));
+                    }}
                   />
                   <DateSelectItem
                     label={"Registration Validity Date"}
                     value={selector.r_registration_validity_date}
-                    onPress={() =>
-                      dispatch(setDatePicker("R_REG_VALIDITY_DATE"))
-                    }
+                    onPress={() => {
+                      setDefaultDateTime(
+                        convertToDefaultDateTime(
+                          selector.r_registration_validity_date
+                        )
+                      );
+                      dispatch(setDatePicker("R_REG_VALIDITY_DATE"));
+                    }}
                   />
                   <View style={styles.view2}>
                     <Text style={styles.looking_any_text}>{"Insurance"}</Text>
@@ -6237,9 +6285,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"Insurance Policy Expiry Date"}
                         value={selector.r_insurence_to_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
-                        }
+                        onPress={() => {
+                          setDefaultDateTime(
+                            convertToDefaultDateTime(
+                              selector.r_insurence_to_date
+                            )
+                          );
+                          dispatch(setDatePicker("R_INSURENCE_TO_DATE"));
+                        }}
                       />
                     </View>
                   )}
@@ -6262,16 +6315,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         <DateSelectItem
                           label={"Insurance From Date"}
                           value={selector.r_insurence_from_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))
-                          }
+                          onPress={() => {
+                            setDefaultDateTime(
+                              convertToDefaultDateTime(
+                                selector.r_insurence_from_date
+                              )
+                            );
+                            dispatch(setDatePicker("R_INSURENCE_FROM_DATE"));
+                          }}
                         />
                         <DateSelectItem
                           label={"Insurance To Date"}
                           value={selector.r_insurence_to_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
-                          }
+                          onPress={() => {
+                            setDefaultDateTime(
+                              convertToDefaultDateTime(
+                                selector.r_insurence_to_date
+                              )
+                            );
+                            dispatch(setDatePicker("R_INSURENCE_TO_DATE"));
+                          }}
                         />
                       </View>
                     )}
