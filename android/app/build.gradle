@@ -160,8 +160,8 @@ android {
         applicationId "com.b2b_new_theme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 45
-        versionName "CPR45-09062023"
+        versionCode 46
+        versionName "CPR46-15062023"
     }
     lintOptions {
         checkReleaseBuilds false

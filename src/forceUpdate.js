@@ -1,3 +1,3 @@
-export const VersionName = "CPR45-09062023";
-export const VersionCode = "45";
+export const VersionName = "CPR46-15062023";
+export const VersionCode = "46";
 export const VersionString = VersionName + "(" + VersionCode + ")";
