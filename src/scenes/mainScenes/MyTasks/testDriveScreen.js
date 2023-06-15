@@ -197,6 +197,8 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [storeLastupdatedTestDriveId, setStoreLastupdatedTestDriveId] = useState("");
   const [storeLastupdatedTestDriveDetails, setStoreLastupdatedTestDriveDetails] = useState([]);
   const [isClosedClicked, setIsClosedClicked] =useState(false);
+  const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
+
   let date = new Date();
   date.setDate(date.getDate() + 9);
   const Task360selector = useSelector((state) => state.taskThreeSixtyReducer);
@@ -2629,6 +2631,17 @@ const TestDriveScreen = ({ route, navigation }) => {
     </>)
   }
 
+  const convertToDefaultDateTime = (date, time = "") => {
+    if (date || time) {
+      let newDateFormate = date
+        ? moment(date, "DD/MM/YYYY").format("MM/DD/YYYY")
+        : moment().format("MM/DD/YYYY");
+      return new Date(`${newDateFormate} ${time}`);
+    } else {
+      return new Date(Date.now());
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -2665,7 +2678,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         mode={datePickerMode}
         minimumDate={new Date(Date.now())}
         maximumDate={date}
-        value={new Date(Date.now())}
+        value={defaultDateTime}
         onChange={(event, selectedDate) => {
           setShowDatePickerModel(false);
 
@@ -2713,7 +2726,6 @@ const TestDriveScreen = ({ route, navigation }) => {
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
-        
           <View style={styles.baseVw}>
             {/* // 1.Test Drive */}
             <View
@@ -2830,8 +2842,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   userData.isSelfManager == "Y"
                     ? "Battery Type"
                     : userData.isTracker == "Y"
-                      ? "Clutch Type"
-                      : "Transmission Type"
+                    ? "Clutch Type"
+                    : "Transmission Type"
                 }
                 value={selectedVehicleDetails.transType}
                 editable={false}
@@ -3005,9 +3017,15 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={selector.customer_preferred_date}
                 // disabled={!isRecordEditable}
                 disabled={isValuesEditable}
-                onPress={() =>
-                  showDatePickerModelMethod("PREFERRED_DATE", "date")
-                }
+                onPress={() => {
+                  setDefaultDateTime(
+                    convertToDefaultDateTime(
+                      selector.customer_preferred_date,
+                      selector.actual_start_time
+                    )
+                  );
+                  showDatePickerModelMethod("PREFERRED_DATE", "date");
+                }}
               />
               <Text
                 style={[
@@ -3042,9 +3060,15 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={selector.customer_preferred_time}
                 // disabled={!isRecordEditable}
                 disabled={isValuesEditable}
-                onPress={() =>
-                  showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
-                }
+                onPress={() => {
+                  setDefaultDateTime(
+                    convertToDefaultDateTime(
+                      selector.customer_preferred_date,
+                      selector.customer_preferred_time
+                    )
+                  );
+                  showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time");
+                }}
               />
               <Text
                 style={[
@@ -3064,9 +3088,15 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={selector.actual_start_time}
                 // disabled={!isRecordEditable}
                 disabled={isValuesEditable}
-                onPress={() =>
-                  showDatePickerModelMethod("ACTUAL_START_TIME", "time")
-                }
+                onPress={() => {
+                  setDefaultDateTime(
+                    convertToDefaultDateTime(
+                      selector.customer_preferred_date,
+                      selector.actual_start_time
+                    )
+                  );
+                  showDatePickerModelMethod("ACTUAL_START_TIME", "time");
+                }}
               />
               <Text
                 style={[
@@ -3086,9 +3116,15 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={selector.actual_end_time}
                 disabled={isValuesEditable}
                 // disabled={!isRecordEditable}
-                onPress={() =>
-                  showDatePickerModelMethod("ACTUAL_END_TIME", "time")
-                }
+                onPress={() => {
+                  setDefaultDateTime(
+                    convertToDefaultDateTime(
+                      selector.customer_preferred_date,
+                      selector.actual_end_time
+                    )
+                  );
+                  showDatePickerModelMethod("ACTUAL_END_TIME", "time");
+                }}
               />
               <Text
                 style={[
@@ -3126,10 +3162,10 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Submit"}
                 // disabled={selector.isLoading}
-                onPress={() => 
-                  // submitClicked("SENT_FOR_APPROVAL", "Test Drive") make it same as wef for live issues 
+                onPress={() =>
+                  // submitClicked("SENT_FOR_APPROVAL", "Test Drive") make it same as wef for live issues
                   submitClicked("APPROVED", "Test Drive")
-              }
+                }
               />
             </View>
           )}
@@ -3176,7 +3212,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.isLoading}
                 bgColor={Colors.GREEN}
                 onPress={() => setIsRescheduleModalVisible(true)}
-              // onPress={() => submitClicked("RESCHEDULED", "Test Drive")} // todo uncomment manthan
+                // onPress={() => submitClicked("RESCHEDULED", "Test Drive")} // todo uncomment manthan
               />
             </View>
           )}
@@ -3263,25 +3299,24 @@ const TestDriveScreen = ({ route, navigation }) => {
           ) : null}
 
           {route?.params?.taskStatus === "CLOSED" &&
-            !isReopenSubmitVisible &&
-            !isCloseSelected 
-            && storeLastupdatedTestDriveDetails?.status == "CLOSED" 
-            // && storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" || storeLastupdatedTestDriveDetails?.reTestdriveFlag == "Original" 
-           
-             ? (
+          !isReopenSubmitVisible &&
+          !isCloseSelected &&
+          storeLastupdatedTestDriveDetails?.status == "CLOSED" ? (
+            // && storeLastupdatedTestDriveDetails?.reTestdriveFlag == "ReTestDrive" || storeLastupdatedTestDriveDetails?.reTestdriveFlag == "Original"
+
             <View style={[styles.view1, { marginTop: 30 }]}>
-                <Button
-                  mode="contained"
-                  style={{ width: "45%" }}
-                  color={Colors.GRAY}
-                  // disabled={selector.is_loading_for_task_update}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={() => {
-                    navigation.goBack();
-                  }}
-                >
-                  Back
-                </Button>
+              <Button
+                mode="contained"
+                style={{ width: "45%" }}
+                color={Colors.GRAY}
+                // disabled={selector.is_loading_for_task_update}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              >
+                Back
+              </Button>
               <Button
                 mode="contained"
                 style={{ width: "45%" }}
@@ -3289,10 +3324,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                 // disabled={selector.is_loading_for_task_update}
                 labelStyle={{ textTransform: "none" }}
                 // onPress={reOpenTask}
-                  onPress={()=>{
-                    reSubmitClick("ASSIGNED", "Test Drive Approval")
-                  }}
-                  // todo manthan 
+                onPress={() => {
+                  reSubmitClick("ASSIGNED", "Test Drive Approval");
+                }}
+                // todo manthan
               >
                 {/* todo */}
                 Re Testdrive
@@ -3322,8 +3357,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 labelStyle={{ textTransform: "none" }}
                 onPress={() => {
                   // submitClicked("SENT_FOR_APPROVAL", "Test Drive") make it same as web for live issue
-                  submitClicked("APPROVED", "Test Drive")
-                  setIsisReopenSubmitVisible(false)
+                  submitClicked("APPROVED", "Test Drive");
+                  setIsisReopenSubmitVisible(false);
                   // reSubmitClick("ASSIGNED","Test Drive Approval")
                   // closeTask("reopen");
                 }}

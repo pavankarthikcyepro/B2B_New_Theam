@@ -129,6 +129,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     isOtp: "",
     isTracker: "",
   });
+  const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
   const Task360selector = useSelector((state) => state.taskThreeSixtyReducer);
   useEffect(() => {
     // getAsyncStorageData();
@@ -981,6 +982,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
     );
   };
 
+  const convertToDefaultDateTime = (date, time = "") => {
+    if (date || time) {
+      let newDateFormate = date
+        ? moment(date, "DD/MM/YYYY").format("MM/DD/YYYY")
+        : moment().format("MM/DD/YYYY");
+      return new Date(`${newDateFormate} ${time}`);
+    } else {
+      return new Date(Date.now());
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -994,45 +1006,44 @@ const HomeVisitScreen = ({ route, navigation }) => {
           mode={selector.datePickerKey}
           minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
-          value={new Date(Date.now())}
+          value={defaultDateTime}
           onChange={(event, selectedDate) => {
-           
             // if (Platform.OS === "android") {
             //   //setDatePickerVisible(false);
             // }
             let formatDate = "";
             if (selectedDate) {
-              if (selector.datePickerKey == "date"){
+              if (selector.datePickerKey == "date") {
                 formatDate = selectedDate;
-              }else{
+              } else {
                 if (Platform.OS === "ios") {
                   formatDate = convertToTime(selectedDate);
                 } else {
                   formatDate = convertToTime(selectedDate);
                 }
               }
-              if (selector.datePickerKeyId == "ACTUAL_START_TIME"){
-                
-                if (compare(convertToDate(selectedDate), selector.actual_start_time)  == 0){
+              if (selector.datePickerKeyId == "ACTUAL_START_TIME") {
+                if (
+                  compare(
+                    convertToDate(selectedDate),
+                    selector.actual_start_time
+                  ) == 0
+                ) {
                   setTimeout(() => {
-                    setIsUpdateBtnVisible(true);  
+                    setIsUpdateBtnVisible(true);
                   }, 500);
-                  
-                }else{
+                } else {
                   setTimeout(() => {
-                    setIsUpdateBtnVisible(false);    
+                    setIsUpdateBtnVisible(false);
                   }, 500);
-                
                 }
               }
-              
             }
             dispatch(updateSelectedDate({ key: "", text: formatDate }));
           }}
           onRequestClose={() => dispatch(setDatePicker(""))}
         />
-      
-        
+
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
             {/* <TextinputComp
@@ -1192,10 +1203,18 @@ const HomeVisitScreen = ({ route, navigation }) => {
               label={"Next Followup Date"}
               // label={"Actual Start Date"}
               value={selector.actual_start_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              onPress={() => {
+                setDefaultDateTime(
+                  convertToDefaultDateTime(
+                    selector.actual_start_time,
+                    selector.next_follow_up_Time
+                  )
+                );
+                dispatch(setDatePicker("ACTUAL_START_TIME"));
+              }}
+              //  value={selector.expected_delivery_date}
+              // onPress={() =>
+              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text
               style={[
@@ -1203,7 +1222,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 {
                   backgroundColor:
                     isSubmitPress &&
-                      (selector.actual_start_time === "" || isDateError)
+                    (selector.actual_start_time === "" || isDateError)
                       ? "red"
                       : "rgba(208, 212, 214, 0.7)",
                 },
@@ -1213,7 +1232,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
               disabled={isViewMode()}
               label={"Next Followup Time"}
               value={selector.next_follow_up_Time}
-              onPress={() => dispatch(setDatePicker("NEEXT_FOLLOWUP_TIME"))}
+              onPress={() => {
+                setDefaultDateTime(
+                  convertToDefaultDateTime(
+                    selector.actual_start_time,
+                    selector.next_follow_up_Time
+                  )
+                );
+                dispatch(setDatePicker("NEEXT_FOLLOWUP_TIME"));
+              }}
               iconsName={"clock-time-eight-outline"}
             />
             <Text style={GlobalStyle.underline}></Text>
@@ -1306,46 +1333,46 @@ const HomeVisitScreen = ({ route, navigation }) => {
           //   </Button>
           // </View>
 
-          
-
           <View>
-            {selector.task_details_response?.taskStatus === "ASSIGNED" ?
-             <View style={styles.view1}>
-              <LocalButtonComp
-                title={"Back"}
-                onPress={() => { navigation.goBack(); }}
-                disabled={selector.is_loading_for_task_update}
-              />
-              <LocalButtonComp
-                title={"Submit"}
-                onPress={()=>{
-                  submitTask()
-                  saveHomeVisitApiCall("Original")
-                }}
-                disabled={selector.is_loading_for_task_update}
-              />
-
-
-            </View> :
-             <>
+            {selector.task_details_response?.taskStatus === "ASSIGNED" ? (
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Back"}
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                  disabled={selector.is_loading_for_task_update}
+                />
+                <LocalButtonComp
+                  title={"Submit"}
+                  onPress={() => {
+                    submitTask();
+                    saveHomeVisitApiCall("Original");
+                  }}
+                  disabled={selector.is_loading_for_task_update}
+                />
+              </View>
+            ) : (
+              <>
                 <View style={styles.view1}>
                   <LocalButtonComp
                     title={"Close"}
                     onPress={closeTask}
                     disabled={selector.is_loading_for_task_update}
                   />
-                  {isUpdateBtnVisible ? <LocalButtonComp
-                    title={"Update"}
-                    onPress={updateTask}
-                    disabled={selector.is_loading_for_task_update}
-                  /> : <LocalButtonComp
-                    title={"Reschedule"}
-                    onPress={rescheduleTask}
-                    disabled={selector.is_loading_for_task_update}
-                  /> }
-                 
-                
-                
+                  {isUpdateBtnVisible ? (
+                    <LocalButtonComp
+                      title={"Update"}
+                      onPress={updateTask}
+                      disabled={selector.is_loading_for_task_update}
+                    />
+                  ) : (
+                    <LocalButtonComp
+                      title={"Reschedule"}
+                      onPress={rescheduleTask}
+                      disabled={selector.is_loading_for_task_update}
+                    />
+                  )}
                 </View>
 
                 <View style={styles.view1}>
@@ -1354,11 +1381,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
                     onPress={cancelTask}
                     disabled={selector.is_loading_for_task_update}
                   /> */}
-               
                 </View>
-            </>}
-            
-            
+              </>
+            )}
           </View>
         ) : null}
 
@@ -1388,39 +1413,39 @@ const HomeVisitScreen = ({ route, navigation }) => {
         ) : null}
 
         {route?.params?.taskStatus === "CLOSED" &&
-          // storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ||
-          // storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "Original" &&
-           storeLastupdatedHomeVisitDetails?.status == "CLOSED"
-         ? <>
-          <View style={styles.view1}>
-            
-            <Button
-              style={{ width: 120 }}
-              mode="contained"
-              color={Colors.RED}
-              // disabled={disabled}
-              labelStyle={{ textTransform: "none", fontSize: 10 }}
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              {"Back"}
-            </Button>
+        // storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "ReHomevisit" ||
+        // storeLastupdatedHomeVisitDetails?.reHomevisitFlag == "Original" &&
+        storeLastupdatedHomeVisitDetails?.status == "CLOSED" ? (
+          <>
+            <View style={styles.view1}>
+              <Button
+                style={{ width: 120 }}
+                mode="contained"
+                color={Colors.RED}
+                // disabled={disabled}
+                labelStyle={{ textTransform: "none", fontSize: 10 }}
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              >
+                {"Back"}
+              </Button>
 
-            <Button
-              style={{ width: 120 }}
-              mode="contained"
-              color={Colors.RED}
-              // disabled={disabled}
-              labelStyle={{ textTransform: "none", fontSize: 10 }}
-              onPress={() => {
-                saveHomeVisitApiCall("ReHomevisit")
-
-              }}
-            >
-              {"Re Home Visit"}
-            </Button>
-          </View></> : null}
+              <Button
+                style={{ width: 120 }}
+                mode="contained"
+                color={Colors.RED}
+                // disabled={disabled}
+                labelStyle={{ textTransform: "none", fontSize: 10 }}
+                onPress={() => {
+                  saveHomeVisitApiCall("ReHomevisit");
+                }}
+              >
+                {"Re Home Visit"}
+              </Button>
+            </View>
+          </>
+        ) : null}
       </ScrollView>
       <LoaderComponent visible={loading} />
     </KeyboardAvoidingView>
