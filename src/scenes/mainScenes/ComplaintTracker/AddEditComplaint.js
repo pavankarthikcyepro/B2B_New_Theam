@@ -75,7 +75,9 @@ const AddEditComplaint = (props) => {
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     const [carModelsList, setCarModelsList] = useState([]);
-    const [selectedRegLocationid, setSelectedRegLocationid] = useState("")
+    const [selectedRegLocationid, setSelectedRegLocationid] = useState("");
+    const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
+
     useEffect(() => {
         getUserData()
         setcomplaintDate(currentDate);
@@ -803,316 +805,362 @@ const AddEditComplaint = (props) => {
         
     }
 
+    const convertToDefaultDateTime = (date = "", time = "") => {
+      if (date || time) {
+        let newDateFormate = date
+          ? moment(date, "DD/MM/YYYY").format("MM/DD/YYYY")
+          : moment().format("MM/DD/YYYY");
+        return new Date(`${newDateFormate} ${time}`);
+      } else {
+        return new Date(Date.now());
+      }
+    };
+    
   return (
-      <KeyboardAvoidingView
-          style={{
-              flex: 1,
-              flexDirection: "column",
-              justifyContent: "center",
-          }}
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          enabled
-          keyboardVerticalOffset={100}
-      >
-          <ImagePickerComponent
-              visible={selector.showImagePicker}
-              keyId={selector.imagePickerKeyId}
-              selectedImage={(data, keyId) => {
-                  uploadSelectedImage(data, keyId);
-              }}
-              onDismiss={() => dispatch(setImagePicker(""))}
-          />
-    <ScrollView
-          automaticallyAdjustContentInsets={true}
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-              paddingVertical: 10,
-              paddingHorizontal: 15,
-          }}
-          keyboardShouldPersistTaps={"handled"}
-          style={{ flex: 1 ,}}
-              ref={scrollRef}
+    <KeyboardAvoidingView
+      style={{
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      enabled
+      keyboardVerticalOffset={100}
     >
+      <ImagePickerComponent
+        visible={selector.showImagePicker}
+        keyId={selector.imagePickerKeyId}
+        selectedImage={(data, keyId) => {
+          uploadSelectedImage(data, keyId);
+        }}
+        onDismiss={() => dispatch(setImagePicker(""))}
+      />
+      <ScrollView
+        automaticallyAdjustContentInsets={true}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingVertical: 10,
+          paddingHorizontal: 15,
+        }}
+        keyboardShouldPersistTaps={"handled"}
+        style={{ flex: 1 }}
+        ref={scrollRef}
+      >
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={async (item) => {
+            if (dropDownKey === "COMPLAINT_LOCATION") {
+              let payload = {
+                orgId: userData.orgId,
+                parent: "organization",
+                child: "branch",
+                parentId: item.id,
+              };
 
-          <DropDownComponant
-              visible={showDropDownModel}
-              headerTitle={dropDownTitle}
-              data={dataForDropDown}
-              onRequestClose={() => setShowDropDownModel(false)}
-              selectedItems={async (item) => {
-                
-                  if (dropDownKey === "COMPLAINT_LOCATION") {
-                    let payload ={
-                        orgId:userData.orgId,
-                        parent: "organization",
-                        child:"branch",
-                        parentId: item.id
-                    }
-                
-                      dispatch(getBranchData(payload))
+              dispatch(getBranchData(payload));
 
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_BRANCH",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_DEPARTMENT",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_DESIGNATION",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_EMPLOYEE",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            } else if (dropDownKey === "COMPLAINT_BRANCH") {
+              let payload = {
+                orgId: userData.orgId,
+                parent: "branch",
+                child: "department",
+                parentId: item.id,
+              };
+              branchid_local = item.id;
+              dispatch(getDepartment(payload));
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_DEPARTMENT",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_DESIGNATION",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_EMPLOYEE",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            } else if (dropDownKey === "COMPLAINT_DEPARTMENT") {
+              let payload = {
+                orgId: userData.orgId,
+                parent: "department",
+                child: "designation",
+                parentId: item.id,
+              };
+              deptId_local = item.id;
+              dispatch(getDesignation(payload));
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_DESIGNATION",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_EMPLOYEE",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            } else if (dropDownKey === "COMPLAINT_DESIGNATION") {
+              //    let   branchId = await AsyncStore.getData(
+              //           AsyncStore.Keys.SELECTED_BRANCH_ID
+              //       );
+              let payload = {
+                orgId: userData.orgId,
+                branchId: branchid_local,
+                deptId: deptId_local,
+                desigId: item.id,
+              };
+
+              dispatch(getEmployeeDetails(payload));
+              dispatch(
+                setDropDownData({
+                  key: "COMPLAINT_EMPLOYEE",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            } else if (dropDownKey === "REG_LOCATION") {
+              let payload = {
+                orgId: userData.orgId,
+                parent: "organization",
+                child: "branch",
+                parentId: item.id,
+              };
+
+              setSelectedRegLocationid(item.id);
+              dispatch(getBranchDataForRegister(payload));
+
+              dispatch(
+                setDropDownData({
+                  key: "REG_CONSULTANT",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "REG_MANAGER",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "REG_BRANCH",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            } else if (dropDownKey === "REG_CONSULTANT") {
+              dispatch(getComplaintManager(item.id));
+              dispatch(
+                setDropDownData({
+                  key: "REG_MANAGER",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            } else if (dropDownKey === "REG_BRANCH") {
+              const payload = {
+                orgId: userData.orgId,
+                branchId: item.id,
+              };
+
+              dispatch(getComplaintEmployees(payload));
+              dispatch(
+                setDropDownData({
+                  key: "REG_CONSULTANT",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+              dispatch(
+                setDropDownData({
+                  key: "REG_MANAGER",
+                  value: "",
+                  id: "",
+                  orgId: userData.orgId,
+                })
+              );
+            }
+            setShowDropDownModel(false);
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+                orgId: userData.orgId,
+              })
+            );
+          }}
+        />
+
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          //   maximumDate={new Date(currentDate.toString())}
+          value={defaultDateTime}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (Platform.OS === "android") {
+              if (selectedDate) {
+                updateSelectedDate(selectedDate, "COMPLAINT_DATE");
+              }
+            } else {
+              updateSelectedDate(selectedDate, "COMPLAINT_DATE");
+            }
+          }}
+          onRequestClose={() => setShowDatePicker(false)}
+        />
+        <View style={{}}>
+          <View style={{ marginVertical: 10 }}>
+            <List.AccordionGroup
+              expandedId={openAccordian}
+              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+            >
+              {/* // 1.Customer Details */}
+              <List.Accordion
+                id={"1"}
+                title={"Register a Complaint"}
+                titleStyle={{
+                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <View style={{ backgroundColor: Colors.WHITE }}>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mobile}
+                    keyboardType={"number-pad"}
+                    maxLength={10}
+                    // editable={false}
+                    disabled={isEditable() || isEditbaleForRegistration()}
+                    label={"Mobile Number*"}
+                    onChangeText={(text) =>
                       dispatch(
-                          setDropDownData({
-                              key: "COMPLAINT_BRANCH",
-                              value: "",
-                              id: "",
-                              orgId: userData.orgId,
-                          })
-                      );
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_DEPARTMENT",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_DESIGNATION",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_EMPLOYEE",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                  } else if (dropDownKey === "COMPLAINT_BRANCH"){
-                      let payload = {
-                          orgId: userData.orgId,
-                          parent: "branch",
-                          child: "department",
-                          parentId: item.id
+                        setCustomerDetails({
+                          key: "MOBILE",
+                          text: text.replace(/[^0-9]/g, ""),
+                        })
+                      )
+                    }
+                    showRightIcon={true}
+                    rightIconObj={{ name: "magnify", color: Colors.GRAY }}
+                    onRightIconPressed={() => {
+                      if (selector.mobile.length == 10) {
+                        let payload = {
+                          phoneNum: selector.mobile,
+                          orgid: userData.orgId,
+                        };
+                        dispatch(getDetailsFromPoneNumber(payload));
+                      } else {
+                        showToast("Please enter valid mobile number");
                       }
-                      branchid_local = item.id;
-                      dispatch(getDepartment(payload))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_DEPARTMENT",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch( setDropDownData({
-                          key: "COMPLAINT_DESIGNATION",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_EMPLOYEE",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                  } else if (dropDownKey === "COMPLAINT_DEPARTMENT"){
-                      
-                      let payload = {
-                          orgId: userData.orgId,
-                          parent: "department",
-                          child: "designation",
-                          parentId: item.id
-                      }
-                      deptId_local = item.id;
-                      dispatch(getDesignation(payload))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_DESIGNATION",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_EMPLOYEE",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      
-                  } else if (dropDownKey === "COMPLAINT_DESIGNATION") {
-                //    let   branchId = await AsyncStore.getData(
-                //           AsyncStore.Keys.SELECTED_BRANCH_ID
-                //       );
-                      let payload = {
-                          orgId: userData.orgId,
-                          branchId: branchid_local,
-                          deptId: deptId_local,
-                          desigId:item.id
-                      }
-                  
-                      dispatch(getEmployeeDetails(payload))
-                      dispatch(setDropDownData({
-                          key: "COMPLAINT_EMPLOYEE",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                  } else if (dropDownKey === "REG_LOCATION"){
-                      let payload = {
-                          orgId: userData.orgId,
-                          parent: "organization",
-                          child: "branch",
-                          parentId: item.id
-                      }
-                     
-                      setSelectedRegLocationid(item.id)
-                      dispatch(getBranchDataForRegister(payload))
 
-                      dispatch(setDropDownData({
-                          key: "REG_CONSULTANT",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "REG_MANAGER",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "REG_BRANCH",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                  } else if (dropDownKey === "REG_CONSULTANT") {
-                      dispatch(getComplaintManager(item.id))
-                      dispatch(setDropDownData({
-                          key: "REG_MANAGER",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                  } else if (dropDownKey === "REG_BRANCH"){
-                      const payload = {
-                          orgId: userData.orgId,
-                          branchId: item.id
-                      }
-                    
-                      dispatch(getComplaintEmployees(payload))
-                      dispatch(setDropDownData({
-                          key: "REG_CONSULTANT",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                      dispatch(setDropDownData({
-                          key: "REG_MANAGER",
-                          value: "",
-                          id: "",
-                          orgId: userData.orgId,
-                      }))
-                  }
-                  setShowDropDownModel(false);
-                  dispatch(
-                      setDropDownData({
-                          key: dropDownKey,
-                          value: item.name,
-                          id: item.id,
-                          orgId: userData.orgId,
-                      })
-                  );
-              }}
-          />
+                      // todo API call here for phone APi
+                    }}
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.mobile === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      width: "100%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ width: "40%" }}>
+                      <DateSelectItem
+                        label={"Complaint Date"}
+                        value={complaintDate}
+                        disabled={isEditable()}
+                        onPress={() => {
+                          setDefaultDateTime(
+                            convertToDefaultDateTime(complaintDate)
+                          );
+                          setShowDatePicker(true);
+                        }}
+                      />
+                    </View>
 
-          <DatePickerComponent
-              visible={showDatePicker}
-              mode={"date"}
-            //   maximumDate={new Date(currentDate.toString())}
-              value={new Date()}
-              onChange={(event, selectedDate) => {
-
-                  setShowDatePicker(false);
-                  if (Platform.OS === "android") {
-                      if (selectedDate) {
-                          updateSelectedDate(selectedDate, "COMPLAINT_DATE");
-                      }
-                  } else {
-                      updateSelectedDate(selectedDate, "COMPLAINT_DATE");
-                  }
-              }}
-              onRequestClose={() => setShowDatePicker(false)}
-          />
-          <View style={{}}>
-            
-            <View style={{marginVertical:10}}>
-                      <List.AccordionGroup
-                          expandedId={openAccordian}
-                          onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-                      >
-                          {/* // 1.Customer Details */}
-                          <List.Accordion
-                              id={"1"}
-                              title={"Register a Complaint"}
-                              titleStyle={{
-                                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
-                                  fontSize: 16,
-                                  fontWeight: "600",
-                              }}
-                              style={[
-                                  {
-                                      backgroundColor:
-                                          openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                                  },
-                                  styles.accordianBorder,
-                              ]}
-                          >
-                            <View style={{backgroundColor:Colors.WHITE}}>
-                                  <TextinputComp
-                                      style={styles.textInputStyle}
-                                      value={selector.mobile}
-                                      keyboardType={"number-pad"}
-                                      maxLength={10}
-                                      // editable={false}
-                                      disabled={isEditable() || isEditbaleForRegistration()}
-                                      label={"Mobile Number*"}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "MOBILE", text: text.replace(/[^0-9]/g, ''), })
-                                          )
-                                      }
-                                      showRightIcon={true}
-                                      rightIconObj={{ name: "magnify", color: Colors.GRAY }}
-                                      onRightIconPressed={() => {
-                                            if (selector.mobile.length == 10) {
-                                                let payload = {
-                                                    phoneNum: selector.mobile,
-                                                    orgid: userData.orgId
-                                                }
-                                                dispatch(getDetailsFromPoneNumber(payload))
-                                            } else {
-                                                showToast("Please enter valid mobile number");
-                                            }
-                                        
-                                          // todo API call here for phone APi
-                                      }}
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.mobile === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-                                  <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
-                                      <View style={{ width: '40%' }}>
-                                          <DateSelectItem
-                                              label={"Complaint Date"}
-                                              value={complaintDate}
-                                              disabled={isEditable() }
-                                              onPress={() => {
-                                                  setShowDatePicker(true)
-                                              }}
-                                          />
-                                      </View>
-
-                                      <View style={{ width: '40%' }}>
-
-                                          {/* <TextinputComp
+                    <View style={{ width: "40%" }}>
+                      {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.location}
                                               //   keyboardType={}
@@ -1127,29 +1175,37 @@ const AddEditComplaint = (props) => {
                                               showRightIcon={false}
 
                                           /> */}
-                                          <DropDownSelectionItem
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Location"}
-                                              value={selector.location}
-                                              onPress={() =>
-                                                  showDropDownModelMethod("REG_LOCATION", "Please Select")
-                                              }
-                                          />
-                                          
-                                          {/* <DropDownSelectionItem
+                      <DropDownSelectionItem
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Location"}
+                        value={selector.location}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "REG_LOCATION",
+                            "Please Select"
+                          )
+                        }
+                      />
+
+                      {/* <DropDownSelectionItem
                                   label={"Model*"}
                                   value={selector.carModel}
                                   onPress={() =>
                                       showDropDownModelMethod("CAR_MODEL", "Select Model")
                                   }
                               /> */}
-                                      </View>
+                    </View>
+                  </View>
 
-                                  </View>
-
-                                  <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
-                                      <View style={{ width: '40%' }}>
-                                          {/* <TextinputComp
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      width: "100%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ width: "40%" }}>
+                      {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.branch}
                                               //   keyboardType={"number-pad"}
@@ -1163,18 +1219,17 @@ const AddEditComplaint = (props) => {
                                               }
                                               showRightIcon={false}
                                           /> */}
-                                          <DropDownSelectionItem
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Branch"}
-                                              value={selector.branch}
-                                              onPress={() =>
-                                                  showDropDownModelMethod("REG_BRANCH", "Please Select")
-                                              }
-                                          />
-                                          
-                                      </View>
-                                      <View style={{ width: '40%' }}>
-                                          {/* <TextinputComp
+                      <DropDownSelectionItem
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Branch"}
+                        value={selector.branch}
+                        onPress={() =>
+                          showDropDownModelMethod("REG_BRANCH", "Please Select")
+                        }
+                      />
+                    </View>
+                    <View style={{ width: "40%" }}>
+                      {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.model}
                                               //   keyboardType={"number-pad"}
@@ -1189,63 +1244,68 @@ const AddEditComplaint = (props) => {
                                               showRightIcon={false}
                                           /> */}
 
-                                          <DropDownSelectionItem
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Model"}
-                                              value={selector.model}
-                                              onPress={() =>
-                                                  showDropDownModelMethod("REG_MODEL", "Please Select")
-                                              }
-                                          />
-                                      </View>
-                                  </View>
+                      <DropDownSelectionItem
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Model"}
+                        value={selector.model}
+                        onPress={() =>
+                          showDropDownModelMethod("REG_MODEL", "Please Select")
+                        }
+                      />
+                    </View>
+                  </View>
 
-                                  <TextinputComp
-                                      style={styles.textInputStyle}
-                                      value={selector.customerName}
-                                      //   keyboardType={"number-pad"}
-                                      // editable={false}
-                                      disabled={isEditable() }
-                                      label={"Customer Name"}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "COUSTOMER_NAME", text: text })
-                                          )
-                                      }
-                                      showRightIcon={false}
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.customerName}
+                    //   keyboardType={"number-pad"}
+                    // editable={false}
+                    disabled={isEditable()}
+                    label={"Customer Name"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerDetails({
+                          key: "COUSTOMER_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                    showRightIcon={false}
+                  />
 
-                                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.email}
+                    //   keyboardType={"number-pad"}
+                    // editable={false}
+                    disabled={isEditable()}
+                    label={"Email"}
+                    onChangeText={(text) =>
+                      dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
+                    }
+                    showRightIcon={false}
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.email === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
-                                  <TextinputComp
-                                      style={styles.textInputStyle}
-                                      value={selector.email}
-                                      //   keyboardType={"number-pad"}
-                                      // editable={false}
-                                      disabled={isEditable()}
-                                      label={"Email"}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "EMAIL", text: text })
-                                          )
-                                      }
-                                      showRightIcon={false}
-
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.email === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-
-                                  <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
-                                      <View style={{ width: '50%' }}>
-                                          {/* <TextinputComp
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      width: "100%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.stage}
                                               //   keyboardType={"number-pad"}
@@ -1260,36 +1320,42 @@ const AddEditComplaint = (props) => {
                                               showRightIcon={false}
                                           /> */}
 
-                                          <DropDownSelectionItem
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Stage"}
-                                              value={selector.stage}
-                                              onPress={() =>
-                                                  showDropDownModelMethod("REG_STAGE", "Please Select")
-                                              }
-                                          />
-                                      </View>
-                                      <View style={{ width: '50%' }}>
-                                          <TextinputComp
-                                              style={styles.textInputStyle}
-                                              value={selector.stage_id}
-                                              //   keyboardType={"number-pad"}
-                                              // editable={false}
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Stage ID"}
-                                              onChangeText={(text) =>
-                                                  dispatch(
-                                                      setCustomerDetails({ key: "STAGE_ID", text: text })
-                                                  )
-                                              }
-                                              showRightIcon={false}
-                                          />
-                                      </View>
-                                  </View>
+                      <DropDownSelectionItem
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Stage"}
+                        value={selector.stage}
+                        onPress={() =>
+                          showDropDownModelMethod("REG_STAGE", "Please Select")
+                        }
+                      />
+                    </View>
+                    <View style={{ width: "50%" }}>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.stage_id}
+                        //   keyboardType={"number-pad"}
+                        // editable={false}
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Stage ID"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerDetails({ key: "STAGE_ID", text: text })
+                          )
+                        }
+                        showRightIcon={false}
+                      />
+                    </View>
+                  </View>
 
-                                  <View style={{ flexDirection: "row", width: '100%', justifyContent: "space-between" }}>
-                                      <View style={{ width: '50%' }}>
-                                          {/* <TextinputComp
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      width: "100%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{ width: "50%" }}>
+                      {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.consultant}
                                               //   keyboardType={"number-pad"}
@@ -1303,15 +1369,18 @@ const AddEditComplaint = (props) => {
                                               }
                                               showRightIcon={false}
                                           /> */}
-                                          <DropDownSelectionItem
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Consultant"}
-                                              value={selector.consultant}
-                                              onPress={() =>
-                                                  showDropDownModelMethod("REG_CONSULTANT", "Please Select")
-                                              }
-                                          />
-                                          {/* <Text
+                      <DropDownSelectionItem
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Consultant"}
+                        value={selector.consultant}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "REG_CONSULTANT",
+                            "Please Select"
+                          )
+                        }
+                      />
+                      {/* <Text
                                               style={[
                                                   GlobalStyle.underline,
                                                   {
@@ -1322,9 +1391,9 @@ const AddEditComplaint = (props) => {
                                                   },
                                               ]}
                                           ></Text> */}
-                                      </View>
-                                      <View style={{ width: '50%' }}>
-                                          {/* <TextinputComp
+                    </View>
+                    <View style={{ width: "50%" }}>
+                      {/* <TextinputComp
                                               style={styles.textInputStyle}
                                               value={selector.reporting_manager}
                                               //   keyboardType={"number-pad"}
@@ -1339,296 +1408,328 @@ const AddEditComplaint = (props) => {
                                               showRightIcon={false}
                                           /> */}
 
-                                          <DropDownSelectionItem
-                                              disabled={isEditable() || isEditbaleForRegistration()}
-                                              label={"Reporting Manager"}
-                                              value={selector.reporting_manager}
-                                              onPress={() =>
-                                                  showDropDownModelMethod("REG_MANAGER", "Please Select")
-                                              }
-                                          />
-                                      </View>
-                                  </View>
-                            </View>
-                              
-
-                          </List.Accordion>
-                      </List.AccordionGroup>
-            </View>
-          
-                  <View style={{ marginBottom: 10 }}>
-                      <List.AccordionGroup
-                          expandedId={openAccordian}
-                          onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-                      >
-                          {/* // 1.Customer Details */}
-                          <List.Accordion
-                              id={"2"}
-                              title={"Complaint Info"}
-                              titleStyle={{
-                                  color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
-                                  fontSize: 16,
-                                  fontWeight: "600",
-                              }}
-                              style={[
-                                  {
-                                      backgroundColor:
-                                          openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                                  },
-                                  styles.accordianBorder,
-                              ]}
-                          >
-                            <View style={{backgroundColor:Colors.WHITE}}>
-                                  <DropDownSelectionItem
-                                      disabled={isEditable()}
-                                      label={"Complaint Factor Type*"}
-                                      value={selector.complaintFactorType}
-                                      onPress={() =>
-                                          showDropDownModelMethod("COMPLAIN_FACTOR_TYPE", "Please Select")
-                                      }
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complaintFactorType === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-                                  <DropDownSelectionItem
-                                      disabled={isEditable()}
-                                      label={"Location*"}
-                                      value={selector.complainLocation}
-                                      onPress={() =>
-                                          showDropDownModelMethod("COMPLAINT_LOCATION", "Please Select")
-                                      }
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complainLocation === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-                                  <DropDownSelectionItem
-                                      disabled={isEditable()}
-                                      label={"Branch*"}
-                                      value={selector.complainBranch}
-                                      onPress={() =>
-                                          showDropDownModelMethod("COMPLAINT_BRANCH", "Please Select")
-                                      }
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complainBranch === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-                                  <DropDownSelectionItem
-                                      disabled={isEditable()}
-                                      label={"Department*"}
-                                      value={selector.complainDepartment}
-                                      onPress={() =>
-                                          showDropDownModelMethod("COMPLAINT_DEPARTMENT", "Please Select")
-                                      }
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complainDepartment === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-                                  <DropDownSelectionItem
-                                      disabled={isEditable()}
-                                      label={"Designation*"}
-                                      value={selector.complainDesignation}
-                                      onPress={() =>
-                                          showDropDownModelMethod("COMPLAINT_DESIGNATION", "Please Select")
-                                      }
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complainDesignation === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-
-                                  <DropDownSelectionItem
-                                      disabled={isEditable()}
-                                      label={"Employee*"}
-                                      value={selector.complainEmployee}
-                                      onPress={() =>
-                                          showDropDownModelMethod("COMPLAINT_EMPLOYEE", "Please Select")
-                                      }
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complainEmployee === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-
-                                  {renderPickUpImageDoc()}
-                                  <TextinputComp
-                                      disabled={isEditable()}
-                                      style={styles.textInputStyle}
-                                      value={selector.complaintDescription}
-                                      //   keyboardType={"number-pad"}
-                                      // editable={false}
-                                      label={"Complaint Description*"}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "COMPLAINT_DESCRIPTION", text: text })
-                                          )
-                                      }
-                                      showRightIcon={false}
-
-                                  />
-                                  <Text
-                                      style={[
-                                          GlobalStyle.underline,
-                                          {
-                                              backgroundColor:
-                                                  isSubmitPress && selector.complaintDescription === ""
-                                                      ? "red"
-                                                      : "rgba(208, 212, 214, 0.7)",
-                                          },
-                                      ]}
-                                  ></Text>
-                            </View>
-                              
-                          </List.Accordion>
-                      </List.AccordionGroup>
+                      <DropDownSelectionItem
+                        disabled={isEditable() || isEditbaleForRegistration()}
+                        label={"Reporting Manager"}
+                        value={selector.reporting_manager}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "REG_MANAGER",
+                            "Please Select"
+                          )
+                        }
+                      />
+                    </View>
                   </View>
+                </View>
+              </List.Accordion>
+            </List.AccordionGroup>
+          </View>
 
+          <View style={{ marginBottom: 10 }}>
+            <List.AccordionGroup
+              expandedId={openAccordian}
+              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+            >
+              {/* // 1.Customer Details */}
+              <List.Accordion
+                id={"2"}
+                title={"Complaint Info"}
+                titleStyle={{
+                  color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <View style={{ backgroundColor: Colors.WHITE }}>
+                  <DropDownSelectionItem
+                    disabled={isEditable()}
+                    label={"Complaint Factor Type*"}
+                    value={selector.complaintFactorType}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "COMPLAIN_FACTOR_TYPE",
+                        "Please Select"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complaintFactorType === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    disabled={isEditable()}
+                    label={"Location*"}
+                    value={selector.complainLocation}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "COMPLAINT_LOCATION",
+                        "Please Select"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complainLocation === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    disabled={isEditable()}
+                    label={"Branch*"}
+                    value={selector.complainBranch}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "COMPLAINT_BRANCH",
+                        "Please Select"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complainBranch === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    disabled={isEditable()}
+                    label={"Department*"}
+                    value={selector.complainDepartment}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "COMPLAINT_DEPARTMENT",
+                        "Please Select"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complainDepartment === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    disabled={isEditable()}
+                    label={"Designation*"}
+                    value={selector.complainDesignation}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "COMPLAINT_DESIGNATION",
+                        "Please Select"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complainDesignation === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
-                  {props.route.params.from === "CLOSED_LIST" ||   
-                      props.route.params.which_btn ==="Close_Btn" ?
-                  <View style={{ marginBottom: 10 }}>
-                      <List.AccordionGroup
-                          expandedId={openAccordian}
-                          onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-                      >
-                          {/* // 1.Customer Details */}
-                          <List.Accordion
-                              id={"3"}
-                              title={"Close Complaint"}
-                              titleStyle={{
-                                  color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
-                                  fontSize: 16,
-                                  fontWeight: "600",
-                              }}
-                              style={[
-                                  {
-                                      backgroundColor:
-                                          openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                                  },
-                                  styles.accordianBorder,
-                              ]}
-                          >
-                              <View style={{ backgroundColor: Colors.WHITE }}>
-                                 
-                                  <TextinputComp
-                                      style={styles.textInputStyle}
-                                      value={selector.closeComplaintSource}
-                                      //   keyboardType={"number-pad"}
-                                      // editable={false}
-                                      disabled={isEditable()}
-                                      label={"Complaint Closing Source*"}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "CLOSE_SOURCE", text: text })
-                                          )
-                                      }
-                                      showRightIcon={false}
+                  <DropDownSelectionItem
+                    disabled={isEditable()}
+                    label={"Employee*"}
+                    value={selector.complainEmployee}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "COMPLAINT_EMPLOYEE",
+                        "Please Select"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complainEmployee === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
-                                  />
-                                      <Text
-                                          style={[
-                                              GlobalStyle.underline,
-                                              {
-                                                  backgroundColor:
-                                                      isSubmitPress && selector.closeComplaintSource === ""
-                                                          ? "red"
-                                                          : "rgba(208, 212, 214, 0.7)",
-                                              },
-                                          ]}
-                                      ></Text>
+                  {renderPickUpImageDoc()}
+                  <TextinputComp
+                    disabled={isEditable()}
+                    style={styles.textInputStyle}
+                    value={selector.complaintDescription}
+                    //   keyboardType={"number-pad"}
+                    // editable={false}
+                    label={"Complaint Description*"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerDetails({
+                          key: "COMPLAINT_DESCRIPTION",
+                          text: text,
+                        })
+                      )
+                    }
+                    showRightIcon={false}
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.complaintDescription === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                </View>
+              </List.Accordion>
+            </List.AccordionGroup>
+          </View>
 
-                                  <TextinputComp
-                                      style={styles.textInputStyle}
-                                      value={selector.closeComplaintFinalRate}
-                                        keyboardType={"number-pad"}
-                                      // editable={false}
-                                      disabled={isEditable()}
-                                      label={"Final Rating"}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "CLOSE_FINALRATING", text: text })
-                                          )
-                                      }
-                                      showRightIcon={false}
+          {props.route.params.from === "CLOSED_LIST" ||
+          props.route.params.which_btn === "Close_Btn" ? (
+            <View style={{ marginBottom: 10 }}>
+              <List.AccordionGroup
+                expandedId={openAccordian}
+                onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+              >
+                {/* // 1.Customer Details */}
+                <List.Accordion
+                  id={"3"}
+                  title={"Close Complaint"}
+                  titleStyle={{
+                    color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <View style={{ backgroundColor: Colors.WHITE }}>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.closeComplaintSource}
+                      //   keyboardType={"number-pad"}
+                      // editable={false}
+                      disabled={isEditable()}
+                      label={"Complaint Closing Source*"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerDetails({
+                            key: "CLOSE_SOURCE",
+                            text: text,
+                          })
+                        )
+                      }
+                      showRightIcon={false}
+                    />
+                    <Text
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress &&
+                            selector.closeComplaintSource === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
 
-                                  />
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.closeComplaintFinalRate}
+                      keyboardType={"number-pad"}
+                      // editable={false}
+                      disabled={isEditable()}
+                      label={"Final Rating"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerDetails({
+                            key: "CLOSE_FINALRATING",
+                            text: text,
+                          })
+                        )
+                      }
+                      showRightIcon={false}
+                    />
 
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <View style={{ width: "80%" }}>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={
+                            uploadedImagesDataObjForClose?.complaint
+                              ?.fileName || selector.complainCloserDoc
+                          }
+                          label={"Upload complaint Closer Document"}
+                          keyboardType={"default"}
+                          maxLength={10}
+                          disabled={isEditable()}
+                          autoCapitalize={"characters"}
+                          onChangeText={(text) => {
+                            //   dispatch(
+                            //       setUploadDocuments({
+                            //           key: "PAN",
+                            //           text: text.replace(/[^a-zA-Z0-9]/g, ""),
+                            //       })
+                            //   );
+                          }}
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
 
-                                  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                                      <View style={{ width: '80%' }}>
-                                          <TextinputComp
-                                              style={styles.textInputStyle}
-                                              value={uploadedImagesDataObjForClose?.complaint?.fileName || selector.complainCloserDoc}
-                                              label={"Upload complaint Closer Document"}
-                                              keyboardType={"default"}
-                                              maxLength={10}
-                                              disabled={isEditable()}
-                                              autoCapitalize={"characters"}
-                                              onChangeText={(text) => {
-                                                //   dispatch(
-                                                //       setUploadDocuments({
-                                                //           key: "PAN",
-                                                //           text: text.replace(/[^a-zA-Z0-9]/g, ""),
-                                                //       })
-                                                //   );
-                                              }}
-                                          />
-                                          <Text style={GlobalStyle.underline}></Text>
-                                      </View>
-
-                                      <View style={styles.select_image_bck_vw}>
-                                          <ImageSelectItem
-                                              disabled={isEditable()}
-                                              name={""}
-                                              onPress={() => dispatch(setImagePicker("UPLOAD_CLOSED_COMPLAINT"))}
-                                          />
-                                      </View>
-                                      {/* {true ? (
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          disabled={isEditable()}
+                          name={""}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_CLOSED_COMPLAINT"))
+                          }
+                        />
+                      </View>
+                      {/* {true ? (
                                   <View style={{ flexDirection: "row" }}>
                                       <TouchableOpacity
                                           style={styles.previewbtn}
@@ -1648,83 +1749,108 @@ const AddEditComplaint = (props) => {
                                       </View>
                                   </View>
                               ) : null} */}
-                                  </View>
+                    </View>
 
-                                  <TextinputComp
-                                      style={styles.textInputStyle}
-                                      value={selector.closeComplaintRemarks}
-                                      //   keyboardType={"number-pad"}
-                                      // editable={false}
-                                      disabled={isEditable()}
-                                      label={"Complaint Closer Remarks* "}
-                                      onChangeText={(text) =>
-                                          dispatch(
-                                              setCustomerDetails({ key: "COMPLAINT_CLOSE_REMARKS", text: text })
-                                          )
-                                      }
-                                      showRightIcon={false}
-
-                                  />
-                                      <Text
-                                          style={[
-                                              GlobalStyle.underline,
-                                              {
-                                                  backgroundColor:
-                                                      isSubmitPress && selector.closeComplaintRemarks === ""
-                                                          ? "red"
-                                                          : "rgba(208, 212, 214, 0.7)",
-                                              },
-                                          ]}
-                                      ></Text>
-                              </View>
-
-                             
-                          </List.Accordion>
-                      </List.AccordionGroup>
-
-                    
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.closeComplaintRemarks}
+                      //   keyboardType={"number-pad"}
+                      // editable={false}
+                      disabled={isEditable()}
+                      label={"Complaint Closer Remarks* "}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerDetails({
+                            key: "COMPLAINT_CLOSE_REMARKS",
+                            text: text,
+                          })
+                        )
+                      }
+                      showRightIcon={false}
+                    />
+                    <Text
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress &&
+                            selector.closeComplaintRemarks === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
                   </View>
-                  : null}
-                  {props.route.params.from === "ADD_NEW" && <View style={{flexDirection:"row",width:'100%',justifyContent:"space-between"}}><Button
-                      mode="contained"
-                      style={styles.subBtnStyv2}
-                      color={Colors.PINK}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => { 
-                          dispatch(clearStateFormDataBtnClick());
-                         setcomplaintDate(currentDate); }}>
-                      Clear
-                  </Button><Button
-                      mode="contained"
-                          style={styles.subBtnStyv2}
-                      color={Colors.PINK}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => { submitClicked("Active") }}>
-                          Submit
-                      </Button></View>}
-                  {props.route.params.from === "ACTIVE_LIST" && props.route.params.which_btn !== "Close_Btn" && userData.isCRMorCRE ?
-                   <Button
-                      mode="contained"
-                      style={styles.subBtnSty}
-                      color={Colors.PINK}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => { submitClicked("Update") }}>
-                      Update
-                  </Button> : null}
-                  {props.route.params.which_btn === "Close_Btn" && userData.isCRMorCRE ? <Button
-                      mode="contained"
-                      style={styles.subBtnSty}
-                      color={Colors.PINK}
-                      labelStyle={{ textTransform: "none" }}
-                      onPress={() => { submitClicked("Closed") }}>
-                      Close
-                  </Button>:null} 
-                
-              
-          </View>
-    </ScrollView>
-      </KeyboardAvoidingView>
-  )
+                </List.Accordion>
+              </List.AccordionGroup>
+            </View>
+          ) : null}
+          {props.route.params.from === "ADD_NEW" && (
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+              }}
+            >
+              <Button
+                mode="contained"
+                style={styles.subBtnStyv2}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => {
+                  dispatch(clearStateFormDataBtnClick());
+                  setcomplaintDate(currentDate);
+                }}
+              >
+                Clear
+              </Button>
+              <Button
+                mode="contained"
+                style={styles.subBtnStyv2}
+                color={Colors.PINK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => {
+                  submitClicked("Active");
+                }}
+              >
+                Submit
+              </Button>
+            </View>
+          )}
+          {props.route.params.from === "ACTIVE_LIST" &&
+          props.route.params.which_btn !== "Close_Btn" &&
+          userData.isCRMorCRE ? (
+            <Button
+              mode="contained"
+              style={styles.subBtnSty}
+              color={Colors.PINK}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => {
+                submitClicked("Update");
+              }}
+            >
+              Update
+            </Button>
+          ) : null}
+          {props.route.params.which_btn === "Close_Btn" &&
+          userData.isCRMorCRE ? (
+            <Button
+              mode="contained"
+              style={styles.subBtnSty}
+              color={Colors.PINK}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => {
+                submitClicked("Closed");
+              }}
+            >
+              Close
+            </Button>
+          ) : null}
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 }
 
 export default AddEditComplaint
