@@ -420,6 +420,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [receiptDocModel, setReceiptDocModel] = useState(false);
   const [selectedTags, setSelectedTags] = useState("");
   const [tagList, setTagList] = useState([]);
+  const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
 
   // Edit buttons shows
   useEffect(() => {
@@ -3907,6 +3908,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   };
 
+  const convertToDefaultDateTime = (date = "", time = "") => {
+    if (date || time) {
+      let newDateFormate = date
+        ? moment(date, "DD/MM/YYYY").format("MM/DD/YYYY")
+        : moment().format("MM/DD/YYYY");
+      return new Date(`${newDateFormate} ${time}`);
+    } else {
+      return new Date(Date.now());
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <LoaderComponent visible={isLoading} />
@@ -4024,7 +4036,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={selector.showDatepicker}
         mode={"date"}
-        value={new Date(Date.now())}
+        value={defaultDateTime}
         minimumDate={selector.minDate}
         //   minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
@@ -4298,7 +4310,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       disabled={!isInputsEditable()}
                       label={"Date Of Birth*"}
                       value={selector.date_of_birth}
-                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                      onPress={() => {
+                        setDefaultDateTime(
+                          convertToDefaultDateTime(selector.date_of_birth)
+                        );
+                        dispatch(setDatePicker("DATE_OF_BIRTH"));
+                      }}
                     />
                     <Text
                       style={[
@@ -6837,7 +6854,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dispatch(
                       setBookingPaymentDetails({
                         key: "BOOKING_AMOUNT",
-                        text: text.replace(/[^0-9]/g, ''),
+                        text: text.replace(/[^0-9]/g, ""),
                       })
                     )
                   }
@@ -6916,9 +6933,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   disabled={!isInputsEditable()}
                   label={"Customer Preferred Date"}
                   value={selector.customer_preferred_date}
-                  onPress={() =>
-                    dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
-                  }
+                  onPress={() => {
+                    setDefaultDateTime(
+                      convertToDefaultDateTime(selector.customer_preferred_date)
+                    );
+                    dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"));
+                  }}
                 />
                 <Text style={GlobalStyle.underline} />
                 <TextinputComp
@@ -6938,9 +6958,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   disabled={!isInputsEditable()}
                   label={"Tentative Delivery Date"}
                   value={selector.tentative_delivery_date}
-                  onPress={() =>
-                    dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
-                  }
+                  onPress={() => {
+                    setDefaultDateTime(
+                      convertToDefaultDateTime(selector.tentative_delivery_date)
+                    );
+                    dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"));
+                  }}
                 />
                 <Text style={GlobalStyle.underline} />
                 <TextinputComp
@@ -7023,7 +7046,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <DateSelectItem
                       label={"Receipt Date*"}
                       value={moment().format("DD/MM/YYYY")}
-                      onPress={() => dispatch(setDatePicker("RECEIPT_DATE"))}
+                      onPress={() => {
+                        // setDefaultDateTime(
+                        //   convertToDefaultDateTime(
+                        //     moment().format("DD/MM/YYYY")
+                        //   )
+                        // );
+                        dispatch(setDatePicker("RECEIPT_DATE"));
+                      }}
                       disabled={true}
                     />
                     <Text style={GlobalStyle.underline} />
@@ -7128,9 +7158,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"Transaction Date"}
                         value={selector.transaction_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("TRANSACTION_DATE"))
-                        }
+                        onPress={() => {
+                          setDefaultDateTime(
+                            convertToDefaultDateTime(selector.transaction_date)
+                          );
+                          dispatch(setDatePicker("TRANSACTION_DATE"));
+                        }}
                       />
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -7170,7 +7203,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"Cheque Date"}
                         value={selector.cheque_date}
-                        onPress={() => dispatch(setDatePicker("CHEQUE_DATE"))}
+                        onPress={() => {
+                          setDefaultDateTime(
+                            convertToDefaultDateTime(selector.cheque_date)
+                          );
+                          dispatch(setDatePicker("CHEQUE_DATE"));
+                        }}
                       />
                     </View>
                   )}
@@ -7194,7 +7232,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"DD Date"}
                         value={selector.dd_date}
-                        onPress={() => dispatch(setDatePicker("DD_DATE"))}
+                        onPress={() => {
+                          setDefaultDateTime(
+                            convertToDefaultDateTime(selector.dd_date)
+                          );
+                          dispatch(setDatePicker("DD_DATE"));
+                        }}
                       />
                     </View>
                   )}
