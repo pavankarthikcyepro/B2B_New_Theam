@@ -310,7 +310,7 @@ const WelcomeScreen = ({ navigation }) => {
         <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
         <Text style={styles.textTwoStyle}>
           {
-            "By using this app, Version : CPR46-15062023 you agree to the use of cookies and data processing technologies by us."
+            "By using this app, Version : CPR47-16062023 you agree to the use of cookies and data processing technologies by us."
           }
         </Text>
       </View>
