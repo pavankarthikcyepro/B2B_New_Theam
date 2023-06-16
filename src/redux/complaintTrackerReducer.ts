@@ -288,6 +288,23 @@ export const postDropComplaintSubMenu = createAsyncThunk("COMPLAINTS_TRACKER/pos
     return json;
 })
 
+
+// tree API for roles other than sales consultant
+export const getComplaintTrackerTree = createAsyncThunk(
+  "COMPLAINTS_TRACKER/getComplaintTrackerTree",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.GET_TREE_COMPLAINT_TRACKER(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 interface CustomerDetailModel {
     key: string;
     text: string;
@@ -377,6 +394,7 @@ export const complaintsSlice = createSlice({
             selectedDesignation: "",
             selectedEmpNAme:""
         },
+        complainTrackerTreeData:{}
     },
     reducers: {
         clearState: (state, action) => {
@@ -420,36 +438,37 @@ export const complaintsSlice = createSlice({
             state.complaintListRes = "";
             state.activeTotalCount=0;
             state.closeTotalCount= 0;
-            state.closeComplainListres = "",
-                state.complaintDetailsFromIdRes="",
-                state.complaintdoc = "",
-                state.complainCloserDoc = "",
-                state.postComplaintCloseRes="",
-                state.complaintMainFilterData = "",
-                state.complaintSubFilterData = "",
-                state.complaintEmployees = [],
-                state.complaintManagers = [],
-                state.complaintTrackerDashboardData = [],
-                state.stage_wise_checkbox = false,
-                state.complaintFacoty_wise_checkbox = false,
-                state.department_wise_checkbox = false,
-                state.complaintTrackerDashboardData_Master = [],
-                state.dealerFilter = {},
-                state.receptionistFilterIds= [],
-                state.complaintDashboardFilterData_CRE= [],
-                state.complaint_assignTo_dropdown = [],
-                state.complaint_assignTo = "",
-                state.filterSelectedData= { },
-                state.levelSelected= [],
-                state.saveCRMfilterObj = {
-                    startDate: "",
-                    endDate: "",
-                    levelSelected: "",
-                    selectedempId: "",
-                    dealerCodes: "",
-                    selectedDesignation: "",
-                    selectedEmpNAme: ""
-                }
+            (state.closeComplainListres = ""),
+              (state.complaintDetailsFromIdRes = ""),
+              (state.complaintdoc = ""),
+              (state.complainCloserDoc = ""),
+              (state.postComplaintCloseRes = ""),
+              (state.complaintMainFilterData = ""),
+              (state.complaintSubFilterData = ""),
+              (state.complaintEmployees = []),
+              (state.complaintManagers = []),
+              (state.complaintTrackerDashboardData = []),
+              (state.stage_wise_checkbox = false),
+              (state.complaintFacoty_wise_checkbox = false),
+              (state.department_wise_checkbox = false),
+              (state.complaintTrackerDashboardData_Master = []),
+              (state.dealerFilter = {}),
+              (state.receptionistFilterIds = []),
+              (state.complaintDashboardFilterData_CRE = []),
+              (state.complaint_assignTo_dropdown = []),
+              (state.complaint_assignTo = ""),
+              (state.filterSelectedData = {}),
+              (state.levelSelected = []),
+              (state.saveCRMfilterObj = {
+                startDate: "",
+                endDate: "",
+                levelSelected: "",
+                selectedempId: "",
+                dealerCodes: "",
+                selectedDesignation: "",
+                selectedEmpNAme: "",
+              }),
+              state.complainTrackerTreeData={}
         },
         clearStateFormData: (state, action) => {
             state.mobile = "";
@@ -1196,6 +1215,23 @@ export const complaintsSlice = createSlice({
             state.complaint_assignTo_dropdown = []
         })
 
+
+           
+        builder.addCase(getComplaintTrackerTree.pending, (state, action) => {
+            state.isLoading = true;
+            state.complainTrackerTreeData = [];
+        })
+        builder.addCase(getComplaintTrackerTree.fulfilled, (state, action) => {
+          state.isLoading = false;
+
+          if (action.payload) {
+            state.complainTrackerTreeData = action.payload;
+          }
+        });
+        builder.addCase(getComplaintTrackerTree.rejected, (state, action) => {
+          state.isLoading = false;
+          state.complainTrackerTreeData = [];
+        });
         
     }
 });

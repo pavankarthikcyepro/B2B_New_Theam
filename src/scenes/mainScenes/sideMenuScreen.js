@@ -85,7 +85,7 @@ const commonMenu = [
   "Drop Analysis",
   "My Stock",
   "Download Report",
-  // "Complaint Tracker",
+  "Complaint Tracker",
   "Knowledge Center",
   "EMI Calculator",
 ];

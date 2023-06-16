@@ -10,11 +10,13 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from 'react-redux';
-import { getComplaintTrackerDashboardFiltered, getCountsComplaintsDashboard, getEmpComplaintDashboard } from '../../../redux/complaintTrackerReducer';
+import { getComplaintTrackerDashboardFiltered, getComplaintTrackerTree, getCountsComplaintsDashboard, getEmpComplaintDashboard } from '../../../redux/complaintTrackerReducer';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import { IconButton } from 'react-native-paper';
 import _ from "lodash"
 import { getOrganaizationHirarchyList } from '../../../redux/homeReducer';
+import moment from 'moment';
+import { ScrollView } from 'react-native-gesture-handler';
 const data = [
     {
         id: 0,
@@ -125,6 +127,9 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
         isCRE: false,
         hrmsRole:"",
     });
+    const [treeLevel0Data,setTreeLevel0Data ] = useState([]);
+    const [treeLevel1Data, setTreeLevel1Data] = useState([]);
+    const [treeAllLevelData, setTreeAllLevelData] = useState([]);
 
     useEffect(() => {
         // navigation.addListener("focus", () => {
@@ -147,6 +152,17 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
     
       
     }, [selector.complaintTrackerDashboardData])
+    
+    useEffect(() => {
+        if(!_.isEmpty(selector.complainTrackerTreeData)){
+            let tempLevel0Arr =[];
+            let localLevel0 = selector.complainTrackerTreeData.data.map((item)=>{
+                tempLevel0Arr.push(item);
+            });
+            setTreeLevel0Data(tempLevel0Arr);
+
+        }
+    }, [selector.complainTrackerTreeData]);
     
     
     const getUserData = async () => {
@@ -240,7 +256,42 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
 
                 }else{
                     
-                    dispatch(getEmpComplaintDashboard(payload));
+                    if (
+                      jsonObj.hrmsRole === "CRE" ||
+                      receptionistRole.includes(jsonObj.hrmsRole) ||
+                      jsonObj.hrmsRole === "CRM" ||
+                      jsonObj?.isTeam.toLowerCase().includes("y")
+                    ) {
+                          const dateFormat = "YYYY-MM-DD";
+                          const currentDate = moment()
+                            .add(0, "day")
+                            .format(dateFormat);
+                          const CurrentMonthFirstDate = moment(
+                            currentDate,
+                            dateFormat
+                          )
+                            .subtract(0, "months")
+                            .startOf("month")
+                            .format(dateFormat);
+                          const currentMonthLastDate = moment(
+                            currentDate,
+                            dateFormat
+                          )
+                            .subtract(0, "months")
+                            .endOf("month")
+                            .format(dateFormat);
+                        
+                        let payloadTree = {
+                          orgId: jsonObj.orgId,
+                          loggedInEmpId: jsonObj.empId,
+                            startDate: "2021-01-01",
+                            endDate: currentMonthLastDate,
+                        };
+                        dispatch(getComplaintTrackerTree(payloadTree));
+                    } else {
+                      dispatch(getEmpComplaintDashboard(payload));
+                    }
+                    
                 }
                 
 
@@ -426,6 +477,147 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
         }
     );
 
+
+    const eventListTableRowForTree = useCallback(
+      (
+        empName,
+        AtiveCount,
+        ClosedCount,
+        isViewDetailsVisible = false,
+        isShowUnderLine = false,
+        itemData,
+        isDisabled = true,isHeader=false
+      ) => {
+        return (
+          <>
+            <View
+              style={{
+                flexDirection: "row",
+                // justifyContent: "space-around",
+                // alignItems: "center",
+                // // height: '15%',
+                // alignContent: "center",
+                width: "100%",
+                borderTopColor: Colors.PINK,
+                borderTopWidth: isHeader ? 1 : 0,
+                borderBottomWidth: isHeader ? 1 : 0,
+                paddingVertical:isHeader? 4:0
+                // backgroundColor:"red"
+                // marginTop: 5,
+                // justifyContent:"space-between"
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={[
+                    styles.TitleTabelText,
+                    { color: isHeader ? Colors.PINK : Colors.BLACK },
+                  ]}
+                >
+                  {empName}
+                </Text>
+              </View>
+              <View style={{ flexDirection: "row", flex: 1 }}>
+                <Pressable
+                  disabled={isDisabled}
+                  style={{ flex: 1 }}
+                  onPress={() => {
+                    navigation.navigate(
+                      ComplainTrackerIdentifires.complainTrackerTop
+                    );
+                    setTimeout(() => {
+                      navigation.navigate("Active", {
+                        screenName: "ComplaintMaster",
+                        params: itemData,
+                      });
+                    }, 500);
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: isHeader ? Colors.PINK : Colors.BLACK,
+                      textAlign: "center",
+                      marginEnd: 10,
+                      textDecorationLine: isShowUnderLine
+                        ? "underline"
+                        : "none",
+                      // flex: 1
+                      // width: 50,
+                    }}
+                  >
+                    {AtiveCount}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  disabled={isDisabled}
+                  style={{ flex: 1 }}
+                  onPress={() => {
+                    navigation.navigate(
+                      ComplainTrackerIdentifires.complainTrackerTop
+                    );
+                    setTimeout(() => {
+                      navigation.navigate("Closed", {
+                        screenName: "ComplaintMaster",
+                        params: itemData,
+                      });
+                    }, 500);
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: isHeader ? Colors.PINK : Colors.BLACK,
+                      textAlign: "center",
+                      marginEnd: 10,
+                      textDecorationLine: isShowUnderLine
+                        ? "underline"
+                        : "none",
+                      // flex: 1
+                      // width: 50,
+                    }}
+                  >
+                    {ClosedCount}
+                  </Text>
+                </Pressable>
+              </View>
+              {isViewDetailsVisible ? (
+                <Pressable
+                  style={{ flexDirection: "row", flex: 1 }}
+                  onPress={() => {
+                    navigation.navigate(
+                      ComplainTrackerIdentifires.complaintTrackerMaster,
+                      {
+                        isFromLogin: false,
+                        dataObject: itemData,
+                      }
+                    );
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.TitleTabelText,
+                      {
+                        color: Colors.BLUE,
+                        textDecorationLine: "underline",
+                        textAlign: "center",
+                      },
+                    ]}
+                  >
+                    Detailed view
+                  </Text>
+                </Pressable>
+              ) : (
+                <View style={{ fflexDirection: "row", flex: 1 }}>
+                  <Text style={styles.TitleTabelText}></Text>
+                </View>
+              )}
+            </View>
+          </>
+        );
+      }
+    );
+    
     
     const eventListTableRow = useCallback(
         (
@@ -516,142 +708,443 @@ const ComplaintTrackerMain = ({ route, navigation }) => {
         }
     );
     
+      
+    const treeRowCompLevel0 = useCallback(
+      (
+        empName,
+        AtiveCount,
+        ClosedCount,
+        item=[],
+        isViewDetailsVisible = false,
+        isShowUnderLine = false,
+        itemData,
+        isDisabled = true,
+      ) => {
+        return (
+          <>
+            <View
+              style={{
+                flexDirection: "row",
+                // justifyContent: "space-around",
+                // alignItems: "center",
+                // // height: '15%',
+                // alignContent: "center",
+                width: "100%",
+
+                // flex:1
+                height: 75,
+                marginVertical: 10,
+                // backgroundColor:"red"
+                // marginTop: 5,
+                // justifyContent:"space-between"
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: "column", flex: 1 }}>
+                  <Text style={styles.TitleTabelText}>
+                    {empName} {"  "}
+                    {"-   " + item.roleName}
+                  </Text>
+                  <RenderLevel1NameViewCRM
+                    level={0}
+                    item={item}
+                    branchName={item.branchName}
+                    color={Colors.CORAL}
+                    receptionManager={true}
+                    navigation={navigation}
+                    titleClick={async (e) => {
+                      setfilterExapand(!filterExapand);
+                      // setIsViewExpanded(!isViewExpanded)
+                    }}
+                    roleName={item.roleName}
+                    stopLocation={true}
+                  />
+                </View>
+              </View>
+              <View style={{ flexDirection: "row", flex: 1 }}>
+                <Pressable
+                  disabled={isDisabled}
+                  style={{ flex: 1 }}
+                  onPress={() => {
+                    navigation.navigate(
+                      ComplainTrackerIdentifires.complainTrackerTop
+                    );
+                    setTimeout(() => {
+                      navigation.navigate("Active", {
+                        screenName: "ComplaintMaster",
+                        params: itemData,
+                      });
+                    }, 500);
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: Colors.BLACK,
+                      textAlign: "center",
+                      marginEnd: 10,
+                      textDecorationLine: isShowUnderLine
+                        ? "underline"
+                        : "none",
+                      // flex: 1
+                      // width: 50,
+                    }}
+                  >
+                    {AtiveCount}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  disabled={isDisabled}
+                  style={{ flex: 1 }}
+                  onPress={() => {
+                    navigation.navigate(
+                      ComplainTrackerIdentifires.complainTrackerTop
+                    );
+                    setTimeout(() => {
+                      navigation.navigate("Closed", {
+                        screenName: "ComplaintMaster",
+                        params: itemData,
+                      });
+                    }, 500);
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: Colors.BLACK,
+                      textAlign: "center",
+                      marginEnd: 10,
+                      textDecorationLine: isShowUnderLine
+                        ? "underline"
+                        : "none",
+                      // flex: 1
+                      // width: 50,
+                    }}
+                  >
+                    {ClosedCount}
+                  </Text>
+                </Pressable>
+              </View>
+              {isViewDetailsVisible ? (
+                <Pressable
+                  style={{ flexDirection: "row", flex: 1 }}
+                  onPress={() => {
+                    navigation.navigate(
+                      ComplainTrackerIdentifires.complaintTrackerMaster,
+                      {
+                        isFromLogin: false,
+                        dataObject: itemData,
+                      }
+                    );
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.TitleTabelText,
+                      {
+                        color: Colors.BLUE,
+                        textDecorationLine: "underline",
+                        textAlign: "center",
+                      },
+                    ]}
+                  >
+                    Detailed view
+                  </Text>
+                </Pressable>
+              ) : (
+                <View style={{ fflexDirection: "row", flex: 1 }}>
+                  <Text style={styles.TitleTabelText}></Text>
+                </View>
+              )}
+            </View>
+          </>
+        );
+      }
+    );
+
     const renderItemV2 = (item, index) => {
+        
         
        
         return (<>
            
-            <View style={{
-                width: '100%',
-                padding: 10,
-                // borderColor: index === 0 ? Colors.PURPLE : Colors.BLUE_V2,
-                // borderWidth: 1,
-                borderRadius: 10,
-                justifyContent: "center",
-                marginVertical: 10,
-                backgroundColor:Colors.WHITE
-
-            }}>
+            {treeLevel0Data.length>0 && treeLevel0Data.map((item,index)=>{
+                return (
+                  <View key={`${item.empName} ${index}`}
+                  style={{}}>
+                    {treeRowCompLevel0(
+                      item.empName,
+                      item.totalActiveCount,
+                      item.totalClosedCount,
+                      item
+                    )}
+                  </View>
+                );
+            })}
                
                
-            </View></>)
+            </>)
     }
 
 
     return (
-        <SafeAreaView style={styles.conatiner}>
-            <View style={{ padding: 10, }}>
-                <View
-                    style={{
-                       backgroundColor:Colors.WHITE,
-                       padding:10,
-                    }}
-                >
-                    <View
-                        style={{
-                            padding: 10
-                        }}>
-                        {eventListTableRow("Employee Name", "Active", "Closed")}    
-                    </View>
-                    <View style={{
-                        padding: 10
-                    }}>
-                        {!_.isEmpty(selector.receptionistFilterIds) && !_.isEmpty(selector.complaintDashboardFilterData_CRE) ? 
-                        <>
-                                <FlatList
-                                    data={selector.complaintDashboardFilterData_CRE}
-                                    bounces={false}
-                                    renderItem={({ item, index }) => {
-
-
-                                        return (
-                                            <>
-                                                <View style={{ marginVertical: 10 }}>
-                                                    {eventListTableRow(item.employeeName + "\n" + item.designation, item.activeCount, item.closedCount, true, true, item,false)}
-
-                                                </View>
-
-
-                                            </>
-                                        );
-                                    }
-
-
-                                    }
-                                />
-                        </> 
-                        
-                        :
-                        <>
-                                {userData.hrmsRole.includes("DSE") && !_.isEmpty(selector.complaintTrackerDashboardData) ? <View style={{ marginVertical: 10 }}>
-                                    {eventListTableRow(selector.complaintTrackerDashboardData?.employeeName + "\n" + selector.complaintTrackerDashboardData?.designation,
-                                        selector.complaintTrackerDashboardData?.activeCount, selector.complaintTrackerDashboardData?.closedCount, true, true, selector.complaintTrackerDashboardData,false)}
-
-                                </View> : 
-                                <>
-                                        <FlatList
-                                            data={selector.complaintTrackerDashboardData.dropDownData}
-                                            bounces={false}
-                                            renderItem={({ item, index }) => {
-
-
-                                                return (
-                                                    <>
-                                                        <View style={{ marginVertical: 10 }}>
-                                                            {eventListTableRow(item.employeeName + "\n" + item.designation, item.activeCount, item.closedCount, true, true, item,false)}
-
-                                                        </View>
-
-
-                                                    </>
-                                                );
-                                            }
-
-
-                                            }
-                                        />
-                                        <View style={{marginVertical:10}}>
-                                            {totalofListRow("Total", totalActiveCounts, totalCloseCounts)}
-                                        </View>
-                                        
-                                        </>
-                                
-                                }
-                        </>
-                        } 
-                        
-                       
-                
-
-                    </View>
-                    
-                </View>
-               
-                
+      <SafeAreaView style={styles.conatiner}>
+        <View style={{ padding: 10 }}>
+          <View
+            style={{
+              backgroundColor: Colors.WHITE,
+              padding: 10,
+            }}
+          >
+            <View
+              style={{
+                padding: 10,
+              }}
+            >
+              {userData.hrmsRole.includes("DSE") ||
+              (userData.hrmsRole.toLowerCase().includes("sales consultant") &&
+                !_.isEmpty(selector.complaintTrackerDashboardData))
+                ? eventListTableRow("Employee Name", "Active", "Closed")
+                : eventListTableRowForTree(
+                    "Employee Name",
+                    "Active",
+                    "Closed",
+                    false,
+                    false,
+                    [],
+                    false,
+                    true
+                  )}
+              {/* {eventListTableRow("Employee Name", "Active", "Closed")} */}
             </View>
+            <View
+              style={{
+                padding: 10,
+              }}
+            >
+              {!_.isEmpty(selector.receptionistFilterIds) &&
+              !_.isEmpty(selector.complaintDashboardFilterData_CRE) ? (
+                <>
+                  <FlatList
+                    data={selector.complaintDashboardFilterData_CRE}
+                    bounces={false}
+                    renderItem={({ item, index }) => {
+                      return (
+                        <>
+                          <View style={{ marginVertical: 10 }}>
+                            {eventListTableRow(
+                              item.employeeName + "\n" + item.designation,
+                              item.activeCount,
+                              item.closedCount,
+                              true,
+                              true,
+                              item,
+                              false
+                            )}
+                          </View>
+                        </>
+                      );
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  {userData.hrmsRole.includes("DSE") ||
+                  (userData.hrmsRole
+                    .toLowerCase()
+                    .includes("sales consultant") &&
+                    !_.isEmpty(selector.complaintTrackerDashboardData)) ? (
+                    <View style={{ marginVertical: 10 }}>
+                      {eventListTableRow(
+                        selector.complaintTrackerDashboardData?.employeeName +
+                          "\n" +
+                          selector.complaintTrackerDashboardData?.designation,
+                        selector.complaintTrackerDashboardData?.activeCount,
+                        selector.complaintTrackerDashboardData?.closedCount,
+                        true,
+                        true,
+                        selector.complaintTrackerDashboardData,
+                        false
+                      )}
+                    </View>
+                  ) : (
+                    // vol2 code
+                    <>
+                      <ScrollView horizontal>
+                        <View style={{flex:1}}>
+                          {renderItemV2()}
 
-            {/* <View style={{ padding: 10, }}>
+                          <View style={{ marginVertical: 10 }}>
+                            {totalofListRow(
+                              "Total",
+                              totalActiveCounts,
+                              totalCloseCounts
+                            )}
+                          </View>
+                        </View>
+                      </ScrollView>
+                    </>
+
+                    // vol1 code
+                    // <>
+                    //   <FlatList
+                    //     data={
+                    //       selector.complaintTrackerDashboardData.dropDownData
+                    //     }
+                    //     bounces={false}
+                    //     renderItem={({ item, index }) => {
+                    //       return (
+                    //         <>
+                    //           <View style={{ marginVertical: 10 }}>
+                    //             {eventListTableRow(
+                    //               item.employeeName + "\n" + item.designation,
+                    //               item.activeCount,
+                    //               item.closedCount,
+                    //               true,
+                    //               true,
+                    //               item,
+                    //               false
+                    //             )}
+                    //           </View>
+                    //         </>
+                    //       );
+                    //     }}
+                    //   />
+                    //   <View style={{ marginVertical: 10 }}>
+                    //     {totalofListRow(
+                    //       "Total",
+                    //       totalActiveCounts,
+                    //       totalCloseCounts
+                    //     )}
+                    //   </View>
+                    // </>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+        </View>
+
+        {/* <View style={{ padding: 10, }}>
                 <FlatList
                     data={data}
                     bounces={false}
                     renderItem={({ item, index }) => renderItem(item, index)}
                 />
             </View> */}
-            {userData.isCRE || userData.isCRM ? <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
-                        from: "ADD_NEW"
-                    });
-                }}
-                style={[GlobalStyle.shadow, styles.floatingBtn]}
-            >
-                <Entypo size={25} name="plus" color={Colors.WHITE} />
-            </TouchableOpacity> : null}
-
-
-        </SafeAreaView>
-    )
+        {userData.isCRE || userData.isCRM ? (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(ComplainTrackerIdentifires.addEditComplaint, {
+                from: "ADD_NEW",
+              });
+            }}
+            style={[GlobalStyle.shadow, styles.floatingBtn]}
+          >
+            <Entypo size={25} name="plus" color={Colors.WHITE} />
+          </TouchableOpacity>
+        ) : null}
+      </SafeAreaView>
+    );
 }
+
+export const RenderLevel1NameViewCRM = ({
+  level,
+  item,
+  branchName = "",
+  color,
+  titleClick,
+  navigation,
+  disable = false,
+  receptionManager = false,
+  stopLocation = false,
+}) => {
+  return (
+    <View
+      style={{
+        width: 100,
+        justifyContent: "center",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "row",
+      }}
+    >
+      <View
+        style={{ width: 60, justifyContent: "center", alignItems: "center" }}
+      >
+        <TouchableOpacity
+          disabled={disable}
+          style={{
+            width: 30,
+            height: 30,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: color,
+            borderRadius: 20,
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+          onPress={titleClick}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#fff",
+            }}
+          >
+            {item?.empName?.charAt(0)}
+          </Text>
+        </TouchableOpacity>
+        {/* {level === 0 && !!branchName && ( */}
+        {branchName ? (
+          <TouchableOpacity
+            disabled={stopLocation}
+            onPress={() => {
+              if (item.roleName !== "MD" && item.roleName !== "CEO") {
+                navigation.navigate(
+                  AppNavigator.HomeStackIdentifiers.location,
+                  {
+                    empId: item.empId,
+                    orgId: item.orgId,
+                  }
+                );
+              }
+            }}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <IconButton
+              icon="map-marker"
+              style={{ padding: 0, margin: 0 }}
+              color={Colors.RED}
+              size={8}
+            />
+            <Text style={{ fontSize: 8 }} numberOfLines={2}>
+              {branchName}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+        {/* )} */}
+      </View>
+      <View
+        style={{
+          width: "25%",
+          justifyContent: "space-around",
+          textAlign: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "ACH"}
+        </Text>
+        <Text style={{ fontSize: 10, fontWeight: "bold" }}>
+          {receptionManager ? "" : "TGT"}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 
 export default ComplaintTrackerMain
 

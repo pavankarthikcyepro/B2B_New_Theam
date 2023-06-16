@@ -352,106 +352,132 @@ const AddEditComplaint = (props) => {
         
         if(status==="Active"){
             let payload = {
-                "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
-                "customerName": selector.customerName,
-                "customeLocation": selector.location,
-                "currentStage": selector.stage,
-                "currentStageIdNo": selector.stage_id,
-                "employee": selector.consultant,
-                "manager": selector.reporting_manager,
-                "branch": selector.branch,
-                "complaintLocation": selector.complainLocation,
-                "designation": selector.complainDesignation,
-                "salesExecutiveName": selector.complainEmployee,
-                "complaintDecription": selector.complaintDescription,
-                "mobileNo": selector.mobile,
-                "email": selector.email,
-                "model": selector.model,
-                "complaintFactor": selector.complaintFactorType,
-                "closingSource": selector.closeComplaintSource,
-                "orgId": userData.orgId,
-                "department": selector.complainDepartment,
-                "createdBy": userData.employeeName,// need to give loggedin empid
-                "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
-                "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
-                "updatedDate": moment.utc().format(),
-                "compliantBranch": selector.complainBranch,
-                "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
-                "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
-                "aging": null,
-                "status": status,
-                "assigneeTo": selector.complaint_assignTo,
-            }
+              id: selector.complaintDetailsFromIdRes
+                ? selector.complaintDetailsFromIdRes?.id
+                : 0,
+              customerName: selector.customerName,
+              customeLocation: selector.location,
+              currentStage: selector.stage,
+              currentStageIdNo: selector.stage_id,
+              // "employee": selector.consultant,
+              employee: selector.complainEmployee,
+              manager: selector.reporting_manager,
+              branch: selector.branch,
+              complaintLocation: selector.complainLocation,
+              designation: selector.complainDesignation,
+              salesExecutiveName: selector.consultant,
+              // "salesExecutiveName": selector.complainEmployee,
+              complaintDecription: selector.complaintDescription,
+              mobileNo: selector.mobile,
+              email: selector.email,
+              model: selector.model,
+              complaintFactor: selector.complaintFactorType,
+              closingSource: selector.closeComplaintSource,
+              orgId: userData.orgId,
+              department: selector.complainDepartment,
+              createdBy: userData.employeeName, // need to give loggedin empid
+              updatedBy: userData.employeeName, // need to give loggedin empid for first time and in update case need to give
+              createdDate: selector.complaintDetailsFromIdRes?.createdDate
+                ? selector.complaintDetailsFromIdRes?.createdDate
+                : moment.utc().format(),
+              updatedDate: moment.utc().format(),
+              compliantBranch: selector.complainBranch,
+              complaintDocument:
+                uploadedImagesDataObj?.complaint?.documentPath ||
+                selector.complaintdoc,
+              complaintCloserDocument:
+                uploadedImagesDataObjForClose?.complaint?.documentPath ||
+                selector.complainCloserDoc,
+              aging: null,
+              status: status,
+              assigneeTo: selector.complaint_assignTo,
+            };
 
             dispatch(postComplaintFirstTime(payload));
         } else if (status ==="Closed"){
             let payload = {
-                "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
-                "customerName": selector.customerName,
-                "customeLocation": selector.location,
-                "currentStage": selector.stage,
-                "currentStageIdNo": selector.stage_id,
-                "employee": selector.consultant,
-                "manager": selector.reporting_manager,
-                "branch": selector.branch,
-                "complaintLocation": selector.complainLocation,
-                "designation": selector.complainDesignation,
-                "salesExecutiveName": selector.complainEmployee,
-                "complaintDecription": selector.complaintDescription,
-                "mobileNo": selector.mobile,
-                "email": selector.email,
-                "model": selector.model,
-                "complaintFactor": selector.complaintFactorType,
-                "closingSource": selector.closeComplaintSource,
-                "orgId": userData.orgId,
-                "department": selector.complainDepartment,
-                // "createdBy": userData.employeeName,// need to give loggedin empid
-                "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
-                // "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
-                "updatedDate": moment.utc().format(),
-                "compliantBranch": selector.complainBranch,
-                "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
-                "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
-                "aging": null,
-                "status": status,
-                "rating": selector.closeComplaintFinalRate,
-                "remarks": selector.closeComplaintRemarks,
-                "assigneeTo": selector.complaint_assignTo,
-            }
+              id: selector.complaintDetailsFromIdRes
+                ? selector.complaintDetailsFromIdRes?.id
+                : 0,
+              customerName: selector.customerName,
+              customeLocation: selector.location,
+              currentStage: selector.stage,
+              currentStageIdNo: selector.stage_id,
+            //   employee: selector.consultant,
+            employee: selector.complainEmployee,
+              manager: selector.reporting_manager,
+              branch: selector.branch,
+              complaintLocation: selector.complainLocation,
+              designation: selector.complainDesignation,
+              // "salesExecutiveName": selector.complainEmployee,
+              salesExecutiveName: selector.consultant,
+              complaintDecription: selector.complaintDescription,
+              mobileNo: selector.mobile,
+              email: selector.email,
+              model: selector.model,
+              complaintFactor: selector.complaintFactorType,
+              closingSource: selector.closeComplaintSource,
+              orgId: userData.orgId,
+              department: selector.complainDepartment,
+              // "createdBy": userData.employeeName,// need to give loggedin empid
+              updatedBy: userData.employeeName, // need to give loggedin empid for first time and in update case need to give
+              // "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
+              updatedDate: moment.utc().format(),
+              compliantBranch: selector.complainBranch,
+              complaintDocument:
+                uploadedImagesDataObj?.complaint?.documentPath ||
+                selector.complaintdoc,
+              complaintCloserDocument:
+                uploadedImagesDataObjForClose?.complaint?.documentPath ||
+                selector.complainCloserDoc,
+              aging: null,
+              status: status,
+              rating: selector.closeComplaintFinalRate,
+              remarks: selector.closeComplaintRemarks,
+              assigneeTo: selector.complaint_assignTo,
+            };
             
             dispatch(postComplaintClose(payload));
         } else if (status === "Update") {
             let payload = {
-                "id": selector.complaintDetailsFromIdRes ? selector.complaintDetailsFromIdRes?.id : 0,
-                "customerName": selector.customerName,
-                "customeLocation": selector.location,
-                "currentStage": selector.stage,
-                "currentStageIdNo": selector.stage_id,
-                "employee": selector.consultant,
-                "manager": selector.reporting_manager,
-                "branch": selector.branch,
-                "complaintLocation": selector.complainLocation,
-                "designation": selector.complainDesignation,
-                "salesExecutiveName": selector.complainEmployee,
-                "complaintDecription": selector.complaintDescription,
-                "mobileNo": selector.mobile,
-                "email": selector.email,
-                "model": selector.model,
-                "complaintFactor": selector.complaintFactorType,
-                "closingSource": selector.closeComplaintSource,
-                "orgId": userData.orgId,
-                "department": selector.complainDepartment,
-                // "createdBy": userData.employeeName,// need to give loggedin empid
-                "updatedBy": userData.employeeName,// need to give loggedin empid for first time and in update case need to give  
-                // "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
-                "updatedDate": moment.utc().format(),
-                "compliantBranch": selector.complainBranch,
-                "complaintDocument": uploadedImagesDataObj?.complaint?.documentPath || selector.complaintdoc,
-                "complaintCloserDocument": uploadedImagesDataObjForClose?.complaint?.documentPath || selector.complainCloserDoc,
-                "aging": null,
-                "status": "Active",
-                "assigneeTo": selector.complaint_assignTo,
-            }
+              id: selector.complaintDetailsFromIdRes
+                ? selector.complaintDetailsFromIdRes?.id
+                : 0,
+              customerName: selector.customerName,
+              customeLocation: selector.location,
+              currentStage: selector.stage,
+              currentStageIdNo: selector.stage_id,
+              // "employee": selector.consultant,
+              employee: selector.complainEmployee,
+              manager: selector.reporting_manager,
+              branch: selector.branch,
+              complaintLocation: selector.complainLocation,
+              designation: selector.complainDesignation,
+              //   salesExecutiveName: selector.complainEmployee,
+              salesExecutiveName: selector.consultant,
+              complaintDecription: selector.complaintDescription,
+              mobileNo: selector.mobile,
+              email: selector.email,
+              model: selector.model,
+              complaintFactor: selector.complaintFactorType,
+              closingSource: selector.closeComplaintSource,
+              orgId: userData.orgId,
+              department: selector.complainDepartment,
+              // "createdBy": userData.employeeName,// need to give loggedin empid
+              updatedBy: userData.employeeName, // need to give loggedin empid for first time and in update case need to give
+              // "createdDate": selector.complaintDetailsFromIdRes?.createdDate ? selector.complaintDetailsFromIdRes?.createdDate : moment.utc().format(),
+              updatedDate: moment.utc().format(),
+              compliantBranch: selector.complainBranch,
+              complaintDocument:
+                uploadedImagesDataObj?.complaint?.documentPath ||
+                selector.complaintdoc,
+              complaintCloserDocument:
+                uploadedImagesDataObjForClose?.complaint?.documentPath ||
+                selector.complainCloserDoc,
+              aging: null,
+              status: "Active",
+              assigneeTo: selector.complaint_assignTo,
+            };
 
             dispatch(postComplaintClose(payload));
         }

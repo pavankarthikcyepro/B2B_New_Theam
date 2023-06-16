@@ -93,7 +93,7 @@ import { GoogleMapKey } from "../service";
 //   "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic";
 
 // Dev End Points with JWT
-export const baseUrl = "http://qa-api.cyepro.com/";
+export const baseUrl = "http://dev-api.cyepro.com/";
 export const auth_url = baseUrl + "auth";
 export const hrms_url = baseUrl + "hrms";
 export const inventory_url = baseUrl + "inventory";
@@ -373,18 +373,17 @@ const URL = {
   GET_ASSIGN_TO_NAME_COMPLAINT_INFO: (orgid) =>
     sales_url + `/complainttracker/getAssigneeName/${orgid}`,
 
+  GET_TREE_COMPLAINT_TRACKER: () =>
+    sales_url + `/complainttracker/tree`,
 
   GET_DET_COMPLAINT_EMP_DASHBOARD: (empid) =>
     sales_url + `/complainttracker/getEmpComplaintDashboard/${empid}`,
 
-
   GET_COMPLAINT_TRACKER_MASTER: (empid) =>
     sales_url + `/complainttracker/getComplaintMaster/${empid}`,
 
-
   GET_COMPLAINT_TRACKER_MAIN_FILTERAPPLIED: () =>
     sales_url + `/complainttracker/dashboardfilter`,
-
 
   GET_COMPLAIN_FACTOR_DATA: (orgId) =>
     baseUrl + `dfdg/df-get-all/${orgId}/"Active"/${orgId}/ComplaintFactor`,
@@ -640,7 +639,9 @@ const URL = {
   },
 
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA_COPMLAINT_CRM_ETC: (orgId, employeeId) => {
-    return orgnaizationHirarchy + `/getRoleBasedEmployee/${orgId}/${employeeId}`;
+    return (
+      orgnaizationHirarchy + `/getRoleBasedEmployee/${orgId}/${employeeId}`
+    );
   },
 
   GET_CRM_EMPLOYEES_DROP_DOWN_DATA_RECEP: (orgId, employeeId) => {
