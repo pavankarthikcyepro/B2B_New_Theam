@@ -76,6 +76,11 @@ import {
   getRulesConfiguration,
   getOtherPricesDropDown,
   getEnquiryTypesApi,
+  postEvalutionApi,
+  postFinanaceApi,
+  getOrgTags,
+  getOrgTagsById,
+  postOrgTags,
 } from "../../../redux/preBookingFormReducer";
 import {
   clearBookingState,
@@ -182,6 +187,8 @@ const dmsAttachmentsObj = {
   tinNumber: null,
 };
 
+const orgTagDateFormate = "YYYY-MM-DD hh:mm:ss";
+
 const CheckboxTextAndAmountComp = ({
   title,
   amount,
@@ -277,7 +284,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const selectorBooking = useSelector((state) => state.proceedToBookingReducer);
 
   let scrollRef = useRef(null);
-  const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
+  const { universalId, accessoriesList, leadStatus, leadStage, enqDetails } =
+    route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
   const [otherPrices, setOtherPrices] = useState(0);
@@ -291,6 +299,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     isSelfManager: "",
     isTracker: "",
     branchId: 0,
+    approverId: "",
+    orgName: ""
   });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] =
@@ -408,8 +418,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [isMiniAmountCheck, setisMiniAmountCheck] = useState(true);
   const [otherPriceDropDownIndex, setOtherPriceDropDownIndex] = useState(null);
   const [receiptDocModel, setReceiptDocModel] = useState(false);
-  const [isVip, setIsVip] = useState(null);
-  const [isHni, setIsHni] = useState(null);
+  const [selectedTags, setSelectedTags] = useState("");
+  const [tagList, setTagList] = useState([]);
 
   // Edit buttons shows
   useEffect(() => {
@@ -420,16 +430,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ) {
       const { leadStatus } = selector.pre_booking_details_response.dmsLeadDto;
       let isEditFlag = false;
-      setIsVip(
-        selector.pre_booking_details_response.dmsLeadDto.isVip === "Y"
-          ? true
-          : false
-      );
-      setIsHni(
-        selector.pre_booking_details_response.dmsLeadDto.isHni === "Y"
-          ? true
-          : false
-      );
       if (
         uploadedImagesDataObj.receipt &&
         uploadedImagesDataObj.receipt.fileName
@@ -611,6 +611,40 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    if (selector.orgTagListById.length > 0) {
+      let newArr = [];
+      let names = [];
+      let selectedNames = [];
+      for (let i = 0; i < selector.orgTagListById.length; i++) {
+        const element = selector.orgTagListById[i];
+        let obj = {
+          ...element,
+          selected: element.isActive == "Y" ? true : false,
+        };
+        if (obj.selected != undefined && obj.selected == true) {
+          names.push(obj.name);
+        }
+        selectedNames = names?.join(", ");
+        newArr.push(obj);
+      }
+      setTagList(Object.assign([], newArr));
+      setSelectedTags(selectedNames);
+    } else if (selector.orgTagList.length > 0) {
+      let newArr = [];
+      for (let i = 0; i < selector.orgTagList.length; i++) {
+        const element = selector.orgTagList[i];
+        let obj = {
+          ...element,
+          selected: false,
+        };
+        newArr.push(obj);
+      }
+      setTagList(Object.assign([], newArr));
+    }
+    return () => {};
+  }, [selector.orgTagList, selector.orgTagListById]);
+
   // useEffect(() => {
   //   navigation.addListener("focus", () => {
   //     BackHandler.removeEventListener(
@@ -647,6 +681,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       isSelfManager: "",
       isTracker: "",
       branchId: 0,
+      approverId: "",
+      orgName: "",
     });
     setShowDropDownModel(false);
     setShowMultipleDropDownData(false);
@@ -699,6 +735,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setAccDiscount("");
     setInitialTotalAmt(0);
     setIsEdit(false);
+    setSelectedTags("");
+    setTagList([]);
   };
 
   const getCustomerEnquiryType = async () => {
@@ -1064,6 +1102,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         editEnable = true;
         isPreBookingApprover = true;
       }
+      dispatch(getOrgTags(jsonObj.orgId));
+      dispatch(getOrgTagsById(enqDetails.leadId));
       setUserData({
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
@@ -1074,6 +1114,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
         branchId: jsonObj.branchId,
+        approverId: jsonObj.approverId,
+        orgName: jsonObj.orgName
       });
 
       const payload = {
@@ -1553,6 +1595,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setShowMultipleDropDownData(false);
     const orgId = +userData.orgId;
 
     switch (key) {
@@ -1659,6 +1702,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "OTHER_PRICES":
         setDataForDropDown([...selector.otherPricesDropDown]);
+        break;
+      case "SELECT_TAG":
+        setShowMultipleDropDownData(true);
+        setDataForDropDown(tagList);
         break;
     }
     setDropDownKey(key);
@@ -1833,6 +1880,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     return false;
   };
+
+  const postEvalutionForm = () => {
+    // todo manthan
+    if (selector.buyer_type.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = () => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
 
   const submitClicked = async () => {
     Keyboard.dismiss();
@@ -2079,6 +2153,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     }
 
+     const bookingAmount = parseInt(selector.booking_amount);
+    if (bookingAmount <= 0) {
+      scrollToPos(8);
+      setOpenAccordian("8");
+      showToast("please enter booking amount greater than 0");
+      return;
+    }
+
     let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
       return item.isPrimary === "Y";
@@ -2259,6 +2341,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
+    postEvalutionForm();
+    postFinanceForm();
     if (isEdit) {
       setIsLoading(true);
       Promise.all([
@@ -2337,8 +2421,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dmsLeadDto.lastName = selector.last_name;
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.email = selector.email;
-      dmsLeadDto.isVip = isVip ? "Y" : "N";
-      dmsLeadDto.isHni = isHni ? "Y" : "N";
       dmsLeadDto.model =
         selectedModel.length > 0 ? selectedModel[0].model : selector.model;
       const employeeData = await AsyncStore.getData(
@@ -2540,6 +2622,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         // getPreBookingListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
         setIsLoading(false);
+        submitOrgTags();
         showToastSucess("Successfully Sent for Manager Approval");
         goToLeadScreen();
       } else if (typeOfActionDispatched === "APPROVE") {
@@ -2552,6 +2635,52 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     }
   }, [selector.update_pre_booking_details_response]);
+
+  const submitOrgTags = () => {
+    const { leadId } = enqDetails;
+    let newArr = [];
+    if (selector.orgTagListById.length > 0) {
+      for (let i = 0; i < selector.orgTagListById.length; i++) {
+        const element = selector.orgTagListById[i];
+        let defaultObj = {
+          id: element.id,
+          leadId: leadId,
+          universalId: universalId,
+          isActive: selectedTags.includes(element.tagName) ? "Y" : "N",
+          tagName: element.tagName,
+          createdDatetime: element.createdDatetime,
+          updatedDatetime: moment().format(orgTagDateFormate),
+        };
+        newArr.push(defaultObj);
+      }
+    } else {
+      let defaultObj = {
+        leadId: leadId,
+        universalId: universalId,
+        isActive: "N",
+        createdDatetime: moment().format(orgTagDateFormate),
+        updatedDatetime: moment().format(orgTagDateFormate),
+      };
+
+      newArr = [
+        { ...defaultObj, tagName: "VIP" },
+        { ...defaultObj, tagName: "HNI" },
+        { ...defaultObj, tagName: "SPL" },
+      ];
+
+      if (selectedTags.includes("VIP")) {
+        payloadArr[0].isActive = "Y";
+      }
+      if (selectedTags.includes("HNI")) {
+        payloadArr[1].isActive = "Y";
+      }
+      if (selectedTags.includes("SPL")) {
+        payloadArr[2].isActive = "Y";
+      }
+    }
+    dispatch(postOrgTags(newArr));
+  };
+
   useEffect(() => {
     try {
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
@@ -3800,74 +3929,95 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          setShowDropDownModel(false);
-          setShowMultipleDropDownData(false);
-          if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name, false);
-          } else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(
-              item.name,
-              selectedCarVarientsData.varientList,
-              selectedModelId
-            );
-          } else if (dropDownKey === "INSURANCE_TYPE") {
-            setSelectedInsurencePrice(item.cost);
-          } else if (dropDownKey === "WARRANTY") {
-            setSelectedWarrentyPrice(Number(item.cost));
-          } else if (dropDownKey === "DROP_REASON") {
-            const payload = {
-              bu: userData.orgId,
-              dropdownType: "PreBook_Lost_Com_Sub_Reas",
-              parentId: item.id,
-            };
-            dispatch(getDropSubReasonDataApi(payload));
-          } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-            setSelectedRegistrationCharges(item);
-            let totalCost = 0;
-            let names = "";
-            let insurenceAddOns = [];
+          if (showMultipleDropDownData && dropDownKey === "SELECT_TAG") {
+            setTagList([...item]);
+            let names = [];
+            let selectedNames = [];
+
             if (item.length > 0) {
-              item.forEach((obj, index) => {
-                totalCost += Number(obj.cost);
-                names += obj.name + (index + 1 < item.length ? ", " : "");
-                insurenceAddOns.push({
-                  insuranceAmount: obj.cost,
-                  insuranceAddonName: obj.name,
-                });
+              setIsSubmitPress(false);
+              item.forEach((obj) => {
+                if (obj.selected != undefined && obj.selected == true) {
+                  names.push(obj.name);
+                }
               });
+              selectedNames = names?.join(", ");
+            } else {
+              setIsSubmitPress(true);
             }
-            setSelectedAddOnsPrice(totalCost);
-            setSelectedInsurenceAddons([...insurenceAddOns]);
-            dispatch(
-              setDropDownData({ key: dropDownKey, value: names, id: "" })
-            );
-            return;
-          } else if (dropDownKey === "REGISTRATION_CHARGES") {
-            setSelectedRegistrationCharges(item);
-          } else if (dropDownKey === "OTHER_PRICES") {
-            inputHandlerName(item.name, otherPriceDropDownIndex);
-          }
 
-          if (
-            selector.retail_finance !== item.name &&
-            dropDownKey === "RETAIL_FINANCE"
-          ) {
+            setSelectedTags(selectedNames);
+            setShowDropDownModel(false);
+          } else {
+            setShowDropDownModel(false);
+            setShowMultipleDropDownData(false);
+            if (dropDownKey === "MODEL") {
+              updateVariantModelsData(item.name, false);
+            } else if (dropDownKey === "VARIENT") {
+              updateColorsDataForSelectedVarient(
+                item.name,
+                selectedCarVarientsData.varientList,
+                selectedModelId
+              );
+            } else if (dropDownKey === "INSURANCE_TYPE") {
+              setSelectedInsurencePrice(item.cost);
+            } else if (dropDownKey === "WARRANTY") {
+              setSelectedWarrentyPrice(Number(item.cost));
+            } else if (dropDownKey === "DROP_REASON") {
+              const payload = {
+                bu: userData.orgId,
+                dropdownType: "PreBook_Lost_Com_Sub_Reas",
+                parentId: item.id,
+              };
+              dispatch(getDropSubReasonDataApi(payload));
+            } else if (dropDownKey === "INSURENCE_ADD_ONS") {
+              setSelectedRegistrationCharges(item);
+              let totalCost = 0;
+              let names = "";
+              let insurenceAddOns = [];
+              if (item.length > 0) {
+                item.forEach((obj, index) => {
+                  totalCost += Number(obj.cost);
+                  names += obj.name + (index + 1 < item.length ? ", " : "");
+                  insurenceAddOns.push({
+                    insuranceAmount: obj.cost,
+                    insuranceAddonName: obj.name,
+                  });
+                });
+              }
+              setSelectedAddOnsPrice(totalCost);
+              setSelectedInsurenceAddons([...insurenceAddOns]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
+              return;
+            } else if (dropDownKey === "REGISTRATION_CHARGES") {
+              setSelectedRegistrationCharges(item);
+            } else if (dropDownKey === "OTHER_PRICES") {
+              inputHandlerName(item.name, otherPriceDropDownIndex);
+            }
+
+            if (
+              selector.retail_finance !== item.name &&
+              dropDownKey === "RETAIL_FINANCE"
+            ) {
+              dispatch(
+                setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+              );
+              dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+              dispatch(
+                setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+              );
+            }
+
             dispatch(
-              setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
-            );
-            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
-            dispatch(
-              setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+              })
             );
           }
-
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-            })
-          );
         }}
       />
 
@@ -4133,89 +4283,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     },
                   ]}
                 ></Text>
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
+                <DropDownSelectionItem
+                  label={"Select Tag"}
+                  disabled={!isInputsEditable()}
+                  value={selectedTags}
+                  onPress={() => {
+                    showDropDownModelMethod("SELECT_TAG", "Select Tag");
                   }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is VIP?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isVip}
-                    disabled={!isInputsEditable()}
-                    onPress={() => setIsVip(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    disabled={!isInputsEditable()}
-                    status={isVip === null ? false : !isVip}
-                    onPress={() => setIsVip(false)}
-                  />
-                </View>
-                <Text style={[GlobalStyle.underline]}></Text>
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is HNI?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isHni}
-                    disabled={!isInputsEditable()}
-                    onPress={() => setIsHni(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    disabled={!isInputsEditable()}
-                    status={isHni === null ? false : !isHni}
-                    onPress={() => setIsHni(false)}
-                  />
-                </View>
+                />
                 <Text style={[GlobalStyle.underline]}></Text>
                 {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
@@ -5798,6 +5873,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <TextInput
                       editable={isInputsEditable()}
                       value={taxPercent}
+                      maxLength={2}
                       style={[
                         {
                           fontSize: 14,
@@ -6761,7 +6837,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dispatch(
                       setBookingPaymentDetails({
                         key: "BOOKING_AMOUNT",
-                        text: text,
+                        text: text.replace(/[^0-9]/g, ''),
                       })
                     )
                   }
@@ -7286,7 +7362,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   labelStyle={{ textTransform: "none", fontSize: 10 }}
                   onPress={() => {
                     setIsEdit(true);
-                    setShowApproveRejectBtn(true);
+                    if (userData.orgName !== "BikeWo Corporation") {
+                      setShowApproveRejectBtn(true);
+                    }
                     setIsEditButtonShow(false);
                     setIsSubmitCancelButtonShow(true);
                   }}
@@ -7313,7 +7391,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => {
                     setIsEdit(true);
-                    setShowApproveRejectBtn(true);
+                    if (userData.orgName !== "BikeWo Corporation") {
+                      setShowApproveRejectBtn(true);
+                    }
                     // new conditions
                     setIsEditButtonShow(false);
                     setIsSubmitCancelButtonShow(true);
@@ -7357,7 +7437,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       >
         <View style={styles.modelMainContainer}>
           <View style={styles.modelContainer}>
-            <View style={styles.closeContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setReceiptDocModel(false);
+                // setIsEdit(true);
+                setShowApproveRejectBtn(true);
+                // new conditions
+                setIsEditButtonShow(false);
+                setIsSubmitCancelButtonShow(true);
+              }}
+              style={styles.TochableClose}
+            >
+              <View style={styles.closeVIew}>
+                <Text style={{ fontSize: 16 }}>{"X"}</Text>
+              </View>
+            </TouchableOpacity>
+            {/* <View style={styles.closeContainer}
+             >
               <IconButton
                 icon="close-circle"
                 color={Colors.RED}
@@ -7372,7 +7468,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   setIsSubmitCancelButtonShow(true);
                 }}
               />
-            </View>
+            </View> */}
 
             <View style={styles.recDocTitleContainer}>
               <Text style={styles.recDocTitleText}>
@@ -7396,7 +7492,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 onPress={() => {
                   setReceiptDocModel(false);
                   setIsEdit(true);
-                  setShowApproveRejectBtn(true);
+                  setShowApproveRejectBtn(false);
                   // new conditions
                   setIsEditButtonShow(false);
                   setIsSubmitCancelButtonShow(true);
@@ -7772,4 +7868,11 @@ const styles = StyleSheet.create({
   photoOptionBtnText: {
     color: Colors.WHITE,
   },
+  TochableClose: { position: 'absolute', right: -40, top: -40, padding: 30 },
+  closeVIew: {
+
+  borderRadius: 15, width: 30, height: 30, 
+    borderColor: Colors.PINK, borderWidth: 1, backgroundColor: Colors.PINK,
+      justifyContent: 'center', alignItems: 'center'
+}
 });

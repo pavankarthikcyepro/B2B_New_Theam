@@ -83,6 +83,11 @@ import {
   clearState2,
   getEventConfigList,
   getEnquiryTypesApi,
+  postEvalutionApi,
+  postFinanaceApi,
+  getOrgTags,
+  postOrgTags,
+  getBranchList,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -175,6 +180,7 @@ import { getEmployeesListApi } from "../../../redux/confirmedPreEnquiryReducer";
 import { client } from "../../../networking/client";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
+import DuplicateMobileModel from "../../../components/DuplicateMobileModel";
 const theme = {
   ...DefaultTheme,
   // Specify custom property
@@ -250,6 +256,8 @@ const dmsAttachmentsObj = {
   tinNumber: null,
 };
 
+const orgTagDateFormate = "YYYY-MM-DD hh:mm:ss";
+
 const AddNewEnquiryScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
@@ -289,6 +297,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     employeeName: "",
     isSelfManager: "",
     isTracker: "",
+    approverId: "",
+    orgName: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [modelsList, setModelsList] = useState([]);
@@ -333,8 +343,13 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [isEventListModalVisible, setisEventListModalVisible] = useState(false);
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
-  const [isVip, setIsVip] = useState(null);
-  const [isHni, setIsHni] = useState(null);
+  const [isMultipleSelection, setIsMultipleSelection] = useState(false);
+  const [selectedTags, setSelectedTags] = useState("");
+  const [tagList, setTagList] = useState([]);
+
+  const [duplicateMobileErrorData, setDuplicateMobileErrorData] = useState("");
+  const [duplicateMobileModelVisible, setDuplicateMobileModelVisible] =
+    useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -396,6 +411,8 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       employeeName: "",
       isSelfManager: "",
       isTracker: "",
+      approverId: "",
+      orgName: ""
     });
     setUploadedImagesDataObj({});
     setTypeOfActionDispatched("");
@@ -406,7 +423,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     serInsurenceCompanyList([]);
     setFinanceBanksList([]);
     setSelectedBranchId("");
-
+    setIsMultipleSelection(false);
+    setSelectedTags("");
+    setTagList([]);
+    
     // drop section
     setDropData([]);
     setDropReason("");
@@ -450,7 +470,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerEnquiryType();
-
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
     //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
@@ -464,6 +483,79 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //   );
     // };
   }, []);
+
+  useEffect(() => {
+    if (homeSelector.filter_drop_down_data?.Location?.sublevels.length == 1) {
+      const { sublevels } = homeSelector.filter_drop_down_data.Location;
+      let payload = {
+        orgId: sublevels[0].orgId,
+        locationId: sublevels[0].id,
+      };
+      dispatch(setDropDownData({ key: "LOCATION", value: sublevels[0].name }));
+      dispatch(getBranchList(payload));
+    }
+  }, [homeSelector.filter_drop_down_data]);
+  
+  useEffect(() => {
+    if (homeSelector.filter_drop_down_data?.Location?.sublevels.length > 0) {
+      const { sublevels } = homeSelector.filter_drop_down_data.Location;
+      for (let i = 0; i < sublevels.length; i++) {
+        const element = sublevels[i];
+        if (element.name == selector.selectedLocation) {
+          let payload = {
+            orgId: element.orgId,
+            locationId: element.id,
+          };
+          dispatch(getBranchList(payload));
+          break;
+        }
+      }
+      setSubSourceData([]);
+    }
+  }, [selector.selectedLocation]);
+  
+  useEffect(() => {
+    if (selector.branchList.length == 1) {
+      const element = selector.branchList;
+      dispatch(setDropDownData({ key: "BRANCH", value: element[0].name }));
+      dispatch(setDropDownData({ key: "ORG_ID", value: element[0].orgId }));
+      dispatch(
+        setDropDownData({ key: "BRANCH_ID", value: element[0].branchId })
+      );
+    }
+  }, [selector.branchList]);
+  
+  useEffect(() => {
+    if (selector.selectedBranch) {
+      for (let i = 0; i < selector.branchList.length; i++) {
+        const element = selector.branchList[i];
+        if (element.name == selector.selectedBranch) {
+          dispatch(setDropDownData({ key: "ORG_ID", value: element.orgId }));
+          dispatch(
+            setDropDownData({ key: "BRANCH_ID", value: element.branchId })
+          );
+          break;
+        }
+      }
+      setSubSourceData([]);
+    }
+  }, [selector.selectedBranch]);
+
+  useEffect(() => {
+    if (selector.orgTagList.length > 0) {
+      let newArr = [];
+      for (let i = 0; i < selector.orgTagList.length; i++) {
+        const element = selector.orgTagList[i];
+        let obj = {
+          ...element,
+          selected: false,
+        };
+        newArr.push(obj);
+      }
+      setTagList(Object.assign([], newArr));
+    }
+    return () => {};
+  }, [selector.orgTagList]);
 
   useEffect(() => {
     if (
@@ -547,7 +639,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         employeeName: jsonObj.empName,
         isSelfManager: jsonObj.isSelfManager,
         isTracker: jsonObj.isTracker,
+        approverId: jsonObj.approverId,
+        orgName: jsonObj.orgName,
       });
+      dispatch(getOrgTags(jsonObj.orgId));
       getCarMakeListFromServer(jsonObj.orgId);
       getCarModelListFromServer(jsonObj.orgId);
 
@@ -695,6 +790,33 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       }
     );
   };
+
+  const postEvalutionForm = (universalId)=>{
+    // todo manthan
+    if (selector.buyer_type.length !== 0){
+      let payload = {
+        "universalId":universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.buyer_type
+      }
+      dispatch(postEvalutionApi(payload));
+    }
+  }
+  const postFinanceForm = (universalId) => {
+    // todo manthan
+    if (selector.retail_finance.length !== 0) {
+      let payload = {
+        "universalId": universalId,
+        "evaluationApproverId": userData.approverId,
+        // "oldBuyerType": "",
+        "status": "ASSIGNED",
+        "newBuyerType": selector.retail_finance
+      }
+      dispatch(postFinanaceApi(payload));
+    }
+  }
 
   useEffect(() => {
     try {
@@ -1023,6 +1145,20 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in lastname");
       return;
     }
+    
+    if (selector.selectedLocation == "") {
+      scrollToPos(0);
+      setOpenAccordian("11");
+      showToast("Please select location");
+      return;
+    }
+    if (selector.selectedBranch == "") {
+      scrollToPos(0);
+      setOpenAccordian("11");
+      showToast("Please select branch");
+      return;
+    }
+
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1046,14 +1182,6 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please fill Sub Source Of Enquiry");
-      return;
-    }
-    if (isVip === null) {
-      showToast("Please select VIP");
-      return;
-    }
-    if (isHni === null) {
-      showToast("Please select HNI");
       return;
     }
     if (selector.buyer_type.length == 0) {
@@ -1329,7 +1457,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let empObj = {
-          branchId: jsonObj.branchs[0]?.branchId,
+          branchId: selector.selectedBranchId ?? jsonObj.branchs[0]?.branchId,
           modifiedBy: jsonObj.empName,
           orgId: jsonObj.orgId,
           ownerName: jsonObj.empName,
@@ -1350,7 +1478,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         }
         let payloadx = {
           dmsAccountDto: {
-            branchId: jsonObj.branchs[0]?.branchId,
+            branchId: selector.selectedBranchId ?? jsonObj.branchs[0]?.branchId,
             company: selector.company_name,
             createdBy: jsonObj.empName,
             customerType: selector.customer_type,
@@ -1393,9 +1521,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
             companyName: selector.company_name,
           },
           dmsLeadDto: {
-            isVip: isVip ? "Y" : "N",
-            isHni: isHni ? "Y" : "N",
-            branchId: jsonObj.branchs[0]?.branchId,
+            branchId: selector.selectedBranchId ?? jsonObj.branchs[0]?.branchId,
             createdBy: jsonObj.empName,
             enquirySegment: selector.enquiry_segment,
             firstName: selector.firstName,
@@ -1676,13 +1802,16 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
             const json = await response.json();
             if (json.success) {
+              submitOrgTags(json);
               displayCreateEnquiryLeadAlert(
                 json?.dmsEntity?.leadCustomerReference?.referencenumber
               );
+              postEvalutionForm(json?.dmsEntity?.dmsLeadDto?.crmUniversalId);
+              postFinanceForm(json?.dmsEntity?.dmsLeadDto?.crmUniversalId);
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
-              showToast(json.message);
+              DuplicateErrorModal(json);
             }
           } else {
             const response1 = await client.post(
@@ -1692,13 +1821,16 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
             const json1 = await response1.json();
             if (json1.success) {
+              submitOrgTags(json1);
               displayCreateEnquiryLeadAlert(
                 json1?.dmsEntity?.leadCustomerReference?.referencenumber
               );
+              postEvalutionForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId);
+              postFinanceForm(json1?.dmsEntity?.dmsLeadDto?.crmUniversalId);
               // showToastRedAlert("Enquiry is generated Successfully");
               // goToLeadScreen();
             } else {
-              showToast(json1.message);
+              DuplicateErrorModal(json1);
             }
           }
           // navigation.goBack();
@@ -1741,6 +1873,63 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     //     dispatch(updateRef(payload));
     //   });
     // }
+  };
+
+  const submitOrgTags = (json) => {
+    const { dmsLeadDto, task } = json.dmsEntity;
+    const { id } = dmsLeadDto;
+    const { universalId } = task;
+    let defaultObj = {
+      leadId: id,
+      universalId: universalId,
+      isActive: "N",
+      createdDatetime: moment().format(orgTagDateFormate),
+      updatedDatetime: moment().format(orgTagDateFormate),
+    };
+
+    let payloadArr = [
+      { ...defaultObj, tagName: "VIP" },
+      { ...defaultObj, tagName: "HNI" },
+      { ...defaultObj, tagName: "SPL" },
+    ];
+
+    if (selectedTags.includes("VIP")) {
+      payloadArr[0].isActive = "Y";
+    }
+    if (selectedTags.includes("HNI")) {
+      payloadArr[1].isActive = "Y";
+    }
+    if (selectedTags.includes("SPL")) {
+      payloadArr[2].isActive = "Y";
+    }
+    dispatch(postOrgTags(payloadArr));
+  };
+
+  const DuplicateErrorModal = (data) => {
+    const { message } = data;
+    if (message.includes("Account already exists")) {
+      const msgArr = message.split("[");
+      const msgArr2 = msgArr[1].split("]").join("");
+      const msgArr3 = msgArr2.split(":");
+      const msgArr4 = msgArr3[1].split(",");
+      const createdDate = msgArr3[2].trim();
+      const createdBy = msgArr4[0].trim();
+
+      const msgEnq = msgArr[2].split("]").join("");
+      const msgEnq2 = msgEnq.split(":");
+      const enqNumber = msgEnq2[1].trim();
+
+      let newObj = {
+        createdBy: createdBy,
+        createdDate: createdDate,
+        enqNumber: enqNumber,
+        mobileNumber: selector.mobile,
+      };
+      setDuplicateMobileErrorData(Object.assign({}, newObj));
+      setDuplicateMobileModelVisible(true);
+    } else {
+      showToast(data.message);
+    }
   };
 
   const mapContactOrAccountDto = (prevData) => {
@@ -2116,7 +2305,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
     let object = { ...dmsAttachmentsObj, ...data };
-    object.branchId = selectedBranchId;
+    object.branchId = selector.selectedBranchId ?? selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
     object.documentType = photoObj?.documentType;
@@ -2262,7 +2451,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const callCustomerLeadReferenceApi = async () => {
     const payload = {
-      branchid: userData.branchId,
+      branchid: selector.selectedBranchId ?? userData.branchId,
       leadstage: "PREBOOKING",
       orgid: userData.orgId,
       // universalId: universalId,
@@ -2513,7 +2702,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     const payload = {
       dmsLeadDropInfo: {
         additionalRemarks: dropRemarks,
-        branchId: Number(selectedBranchId),
+        branchId: Number(selector.selectedBranchId ?? selectedBranchId),
         brandName: dropBrandName,
         dealerName: dropDealerName,
         location: dropLocation,
@@ -2552,6 +2741,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
+    setIsMultipleSelection(false);
     switch (key) {
       case "ENQUIRY_SEGMENT":
         if (selector.enquiry_type_list?.length === 0) {
@@ -2674,6 +2864,29 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         break;
       case "R_INSURENCE_COMPANY_NAME":
         setDataForDropDown([...insurenceCompayList]);
+        break;
+      case "SELECT_TAG":
+        setIsMultipleSelection(true);
+        setDataForDropDown(tagList);
+        break;
+      case "LOCATION":
+        if (
+          homeSelector?.filter_drop_down_data?.Location?.sublevels.length > 0
+        ) {
+          setDataForDropDown([
+            ...homeSelector.filter_drop_down_data.Location.sublevels,
+          ]);
+        } else {
+          showToast("No Locations found");
+          return;
+        }
+        break;
+      case "BRANCH":
+        if (selector.branchList.length == 0) {
+          showToast("No Branch found");
+          return;
+        }
+        setDataForDropDown([...selector.branchList]);
         break;
     }
     setDropDownKey(key);
@@ -3068,7 +3281,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       startDate: startDate,
       endDate: endDate,
       empId: userData.employeeId,
-      branchId: userData.branchId,
+      branchId: selector.selectedBranchId ?? userData.branchId,
       orgId: userData.orgId,
     };
     dispatch(getEventListApi(payload));
@@ -3088,7 +3301,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       startDate: startDate,
       endDate: endDate,
       empId: userData.employeeId,
-      branchId: userData.branchId,
+      branchId: selector.selectedBranchId ?? userData.branchId,
       orgId: userData.orgId,
     };
     dispatch(getEventConfigList(payload));
@@ -3114,7 +3327,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
     const data = {
       sourceId: sourceOfEnquiryId,
       orgId: userData.orgId,
-      branchId: userData.branchId,
+      branchId: selector.selectedBranchId ?? userData.branchId,
     };
     Promise.all([dispatch(getEmployeesListApi(data))]).then(async (res) => {});
   };
@@ -3352,6 +3565,15 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+      <DuplicateMobileModel
+        duplicateMobileModelVisible={duplicateMobileModelVisible}
+        onRequestClose={() => {
+          setDuplicateMobileModelVisible(false);
+          setDuplicateMobileErrorData("");
+        }}
+        duplicateMobileErrorData={duplicateMobileErrorData}
+      />
+
       <SelectEmployeeComponant
         visible={showEmployeeSelectModel}
         headerTitle={"Select Employee"}
@@ -3372,66 +3594,88 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
       />
 
       <DropDownComponant
+        multiple={isMultipleSelection}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name, false);
-          } else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(
-              item.name,
-              selectedCarVarientsData.varientList
-            );
-          } else if (
-            dropDownKey === "C_MAKE" ||
-            dropDownKey === "R_MAKE" ||
-            dropDownKey === "A_MAKE"
-          ) {
-            updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
-          }
+          if (isMultipleSelection) {
+            setTagList([...item]);
+            let names = [];
+            let selectedNames = [];
 
-          if (
-            dropDownKey === "RETAIL_FINANCE" &&
-            selector.retail_finance !== item.name
-          ) {
-            dispatch(
-              setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
-            );
-            dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
-            dispatch(
-              setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
-            );
-          }
-          if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-            setSelectedEventData([]);
-            if (item.name === "Events") {
-              const startOfMonth = moment()
-                .startOf("month")
-                .format("YYYY-MM-DD");
-              const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
-              getEventConfigListFromServer(startOfMonth, endOfMonth);
+            if (item.length > 0) {
+              setIsSubmitPress(false);
+              item.forEach((obj) => {
+                if (obj.selected != undefined && obj.selected == true) {
+                  names.push(obj.name);
+                }
+              });
+              selectedNames = names?.join(", ");
+            } else {
+              setIsSubmitPress(true);
             }
-            if (item.name === "Event") {
-              getEventListFromServer();
+
+            setSelectedTags(selectedNames);
+            setShowDropDownModel(false);
+          } else {
+            if (dropDownKey === "MODEL") {
+              updateVariantModelsData(item.name, false);
+            } else if (dropDownKey === "VARIENT") {
+              updateColorsDataForSelectedVarient(
+                item.name,
+                selectedCarVarientsData.varientList
+              );
+            } else if (
+              dropDownKey === "C_MAKE" ||
+              dropDownKey === "R_MAKE" ||
+              dropDownKey === "A_MAKE"
+            ) {
+              updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
             }
-            getEmployeeListFromServer(item.id);
-            setSourceData(item.id);
-            updateSubSourceData(item);
+
+            if (
+              dropDownKey === "RETAIL_FINANCE" &&
+              selector.retail_finance !== item.name
+            ) {
+              dispatch(
+                setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: "" })
+              );
+              dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "" }));
+              dispatch(
+                setFinancialDetails({ key: "RATE_OF_INTEREST", text: "" })
+              );
+            }
+            if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+              setSelectedEventData([]);
+              if (item.name === "Events") {
+                const startOfMonth = moment()
+                  .startOf("month")
+                  .format("YYYY-MM-DD");
+                const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+                getEventConfigListFromServer(startOfMonth, endOfMonth);
+              }
+              if (item.name === "Event") {
+                getEventListFromServer();
+              }
+              getEmployeeListFromServer(item.id);
+              setSourceData(item.id);
+              updateSubSourceData(item);
+            }
+            if (dropDownKey === "SUB_SOURCE_OF_ENQUIRY") {
+              setSubSourceId(item.id);
+            }
+            setShowDropDownModel(false);
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+                orgId: userData.orgId,
+              })
+            );
           }
-          if (dropDownKey === "SUB_SOURCE_OF_ENQUIRY") {
-            setSubSourceId(item.id);
-          }
-          setShowDropDownModel(false);
-          dispatch(
-            setDropDownData({
-              key: dropDownKey,
-              value: item.name,
-              id: item.id,
-              orgId: userData.orgId,
-            })
-          );
         }}
       />
 
@@ -3803,185 +4047,122 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
               </List.Accordion>
               <View style={styles.space}></View>
 
-              {/* 2.Customer Profile */}
+              {/* Select Location & Dealer Code */}
               <List.Accordion
-                id={"1"}
-                title={"Customer Profile"}
+                id={"11"}
+                title="Select Location & Dealer Code"
                 titleStyle={{
-                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                  color: openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "11" ? Colors.RED : Colors.WHITE,
                     height: 60,
-                    // justifyContent: 'center'
                   },
                   styles.accordianBorder,
                 ]}
               >
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.occupation}
-                  autoCapitalize="words"
-                  label={"Occupation"}
-                  keyboardType={"default"}
-                  maxLength={40}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "OCCUPATION", text: text })
-                    )
+                <DropDownSelectionItem
+                  label={"Location*"}
+                  value={selector.selectedLocation}
+                  onPress={() =>
+                    showDropDownModelMethod("LOCATION", "Select Location")
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.designation}
-                  autoCapitalize="words"
-                  label={"Designation"}
-                  keyboardType={"default"}
-                  maxLength={40}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "DESIGNATION", text: text })
-                    )
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.selectedLocation === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <DropDownSelectionItem
+                  label={"Branch*"}
+                  value={selector.selectedBranch}
+                  onPress={() =>
+                    showDropDownModelMethod("BRANCH", "Select Branch")
                   }
                 />
-                <Text style={GlobalStyle.underline} />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.selectedBranch === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+              </List.Accordion>
+              <View style={styles.space}></View>
 
-                <DropDownSelectionItem
-                  label={"Enquiry Segment*"}
-                  // disabled={!selector.enableEdit}
-                  value={selector.enquiry_segment}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "ENQUIRY_SEGMENT",
-                      "Select Enquiry Segment"
-                    )
-                  }
-                />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.enquiry_segment === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
-                <DropDownSelectionItem
-                  label={"Customer Type*"}
-                  disabled={selector.enquiry_segment.length > 0 ? false : true}
-                  value={selector.customer_type}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "CUSTOMER_TYPE",
-                      "Select Customer Type"
-                    )
-                  }
-                />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.customer_type === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
-                {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
-                  <View>
+              {/* 2.Customer Profile */}
+              {selector.selectedBranch ? (
+                <>
+                  <List.Accordion
+                    id={"1"}
+                    title={"Customer Profile"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                        height: 60,
+                        // justifyContent: 'center'
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.company_name}
-                      label={"Company Name"}
+                      value={selector.occupation}
                       autoCapitalize="words"
+                      label={"Occupation"}
                       keyboardType={"default"}
-                      maxLength={50}
+                      maxLength={40}
                       onChangeText={(text) =>
                         dispatch(
-                          setCustomerProfile({
-                            key: "COMPANY_NAME",
-                            text: text,
-                          })
+                          setCustomerProfile({ key: "OCCUPATION", text: text })
                         )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                ) : null}
-                <View>
-                  <DropDownSelectionItem
-                    label={"Source Of Enquiry*"}
-                    value={selector.source_of_enquiry}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "SOURCE_OF_ENQUIRY",
-                        "Source Of Enquiry"
-                      )
-                    }
-                  />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.source_of_enquiry === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                </View>
-                {/* <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.source_of_enquiry}
-                  label={"Source Of Enquiry*"}
-                  editable={true}
-                /> */}
-                <Text style={GlobalStyle.underline}></Text>
-
-                {selector.source_of_enquiry.toLowerCase() === "event" && (
-                  <View>
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.event_code}
-                      label={"Event Code"}
-                      editable={false}
+                      value={selector.designation}
+                      autoCapitalize="words"
+                      label={"Designation"}
+                      keyboardType={"default"}
+                      maxLength={40}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerProfile({ key: "DESIGNATION", text: text })
+                        )
+                      }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <Text style={GlobalStyle.underline} />
 
-                {/* {(selector.source_of_enquiry
-                  .toLowerCase()
-                  .trim()
-                  .replace(/ /g, "") === "digitalmarketing" ||
-                  selector.source_of_enquiry
-                    .toLowerCase()
-                    .trim()
-                    .replace(/ /g, "") === "socialnetwork") && ( */}
-                {selector.source_of_enquiry.length !== 0 && (
-                  <View>
                     <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry*"}
-                      disabled={false}
-                      value={selector.sub_source_of_enquiry}
+                      label={"Enquiry Segment*"}
+                      // disabled={!selector.enableEdit}
+                      value={selector.enquiry_segment}
                       onPress={() =>
                         showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
+                          "ENQUIRY_SEGMENT",
+                          "Select Enquiry Segment"
                         )
                       }
                     />
@@ -3990,275 +4171,335 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                         GlobalStyle.underline,
                         {
                           backgroundColor:
-                            isSubmitPress &&
-                            selector.sub_source_of_enquiry === ""
+                            isSubmitPress && selector.enquiry_segment === ""
                               ? "red"
                               : "rgba(208, 212, 214, 0.7)",
                         },
                       ]}
                     ></Text>
-                  </View>
-                )}
-                {/* )} */}
+                    <DropDownSelectionItem
+                      label={"Customer Type*"}
+                      disabled={
+                        selector.enquiry_segment.length > 0 ? false : true
+                      }
+                      value={selector.customer_type}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "CUSTOMER_TYPE",
+                          "Select Customer Type"
+                        )
+                      }
+                    />
+                    <Text
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress && selector.customer_type === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
+                    {selector.customer_type.toLowerCase() === "fleet" ||
+                    selector.customer_type.toLowerCase() === "institution" ||
+                    selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired" ||
+                    selector.customer_type.toLowerCase() === "other" ? (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.company_name}
+                          label={"Company Name"}
+                          autoCapitalize="words"
+                          keyboardType={"default"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerProfile({
+                                key: "COMPANY_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    ) : null}
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Source Of Enquiry*"}
+                        value={selector.source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SOURCE_OF_ENQUIRY",
+                            "Source Of Enquiry"
+                          )
+                        }
+                      />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.source_of_enquiry === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
+                    </View>
+                    {/* <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.source_of_enquiry}
+                  label={"Source Of Enquiry*"}
+                  editable={true}
+                /> */}
+                    <Text style={GlobalStyle.underline}></Text>
 
-                {selector.source_of_enquiry.toLowerCase() === "reference" && (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_first_name}
-                      label={"Referred BY First Name"}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "RF_FIRST_NAME",
-                            text: text,
-                          })
-                        )
+                    {selector.source_of_enquiry.toLowerCase() === "event" && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.event_code}
+                          label={"Event Code"}
+                          editable={false}
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    {/* {(selector.source_of_enquiry
+                  .toLowerCase()
+                  .trim()
+                  .replace(/ /g, "") === "digitalmarketing" ||
+                  selector.source_of_enquiry
+                    .toLowerCase()
+                    .trim()
+                    .replace(/ /g, "") === "socialnetwork") && ( */}
+                    {selector.source_of_enquiry.length !== 0 && (
+                      <View>
+                        <DropDownSelectionItem
+                          label={"Sub Source Of Enquiry*"}
+                          disabled={false}
+                          value={selector.sub_source_of_enquiry}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "SUB_SOURCE_OF_ENQUIRY",
+                              "Sub Source Of Enquiry"
+                            )
+                          }
+                        />
+                        <Text
+                          style={[
+                            GlobalStyle.underline,
+                            {
+                              backgroundColor:
+                                isSubmitPress &&
+                                selector.sub_source_of_enquiry === ""
+                                  ? "red"
+                                  : "rgba(208, 212, 214, 0.7)",
+                            },
+                          ]}
+                        ></Text>
+                      </View>
+                    )}
+                    {/* )} */}
+
+                    {selector.source_of_enquiry.toLowerCase() ===
+                      "reference" && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.rf_by_first_name}
+                          label={"Referred BY First Name"}
+                          keyboardType={"default"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerProfile({
+                                key: "RF_FIRST_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.rf_by_last_name}
+                          label={"Referred BY Last Name"}
+                          keyboardType={"default"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerProfile({
+                                key: "RF_LAST_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.rf_by_mobile}
+                          label={"Referred BY Mobile"}
+                          keyboardType={"number-pad"}
+                          maxLength={10}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerProfile({
+                                key: "RF_MOBILE",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DropDownSelectionItem
+                          label={"Referred BY Source"}
+                          value={selector.rf_by_source}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "RF_SOURCE",
+                              "Referred BY Source"
+                            )
+                          }
+                          clearOption={true}
+                          clearKey={"RF_SOURCE"}
+                          onClear={onDropDownClear}
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.rf_by_source_location}
+                          label={"Referred BY Source Location"}
+                          keyboardType={"default"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerProfile({
+                                key: "RF_SOURCE_LOCATION",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    <DateSelectItem
+                      label={"Expected Delivery Date*"}
+                      value={
+                        selector.expected_delivery_date
+                          ? moment(
+                              new Date(Number(selector.expected_delivery_date))
+                            ).format("DD/MM/YYYY")
+                          : moment().format("DD/MM/YYYY")
+                      }
+                      onPress={() =>
+                        dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                       }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_last_name}
-                      label={"Referred BY Last Name"}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "RF_LAST_NAME",
-                            text: text,
-                          })
-                        )
+
+                    <DropDownSelectionItem
+                      label={"Enquiry Category*"}
+                      disabled={true}
+                      value={
+                        selector.enquiry_category.length == 0
+                          ? "Hot"
+                          : selector.enquiry_category
                       }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_mobile}
-                      label={"Referred BY Mobile"}
-                      keyboardType={"number-pad"}
-                      maxLength={10}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({ key: "RF_MOBILE", text: text })
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "ENQUIRY_CATEGORY",
+                          "Enquiry Category"
                         )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <DropDownSelectionItem
-                      label={"Referred BY Source"}
-                      value={selector.rf_by_source}
+                      label={"Select Tag"}
+                      value={selectedTags}
+                      onPress={() => {
+                        showDropDownModelMethod("SELECT_TAG", "Select Tag");
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <DropDownSelectionItem
+                      label={"Buyer Type*"}
+                      value={selector.buyer_type}
+                      onPress={() =>
+                        showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
+                      }
+                    />
+                    <Text
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress && selector.buyer_type === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
+                    <DropDownSelectionItem
+                      label={"KMs Travelled in Month"}
+                      value={selector.kms_travelled_month}
                       onPress={() =>
                         showDropDownModelMethod(
-                          "RF_SOURCE",
-                          "Referred BY Source"
+                          "KMS_TRAVELLED",
+                          "KMs Travelled in Month"
                         )
                       }
                       clearOption={true}
-                      clearKey={"RF_SOURCE"}
+                      clearKey={"KMS_TRAVELLED"}
                       onClear={onDropDownClear}
                     />
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_source_location}
-                      label={"Referred BY Source Location"}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "RF_SOURCE_LOCATION",
-                            text: text,
-                          })
+
+                    <DropDownSelectionItem
+                      label={"Who Drives"}
+                      value={selector.who_drives}
+                      onPress={() =>
+                        showDropDownModelMethod("WHO_DRIVES", "Who Drives")
+                      }
+                      clearOption={true}
+                      clearKey={"WHO_DRIVES"}
+                      onClear={onDropDownClear}
+                    />
+
+                    <DropDownSelectionItem
+                      label={"How many members in your family?"}
+                      value={selector.members}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "MEMBERS",
+                          "How many members in your family?"
                         )
                       }
+                      clearOption={true}
+                      clearKey={"MEMBERS"}
+                      onClear={onDropDownClear}
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
 
-                <DateSelectItem
-                  label={"Expected Delivery Date*"}
-                  value={
-                    selector.expected_delivery_date
-                      ? moment(
-                          new Date(Number(selector.expected_delivery_date))
-                        ).format("DD/MM/YYYY")
-                      : moment().format("DD/MM/YYYY")
-                  }
-                  onPress={() =>
-                    dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
-                  }
-                />
+                    <DropDownSelectionItem
+                      label={"What is prime expectation from the Vehicle?"}
+                      value={selector.prime_expectation_from_car}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "PRIME_EXPECTATION_CAR",
+                          "What is prime expectation from the Vehicle?"
+                        )
+                      }
+                      clearOption={true}
+                      clearKey={"PRIME_EXPECTATION_CAR"}
+                      onClear={onDropDownClear}
+                    />
+                  </List.Accordion>
+                  <View style={styles.space}></View>
+                </>
+              ) : null}
 
-                <DropDownSelectionItem
-                  label={"Enquiry Category*"}
-                  disabled={true}
-                  value={
-                    selector.enquiry_category.length == 0
-                      ? "Hot"
-                      : selector.enquiry_category
-                  }
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "ENQUIRY_CATEGORY",
-                      "Enquiry Category"
-                    )
-                  }
-                  isDropDownIconShow={false}
-                />
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is VIP?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isVip}
-                    onPress={() => setIsVip(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    status={isVip === null ? false : !isVip}
-                    onPress={() => setIsVip(false)}
-                  />
-                </View>
-                <Text style={GlobalStyle.underline}></Text>
-                <View
-                  style={{
-                    backgroundColor: "#fff",
-                    alignContent: "flex-start",
-                    paddingTop: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      marginLeft: 12,
-                      color: Colors.GRAY,
-                    }}
-                  >
-                    {"Is HNI?*"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    // height: 65,
-                    paddingLeft: 12,
-                    backgroundColor: Colors.WHITE,
-                  }}
-                >
-                  <RadioTextItem
-                    label={"Yes"}
-                    value={"Yes"}
-                    status={isHni}
-                    onPress={() => setIsHni(true)}
-                  />
-                  <RadioTextItem
-                    label={"No"}
-                    value={"No"}
-                    status={isHni === null ? false : !isHni}
-                    onPress={() => setIsHni(false)}
-                  />
-                </View>
-                <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Buyer Type*"}
-                  value={selector.buyer_type}
-                  onPress={() =>
-                    showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
-                  }
-                />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.buyer_type === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
-                <DropDownSelectionItem
-                  label={"KMs Travelled in Month"}
-                  value={selector.kms_travelled_month}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "KMS_TRAVELLED",
-                      "KMs Travelled in Month"
-                    )
-                  }
-                  clearOption={true}
-                  clearKey={"KMS_TRAVELLED"}
-                  onClear={onDropDownClear}
-                />
-
-                <DropDownSelectionItem
-                  label={"Who Drives"}
-                  value={selector.who_drives}
-                  onPress={() =>
-                    showDropDownModelMethod("WHO_DRIVES", "Who Drives")
-                  }
-                  clearOption={true}
-                  clearKey={"WHO_DRIVES"}
-                  onClear={onDropDownClear}
-                />
-
-                <DropDownSelectionItem
-                  label={"How many members in your family?"}
-                  value={selector.members}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "MEMBERS",
-                      "How many members in your family?"
-                    )
-                  }
-                  clearOption={true}
-                  clearKey={"MEMBERS"}
-                  onClear={onDropDownClear}
-                />
-
-                <DropDownSelectionItem
-                  label={"What is prime expectation from the Vehicle?"}
-                  value={selector.prime_expectation_from_car}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "PRIME_EXPECTATION_CAR",
-                      "What is prime expectation from the Vehicle?"
-                    )
-                  }
-                  clearOption={true}
-                  clearKey={"PRIME_EXPECTATION_CAR"}
-                  onClear={onDropDownClear}
-                />
-              </List.Accordion>
-              <View style={styles.space}></View>
               {/* // 3.Communication Address */}
               <List.Accordion
                 id={"3"}
@@ -5786,7 +6027,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                        userData?.isSelfManager == "N" ||
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Fuel Type"
+                          : "Range"
                       }
                       value={selector.c_fuel_type}
                       onPress={() =>
@@ -5798,7 +6042,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                     />
                     <DropDownSelectionItem
                       label={
-                        userData.isSelfManager == "Y"
+                        userData?.orgName?.includes("BikeWo Corporation")
+                          ? "Transmission Type"
+                          : userData.isSelfManager == "Y"
                           ? "Battery Type"
                           : userData.isTracker == "Y"
                           ? "Clutch Type"
@@ -6219,7 +6465,10 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
 
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y" ? "Range" : "Fuel Type"
+                      userData?.isSelfManager == "N" ||
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Fuel Type"
+                        : "Range"
                     }
                     value={selector.r_fuel_type}
                     onPress={() =>
@@ -6231,7 +6480,9 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                   />
                   <DropDownSelectionItem
                     label={
-                      userData.isSelfManager == "Y"
+                      userData?.orgName?.includes("BikeWo Corporation")
+                        ? "Transmission Type"
+                        : userData.isSelfManager == "Y"
                         ? "Battery Type"
                         : userData.isTracker == "Y"
                         ? "Clutch Type"

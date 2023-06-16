@@ -421,6 +421,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         if (selector.change_enquiry_status === "success") {
             if (selector.change_enquiry_response) {
                 displayCreateEnquiryAlert(selector.change_enquiry_response);
+                updateRefNumber();
+                // getReferenceNumber();
             }
         }
     }, [selector.change_enquiry_status, selector.change_enquiry_response])
@@ -435,7 +437,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 {
                     text: 'OK', onPress: () => {
 
-                        updateRefNumber()
+                        // updateRefNumber()
                     }
                 }
             ],
@@ -590,11 +592,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             }
             const sourceOfEnquiryId = selector.pre_enquiry_details.dmsLeadDto.sourceOfEnquiry;
             const data = {
-                sourceId: sourceOfEnquiryId,
-                orgId: organizationId,
-                branchId: branchId
-            }
-
+              sourceId: sourceOfEnquiryId,
+              orgId: organizationId,
+              branchId: route.params?.itemData?.branchId ?? branchId,
+            };
             Promise.all([
                 dispatch(getEmployeesListApi(data))
             ]).then(async (res) => {
@@ -650,7 +651,44 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         dmsLeadDto.salesConsultant = employeeObj.name;
         dispatch(updateEmployeeApi(dmsLeadDto));
         setEmployeeSelectModel(false);
+        
     }
+
+    const getReferenceNumber = async (addressObj) => {
+        const bodyObj = {
+            branchid: Number(branchId),
+            leadstage: "ENQUIRY",
+            orgid: userData.orgId,
+            universalId: itemData.universalId
+        };
+
+        // await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+        //   method: "POST",
+        //   headers: {
+        //     Accept: "application/json",
+        //     "Content-Type": "application/json",
+        //     "auth-token": userToken,
+        //   },
+        //   body: JSON.stringify(bodyObj),
+        // })
+        await client
+            .post(URL.CUSTOMER_LEAD_REFERENCE(), bodyObj)
+            .then((response) => response.json())
+            .then((jsonObj) => {
+                // if (jsonObj.success == true) {
+                //     const dmsEntiry = jsonObj.dmsEntity;
+                //     const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
+                //     makeCreatePreEnquiry(refNumber, addressObj);
+                // } else {
+                //     showToast("Refrence number failed");
+                //     setIsSubmitEnable(true);
+                // }
+            })
+            .catch((error) => {
+                showToastRedAlert(error.message);
+                setIsSubmitEnable(true);
+            });
+    };
 
     function checkForLeadStage() {
         let name = itemData.leadStage;

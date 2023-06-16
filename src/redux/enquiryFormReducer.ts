@@ -440,6 +440,84 @@ export const getOtherPricesDropDown = createAsyncThunk(
 );
 
 
+export const postFinanaceApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postFinanaceApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_FINANCE(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const postEvalutionApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postEvalutionApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_EVALUTION(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const postOrgTags = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postOrgTags",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.POST_ORG_TAGS(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getOrgTags = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOrgTags",
+  async (orgId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS(orgId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getOrgTagsById = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getOrgTagsById",
+  async (leadId, { rejectWithValue }) => {
+    const url = URL.GET_ORG_TAGS_BY_ID(leadId);
+    const response = await client.get(url);
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getBranchList = createAsyncThunk(
+  "ADD_PRE_ENQUIRY_SLICE/getBranchList",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.DEALER_CODE_BRANCH_LIST(payload["orgId"], payload["locationId"])
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -535,6 +613,8 @@ const initialState = {
   relation: "",
   gender: "",
   salutation: "",
+  orgTagList: [],
+  orgTagListById: [],
   // Communication Address
   pincode: "",
   urban_or_rural: 0, // 1: urban, 2:
@@ -663,6 +743,11 @@ const initialState = {
   foc_accessoriesFromServer: "",
   event_list_Config: [],
   event_list_response_Config_status: "",
+  selectedLocation: "",
+  selectedOrgId: "",
+  selectedBranch: "",
+  selectedBranchId: "",
+  branchList: [],
 };
 
 const enquiryDetailsOverViewSlice = createSlice({
@@ -744,6 +829,13 @@ const enquiryDetailsOverViewSlice = createSlice({
         (state.event_list_Config = []);
       state.event_list_response_Config_status = "";
       state.otherPricesDropDown= [];
+      state.orgTagList= [];
+      state.orgTagListById = [];
+      state.selectedLocation = "";
+      state.selectedOrgId = "";
+      state.selectedBranch = "";
+      state.selectedBranchId = "";
+      state.branchList = [];
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -815,6 +907,13 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.additional_offer_2 = "";
       state.foc_accessoriesFromServer = "";
       state.otherPricesDropDown= [];
+      state.orgTagList= [];
+      state.orgTagListById = [];
+      state.selectedLocation = "";
+      state.selectedOrgId = "";
+      state.selectedBranch = "";
+      state.selectedBranchId = "";
+      state.branchList = [];
     },
     setEditable: (state, action) => {
       state.enableEdit = !state.enableEdit;
@@ -969,6 +1068,25 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_INSURENCE_COMPANY_NAME":
           state.r_insurence_company_name = value;
+          break;
+        case "LOCATION":
+          state.selectedLocation = value;
+          state.branchList = [];
+          state.selectedBranch = "";
+          state.selectedBranchId = "";
+          state.source_of_enquiry = "";
+          state.sub_source_of_enquiry = "";
+          break;
+        case "ORG_ID":
+          state.selectedOrgId = value;
+          break;
+        case "BRANCH":
+          state.selectedBranch = value;
+          state.source_of_enquiry = "";
+          state.sub_source_of_enquiry = "";
+          break;
+        case "BRANCH_ID":
+          state.selectedBranchId = value;
           break;
       }
     },
@@ -2569,7 +2687,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.event_list_Config = [];
     });
 
-
     //Get Other prices drop down data
     builder.addCase(getOtherPricesDropDown.pending, (state, action) => { });
     builder.addCase(getOtherPricesDropDown.fulfilled, (state, action) => {
@@ -2586,6 +2703,67 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     });
     builder.addCase(getOtherPricesDropDown.rejected, (state, action) => { });
+
+    //Post Organisation Tags
+    builder.addCase(postOrgTags.pending, (state, action) => {});
+    builder.addCase(postOrgTags.fulfilled, (state, action) => {});
+    builder.addCase(postOrgTags.rejected, (state, action) => {});
+    
+    //Get Organisation Tags
+    builder.addCase(getOrgTags.pending, (state, action) => { });
+    builder.addCase(getOrgTags.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tag,
+          };
+          data.push(obj);
+        }
+        state.orgTagList = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTags.rejected, (state, action) => { });
+    
+    //Get Organisation Tags By Id
+    builder.addCase(getOrgTagsById.pending, (state, action) => { });
+    builder.addCase(getOrgTagsById.fulfilled, (state, action) => {
+      if (action.payload) {
+        let data = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let obj = {
+            ...element,
+            name: element.tagName,
+          };
+          data.push(obj);
+        }
+        state.orgTagListById = Object.assign([], data);
+      }
+    });
+    builder.addCase(getOrgTagsById.rejected, (state, action) => { });
+
+    builder
+      .addCase(getBranchList.pending, (state, action) => {
+        state.branchList = [];
+      })
+      .addCase(getBranchList.fulfilled, (state, action) => {
+        let newArr = [];
+        for (let i = 0; i < action.payload.length; i++) {
+          const element = action.payload[i];
+          let newObj = {
+            ...element,
+            name: element.branchName,
+          };
+          newArr.push(newObj);
+        }
+        state.branchList = [...newArr];
+      })
+      .addCase(getBranchList.rejected, (state, action) => {
+        state.branchList = [];
+      });
   },
 });
 

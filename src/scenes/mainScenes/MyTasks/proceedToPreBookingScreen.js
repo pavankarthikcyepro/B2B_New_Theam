@@ -1,6 +1,17 @@
 
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Keyboard, KeyboardAvoidingView, Platform, Alert } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, DropDownComponant } from "../../../components";
 import { DropDownSelectionItem } from "../../../pureComponents";
@@ -57,6 +68,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const [authToken, setAuthToken] = useState("");
     const [currentLocation, setCurrentLocation] = useState(null);
 
+    const [receiptDocModel, setReceiptDocModel] = useState(false);  
     useLayoutEffect(() => {
 
         let title = "Booking Approval Task"
@@ -216,6 +228,23 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     }, [selector.enquiry_drop_response_status])
 
     const proceedToPreBookingClicked = () => {
+      if (
+        selector.enquiry_details_response.dmsLeadDto.leadStatus ===
+        "PREBOOKINGCOMPLETED"
+      ) {
+        let newInd =
+          selector.enquiry_details_response.dmsLeadDto.dmsAttachments.findIndex(
+            (obj) => {
+              return obj.documentType == "receipt" && obj.documentPath != "";
+            }
+          );
+        if (newInd < 0) {
+          setReceiptDocModel(true);
+          return;
+        } else {
+          setReceiptDocModel(false);
+        }
+      }
         setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
         if (selector.task_details_response?.taskId !== taskId) {
             return
@@ -405,6 +434,63 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         keyboardVerticalOffset={100}
       >
         <SafeAreaView style={[styles.container]}>
+          <Modal
+            animationType="fade"
+            visible={receiptDocModel}
+            onRequestClose={() => setReceiptDocModel(false)}
+            transparent={true}
+          >
+            <View style={styles.modelMainContainer}>
+              <View style={styles.modelContainer}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setReceiptDocModel(false);
+                    // setIsEdit(true);
+                  }}
+                  style={styles.TochableClose}
+                >
+                  <View style={styles.closeVIew}>
+                    <Text style={{ fontSize: 16 }}>{"X"}</Text>
+                  </View>
+                </TouchableOpacity>
+                {/* <View style={styles.closeContainer}
+             >
+              <IconButton
+                icon="close-circle"
+                color={Colors.RED}
+                style={{ margin: 0 }}
+                size={25}
+                onPress={() => {
+                  setReceiptDocModel(false);
+                  // setIsEdit(true);
+                  setShowApproveRejectBtn(true);
+                  // new conditions
+                  setIsEditButtonShow(false);
+                  setIsSubmitCancelButtonShow(true);
+                }}
+              />
+            </View> */}
+
+                <View style={styles.recDocTitleContainer}>
+                  <Text style={styles.recDocTitleText}>
+                    Please upload receipt.
+                  </Text>
+                </View>
+
+                <View style={styles.photoOptionContainer}>
+                  <TouchableOpacity
+                    style={styles.photoOptionBtn}
+                    onPress={() => {
+                      setReceiptDocModel(false);
+                    }}
+                  >
+                    <Text style={styles.photoOptionBtnText}>ok</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
           <DropDownComponant
             visible={showDropDownModel}
             headerTitle={dropDownTitle}
@@ -567,28 +653,84 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 export default ProceedToPreBookingScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    textInputStyle: {
-        height: 65,
-        width: "100%",
-    },
-    view1: {
-        marginTop: 10,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    },
-    cancelContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    cancelText: {
-        fontSize: 14,
-        fontWeight: "400",
-        color: Colors.RED
-    }
+  container: {
+    flex: 1,
+  },
+  textInputStyle: {
+    height: 65,
+    width: "100%",
+  },
+  view1: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  cancelContainer: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cancelText: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: Colors.RED,
+  },
+  modelMainContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modelContainer: {
+    width: "90%",
+    borderRadius: 10,
+    backgroundColor: Colors.WHITE,
+    padding: 15,
+    alignSelf: "center",
+  },
+  closeContainer: {
+    position: "absolute",
+    right: 0,
+    top: -35,
+  },
+  recDocTitleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  recDocTitleText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  photoOptionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    marginTop: 7,
+  },
+  chooseTitleText: {
+    marginTop: 15,
+    alignSelf: "center",
+  },
+  photoOptionBtn: {
+    borderRadius: 5,
+    backgroundColor: Colors.RED,
+    padding: 10,
+  },
+  photoOptionBtnText: {
+    color: Colors.WHITE,
+  },
+  TochableClose: { position: "absolute", right: -40, top: -40, padding: 30 },
+  closeVIew: {
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    borderColor: Colors.PINK,
+    borderWidth: 1,
+    backgroundColor: Colors.PINK,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

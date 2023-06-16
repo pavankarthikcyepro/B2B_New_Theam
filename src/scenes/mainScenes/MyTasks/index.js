@@ -32,6 +32,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { client } from "../../../networking/client";
 import { getMenuList } from "../../../redux/homeReducer";
+import { TouchableOpacity } from "react-native";
 
 const tabBarOptions = {
   activeTintColor: Colors.RED,
@@ -50,6 +51,60 @@ const tabBarOptions = {
 
 const SecondTopTab = createMaterialTopTabNavigator();
 
+const MyTabBar = ({ state, descriptors, navigation, position }) => {
+  return (
+    <View style={styles.tabView}>
+      <View style={styles.tabRow}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
+          const isFocused = state.index === index;
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
+
+          return (
+            <TouchableOpacity
+              style={[
+                styles.tabItemContainer,
+                isFocused ? { backgroundColor: Colors.PINK } : "",
+              ]}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarTestID}
+              onPress={onPress}
+            >
+              <Text
+                style={[
+                  styles.tabItemText,
+                  isFocused ? { color: Colors.WHITE } : "",
+                ]}
+              >
+                {label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+
 const SecondTopTabNavigator = ({
   todaysData = [],
   upcomingData = [],
@@ -61,6 +116,7 @@ const SecondTopTabNavigator = ({
     <SecondTopTab.Navigator
       initialRouteName={"NEW_TODAY_TOP_TAB"}
       tabBarOptions={tabBarOptions}
+      tabBar={(props) => <MyTabBar {...props} />}
     >
       <SecondTopTab.Screen
         name={"NEW_TODAY"}
@@ -84,7 +140,7 @@ const SecondTopTabNavigator = ({
         name={"NEW_RESCHEDULE"}
         component={ListComponent}
         initialParams={{ data: reScheduleData, from: "RESCHEDULE" }}
-        options={{ title: `RE-\nSCHEDULE` }}
+        options={{ title: `RE-SCHEDULE` }}
       />
       <SecondTopTab.Screen
         name={"CLOSED"}
@@ -268,7 +324,7 @@ const MyTasksScreen = ({ navigation }) => {
     //   body: JSON.stringify(payload),
     // })
     await client
-      .post(URL.GET_MY_TASKS_NEW_DATA(), payload)
+      .post(URL.GET_MY_TASKS_NEW_DATA2(), payload)
       .then((json) => json.json())
       .then((resp) => {
         setResponse(resp);
@@ -307,5 +363,31 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: 5,
     backgroundColor: Colors.LIGHT_GRAY,
+  },
+  tabView: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginTop: 15,
+  },
+  tabRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    backgroundColor: Colors.BORDER_COLOR,
+    width: "95%",
+    alignSelf: "center",
+    borderRadius: 5,
+  },
+  tabItemContainer: {
+    paddingVertical: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "23.75%",
+    borderRadius: 5,
+  },
+  tabItemText: {
+    color: Colors.BLACK,
+    fontSize: 11,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });

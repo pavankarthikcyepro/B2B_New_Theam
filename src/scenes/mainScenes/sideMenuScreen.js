@@ -60,6 +60,12 @@ import { myTaskClearState } from "../../redux/mytaskReducer";
 import Snackbar from "react-native-snackbar";
 import NetInfo from "@react-native-community/netinfo";
 import { notificationClearState } from "../../redux/notificationReducer";
+import {
+  updateAgingFrom,
+  updateAgingTo,
+  updateLocation,
+  updateSelectedDealerCode,
+} from "../../redux/myStockReducer";
 import { saveFilterPayload, updateDealerFilterData, updateFilterSelectedData } from "../../redux/targetSettingsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV2, updateFilterLevelSelectedData, updateLiveLeadObjectData, updateLiveLeadObjectDataCRM, updateDealerFilterData as updateDealerFilterDataLive, updateEmployeeDropdownData, updateEmployeeDropdownDataCRMLiVeLeads } from "../../redux/liveLeadsReducer";
 import { updateFilterSelectedData as updateFilterSelectedDataV3, updateFilterLevelSelectedData as updateFilterLevelSelectedDatav2, updateLiveLeadObjectData as updateLiveLeadObjectDatav2, updateLiveLeadObjectDataCRM as updateLiveLeadObjectDataCRMv2, updateDealerFilterData as updateDealerFilterDataLivev2, updateEmployeeDropdownLiveleadReceptionist } from "../../redux/liveLeadsReducerReceptionist";
@@ -75,25 +81,55 @@ const commonMenu = [
   "Settings",
   "Helpdesk",
   "QR Code",
+  // "My Attendance",
   "Drop Analysis",
-  "My Attendance",
+  "My Stock",
   "Download Report",
-  "Complaint Tracker",
+  // "Complaint Tracker",
+  "Knowledge Center",
+  "EMI Calculator",
 ];
+
 const salesMenu = [
   ...commonMenu,
   "Live Leads",
   "Target Planning",
-  "Event Dashboard",
-  "Geolocation",
-  "Complaint Tracker",
+  // "Event Dashboard",
 ];
+
+const bikeWoMenu = [
+  "Home",
+  "Sign Out",
+  "Settings",
+  "Helpdesk",
+  "QR Code",
+  "Drop Analysis",
+  "My Stock",
+  "Download Report",
+  "Live Leads",
+  "Target Planning",
+  "Digital Dashboard",
+];
+const bikeWoMenuForCRE_CRM = [
+  "Home",
+  "Sign Out",
+  "Settings",
+  "Helpdesk",
+  "QR Code",
+  "Drop Analysis",
+  "My Stock",
+  "Download Report",
+  "Live Leads",
+  "Target Planning",
+  // "Digital Dashboard",
+];
+
 const receptionTelCallerMenu = [
   ...commonMenu,
   "Live Leads",
   "Digital Payment",
-  "Geolocation",
 ];
+
 const CRMMenu = [
   ...commonMenu,
   "Live Leads",
@@ -102,28 +138,26 @@ const CRMMenu = [
   "Digital Payment",
   "Geolocation",
 ];
+
 const managerMenu = [
   ...commonMenu,
   "Live Leads",
-  "Event Dashboard",
+  // "Event Dashboard",
   "Digital Payment",
   "Digital Dashboard",
   "Receptionist Dashboard",
   "Target Planning",
-  "Task Transfer",
+  // "Task Transfer",
   "Geolocation",
-  "Complaint Tracker",
 ];
-const mdMenu = [
+
+const tlMenu = [
   ...commonMenu,
   "Live Leads",
-  "Event Dashboard",
-  "Digital Payment",
-  "Digital Dashboard",
-  "Receptionist Dashboard",
+  // "Event Dashboard",
   "Target Planning",
-  "Task Transfer",
-  "Complaint Tracker",
+  // "Task Transfer",
+  "Geolocation",
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -279,23 +313,36 @@ const SideMenuScreen = ({ navigation }) => {
     // setUserData(jsonObj)
     getProfilePic(jsonObj);
     let newFilterData = [];
-    if (
-      jsonObj.hrmsRole == "Reception" ||
+    if (jsonObj.orgName?.includes("BikeWo Corporation")) {
+      if (jsonObj.hrmsRole == "CRE" || jsonObj.hrmsRole == "CRM" || jsonObj.hrmsRole == "Dealer Head"){
+        newFilterData = selector.tableData.filter((item) =>
+          bikeWoMenuForCRE_CRM.includes(item.title)
+        );
+      }else{
+        newFilterData = selector.tableData.filter((item) =>
+          bikeWoMenu.includes(item.title)
+        );
+      }
       
+    } else if (
+      jsonObj.hrmsRole == "Reception" ||
       jsonObj.hrmsRole == "CRE" ||
       jsonObj.hrmsRole == "Tele Caller"
     ) {
       newFilterData = selector.tableData.filter((item) =>
         receptionTelCallerMenu.includes(item.title)
       );
-    }
-    else if (jsonObj.hrmsRole == "CRM"){
+    } else if (jsonObj.hrmsRole == "TL") {
+      newFilterData = selector.tableData.filter((item) =>
+        tlMenu.includes(item.title)
+      );
+    } else if (jsonObj.hrmsRole == "CRM") {
       newFilterData = selector.tableData.filter((item) =>
         CRMMenu.includes(item.title)
       );
-    }
-    else if (
+    } else if (
       jsonObj?.hrmsRole?.toLowerCase().includes("dse") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("dealer head") ||
       jsonObj?.hrmsRole?.toLowerCase().includes("sales consultant")
     ) {
       newFilterData = selector.tableData.filter((item) =>
@@ -304,12 +351,13 @@ const SideMenuScreen = ({ navigation }) => {
     } else if (
       jsonObj?.hrmsRole == "MD" ||
       jsonObj?.hrmsRole == "CEO" ||
-      jsonObj?.hrmsRole == "General Manager"
+      jsonObj?.hrmsRole == "CXO" ||
+      jsonObj?.hrmsRole == "COO" ||
+      jsonObj?.hrmsRole == "VP" ||
+      jsonObj?.hrmsRole == "General Manager" ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("manager") ||
+      jsonObj?.hrmsRole?.toLowerCase().includes("business head")
     ) {
-      newFilterData = selector.tableData.filter((item) =>
-        mdMenu.includes(item.title)
-      );
-    } else if (jsonObj?.hrmsRole?.toLowerCase().includes("manager")) {
       newFilterData = selector.tableData.filter((item) =>
         managerMenu.includes(item.title)
       );
@@ -383,6 +431,9 @@ const SideMenuScreen = ({ navigation }) => {
       case 111:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
         break;
+      case 124:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.knowledgeCenter);
+        break;
       case 113:
         // navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis, { emp_id: "", fromScreen: "" });
         // added empty params to reset & manage APi call in dropanalysis screen
@@ -404,37 +455,42 @@ const SideMenuScreen = ({ navigation }) => {
           fromDate: "",
           toDate: "",
         });
-        dispatch(updateFilterSelectedDataV2({}))
+        dispatch(updateFilterSelectedDataV2({}));
         dispatch(updateFilterLevelSelectedData([]));
         dispatch(updateLiveLeadObjectData({}));
         dispatch(updateDealerFilterData({}));
-        dispatch(updateLiveLeadObjectDataCRM({}))
-        dispatch(updateDealerFilterDataLive({}))
-        dispatch(updateEmployeeDropdownData({}))
-        dispatch(updateEmployeeDropdownDataHome({}))
+        dispatch(updateLiveLeadObjectDataCRM({}));
+        dispatch(updateDealerFilterDataLive({}));
+        dispatch(updateEmployeeDropdownData({}));
+        dispatch(updateEmployeeDropdownDataHome({}));
         dispatch(updateEmployeeDropdownDataCRMLiVeLeads({}));
         break;
       case 170:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist, {
-          fromScreen: "",
-          selectedID: "",
-          fromDate: "",
-          toDate: "",
-        });
-        dispatch(updateFilterSelectedDataV3({}))
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.liveLeadsReceptionist,
+          {
+            fromScreen: "",
+            selectedID: "",
+            fromDate: "",
+            toDate: "",
+          }
+        );
+        dispatch(updateFilterSelectedDataV3({}));
         dispatch(updateFilterLevelSelectedDatav2([]));
         dispatch(updateLiveLeadObjectDatav2({}));
         // dispatch(updateDealerFilterData({}));
-        dispatch(updateLiveLeadObjectDataCRMv2({}))
-        dispatch(updateDealerFilterDataLivev2({}))
-        dispatch(updateEmployeeDropdownLiveleadReceptionist({}))
+        dispatch(updateLiveLeadObjectDataCRMv2({}));
+        dispatch(updateDealerFilterDataLivev2({}));
+        dispatch(updateEmployeeDropdownLiveleadReceptionist({}));
         break;
       case 171:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.receptionistDashboard);
-        dispatch(updateDealerFilterData_Recep({}))
-        dispatch(updateFilterLevelSelectedDataReceptionist({}))
-        dispatch(updateFilterSelectedDataReceptionist({}))
-        dispatch(updateReceptionistObjectData({}))
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.receptionistDashboard
+        );
+        dispatch(updateDealerFilterData_Recep({}));
+        dispatch(updateFilterLevelSelectedDataReceptionist({}));
+        dispatch(updateFilterSelectedDataReceptionist({}));
+        dispatch(updateReceptionistObjectData({}));
         dispatch(updateCRMRecepDashboard_employees_drop_down_data({}));
         break;
       case 115:
@@ -454,11 +510,18 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateDealerFilterDataHome({}));
         dispatch(updateLiveLeadObjectDataHOme({}));
         dispatch(updateFilterSelectedDataHome({}));
-        dispatch(updateCrm_employees_drop_down_data({}))
-     
+        dispatch(updateCrm_employees_drop_down_data({}));
+
         break;
       case 119:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.eventDashboard);
+        break;
+      case 120:
+         dispatch(updateLocation({}));
+         dispatch(updateSelectedDealerCode({}));
+         dispatch(updateAgingFrom(null));
+         dispatch(updateAgingTo(null));
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.myStock,{refresh:true});
         break;
       case 121:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.reportDownload);
@@ -471,6 +534,11 @@ const SideMenuScreen = ({ navigation }) => {
         dispatch(updateDealerFilterDataComplaintBAsic({}));
         dispatch(updateFilterSelectedData_complaintTracker({}));
         dispatch(updateLiveLeadObjectDataComplaintTracker({}));
+        break;
+      case 125:
+        navigation.navigate(
+          AppNavigator.DrawerStackIdentifiers.emiCalculator
+        );
         break;
       case 112:
         signOutClicked();
@@ -492,8 +560,6 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, "false");
     AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
     AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-    await BackgroundService.stop();
-
     navigation.closeDrawer();
     //realm.close();
     setBranchId("");
@@ -510,6 +576,10 @@ const SideMenuScreen = ({ navigation }) => {
     dispatch(updateFilterLevelSelectedData({}));
     dispatch(updateLiveLeadObjectData({}));
     dispatch(updateDealerFilterData({}));
+    dispatch(updateLocation({}));
+    dispatch(updateSelectedDealerCode({}));
+    dispatch(updateAgingFrom(null));
+    dispatch(updateAgingTo(null));
     dispatch(updatereceptionistDataObjectData({}))
     dispatch(updateDealerFilterData_Recep({}))
     dispatch(updateFilterLevelSelectedDataReceptionist({}))
@@ -533,8 +603,8 @@ const SideMenuScreen = ({ navigation }) => {
       })
     );
     dispatch(updateEmpDropDown_Local({}))
-
     signOut();
+    await BackgroundService.stop();
   };
 
   const selectImage = () => {
@@ -902,6 +972,9 @@ const SideMenuScreen = ({ navigation }) => {
         data={newTableData}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
+          if (userData.isSelfManager === "N" && item.title === "My Stock") {
+            return;
+          }
           if (userData.isAttendance === "N" && item.title === "My Attendance")
             return;
           if (userData.isGeolocation === "N" && item.title === "Geolocation")

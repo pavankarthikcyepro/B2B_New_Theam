@@ -450,7 +450,8 @@ const PreEnquiryScreen = ({ route, navigation }) => {
             "status": "PREENQUIRY",
             "offset": offSet,
           "limit": route?.params?.moduleType === "live-leads"? 50000 : 50,
-          "dashboardType": dashboardType
+          "dashboardType": dashboardType,
+          "isSelf": route?.params?.moduleType === "live-leads" ? route?.params?.self ? route?.params?.self : false : false
         }
         return payload;
     }
@@ -594,10 +595,11 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               leadStatus={item.leadStatus}
               needStatus={"YES"}
               onItemPress={() => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.task360,
-                  { universalId: item.universalId, itemData: item }
-                );
+                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, {
+                  universalId: item.universalId,
+                  itemData: item,
+                  mobileNo: item.phone,
+                });
               }}
               onDocPress={() => {
                 navigation.navigate(
@@ -653,7 +655,7 @@ const PreEnquiryScreen = ({ route, navigation }) => {
 
         <View style={styles.viewmain}>
           <View style={styles.view1}>
-            <View style={{ width: "80%" }}>
+            <View style={{ width: "90%" }}>
               <DateRangeComp
                 fromDate={selectedFromDate}
                 toDate={selectedToDate}
@@ -662,15 +664,15 @@ const PreEnquiryScreen = ({ route, navigation }) => {
               />
             </View>
             <Pressable onPress={() => setSortAndFilterVisible(true)}>
-              <View style={styles.filterView}>
-                <Text style={styles.text1}>{"Filter"}</Text>
+              {/* <View style={styles.filterView}> */}
+                {/* <Text style={styles.text1}>{"Filter"}</Text> */}
                 <IconButton
                   icon={"filter-outline"}
-                  size={16}
+                  size={23}
                   color={Colors.RED}
                   style={{ margin: 0, padding: 0 }}
                 />
-              </View>
+              {/* </View> */}
             </Pressable>
           </View>
           {/* // filter */}

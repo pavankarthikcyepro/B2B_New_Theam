@@ -114,6 +114,7 @@ import EventDashBoardScreen from "../scenes/mainScenes/EventDashboard";
 import EventSourceModel from "../scenes/mainScenes/EventDashboard/EventSourceModel";
 import LeaderShipFilter from "../scenes/mainScenes/Home/TabScreens/leaderShipFilter";
 import Orientation from "react-native-orientation-locker";
+import { MyStockMainTopTabNavigator, MyStockTopTabNavigator } from "./myStockNavigator";
 import { detectIsOrientationLock, isReceptionist } from "../utils/helperFunctions";
 import TaskthreeSixtyhistoryFilter from "../scenes/mainScenes/EMS/components/TaskthreeSixtyhistoryFilter";
 import DownloadReportScreen from "../scenes/mainScenes/Attendance/DownloadReport";
@@ -138,12 +139,20 @@ import ReceptionistDashboardScreen from "../scenes/mainScenes/ReceptionistDashbo
 import ReceptionistDashbordSourceModel from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashbordSourceModel";
 import ReceptionistDashboardFilter from "../scenes/mainScenes/ReceptionistDashboard/ReceptionistDashboardFilter";
 import { updateCrm_employees_drop_down_data, updateDealerFilterData, updateDealerFilterData_Recep, updateEmpDropDown_Local, updateFilterIds, updateFilterLevelSelectedDataReceptionist, updateFilterSelectedData, updateFilterSelectedDataReceptionist, updateLiveLeadObjectData, updateReceptionistObjectData } from "../redux/homeReducer";
+import HomeVisitHistory from "../scenes/mainScenes/MyTasks/homeVisitHistory";
 import leaderShipFilterNewLogic from "../scenes/mainScenes/Home/TabScreens/leaderShipFilterNewLogic";
 import ComplaintTrackerMaster from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerMaster";
 import ComplaintTrackerBasicFilter from "../scenes/mainScenes/ComplaintTracker/ComplaintTrackerBasicFilter";
 import CRMFilterscreenComplaintTracker from "../scenes/mainScenes/ComplaintTracker/CRMFilterscreenComplaintTracker";
+import KnowledgeCenterScreen from "../scenes/mainScenes/KnowledgeCenter";
+import ListScreen from "../scenes/mainScenes/KnowledgeCenter/listScreen";
 import WebCallScreen from "../scenes/mainScenes/MyTasks/webCallScreen";
 import RecordedCalls from "../scenes/mainScenes/EMS/RecordedCalls";
+import TripListScreen from "../scenes/mainScenes/Map/ListScreen";
+import GeolocationMapScreen from "../scenes/mainScenes/Map/myGeolocationMap";
+import EmployeeLocationsScreen from "../scenes/mainScenes/Geolocation/EmployeeLocations";
+import StatsTripListScreen from "../scenes/mainScenes/Map/StatsTripListScreen";
+import EMICalculator from "../scenes/mainScenes/EMICalculator/EMICalculator";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -408,9 +417,14 @@ export const DrawerStackIdentifiers = {
   attendance: "Attendance",
   geolocation: "Geolocation",
   digitalDashboard: "DIGITAL_DASHBOARD",
+  reportDownload: "REPORT_DOWNLOAD",
+  complaintTracker: "COMPLAINT_TRACKER",
+  myStock: "MY_STOCK",
   reportDownload:"REPORT_DOWNLOAD",
   complaintTracker:"COMPLAINT_TRACKER",
   receptionistDashboard: "RECEPTIONIST_DASHBOARD",
+  knowledgeCenter: "KNOWLEDGE_CENTER",
+  emiCalculator: "EMI_CALCULATOR",
 };
 
 export const TabStackIdentifiers = {
@@ -430,9 +444,12 @@ export const HomeStackIdentifiers = {
   sourceModel: "SOURCE_MODEL",
   home: "HOME_SCREEN",
   location: "MAP_TRACKER",
+  tripStats: "TRIP_LIST",
+  map: "MAP",
+  mapDetail: "MAP_DETAIL",
   receptionistFilter: "REECEPTION_FILTER",
   laderfilterScreen: "LEADER_FLITER_SCREEN",
-  crmFilter:"CRM_FILTER",
+  crmFilter: "CRM_FILTER",
   laderfilterScreen_new: "LEADER_FLITER_SCREEN_NEW",
 };
 
@@ -460,6 +477,7 @@ export const EmsStackIdentifiers = {
   testDriveHistory: "TEST_HISTORY",
   recordedCalls: "RECORDED_CALLS",
   task360HistoryFilter: "TASK_360_HISTORY_FILTER",
+  homeVisitHistry: "HOME_VISIT_HISTORY",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -486,6 +504,7 @@ export const MyTasksStackIdentifiers = {
   myTaskFilterScreen: "MYTASK_FILTER",
   webCallScreen: "WEB_CALL",
   testDriveHistory: "TEST_HISTORY",
+  homevisitHistory :"HOME_VISIT_HISTORY"
 };
 
 export const PriceStackIdentifiers = {
@@ -588,8 +607,29 @@ const HomeStackNavigator = ({ navigation }) => {
         options={{ title: "Filters" }}
       />
       <MainDrawerNavigator.Screen
+        name={HomeStackIdentifiers.mapDetail}
+        component={EmployeeLocationsScreen}
+        options={{
+          title: "Geolocation",
+        }}
+      />
+      <MainDrawerNavigator.Screen
         name={HomeStackIdentifiers.location}
-        component={MapScreen}
+        component={TripListScreen}
+        options={{
+          title: "Trip List",
+        }}
+      />
+      <MainDrawerNavigator.Screen
+        name={HomeStackIdentifiers.tripStats}
+        component={StatsTripListScreen}
+        options={{
+          title: "Trip List",
+        }}
+      />
+      <MainDrawerNavigator.Screen
+        name={HomeStackIdentifiers.map}
+        component={GeolocationMapScreen}
         options={{
           title: "Map",
         }}
@@ -757,6 +797,14 @@ const EmsStackNavigator = ({ navigation }) => {
           // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
         }}
       />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.homeVisitHistry}
+        component={HomeVisitHistory}
+        options={{
+          title: "Home Visit History",
+          // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        }}
+      />
     </EmsStack.Navigator>
   );
 };
@@ -773,7 +821,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.mytasks}
         component={MyTasksScreen}
         options={{
-          title: "My Tasks",
+          title: "Task Dashboard",
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -832,6 +880,14 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={TestDriveHistory}
         options={{
           title: "Test Drive History",
+          // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
+        }}
+      />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.homevisitHistory}
+        component={HomeVisitHistory}
+        options={{
+          title: "Home Visit History",
           // headerRight: () => <TestDriveHistoryIcon navigation={navigation} />,
         }}
       />
@@ -1622,6 +1678,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         }
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.myStock}
+        component={MyStockMainTopTabNavigator}
+      />
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.geolocation}
         component={MyGeolocationTopTabNavigatorOne}
       />
@@ -1653,7 +1713,6 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.dropAnalysis}
         component={DropAnalysisStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.upcomingDeliveries}
         component={UpcomingDeliveriestStackNavigator}
@@ -1666,12 +1725,10 @@ const MainStackDrawerNavigator = ({ navigation }) => {
         name={DrawerStackIdentifiers.taskManagement}
         component={TaskManagementStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}
       />
-
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.evtbrlReport}
         component={TabNavigator}
@@ -1688,6 +1745,15 @@ const MainStackDrawerNavigator = ({ navigation }) => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.reportDownload}
         component={DownloadReportNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.emiCalculator}
+        component={EmiCalculatorNavigator}
+        options={{ unmountOnBlur: true }}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.knowledgeCenter}
+        component={KnowledgeCenterStackNavigator}
       />
       {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
@@ -1718,6 +1784,25 @@ const DownloadReportNavigator = ({ navigation }) => {
         }}
       />
     </DownloadReportStack.Navigator>
+  );
+};
+const EmiCalculatorStack = createStackNavigator();
+
+const EmiCalculatorNavigator = ({ navigation }) => {
+  return (
+    <EmiCalculatorStack.Navigator
+      initialRouteName={"EMI_CALCULATOR"}
+      screenOptions={screeOptionStyle}
+    >
+      <EmiCalculatorStack.Screen
+        name={"EMI_CALCULATOR"}
+        component={EMICalculator}
+        options={{
+          title: "EMI Calculator",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </EmiCalculatorStack.Navigator>
   );
 };
 
@@ -1769,13 +1854,7 @@ const EventDashboardNavigator = ({ navigation }) => {
     </EventDashboardStack.Navigator>
   );
 };
-// const MainStackNavigator = createStackNavigator();
 
-// const MainStackNavigator = ({ navigation }) => {
-//     return (
-
-//     )
-// }
 const MainStack = createStackNavigator();
 
 const MainStackNavigator = ({ navigation }) => {
@@ -1806,6 +1885,32 @@ const MainStackNavigator = ({ navigation }) => {
         }}
       />
     </MainStack.Navigator>
+  );
+};
+
+const KnowledgeCenterStack = createStackNavigator();
+
+const KnowledgeCenterStackNavigator = ({ navigation }) => {
+  return (
+    <KnowledgeCenterStack.Navigator
+      initialRouteName={"MAIN_SCREEN"}
+      screenOptions={screeOptionStyle}
+    >
+      <KnowledgeCenterStack.Screen
+        name={"MAIN_SCREEN"}
+        component={KnowledgeCenterScreen}
+        options={{
+          title: "Knowledge Center",
+          headerShown: true,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <KnowledgeCenterStack.Screen
+        name={"LIST"}
+        component={ListScreen}
+        options={{ title: "List" }}
+      />
+    </KnowledgeCenterStack.Navigator>
   );
 };
 

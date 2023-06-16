@@ -11,6 +11,7 @@ import { DropDownSelectionItemV3 } from '../../../pureComponents';
 import { IconButton, Searchbar } from "react-native-paper";
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import _ from 'lodash';
+import { useIsFocused } from '@react-navigation/native';
 
 const dropdownDataV2 = [
   { name: 'Top 5', id: 1 },
@@ -30,7 +31,7 @@ export default function branchRankingScreen(props) {
   const [top5RankList, setTop5RankList] = useState([]);
   const [topRankList, setTopRankList] = useState([]);
   const [bottom5RankList, setBottom5RankList] = useState([]);
-
+  const isFocused = useIsFocused();
   const [showTop5View, setShowTop5View] = useState(false);
   const [showBottom5View, setShowBottom5View] = useState(false);
   const [reversebottomRankList, setReverseBottomRankList] = useState([]);
@@ -77,7 +78,7 @@ export default function branchRankingScreen(props) {
 
   useEffect(() => {
     getUserData();
-  }, [])
+  }, [isFocused])
   
   const getUserData = async () => {
     try {
@@ -165,8 +166,8 @@ export default function branchRankingScreen(props) {
 
 
   const MyTaskFilter = ({ navigation }) => {
-    const screen = useSelector((state) => state.mytaskReducer.currentScreen);
-    if (screen === "TODAY") return <React.Fragment></React.Fragment>;
+    // const screen = useSelector((state) => state.mytaskReducer.currentScreen);
+    // if (screen === "TODAY") return <React.Fragment></React.Fragment>;
     return (
       <IconButton
         icon="filter-outline"
@@ -221,7 +222,7 @@ export default function branchRankingScreen(props) {
           "startDate": startOfMonth,
             //not for payload, just to add in params
             "orgId":jsonObj.orgId,
-          "branchId": deladerID ? deladerID[0] : branName,
+          "branchIds": deladerID ? deladerID : branName,
           "designationNames": selectedid ? selectedid : []
 
         };
@@ -276,14 +277,14 @@ export default function branchRankingScreen(props) {
       // getBranchRankListFromServerWithoutFilter();
       setTimeout(() => {
         setBranchList(selector.branchrank_list);
-      }, 1000);
+      }, 500);
     }, []);
 
     useEffect(() => {
       if (selector.branchrank_list && selector.branchrank_list.length > 0) {
         setTimeout(() => {
           setBranchList(selector.branchrank_list);
-        }, 2000);
+        }, 500);
       }
 
       if (selector.branchrank_list && selector.branchrank_list.length > 0) {
@@ -294,12 +295,12 @@ export default function branchRankingScreen(props) {
         setTimeout(() => {
           setTopRankList(top);
           setTop5RankList(top.slice(0, 5));
-        }, 1000);
+        }, 500);
 
         setTimeout(() => {
           setBottom5RankList([...bottom].reverse().slice(0, 5));
           setReverseBottomRankList([...bottom].reverse());
-        }, 1000);
+        }, 500);
       }
     }, [selector.branchrank_list]);
 
@@ -701,7 +702,6 @@ export default function branchRankingScreen(props) {
 
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
-
         <DropDownComponant
           visible={showDropDownModel}
           multiple={false}
@@ -712,15 +712,13 @@ export default function branchRankingScreen(props) {
             let newdata = { name: item.name, id: item.id };
             switch (dropDownKey) {
               case "TOP_DATA":
-               
-                setselectedRankTop(newdata)
-                setDataOnSelection("TOP",newdata)
+                setselectedRankTop(newdata);
+                setDataOnSelection("TOP", newdata);
                 // setselectedRank(newdata);
                 break;
               case "LOW_DATA":
-              
-                setselectedRankLow(newdata)
-                setDataOnSelection("LOW",newdata)
+                setselectedRankLow(newdata);
+                setDataOnSelection("LOW", newdata);
                 // setselectedRank(newdata);
                 break;
 
@@ -732,13 +730,12 @@ export default function branchRankingScreen(props) {
         />
 
         <View style={styles.rankBox}>
-          
-          {!selector.isLoading ? null : (
-                <LoaderComponent
-                  visible={selector.isLoading}
-                  onRequestClose={() => {}}
-                />
-              )}
+          {!selector.isDealerLoading ? null : (
+            <LoaderComponent
+              visible={selector.isDealerLoading}
+              onRequestClose={() => {}}
+            />
+          )}
 
           <View>
             <View style={styles.titleContainer}>
@@ -755,12 +752,7 @@ export default function branchRankingScreen(props) {
                   // disabled={!isInputsEditable()}
                   // label={"Top 5 Ranks"}
                   value={selectedRankTop.name}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "TOP_DATA",
-                      ""
-                    )
-                  }
+                  onPress={() => showDropDownModelMethod("TOP_DATA", "")}
                 />
               </View>
             </View>
@@ -784,7 +776,7 @@ export default function branchRankingScreen(props) {
             </View>
           </View>
 
-              {/* {renderTableTopRow()}
+          {/* {renderTableTopRow()}
               <FlatList
                 data={branchList}
                 nestedScrollEnabled={true}
@@ -821,12 +813,7 @@ export default function branchRankingScreen(props) {
                   // disabled={!isInputsEditable()}
                   // label={"Top 5 Ranks"}
                   value={selectedRankLow.name}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "LOW_DATA",
-                      ""
-                    )
-                  }
+                  onPress={() => showDropDownModelMethod("LOW_DATA", "")}
                 />
               </View>
             </View>
@@ -849,7 +836,6 @@ export default function branchRankingScreen(props) {
               {renderViewAll("bottom")}
             </View>
           </View>
-           
         </View>
       </ScrollView>
     );

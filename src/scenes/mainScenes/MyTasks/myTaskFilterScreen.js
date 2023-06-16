@@ -29,6 +29,7 @@ import { Colors } from "../../../styles";
 import { showToast } from "../../../utils/toast";
 import _ from "lodash";
 import { DropDown } from "../TargetSettingsScreen/TabScreen/dropDown";
+import { setNotificationManager } from "../../../redux/notificationReducer";
 const dateFormat = "YYYY-MM-DD";
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -868,6 +869,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
 
   const submitBtnClick = async (initialData = null) => {
     if (isSalesConsultant && !isFilter) {
+      dispatch(setNotificationManager(true));
       navigation.navigate(MyTasksStackIdentifiers.mytasks);
       return;
     }
@@ -933,6 +935,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
         if (!isSalesConsultant) {
           getDashboadTableDataFromServer(allIds, "LEVEL", !!initialData);
         } else {
+          dispatch(setNotificationManager(true));
           navigation.navigate(MyTasksStackIdentifiers.mytasks);
         }
       });
@@ -943,6 +946,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
 
   const submitBtnForEmployeeData = async () => {
     if (!isFilter) {
+      dispatch(setNotificationManager(true));
       navigation.navigate(MyTasksStackIdentifiers.mytasks);
       return;
     }
@@ -985,6 +989,7 @@ const MyTaskFilterScreen = ({ navigation }) => {
       dispatch(updateFilterSelectedData(employeeDropDownDataLocal));
       Promise.all([dispatch(updateFilterIds(filterPayoad))])
         .then(() => {
+          dispatch(setNotificationManager(true));
           navigation.navigate(MyTasksStackIdentifiers.mytasks);
           setIsEmployeeLoading(false);
         })

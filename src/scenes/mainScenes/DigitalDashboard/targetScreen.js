@@ -163,6 +163,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
     hrmsRole: "",
     orgId: 0,
     branchs: [],
+    isSelfManager: "N",
+    orgName: "",
   });
   const scrollViewRef = useRef();
   const paramsMetadata = [
@@ -429,6 +431,8 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
         hrmsRole: jsonObj.hrmsRole,
         orgId: jsonObj.orgId,
         branchs: jsonObj.branchs,
+        isSelfManager: jsonObj.isSelfManager,
+        orgName: jsonObj.orgName,
       });
       if (true) {
         // getReceptionManagerTeam(jsonObj);
@@ -1289,7 +1293,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={Colors.CORAL}
                           receptionManager={true}
                           navigation={navigation}
@@ -1523,7 +1529,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
@@ -1747,7 +1755,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -2065,7 +2075,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         color={"#C62159"}
                         receptionManager={true}
                         navigation={navigation}
@@ -2307,7 +2319,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#C62159"}
                           receptionManager={true}
                           navigation={navigation}
@@ -2568,7 +2582,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         color={Colors.CORAL}
                         receptionManager={true}
                         navigation={navigation}
@@ -2811,7 +2827,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         color={"#2C97DE"}
                         receptionManager={true}
                         navigation={navigation}
@@ -3093,7 +3111,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         // color={"#C62159"}
                         color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                         receptionManager={true}
@@ -3317,7 +3337,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                       <RenderLevel1NameViewCRM
                         level={0}
                         item={item}
-                        branchName={item.branch}
+                        branchName={checkIsSelfManager()
+                          ? ""
+                          : item.branch}
                         // color={"#C62159"}
                         color={item.roleName.toLowerCase() === "field dse" ? "#2C97DE" : "#FF4040"}
                         receptionManager={true}
@@ -3533,7 +3555,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         <RenderLevel1NameViewCRM
                           level={0}
                           item={item}
-                          branchName={item.branch}
+                          branchName={checkIsSelfManager()
+                            ? ""
+                            : item.branch}
                           color={"#2C97DE"}
                           receptionManager={true}
                           navigation={navigation}
@@ -3726,9 +3750,26 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
       default:
         break;
     }
-
   }
 
+  // function navigateToEMS(params) {
+  //   navigation.navigate(AppNavigator.TabStackIdentifiers.ems, {
+  //     screen: "EMS",
+  //     params: {
+  //       screen: "LEADS",
+  //     },
+  //   });
+  // }
+
+  const checkIsSelfManager = () => {
+    if (
+      userData?.orgName?.includes("BikeWo Corporation") &&
+      userData.isSelfManager == "Y"
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   return (
     <React.Fragment>
@@ -3737,6 +3778,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
           {!receptionistRole.includes(userData.hrmsRole) ? (
             selector.isTeam ? (
               <View>
+                <View style={styles.titleDashboardContainer}>
+                  <Text style={styles.dashboardText}>Dashboard</Text>
+                </View>
                 <View style={styles.view1}>
                   <View style={styles.view2}>
                     <View style={styles.percentageToggleView}></View>
@@ -3768,7 +3812,7 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                         {/* <View
                           style={{ width: 100, height: 20, marginRight: 5 }}
                         ></View> */}
-                          {/* <View
+                        {/* <View
                             style={{ width: 100, height: 20, marginRight: 5, alignItems: "center" }}
                           >
                             <Text style={{
@@ -3782,28 +3826,33 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                             }}>Employee</Text>
 
                           </View> */}
+                        <View
+                          style={{
+                            width: 100,
+                            height: 20,
+                            marginRight: 5,
+                            alignItems: "flex-start",
+                            marginLeft: 10,
+                          }}
+                        >
                           <View
-                            style={{ width: 100, height: 20, marginRight: 5, alignItems: "flex-start", marginLeft: 10 }}
+                            style={[
+                              styles.itemBox,
+                              {
+                                width: 55,
+                              },
+                            ]}
                           >
-                            <View
-                              style={[
-                                styles.itemBox,
-                                {
-                                  width: 55,
-                                },
-                              ]}
-
+                            <Text
+                              style={{
+                                color: Colors.RED,
+                                fontSize: 12,
+                              }}
                             >
-                              <Text
-                                style={{
-                                  color: Colors.RED,
-                                  fontSize: 12,
-                                }}
-                              >
-                                Employee
-                              </Text>
-                            </View>
+                              Employee
+                            </Text>
                           </View>
+                        </View>
                         <View style={styles.view4}>
                           {toggleParamsMetaData.map((param) => {
                             return (
@@ -3892,7 +3941,9 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                                       <RenderLevel1NameView
                                         level={0}
                                         item={item}
-                                        branchName={item.branch}
+                                        branchName={checkIsSelfManager()
+                                          ? ""
+                                          : item.branch}
                                         color={"#C62159"}
                                         receptionManager={true}
                                         navigation={navigation}
@@ -3945,13 +3996,15 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           })}
                       </ScrollView>
                     </View>
-                      {/* {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null} */}
-                      {!selector.saveCRMfilterObj.selectedempId ?
+                    {/* {CRM_filterParameters.length == 0 ? renderCRMtreeFirstLevel() : null} */}
+                    {!selector.saveCRMfilterObj.selectedempId
+                      ? renderCRMTree()
+                      : selector.saveCRMfilterObj?.selectedDesignation &&
+                        selector.saveCRMfilterObj?.selectedDesignation[0] ===
+                          "CRM"
+                      ? renderCRMTreeFilter()
+                      : renderCRETreeFilter()}
 
-
-                        renderCRMTree()
-                        : selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM" ? renderCRMTreeFilter() : renderCRETreeFilter()}
-                       
                     {/* Grand Total Section */}
                     {totalOfTeam && (
                       <View
@@ -3960,68 +4013,81 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                           marginTop: 20,
                         }}
                       >
-                          <View style={{ alignItems: "flex-end" }}>
-                            <SourceModelView
-                              onClick={() => {
-
-                                if (selector.saveCRMfilterObj.selectedempId) {
-                                  if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                                    navigation.navigate(
-                                      "RECEP_SOURCE_MODEL_DEGITAL",
-                                      {
-                                        empId: selector.saveCRMfilterObj.selectedempId[0],
-                                        loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-                                        // type: "TEAM",
-                                        moduleType: "DigitalDashboard",
-                                        headerTitle: "Source/Model",
-                                        orgId: userData.orgId,
-                                        role: "CRM",
-                                        branchList: userData.branchs.map(
-                                          (a) => a.branchId
-                                        ),
-                                        // empList: selector.saveCRMfilterObj.selectedempId,
-                                        self: true
-                                      }
-                                    );
-                                  } else {
-                                    navigation.navigate(
-                                      "RECEP_SOURCE_MODEL_DEGITAL",
-                                      {
-                                        empId: selector.saveCRMfilterObj.selectedempId[0],
-                                        loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-                                        // type: "TEAM",
-                                        moduleType: "DigitalDashboard",
-                                        headerTitle: "Source/Model",
-                                        orgId: userData.orgId,
-                                        role: selector.saveCRMfilterObj?.selectedDesignation[0],
-                                        branchList: userData.branchs.map(
-                                          (a) => a.branchId
-                                        ),
-                                        // empList: selector.saveCRMfilterObj.selectedempId,
-                                        self: true
-                                      }
-                                    );
-                                    // handleSourceModalNavigation(item, "", [], "CRM", true)
-                                  }
+                        <View style={{ alignItems: "flex-end" }}>
+                          <SourceModelView
+                            onClick={() => {
+                              if (selector.saveCRMfilterObj.selectedempId) {
+                                if (
+                                  selector.saveCRMfilterObj
+                                    ?.selectedDesignation &&
+                                  selector.saveCRMfilterObj
+                                    ?.selectedDesignation[0] === "CRM"
+                                ) {
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_DEGITAL",
+                                    {
+                                      empId:
+                                        selector.saveCRMfilterObj
+                                          .selectedempId[0],
+                                      loggedInEmpId:
+                                        selector.saveCRMfilterObj
+                                          .selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "DigitalDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: "CRM",
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true,
+                                    }
+                                  );
                                 } else {
-                                  navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
+                                  navigation.navigate(
+                                    "RECEP_SOURCE_MODEL_DEGITAL",
+                                    {
+                                      empId:
+                                        selector.saveCRMfilterObj
+                                          .selectedempId[0],
+                                      loggedInEmpId:
+                                        selector.saveCRMfilterObj
+                                          .selectedempId[0],
+                                      // type: "TEAM",
+                                      moduleType: "DigitalDashboard",
+                                      headerTitle: "Source/Model",
+                                      orgId: userData.orgId,
+                                      role: selector.saveCRMfilterObj
+                                        ?.selectedDesignation[0],
+                                      branchList: userData.branchs.map(
+                                        (a) => a.branchId
+                                      ),
+                                      // empList: selector.saveCRMfilterObj.selectedempId,
+                                      self: true,
+                                    }
+                                  );
+                                  // handleSourceModalNavigation(item, "", [], "CRM", true)
+                                }
+                              } else {
+                                navigation.navigate(
+                                  "RECEP_SOURCE_MODEL_DEGITAL",
+                                  {
                                     empId: userData.empId,
                                     headerTitle: "Source/Model",
                                     loggedInEmpId: userData.empId,
                                     orgId: userData.orgId,
                                     role: "xrole",
                                     moduleType: "DigitalDashboard",
-                                  });
-                                }
-
-                              }}
-                              style={{
-                                transform: [
-                                  { translateX: translation },
-                                ],
-                              }}
-                            />
-                          </View>
+                                  }
+                                );
+                              }
+                            }}
+                            style={{
+                              transform: [{ translateX: translation }],
+                            }}
+                          />
+                        </View>
                         <View
                           style={{
                             flexDirection: "row",
@@ -4148,81 +4214,109 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
                   <>
                     {true && !selector.isTeam ? (
                       <>
-                      {true && <View style={{ paddingHorizontal: '8%' }}>
-                        <View style={styles.newView}>
-                          <Text style={{
-                            fontSize: 12,
-                            fontWeight: "600",
-                            color: Colors.BLUE,
-                            marginLeft: 8,
-                          }}>Leads Allocated</Text>
-                          <SourceModelView
-                            style={{ alignSelf: "flex-end" }}
-                            onClick={() => {
-                              if (selector.saveCRMfilterObj.selectedempId) {
-                                if (selector.saveCRMfilterObj?.selectedDesignation && selector.saveCRMfilterObj?.selectedDesignation[0] === "CRM") {
-                                  navigation.navigate(
-                                    "RECEP_SOURCE_MODEL_DEGITAL",
-                                    {
-                                      empId: selector.saveCRMfilterObj.selectedempId[0],
-                                      loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-                                      // type: "TEAM",
-                                      moduleType: "DigitalDashboard",
-                                      headerTitle: "Source/Model",
-                                      orgId: userData.orgId,
-                                      role: "CRM",
-                                      branchList: userData.branchs.map(
-                                        (a) => a.branchId
-                                      ),
-                                      // empList: selector.saveCRMfilterObj.selectedempId,
-                                      self: true
+                        {true && (
+                          <View style={{ paddingHorizontal: "8%" }}>
+                            <View style={styles.titleDashboardContainer}>
+                              <Text style={styles.dashboardText}>
+                                Dashboard
+                              </Text>
+                            </View>
+                            <View style={styles.newView}>
+                              <Text
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: "600",
+                                  color: Colors.BLUE,
+                                  marginLeft: 8,
+                                }}
+                              >
+                                Leads Allocated
+                              </Text>
+                              <SourceModelView
+                                style={{ alignSelf: "flex-end" }}
+                                onClick={() => {
+                                  if (selector.saveCRMfilterObj.selectedempId) {
+                                    if (
+                                      selector.saveCRMfilterObj
+                                        ?.selectedDesignation &&
+                                      selector.saveCRMfilterObj
+                                        ?.selectedDesignation[0] === "CRM"
+                                    ) {
+                                      navigation.navigate(
+                                        "RECEP_SOURCE_MODEL_DEGITAL",
+                                        {
+                                          empId:
+                                            selector.saveCRMfilterObj
+                                              .selectedempId[0],
+                                          loggedInEmpId:
+                                            selector.saveCRMfilterObj
+                                              .selectedempId[0],
+                                          // type: "TEAM",
+                                          moduleType: "DigitalDashboard",
+                                          headerTitle: "Source/Model",
+                                          orgId: userData.orgId,
+                                          role: "CRM",
+                                          branchList: userData.branchs.map(
+                                            (a) => a.branchId
+                                          ),
+                                          // empList: selector.saveCRMfilterObj.selectedempId,
+                                          self: true,
+                                        }
+                                      );
+                                    } else {
+                                      navigation.navigate(
+                                        "RECEP_SOURCE_MODEL_DEGITAL",
+                                        {
+                                          empId:
+                                            selector.saveCRMfilterObj
+                                              .selectedempId[0],
+                                          loggedInEmpId:
+                                            selector.saveCRMfilterObj
+                                              .selectedempId[0],
+                                          // type: "TEAM",
+                                          moduleType: "DigitalDashboard",
+                                          headerTitle: "Source/Model",
+                                          orgId: userData.orgId,
+                                          role: selector.saveCRMfilterObj
+                                            ?.selectedDesignation[0],
+                                          branchList: userData.branchs.map(
+                                            (a) => a.branchId
+                                          ),
+                                          // empList: selector.saveCRMfilterObj.selectedempId,
+                                          self: true,
+                                        }
+                                      );
+                                      // handleSourceModalNavigation(item, "", [], "CRM", true)
                                     }
-                                  );
-                                } else {
-                                  navigation.navigate(
-                                    "RECEP_SOURCE_MODEL_DEGITAL",
-                                    {
-                                      empId: selector.saveCRMfilterObj.selectedempId[0],
-                                      loggedInEmpId: selector.saveCRMfilterObj.selectedempId[0],
-                                      // type: "TEAM",
-                                      moduleType: "DigitalDashboard",
-                                      headerTitle: "Source/Model",
-                                      orgId: userData.orgId,
-                                      role: selector.saveCRMfilterObj?.selectedDesignation[0],
-                                      branchList: userData.branchs.map(
-                                        (a) => a.branchId
-                                      ),
-                                      // empList: selector.saveCRMfilterObj.selectedempId,
-                                      self: true
-                                    }
-                                  );
-                                  // handleSourceModalNavigation(item, "", [], "CRM", true)
-                                }
-                              } else {
-                                navigation.navigate("RECEP_SOURCE_MODEL_DEGITAL", {
-                                  empId: userData.empId,
-                                  headerTitle: "Source/Model",
-                                  loggedInEmpId: userData.empId,
-                                  orgId: userData.orgId,
-                                  role: "xrole",
-                                  moduleType: "DigitalDashboard",
-                                });
+                                  } else {
+                                    navigation.navigate(
+                                      "RECEP_SOURCE_MODEL_DEGITAL",
+                                      {
+                                        empId: userData.empId,
+                                        headerTitle: "Source/Model",
+                                        loggedInEmpId: userData.empId,
+                                        orgId: userData.orgId,
+                                        role: "xrole",
+                                        moduleType: "DigitalDashboard",
+                                      }
+                                    );
+                                  }
+                                }}
+                              />
+                            </View>
+                            {/* todo */}
+                            <FlatList
+                              data={data}
+                              bounces={false}
+                              renderItem={({ item, index }) =>
+                                renderItem(item, index)
                               }
-                            
-                            }}
-                          />
-                        </View>
-                        {/* todo */}
-                        <FlatList
-                          data={data}
-                          bounces={false}
-                          renderItem={({ item, index }) => renderItem(item, index)}
-                          contentContainerStyle={{ width: '100%' }}
-                        />
-                      </View>
-                      }
+                              contentContainerStyle={{ width: "100%" }}
+                            />
+                          </View>
+                        )}
 
-                      {/* digital dashboard old code  */}
+                        {/* digital dashboard old code  */}
                         {/* <View style={styles.view14}>
                           <SourceModelView
                             style={{ alignSelf: "flex-end" }}
@@ -4695,10 +4789,13 @@ const DigitalDashBoardTargetScreen = ({ route }) => {
               )}
         </View>
       ) : (
-        <LoaderComponent
-          visible={selector.isLoading}
-          onRequestClose={() => {}}
-        />
+        <View style={{ flex: 1 }}>
+          <AnimLoaderComp visible={selector.isLoading} />
+        </View>
+        // <LoaderComponent
+        //   visible={selector.isLoading}
+        //   onRequestClose={() => {}}
+        // />
       )}
     </React.Fragment>
   );
@@ -4712,7 +4809,7 @@ export const SourceModelView = ({ style = null, onClick }) => {
       <Pressable onPress={onClick}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: "600",
             color: Colors.BLUE,
             marginLeft: 8,
@@ -5185,12 +5282,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.BLACK,
     fontWeight: "600",
-    textDecorationLine: 'underline'
+    textDecorationLine: "underline",
   },
   newView: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 10,
     marginRight: 10,
-  }
+  },
+  titleDashboardContainer: {
+    paddingVertical: 5,
+    backgroundColor: Colors.LIGHT_GRAY,
+    marginBottom: 10,
+    paddingHorizontal: 45,
+    borderRadius: 50,
+    alignSelf: "center",
+  },
+  dashboardText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.PINK,
+    textDecorationLine: "underline",
+  },
 });

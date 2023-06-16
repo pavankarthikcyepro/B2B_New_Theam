@@ -130,7 +130,73 @@ export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi"
 
 
 
-export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
+export const saveReScheduleRemark = createAsyncThunk("TEST_DRIVE_SLICE/saveReScheduleRemark", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.SAVE_RECHEDULE_REMARKS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getReScheduleRemark = createAsyncThunk("TEST_DRIVE_SLICE/getReScheduleRemark", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_RECHEDULE_REMARKS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTask = createAsyncThunk("TEST_DRIVE_SLICE/getDetailsWrokflowTask", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]), );
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTaskReTestDrive = createAsyncThunk("TEST_DRIVE_SLICE/getDetailsWrokflowTaskReTestDrive", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+// call on click of retestdrive added to get entry of same task in today and closed 
+export const getDetailsWrokflowTaskForFormData = createAsyncThunk("TEST_DRIVE_SLICE/getDetailsWrokflowTaskForFormData", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_WORKFLOW_TASKS(payload["entityId"], payload["taskName"]),);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const postDetailsWorkFlowTask = createAsyncThunk("TEST_DRIVE_SLICE/postDetailsWorkFlowTask", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.POST_WORKFLOW_TASKS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+export const postReOpenTestDrive = createAsyncThunk("TEST_DRIVE_SLICE/postReOpenTestDrive", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.SAVETESTDRIVE(), payload);
   const json = await response.json()
@@ -141,7 +207,29 @@ export const postReOpenTestDrive = createAsyncThunk("HOME_VISIT_SLICE/postReOpen
 })
 
 
+// for calling on all btns 
+export const postReOpenTestDriveV2 = createAsyncThunk("TEST_DRIVE_SLICE/postReOpenTestDriveV2", async (payload, { rejectWithValue }) => {
 
+  const response = await client.post(URL.SAVETESTDRIVE(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
+export const PutUpdateListTestDriveHistory = createAsyncThunk("TEST_DRIVE_SLICE/PutUpdateListTestDriveHistory", async (payload,{ rejectWithValue }) => {
+
+  const response = await client.put(URL.UPDATELIST_TESTDRIVE_HISTORY(payload["recordid"]), payload["body"]);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+// get test drive audit history counts 
 export const getTestDriveHistoryCount = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryCount", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_TEST_HISTORY_COUNT(universalId));
@@ -153,9 +241,22 @@ export const getTestDriveHistoryCount = createAsyncThunk("TEST_DRIVE_SLICE/getTe
 })
 
 
+// listing API for history details 
 export const getTestDriveHistoryDetails = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveHistoryDetails", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_TEST_HISTORY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+// call for close and reschdules in retestdrvie cases
+export const putWorkFlowHistory = createAsyncThunk("TEST_DRIVE_SLICE/putWorkFlowHistory", async (payload, { rejectWithValue }) => {
+ 
+  
+  const response = await client.put(URL.GET_PUT_WORKFLOW_HISTORY(payload["recordid"]), payload["body"]);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -192,6 +293,15 @@ const testDriveSlice = createSlice({
     test_drive_history_count:0,
      test_drive_history_details_statu:"",
     test_drive_history_details:"",
+    test_drrive_history_updatelist:"",
+    isReasonUpdate: true,
+    reason: "",
+    save_test_drive_rescheduleRemarks_status: "",
+    get_workFlow_task_details:[],
+    post_workFlow_task_details: "",
+    put_workflow_task_history :"",
+    get_workFlow_task_details_Form_data: [],
+    get_workFlow_task_details_reTestDrive:[]
   },
   reducers: {
     clearState: (state, action) => {
@@ -218,6 +328,13 @@ const testDriveSlice = createSlice({
       state.test_drive_history_count=0;
      state.test_drive_history_details_statu= "";
         state.test_drive_history_details= "";
+      state.test_drrive_history_updatelist="";
+      state.reason = "";
+      state.get_workFlow_task_details = [];
+      state.post_workFlow_task_details = "";
+      state.put_workflow_task_history = "";
+      state.get_workFlow_task_details_Form_data = [];
+      state.get_workFlow_task_details_reTestDrive = []
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -241,6 +358,15 @@ const testDriveSlice = createSlice({
       state.otp_session_key = "";
       state.validate_otp_response_status = "";
     },
+    updateSelectedScheduledata: (state, action: PayloadAction<CustomerDetailModel>)=>{
+      const { key, text } = action.payload;
+      switch (key) {
+        case "REASON":
+          state.reason = text;
+          break;
+        
+      }
+    }
   },
   extraReducers: (builder) => {
     // Get Task Details Api
@@ -479,6 +605,28 @@ const testDriveSlice = createSlice({
       state.reopen_test_drive_res_status = "failed";
     })
 
+    // for calling on all btn test drive
+    builder.addCase(postReOpenTestDriveV2.pending, (state, action) => {
+      state.isLoading = true;
+      // state.reopen_test_drive_res_status = "pending";
+    })
+    builder.addCase(postReOpenTestDriveV2.fulfilled, (state, action) => {
+      if (action.payload) {
+        // state.reopen_test_drive_res_status = "successs";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(postReOpenTestDriveV2.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      // state.reopen_test_drive_res_status = "failed";
+    })
 
     // reopen test drive history count 
     builder.addCase(getTestDriveHistoryCount.pending, (state, action) => {
@@ -537,12 +685,176 @@ const testDriveSlice = createSlice({
       state.test_drive_history_details_statu = "failed";
       state.test_drive_history_details = "";
     })
+
+
+    
+    builder.addCase(PutUpdateListTestDriveHistory.pending, (state, action) => {
+      state.isLoading = true;
+
+    
+      state.test_drrive_history_updatelist = "";
+    })
+    builder.addCase(PutUpdateListTestDriveHistory.fulfilled, (state, action) => {
+      if (action.payload) {
+
+        state.test_drrive_history_updatelist = action.payload;
+      }
+     
+      state.isLoading = false;
+    })
+    builder.addCase(PutUpdateListTestDriveHistory.rejected, (state, action) => {
+    
+      state.isLoading = false;
+     
+      state.test_drrive_history_updatelist = "";
+    })
+
+
+    // saveReScheduleRemark test drive
+    builder.addCase(saveReScheduleRemark.pending, (state, action) => {
+      state.isLoading = true;
+      state.save_test_drive_rescheduleRemarks_status = "pending";
+    })
+    builder.addCase(saveReScheduleRemark.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.save_test_drive_rescheduleRemarks_status = "successs";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(saveReScheduleRemark.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.save_test_drive_rescheduleRemarks_status = "failed";
+    })
+
+
+    
+    builder.addCase(getDetailsWrokflowTask.pending, (state, action) => {
+      state.isLoading = true;
+      state.get_workFlow_task_details = [];
+    })
+    builder.addCase(getDetailsWrokflowTask.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.get_workFlow_task_details =action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getDetailsWrokflowTask.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.get_workFlow_task_details = [];
+    })
+
+    builder.addCase(getDetailsWrokflowTaskReTestDrive.pending, (state, action) => {
+      state.isLoading = true;
+      state.get_workFlow_task_details_reTestDrive = [];
+    })
+    builder.addCase(getDetailsWrokflowTaskReTestDrive.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.get_workFlow_task_details_reTestDrive = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(getDetailsWrokflowTaskReTestDrive.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.get_workFlow_task_details_reTestDrive = [];
+    })
+
+
+    builder.addCase(getDetailsWrokflowTaskForFormData.pending, (state, action) => {
+      state.isLoading = true;
+      state.get_workFlow_task_details_Form_data = [];
+    })
+    builder.addCase(getDetailsWrokflowTaskForFormData.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.get_workFlow_task_details_Form_data = action.payload;
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+
+    builder.addCase(getDetailsWrokflowTaskForFormData.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.get_workFlow_task_details_Form_data = [];
+    })
+
+
+
+    builder.addCase(postDetailsWorkFlowTask.pending, (state, action) => {
+      state.isLoading = true;
+      state.post_workFlow_task_details = "pending";
+    })
+    builder.addCase(postDetailsWorkFlowTask.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.post_workFlow_task_details = "success";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(postDetailsWorkFlowTask.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.post_workFlow_task_details = "failed";
+    })
+
+
+    builder.addCase(putWorkFlowHistory.pending, (state, action) => {
+      state.isLoading = true;
+      state.put_workflow_task_history = "pending";
+    })
+    builder.addCase(putWorkFlowHistory.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.put_workflow_task_history = "success";
+      }
+      // else if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      //   state.reopen_test_drive_res_status = "failed";
+      // }
+      state.isLoading = false;
+    })
+    builder.addCase(putWorkFlowHistory.rejected, (state, action) => {
+      // if (action.payload["reason"]) {
+      //   showToastRedAlert(action.payload["reason"]);
+      // }
+      state.isLoading = false;
+      state.put_workflow_task_history = "failed";
+    })
   }
 });
 
 export const {
   clearState,
   updateSelectedDate,
-  clearOTP,
+  clearOTP, updateSelectedScheduledata
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;

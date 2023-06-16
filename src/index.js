@@ -1,50 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { AuthNavigator, AppNavigator } from "./navigations";
 import { AuthStackNavigator } from "./navigations/authNavigator";
-import {
-  MainStackDrawerNavigator,
-  MainStackNavigator,
-} from "./navigations/appNavigator";
+import { MainStackNavigator } from "./navigations/appNavigator";
 import { Provider } from "react-redux";
 import reduxStore from "./redux/reduxStore";
 import * as AsyncStore from "./asyncStore";
 import { AuthContext } from "./utils/authContext";
-import BackgroundService from "react-native-background-actions";
 import {
-  createDateTime,
+  checkLocationPermission,
   distanceFilterValue,
-  getDistanceBetweenTwoPoints,
-  MarkAbsent,
-  officeRadius,
-  options,
-  sendAlertLocalNotification,
-  sendLocalNotification,
-  sleep,
-  veryIntensiveTask,
+  getDistanceBetweenTwoPointsLatLong,
+  GlobalSpeed,
 } from "./service";
-import Geolocation from "react-native-geolocation-service";
 import { client } from "./networking/client";
-import {
-  getDetailsByempIdAndorgId,
-  locationUpdate,
-  saveLocation,
-} from "./networking/endpoints";
+import URL, { locationUpdate, saveLocation } from "./networking/endpoints";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import { Platform, AppState } from "react-native";
+import { Platform } from "react-native";
 import PushNotification from "react-native-push-notification";
 import { enableScreens } from "react-native-screens";
 import { showToastRedAlert } from "./utils/toast";
 import Orientation from "react-native-orientation-locker";
+import { registerCrashListener } from "./CrashListener";
 import TrackPlayer from "react-native-track-player";
+import moment from "moment";
+import Geolocation from "@react-native-community/geolocation";
+import GetLocation from "react-native-get-location";
+import haversine from "haversine";
+import BackgroundActions from "react-native-background-actions";
+import { Colors } from "./styles";
+import RNLocation from "react-native-location";
+import BackgroundServices from "./backgroundServices";
+
+let locationSubscription = null;
 
 enableScreens();
-
+const dateFormat = "YYYY-MM-DD";
+const currentDateMoment = moment().format(dateFormat);
 const AppScreen = () => {
+  useEffect(() => {
+    registerCrashListener();
+  }, []);
+
   useEffect(async () => {
     Orientation.lockToPortrait();
-    await TrackPlayer.setupPlayer();
+    try {
+      await TrackPlayer.setupPlayer({ autoHandleInterruptions: true });
+    } catch (error) {}
   }, []);
+
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -88,184 +91,228 @@ const AppScreen = () => {
     setSubscriptionId(null);
   };
 
-  const initialData = async () => {
-    try {
-      await AsyncStore.storeJsonData(
-        AsyncStore.Keys.TODAYSDATE,
-        new Date().getDate()
+  const calculateDistance = (coord1, coord2) => {
+    return haversine(coord1, coord2, { unit: "km" });
+  };
+
+  // function to calculate the total distance traveled
+  const getTotalDistance = (coordinates) => {
+    let totalDistance = 0;
+    for (let i = 1; i < coordinates.length; i++) {
+      const coord1 = coordinates[i - 1];
+      const coord2 = coordinates[i];
+      const distance = calculateDistance(coord1, coord2);
+      totalDistance += distance;
+    }
+    return totalDistance;
+  };
+
+  const totalTimeTravel = (start, end) => {
+    const timestamp1 = new Date(start).getTime();
+    const timestamp2 = new Date(end).getTime();
+    const diffInMs = Math.abs(timestamp2 - timestamp1);
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    return diffInSeconds;
+  };
+
+  const checkTheDate = async (employeeData, lastPosition) => {
+    const { longitude, latitude, speed } = lastPosition;
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const trackingResponse = await client.get(
+        URL.GET_MAP_COORDINATES_BY_ID(
+          jsonObj.empId,
+          jsonObj.orgId,
+          currentDateMoment
+        )
       );
-      await AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-      // getCoordinates();
-    } catch (error) {}
-  };
-
-  const objectsEqual = (o1, o2) =>
-    Object.keys(o1).length === Object.keys(o2).length &&
-    Object.keys(o1).every((p) => o1[p] === o2[p]);
-
-  const getCoordinates = async () => {
-    try {
-      if (true) {
-        // setInterval(() => {
-        const watchID = Geolocation.getCurrentPosition(
-          async (lastPosition) => {
-            let speed =
-              lastPosition?.coords?.speed <= -1
-                ? 0
-                : lastPosition?.coords?.speed;
-            const employeeData = await AsyncStore.getData(
-              AsyncStore.Keys.LOGIN_EMPLOYEE
-            );
-            if (employeeData) {
-              const jsonObj = JSON.parse(employeeData);
-              const trackingResponse = await client.get(
-                getDetailsByempIdAndorgId + `/${jsonObj.empId}/${jsonObj.orgId}`
-              );
-              const trackingJson = await trackingResponse.json();
-
-              var newLatLng = {
-                latitude: lastPosition.coords.latitude,
-                longitude: lastPosition.coords.longitude,
-              };
-              if (trackingJson.length > 0) {
-                let parsedValue =
-                  trackingJson.length > 0
-                    ? JSON.parse(trackingJson[trackingJson.length - 1].location)
-                    : [];
-
-                let x = trackingJson;
-                let y = x[x.length - 1].location;
-                let z = JSON.parse(y);
-                let lastlocation = z[z.length - 1];
-
-                let dist = getDistanceBetweenTwoPoints(
-                  lastlocation.latitude,
-                  lastlocation.longitude,
-                  lastPosition?.coords?.latitude,
-                  lastPosition?.coords?.longitude
-                );
-                let distance = dist * 1000;
-                let newArray = [...parsedValue, ...[newLatLng]];
-                let date = new Date(
-                  trackingJson[trackingJson.length - 1]?.createdtimestamp
-                );
-                let condition =
-                  new Date(date).getDate() == new Date().getDate();
-                if (trackingJson.length > 0 && condition) {
-                  let tempPayload = {
-                    id: trackingJson[trackingJson.length - 1]?.id,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp:
-                      trackingJson[trackingJson.length - 1]?.createdtimestamp,
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify(newArray),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-                  if (speed <= 10 && distance > distanceFilterValue) {
-                    const response = await client.put(
-                      locationUpdate +
-                        `/${trackingJson[trackingJson.length - 1].id}`,
-                      tempPayload
-                    );
-                    const json = await response.json();
-                  }
-                } else {
-                  let payload = {
-                    id: 0,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp: new Date().getTime(),
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify([newLatLng]),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-                  if (speed <= 10) {
-                    const response = await client.post(saveLocation, payload);
-                    const json = await response.json();
-                  }
-                }
-              } else {
-                let payload = {
-                  id: 0,
-                  orgId: jsonObj?.orgId,
-                  empId: jsonObj?.empId,
-                  branchId: jsonObj?.branchId,
-                  currentTimestamp: new Date().getTime(),
-                  updateTimestamp: new Date().getTime(),
-                  purpose: "",
-                  location: JSON.stringify([newLatLng]),
-                  kmph: speed.toString(),
-                  speed: speed.toString(),
-                };
-                if (speed <= 10) {
-                  const response = await client.post(saveLocation, payload);
-                  const json = await response.json();
-                }
-              }
-            }
-          },
-          (error) => {},
-          {
-            enableHighAccuracy: true,
-            //  distanceFilter: distanceFilterValue,
-            //  timeout: 2000,
-            //  maximumAge: 0,
-            //  interval: 5000,
-            //  fastestInterval: 2000,
-            accuracy: {
-              android: "high",
-            },
-            // useSignificantChanges: true,
-          }
+      const trackingJson = await trackingResponse.json();
+      const currentDate = new Date();
+      const hasObjectWithCurrentDate1 = trackingJson.filter((obj) => {
+        const selectedDate = new Date(obj.createdtimestamp);
+        return (
+          selectedDate.getDate() === currentDate.getDate() &&
+          selectedDate.getMonth() === currentDate.getMonth() &&
+          selectedDate.getFullYear() === currentDate.getFullYear()
         );
-        setSubscriptionId(watchID);
-        // }, 5000);
+      });
+      const hasObjectWithCurrentDate =
+        hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
+      if (hasObjectWithCurrentDate) {
+        // Have Today's Data
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "false" // Trip Not yet Ended
+        ) {
+          const tempArray = JSON.parse(
+            JSON.parse(hasObjectWithCurrentDate.location)
+          );
+          const finalArray = tempArray.concat([{ longitude, latitude }]);
+          const distanceCheck = tempArray[tempArray.length - 1];
+          let distance = getDistanceBetweenTwoPointsLatLong(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            latitude,
+            longitude
+          );
+          const totalDistance = getTotalDistance(finalArray);
+          const totalTime = totalTimeTravel(
+            hasObjectWithCurrentDate.createdtimestamp,
+            new Date()
+          );
+          if (distance >= distanceFilterValue) {
+            const payload = {
+              id: hasObjectWithCurrentDate.id,
+              orgId: jsonObj?.orgId,
+              empId: jsonObj?.empId,
+              branchId: jsonObj?.branchId,
+              currentTimestamp: new Date(
+                hasObjectWithCurrentDate.createdtimestamp
+              ).getTime(),
+              updateTimestamp: new Date().getTime(),
+              purpose: "",
+              location: JSON.stringify(finalArray),
+              kmph: speed.toString(),
+              speed: speed.toString(),
+              isStart: "true",
+              isEnd: "false",
+              travelDistance: totalDistance.toString(),
+              travelTime: totalTime,
+            };
+            const response = await client.put(
+              locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
+              payload
+            );
+            const json = await response.json();
+          }
+        }
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "true" // Trip Ended
+        ) {
+          const payload = {
+            id: 0,
+            orgId: jsonObj?.orgId,
+            empId: jsonObj?.empId,
+            branchId: jsonObj?.branchId,
+            currentTimestamp: new Date().getTime(),
+            updateTimestamp: new Date().getTime(),
+            purpose: "",
+            location: JSON.stringify([{ longitude, latitude }]),
+            kmph: speed.toString(),
+            speed: speed.toString(),
+            isStart: "true",
+            isEnd: "false",
+            travelDistance: "0",
+            travelTime: null,
+          };
+          const response = await client.post(saveLocation, payload);
+          const json = await response.json();
+        }
+      } else {
+        const payload = {
+          id: 0,
+          orgId: jsonObj?.orgId,
+          empId: jsonObj?.empId,
+          branchId: jsonObj?.branchId,
+          currentTimestamp: new Date().getTime(),
+          updateTimestamp: new Date().getTime(),
+          purpose: "",
+          location: JSON.stringify([{ longitude, latitude }]),
+          kmph: speed.toString(),
+          speed: speed.toString(),
+          isStart: "true",
+          isEnd: "false",
+          travelDistance: "0",
+          travelTime: null,
+        };
+        const response = await client.post(saveLocation, payload);
+        const json = await response.json();
       }
-    } catch (error) {
-      // showToastRedAlert(error);
     }
   };
 
-  const veryIntensiveTask = async (taskDataArguments) => {
-    // Example of an infinite loop task
-    const { delay } = taskDataArguments;
-    await new Promise(async (resolve) => {
-      for (let i = 0; BackgroundService.isRunning(); i++) {
-        try {
-                      getCoordinates();
-
-          // let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-          // if (todaysDate) {
-          //   getCoordinates();
-          // } else {
-          //   initialData();
-          // }
-        } catch (error) {}
-        await sleep(delay);
+  const checkTheEndDate = async (employeeData, lastPosition) => {
+    const { longitude, latitude, speed } = lastPosition;
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const trackingResponse = await client.get(
+        URL.GET_MAP_COORDINATES_BY_ID(
+          jsonObj.empId,
+          jsonObj.orgId,
+          currentDateMoment
+        )
+      );
+      const trackingJson = await trackingResponse.json();
+      const currentDate = new Date();
+      const hasObjectWithCurrentDate1 = trackingJson.filter((obj) => {
+        const selectedDate = new Date(obj.createdtimestamp);
+        return (
+          selectedDate.getDate() === currentDate.getDate() &&
+          selectedDate.getMonth() === currentDate.getMonth() &&
+          selectedDate.getFullYear() === currentDate.getFullYear()
+        );
+      });
+      const hasObjectWithCurrentDate =
+        hasObjectWithCurrentDate1[hasObjectWithCurrentDate1.length - 1];
+      if (hasObjectWithCurrentDate) {
+        if (
+          hasObjectWithCurrentDate.isStart === "true" &&
+          hasObjectWithCurrentDate.isEnd === "false"
+        ) {
+          const tempArray = JSON.parse(
+            JSON.parse(hasObjectWithCurrentDate.location)
+          );
+          const finalArray = tempArray.concat([{ longitude, latitude }]);
+          const distanceCheck = tempArray[tempArray.length - 1];
+          let distance = getDistanceBetweenTwoPointsLatLong(
+            distanceCheck.latitude,
+            distanceCheck.longitude,
+            latitude,
+            longitude
+          );
+          const totalDistance = getTotalDistance(finalArray);
+          const totalTime = totalTimeTravel(
+            hasObjectWithCurrentDate.createdtimestamp,
+            new Date()
+          );
+          if (distance >= distanceFilterValue) {
+            const payload = {
+              id: hasObjectWithCurrentDate.id,
+              orgId: jsonObj?.orgId,
+              empId: jsonObj?.empId,
+              branchId: jsonObj?.branchId,
+              currentTimestamp: new Date(
+                hasObjectWithCurrentDate.createdtimestamp
+              ).getTime(),
+              updateTimestamp: new Date().getTime(),
+              purpose: "",
+              location: JSON.stringify(finalArray),
+              kmph: speed.toString(),
+              speed: speed.toString(),
+              isStart: "true",
+              isEnd: "true",
+              travelDistance: totalDistance.toString(),
+              travelTime: totalTime,
+            };
+            const response = await client.put(
+              locationUpdate + `/${trackingJson[trackingJson.length - 1].id}`,
+              payload
+            );
+            const json = await response.json();
+          }
+        }
+      } else {
       }
-    });
-  };
-
-  const startTracking = async () => {
-    if (Platform.OS === "ios") {
-      Geolocation.requestAuthorization("always");
     }
-    await Geolocation.setRNConfiguration({
-      skipPermissionRequests: false,
-      authorizationLevel: "always" | "whenInUse" | "auto",
-      locationProvider: "playServices" | "android" | "auto",
-    });
-    await BackgroundService.start(veryIntensiveTask, options);
   };
 
   useEffect(async () => {
+    let todaysDate = await AsyncStore.getData(AsyncStore.Keys.COORDINATES);
+    if (todaysDate) {
+    } else {
+      await AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, "");
+    }
     if (Platform.OS === "ios") {
       PushNotificationIOS.checkPermissions((item) => {
         if (!item.alert) {
@@ -274,26 +321,11 @@ const AppScreen = () => {
       });
     }
     const checkUserToken = async () => {
-      await BackgroundService.stop();
       let userToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
       dispatch({ type: "RESTORE_TOKEN", token: userToken });
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        if (jsonObj.isGeolocation === "Y") {
-          if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
-            BackgroundService.stop();
-          } else {
-            if (userToken) {
-              startTracking();
-            } else {
-              await BackgroundService.stop();
-            }
-          }
-        }
-      }
     };
 
     checkUserToken();
@@ -315,6 +347,59 @@ const AppScreen = () => {
     }),
     []
   );
+
+  useEffect(async () => {
+    if (state.userToken) {
+      BackgroundServices.start();
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        if (jsonObj.isGeolocation === "Y") {
+          if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
+            BackgroundServices.stop();
+          }
+        } else {
+          BackgroundServices.stop();
+        }
+      }
+      RNLocation.requestPermission({
+        ios: "always",
+        android: {
+          detail: "fine",
+        },
+      }).then((granted) => {
+        if (Platform.OS === "android") {
+          checkLocationPermission();
+        }
+        if (granted) {
+          locationSubscription = RNLocation.subscribeToLocationUpdates(
+            async (locations) => {
+              if (locations[0].speed >= GlobalSpeed) {
+                checkTheDate(employeeData, locations[0]);
+              }
+              if (locations[0].speed < GlobalSpeed) {
+                checkTheEndDate(employeeData, locations[0]);
+              }
+            }
+          );
+        }
+      });
+
+      return () => {
+        locationSubscription && locationSubscription();
+        BackgroundServices.stop();
+      };
+    }
+  }, [state.userToken]);
+
+  useEffect(() => {
+    return () => {
+      locationSubscription && locationSubscription();
+      BackgroundServices.stop();
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={authContext}>

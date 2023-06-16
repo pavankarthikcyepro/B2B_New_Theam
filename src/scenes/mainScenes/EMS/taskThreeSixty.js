@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  SectionList,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Linking,
-} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getWorkFlow,
-  getEnquiryDetails,
-  getLeadAge,
-  getFollowUPCount,
-  getTestDriveHistoryCount,
-  clearListData,
-} from "../../../redux/taskThreeSixtyReducer";
-import { Colors, GlobalStyle } from "../../../styles";
+import { getWorkFlow, getEnquiryDetails, getLeadAge, getFollowUPCount, getTestDriveHistoryCount, clearListData } from "../../../redux/taskThreeSixtyReducer";
+import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
@@ -28,6 +10,7 @@ import * as AsyncStore from "../../../asyncStore";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 import AnimLoaderComp from "../../../components/AnimLoaderComp";
 import { IconButton } from "react-native-paper";
+import { callNumber } from "../../../utils/helperFunctions";
 
 const mytasksIdentifires = {
   testdrive: "TEST_DRIVE",
@@ -56,11 +39,13 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   const [userRole, setUserRole] = useState("");
   const [isApprovar, setIsApprovar] = useState(false);
   const [dataForFOllowUpCount, setdataForFOllowUpCount] = useState([]);
+  const [userData, setUserData] = useState({ orgName: "" });
 
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData({ orgName: jsonObj.orgName });
       setUserRole(jsonObj.hrmsRole);
       if (jsonObj?.hrmsRole === "Test drive approver") {
         setIsApprovar(true);
@@ -70,14 +55,14 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    return () => {
+     return () => {
       setPlannedTasks([]);
       dispatch(clearListData());
     };
   }, []);
-
+  
   useEffect(() => {
-    navigation.addListener("focus", () => {
+    navigation.addListener('focus', () => {
       dispatch(getLeadAge(universalId));
       dispatch(getFollowUPCount(universalId));
       dispatch(getTestDriveHistoryCount(universalId));
@@ -108,21 +93,27 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
       const data = [];
       if (selector.wrokflow_response.length > 0) {
         selector.wrokflow_response.forEach((element) => {
-          if (element.taskStatus === "CLOSED") {
-            closedData.push(element);
-          } else if (
-            (element.taskStatus !== "CLOSED" &&
-              selector.enquiry_leadDto_response.leadStage ===
-                element.taskCategory.taskCategory) ||
-            (element.taskCategory.taskCategory === "APPROVAL" &&
-              element.taskStatus === "ASSIGNED") ||
-            (element.taskStatus &&
-              element.taskStatus !== "APPROVAL" &&
-              (element.taskName === "Home Visit" ||
-                element.taskName === "Test Drive"))
-          ) {
-            plannedData.push(element);
-          }
+            if (element.taskStatus === "CLOSED") {
+              closedData.push(element);
+            } else if (
+              (element.taskStatus !== "CLOSED" &&
+                selector.enquiry_leadDto_response.leadStage ===
+                  element.taskCategory.taskCategory) ||
+              (element.taskCategory.taskCategory === "APPROVAL" &&
+                element.taskStatus === "ASSIGNED")  || 
+              (element.taskStatus &&
+                element.taskStatus !== "APPROVAL" &&
+                (element.taskName === "Home Visit" ||
+                  element.taskName === "Test Drive")) 
+                  // || (selector.enquiry_leadDto_response.leadStage === "PREBOOKING") && element.taskCategory.taskCategory ==="ENQUIRY"
+            ) {
+              plannedData.push(element);
+            } else if (element.taskStatus !== "CLOSED"  && element.taskName === "Evaluation" || element.taskName === "Finance"){
+              if (selector.enquiry_leadDto_response.leadStage !== "PREENQUIRY"){ // added to manage not display in contacts 
+                plannedData.push(element);
+              }
+            
+            }
         });
       }
 
@@ -157,8 +148,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     const taskStatus = item.taskStatus;
     const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-    if (item.taskStatus === "CLOSED") {
+    if (item.taskStatus === "CLOSED" && taskName !== "Test Drive" && taskName !== "Home Visit" && taskName !== "Re Test Drive" && taskName !== "Re Home Visit") {
       const name = checkForTaskNames(taskName);
+      
       showToast(name + " task has been closed");
       return;
     }
@@ -170,6 +162,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     let taskNameNew = "";
     switch (finalTaskName) {
       case "testdrive":
+        navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+        taskNameNew = "Test Drive";
+        break;
+      case "retestdrive":
         navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
         taskNameNew = "Test Drive";
         break;
@@ -190,6 +186,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         taskNameNew = "";
         break;
       case "homevisit":
+        navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
+        taskNameNew = "Home Visit";
+        break;
+      case "rehomevisit":
         navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
         taskNameNew = "Home Visit";
         break;
@@ -276,6 +276,24 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
     });
   };
 
+  const checkForEnqFollow = (item, section) => {
+    if (
+      item.taskName == "Enquiry Follow Up" &&
+      section?.title == "Planned Tasks"
+    ) {
+      let formate = "DD/MM/YYYY hh:mm a";
+      const { taskUpdatedTime } = item;
+      const current = moment().format(formate);
+      const startDate = moment(current, formate);
+      const create = moment(taskUpdatedTime).format(formate);
+      const createDate = moment(create, formate);
+      const timeDiff = startDate.diff(createDate, "hours");
+      return timeDiff;
+    } else {
+      return 0;
+    }
+  };
+
   const renderItem = ({ item, index, section }) => {
     let isHistory = section.title == "Planned Tasks";
     let isDotVisible =
@@ -324,27 +342,52 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
       }
 
       return true;
-    };
+    }
 
     const date = moment(item.taskUpdatedTime)
       .format("DD/MM/YY h:mm a")
       .split(" ");
-
-    let radioColor =
+    const radioColor =
       item.taskStatus === "CLOSED" ? Colors.DARK_GREEN : Colors.LIGHT_GRAY2;
+    const isHoursVisible = checkForEnqFollow(item, section) >= 2;
 
     return (
       <View style={styles.itemContainer}>
+        {section.data[index + 1] ? (
+          <View
+            style={[styles.progressColumn, { backgroundColor: radioColor }]}
+          />
+        ) : null}
         <View style={styles.radioContainer}>
           <View style={[styles.radioRound, { backgroundColor: radioColor }]} />
         </View>
         <TouchableOpacity
           onPress={() => itemClicked(item)}
-          style={styles.itemDetailsContainer}
+          style={[
+            styles.itemDetailsContainer,
+            isHoursVisible ? styles.cardBorder : null,
+          ]}
         >
-          <Text style={styles.dateTimeText}>
-            {date[0]} | {date[1] + " " + date[2]}
-          </Text>
+          {isHoursVisible ? (
+            <View style={styles.itemTopRow}>
+              <View style={styles.hourContainer}>
+                <Text
+                  style={styles.hourText}
+                >{`Last follow up >${checkForEnqFollow(
+                  item,
+                  section
+                )}hrs`}</Text>
+              </View>
+              <Text style={styles.dateTimeText}>
+                {date[0]} | {date[1] + " " + date[2]}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.dateTimeText}>
+              {date[0]} | {date[1] + " " + date[2]}
+            </Text>
+          )}
+
           {TaskNameView(item.taskName)}
           <Text style={styles.assigneeNameText}>
             {"Assignee: " + item.assignee?.empName}
@@ -363,16 +406,20 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             </View>
           ) : null}
           <View style={styles.iconContainer}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               activeOpacity={0.6}
               onPress={() => {
-                navigation.navigate(
-                  AppNavigator.MyTasksStackIdentifiers.webCallScreen,
-                  {
-                    phone: mobileNo,
-                    uniqueId: item.taskId,
-                  }
-                );
+                if (userData.orgName.includes("BikeWo Corporation")) {
+                  callNumber(mobileNo);
+                } else {
+                  navigation.navigate(
+                    AppNavigator.MyTasksStackIdentifiers.webCallScreen,
+                    {
+                      phone: mobileNo,
+                      uniqueId: item.taskId,
+                    }
+                  );
+                }
               }}
               style={styles.iconBoxView}
             >
@@ -387,58 +434,67 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
               </View>
               <Text style={styles.iconText}>Call</Text>
             </TouchableOpacity>
-            <View style={styles.iconDivider} />
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.recordedCalls,
-                  {
-                    taskId: item.taskId,
-                  }
-                );
-              }}
-              style={styles.iconBoxView}
-            >
-              <View style={styles.iconView}>
-                <IconButton
-                  icon={"play"}
-                  size={20}
-                  style={styles.playIcon}
-                  color={activeColor}
-                />
-              </View>
-              <Text numberOfLines={1} style={styles.iconText}>
-                Recordings
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.iconDivider} />
-            <TouchableOpacity
-              onPress={() => openMap(item.lat, item.lon)}
-              activeOpacity={0.6}
-              style={styles.iconBoxView}
-              disabled={!isIconEnable("location", item)}
-            >
-              <View style={styles.iconView}>
-                <IconButton
-                  icon={"map-marker"}
-                  size={18}
-                  style={styles.playIcon}
-                  color={
-                    isIconEnable("location", item) ? activeColor : disabledColor
-                  }
-                />
-              </View>
-              <Text
-                style={[
-                  styles.iconText,
-                  !isIconEnable("location", item) ? styles.disabledText : "",
-                ]}
-              >
-                Geo
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.iconDivider} />
+            <View style={styles.iconDivider} /> */}
+            {userData.orgName !== "BikeWo Corporation" ? (
+              <>
+                {/* <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => {
+                    navigation.navigate(
+                      AppNavigator.EmsStackIdentifiers.recordedCalls,
+                      {
+                        taskId: item.taskId,
+                      }
+                    );
+                  }}
+                  style={styles.iconBoxView}
+                >
+                  <View style={styles.iconView}>
+                    <IconButton
+                      icon={"play"}
+                      size={20}
+                      style={styles.playIcon}
+                      color={activeColor}
+                    />
+                  </View>
+                  <Text numberOfLines={1} style={styles.iconText}>
+                    Recordings
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.iconDivider} /> */}
+                <TouchableOpacity
+                  onPress={() => openMap(item.lat, item.lon)}
+                  activeOpacity={0.6}
+                  style={styles.iconBoxView}
+                  disabled={!isIconEnable("location", item)}
+                >
+                  <View style={styles.iconView}>
+                    <IconButton
+                      icon={"map-marker"}
+                      size={18}
+                      style={styles.playIcon}
+                      color={
+                        isIconEnable("location", item)
+                          ? activeColor
+                          : disabledColor
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.iconText,
+                      !isIconEnable("location", item)
+                        ? styles.disabledText
+                        : "",
+                    ]}
+                  >
+                    Geo
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.iconDivider} />
+              </>
+            ) : null}
+
             <View style={styles.iconBoxView}>
               <View style={styles.iconView}>
                 <IconButton
@@ -549,6 +605,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   txt4: { fontSize: 18, fontWeight: "700", marginBottom: 5 },
+  progressColumn: {
+    height: "100%",
+    width: 3,
+    backgroundColor: Colors.LIGHT_GRAY2,
+    marginTop: 27,
+    position: "absolute",
+    marginHorizontal: 8
+  },
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -577,6 +641,30 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: Colors.WHITE,
     marginHorizontal: 10,
+    borderRadius: 5,
+  },
+  cardBorder: {
+    borderLeftColor: Colors.PINK,
+    borderLeftWidth: 1.5,
+  },
+  itemTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 3,
+  },
+  hourContainer: {
+    borderRadius: 10,
+    backgroundColor: Colors.WHITE,
+    borderWidth: 1,
+    borderColor: Colors.PINK,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+  },
+  hourText: {
+    fontSize: 11,
+    fontWeight: "500",
+    color: Colors.BLACK,
   },
   dateTimeText: {
     fontSize: 12,
@@ -689,6 +777,6 @@ const styles = StyleSheet.create({
     height: "80%",
     width: 1,
     backgroundColor: Colors.LIGHT_GRAY2,
-    alignSelf: "center"
+    alignSelf: "center",
   },
 });

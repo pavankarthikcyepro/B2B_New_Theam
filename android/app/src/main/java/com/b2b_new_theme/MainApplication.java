@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.poberwong.launcher.IntentLauncherPackage;
+import com.github.reactnativecommunity.location.RNLocationPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -12,6 +14,8 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage;
+import cl.json.RNSharePackage;
+import cl.json.ShareApplication;
 // import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 //import com.swmansion.reanimated.ReanimatedJSIModulePackage;
@@ -30,6 +34,7 @@ public class MainApplication extends Application implements ReactApplication {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
           new ReactNativePushNotificationPackage();
+          new RNSharePackage();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           return packages;

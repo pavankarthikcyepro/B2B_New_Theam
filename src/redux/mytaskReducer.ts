@@ -62,7 +62,7 @@ export const getMyTasksListApi = createAsyncThunk(
       onlyForEmp: true,
     };
 
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -80,7 +80,7 @@ export const getMyTeamsTasksListApi = createAsyncThunk(
       onlyForEmp: false,
     };
 
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -93,7 +93,7 @@ export const getMyTeamsTasksListApi = createAsyncThunk(
 export const getTodayMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getTodayMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -106,7 +106,7 @@ export const getTodayMyTasksListApi = createAsyncThunk(
 export const getUpcomingMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getUpcomingMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -119,7 +119,7 @@ export const getUpcomingMyTasksListApi = createAsyncThunk(
 export const getPendingMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -132,7 +132,7 @@ export const getPendingMyTasksListApi = createAsyncThunk(
 export const getRescheduleMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getRescheduleMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -145,7 +145,7 @@ export const getRescheduleMyTasksListApi = createAsyncThunk(
 export const getCompletedMyTasksListApi = createAsyncThunk(
   "MY_TASKS/getCompletedMyTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -158,7 +158,7 @@ export const getCompletedMyTasksListApi = createAsyncThunk(
 export const getTodayTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getTodayTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -171,7 +171,7 @@ export const getTodayTeamTasksListApi = createAsyncThunk(
 export const getUpcomingTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getUpcomingTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -184,7 +184,7 @@ export const getUpcomingTeamTasksListApi = createAsyncThunk(
 export const getPendingTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getPendingTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -197,7 +197,7 @@ export const getPendingTeamTasksListApi = createAsyncThunk(
 export const getRescheduleTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getRescheduleTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -210,7 +210,7 @@ export const getRescheduleTeamTasksListApi = createAsyncThunk(
 export const getCompletedTeamTasksListApi = createAsyncThunk(
   "MY_TASKS/getCompletedTeamTasksListApi",
   async (payload, { rejectWithValue }) => {
-    const url = URL.GET_MY_TASKS_NEW_DATA();
+    const url = URL.GET_MY_TASKS_NEW_DATA2();
     const response = await client.post(url, payload);
     const json = await response.json();
     if (!response.ok) {
@@ -287,8 +287,8 @@ export const mytaskSlice = createSlice({
     myTeamstasksListResponse: {},
     myTeamsTasksListResponseStatus: "",
     role: "",
-    isLoading: true,
-    isTeamsTaskLoading: true,
+    isLoading: false,
+    isTeamsTaskLoading: false,
     myTodayData: [],
     myUpcomingData: [],
     myPendingData: [],
@@ -452,68 +452,68 @@ export const mytaskSlice = createSlice({
     });
 
     builder.addCase(getTodayMyTasksListApi.pending, (state) => {
-      state.myTodayData = [];
       state.isLoading = true;
+      state.myTodayData = [];
     });
     builder.addCase(getTodayMyTasksListApi.fulfilled, (state, action) => {
-      state.myTodayData = action.payload.todaysData;
       state.isLoading = false;
+      state.myTodayData = action.payload.todaysData;
     });
     builder.addCase(getTodayMyTasksListApi.rejected, (state, action) => {
-      state.myTodayData = [];
       state.isLoading = false;
+      state.myTodayData = [];
     });
 
     builder.addCase(getUpcomingMyTasksListApi.pending, (state) => {
-      state.myUpcomingData = [];
       state.isLoading = true;
+      state.myUpcomingData = [];
     });
     builder.addCase(getUpcomingMyTasksListApi.fulfilled, (state, action) => {
-      state.myUpcomingData = action.payload.upcomingData;
       state.isLoading = false;
+      state.myUpcomingData = action.payload.upcomingData;
     });
     builder.addCase(getUpcomingMyTasksListApi.rejected, (state, action) => {
-      state.myUpcomingData = [];
       state.isLoading = false;
+      state.myUpcomingData = [];
     });
 
     builder.addCase(getPendingMyTasksListApi.pending, (state) => {
-      state.myPendingData = [];
       state.isLoading = true;
+      state.myPendingData = [];
     });
     builder.addCase(getPendingMyTasksListApi.fulfilled, (state, action) => {
-      state.myPendingData = action.payload.pendingData;
       state.isLoading = false;
+      state.myPendingData = action.payload.pendingData;
     });
     builder.addCase(getPendingMyTasksListApi.rejected, (state, action) => {
-      state.myPendingData = [];
       state.isLoading = false;
+      state.myPendingData = [];
     });
 
     builder.addCase(getRescheduleMyTasksListApi.pending, (state) => {
-      state.myReData = [];
       state.isLoading = true;
+      state.myReData = [];
     });
     builder.addCase(getRescheduleMyTasksListApi.fulfilled, (state, action) => {
-      state.myReData = action.payload.rescheduledData;
       state.isLoading = false;
+      state.myReData = action.payload.rescheduledData;
     });
     builder.addCase(getRescheduleMyTasksListApi.rejected, (state, action) => {
-      state.myReData = [];
       state.isLoading = false;
+      state.myReData = [];
     });
 
     builder.addCase(getCompletedMyTasksListApi.pending, (state) => {
-      state.myReData = [];
       state.isLoading = true;
+      state.myReData = [];
     });
     builder.addCase(getCompletedMyTasksListApi.fulfilled, (state, action) => {
-      state.myReData = action.payload.completedData;
       state.isLoading = false;
+      state.myReData = action.payload.completedData;
     });
     builder.addCase(getCompletedMyTasksListApi.rejected, (state, action) => {
-      state.myReData = [];
       state.isLoading = false;
+      state.myReData = [];
     });
 
     builder.addCase(getTodayTeamTasksListApi.pending, (state) => {

@@ -11,6 +11,7 @@ import moment from "moment";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Mailer from 'react-native-mail';
 var RNFS = require('react-native-fs');
+import RNFetchBlob from "rn-fetch-blob";
 import { ProformaTextinputOffers } from "../../../../components";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import * as AsyncStore from "../../../../asyncStore";
@@ -1234,20 +1235,34 @@ export const ProformaComp = ({
             if (error) {
               Alert.alert(
                 "Error",
-                "Could not send mail. Please send a mail to support@example.com"
+                "Could not send mail. Please try again later"
               );
             }
           }
         );
       }
 
-      // alert(file.filePath);
-      Alert.alert(
-        "File Downloaded to following location",
-        `${file.filePath}`, // <- this part is optional, you can pass an empty string
-        [{ text: "OK", onPress: () => console.log("OK Pressed") }],
-        { cancelable: false }
-      );
+
+    if (Platform.OS === "ios" && from !== "email") {
+      const { config, fs } = RNFetchBlob;
+      RNFetchBlob.ios.openDocument(file.filePath);
+    } else {
+      if (from !== "email") {
+        Alert.alert(
+          "File Downloaded to following location",
+          `${file.filePath}`, // <- this part is optional, you can pass an empty string
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                console.log("OK Pressed");
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    }
     } catch (error) {
       alert(error);
     }
@@ -3262,6 +3277,7 @@ export const ProformaComp = ({
                         paddingVertical: 0,
                       },
                     ]}
+                    maxLength={2}
                     // disabled= {isDownLoadVisible ? true :false}
                     maxLength={5}
                     disabled={!isInputsEditable()}
@@ -4042,14 +4058,15 @@ export const ProformaComp = ({
                 keyboardType="number-pad"
                 value={selector.for_accessories}
                 TitleText={"Foc Accessories:"}
-                onChangeText={(text) =>
+                onChangeText={(text) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "FOR_ACCESSORIES",
                       text: text,
                     })
-                  )
-                }
+                  );
+                  setSelectedPaidAccessoriesList([]);
+                }}
               />
               {/* <Text style={GlobalStyle.underline}></Text> */}
 

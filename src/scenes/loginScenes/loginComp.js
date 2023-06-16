@@ -40,39 +40,19 @@ import { AuthContext } from "../../utils/authContext";
 import { LoaderComponent } from "../../components";
 import * as AsyncStore from "../../asyncStore";
 import {
-  showAlertMessage,
   showToast,
-  showToastRedAlert,
 } from "../../utils/toast";
-import BackgroundService from "react-native-background-actions";
-import Geolocation from "react-native-geolocation-service";
-import {
-  distanceFilterValue,
-  getDistanceBetweenTwoPoints,
-  officeRadius,
-  options,
-  sendAlertLocalNotification,
-  sendLocalNotification,
-  sleep,
-} from "../../service";
-import {
-  getDetailsByempIdAndorgId,
-  locationUpdate,
-  saveLocation,
-} from "../../networking/endpoints";
-import { client } from "../../networking/client";
+import crashlytics from "@react-native-firebase/crashlytics";
 import {
   getHeight,
   getWidth,
   setBranchId,
   setBranchName,
 } from "../../utils/helperFunctions";
+import moment from "moment";
 
-// import { TextInput } from 'react-native-paper';
-const officeLocation = {
-  latitude: 37.33233141,
-  longitude: -122.0312186,
-};
+const dateFormat = "YYYY-MM-DD";
+const currentDateMoment = moment().format(dateFormat);
 
 const LoginScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.loginReducer);
@@ -81,18 +61,7 @@ const LoginScreen = ({ navigation }) => {
   const { signIn } = React.useContext(AuthContext);
   const [text, setText] = React.useState("");
   const [number, onChangeNumber] = React.useState(null);
-  const [subscriptionId, setSubscriptionId] = useState(null);
-  useEffect(() => {
-    return () => {
-      clearWatch();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  const clearWatch = () => {
-    subscriptionId !== null && Geolocation.clearWatch(subscriptionId);
-    setSubscriptionId(null);
-  };
   useEffect(() => {
     Animated.timing(fadeAnima, {
       toValue: 1,
@@ -135,6 +104,7 @@ const LoginScreen = ({ navigation }) => {
     let object = {
       username: employeeId,
       password: password,
+      deviceId: selector.token,
     };
 
     dispatch(postUserData(object));
@@ -168,11 +138,7 @@ const LoginScreen = ({ navigation }) => {
           dispatch(getEmpId(selector.userData.userName)),
         ])
           .then((res) => {
-            const condition =
-              res[0].payload.loginEmployee.isGeolocation === "Y";
-            if (condition) {
-              startTracking();
-            }
+            onSignIn(res[0].payload.dmsEntity.loginEmployee);
           })
           .catch(() => {});
 
@@ -227,203 +193,18 @@ const LoginScreen = ({ navigation }) => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.FORGOT);
   };
 
-  const initialData = async () => {
-    AsyncStore.storeJsonData(AsyncStore.Keys.TODAYSDATE, new Date().getDate());
-    AsyncStore.storeJsonData(AsyncStore.Keys.COORDINATES, []);
-    getCoordinates();
-  };
-
-  function createDateTime(time) {
-    var splitted = time.split(":");
-    if (splitted.length != 2) return undefined;
-
-    var date = new Date();
-    date.setHours(parseInt(splitted[0], 10));
-    date.setMinutes(parseInt(splitted[1], 10));
-    date.setSeconds(0);
-    return date;
+  async function onSignIn(user) {
+    crashlytics().log("User signed in.");
+    await Promise.all([
+      crashlytics().setUserId(user.empId.toString()),
+      crashlytics().setAttribute("credits", "Crash User"),
+      crashlytics().setAttributes({
+        role: user.primaryDesignation,
+        email: user.email,
+        username: user.empName,
+      }),
+    ]);
   }
-
-  const objectsEqual = (o1, o2) =>
-    Object.keys(o1).length === Object.keys(o2).length &&
-    Object.keys(o1).every((p) => o1[p] === o2[p]);
-
-  const getCoordinates = async () => {
-    try {
-        if (true) {
-          // setInterval(() => {
-          const watchID = Geolocation.getCurrentPosition(
-            async (lastPosition) => {
-              let speed =
-                lastPosition?.coords?.speed <= -1
-                  ? 0
-                  : lastPosition?.coords?.speed;
-              const employeeData = await AsyncStore.getData(
-                AsyncStore.Keys.LOGIN_EMPLOYEE
-              );
-              if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                if (jsonObj.hrmsRole == "MD" || jsonObj.hrmsRole == "CEO") {
-                  BackgroundService.stop();
-                }
-                const trackingResponse = await client.get(
-                  getDetailsByempIdAndorgId +
-                    `/${jsonObj.empId}/${jsonObj.orgId}`
-                );
-                const trackingJson = await trackingResponse.json();
-
-                var newLatLng = {
-                  latitude: lastPosition.coords.latitude,
-                  longitude: lastPosition.coords.longitude,
-                };
-                if (trackingJson.length > 0) {
-                  let parsedValue =
-                    trackingJson.length > 0
-                      ? JSON.parse(
-                          trackingJson[trackingJson.length - 1].location
-                        )
-                      : [];
-
-                  let x = trackingJson;
-                  let y = x[x.length - 1].location;
-                  let z = JSON.parse(y);
-                  let lastlocation = z[z.length - 1];
-
-                  let dist = getDistanceBetweenTwoPoints(
-                    lastlocation.latitude,
-                    lastlocation.longitude,
-                    lastPosition?.coords?.latitude,
-                    lastPosition?.coords?.longitude
-                  );
-                  let distance = dist * 1000;
-                  let newArray = [...parsedValue, ...[newLatLng]];
-                  let date = new Date(
-                    trackingJson[trackingJson.length - 1]?.createdtimestamp
-                  );
-                  let condition =
-                    new Date(date).getDate() == new Date().getDate();
-                  if (trackingJson.length > 0 && condition) {
-                    let tempPayload = {
-                      id: trackingJson[trackingJson.length - 1]?.id,
-                      orgId: jsonObj?.orgId,
-                      empId: jsonObj?.empId,
-                      branchId: jsonObj?.branchId,
-                      currentTimestamp:
-                        trackingJson[trackingJson.length - 1]?.createdtimestamp,
-                      updateTimestamp: new Date().getTime(),
-                      purpose: "",
-                      location: JSON.stringify(newArray),
-                      kmph: speed.toString(),
-                      speed: speed.toString(),
-                    };
-                    if (speed <= 10 && distance > distanceFilterValue) {
-                      const response = await client.put(
-                        locationUpdate +
-                          `/${trackingJson[trackingJson.length - 1].id}`,
-                        tempPayload
-                      );
-                      const json = await response.json();
-                    }
-                  } else {
-                    let payload = {
-                      id: 0,
-                      orgId: jsonObj?.orgId,
-                      empId: jsonObj?.empId,
-                      branchId: jsonObj?.branchId,
-                      currentTimestamp: new Date().getTime(),
-                      updateTimestamp: new Date().getTime(),
-                      purpose: "",
-                      location: JSON.stringify([newLatLng]),
-                      kmph: speed.toString(),
-                      speed: speed.toString(),
-                    };
-                    if (speed <= 10) {
-                      const response = await client.post(saveLocation, payload);
-                      const json = await response.json();
-                    }
-                  }
-                } else {
-                  let payload = {
-                    id: 0,
-                    orgId: jsonObj?.orgId,
-                    empId: jsonObj?.empId,
-                    branchId: jsonObj?.branchId,
-                    currentTimestamp: new Date().getTime(),
-                    updateTimestamp: new Date().getTime(),
-                    purpose: "",
-                    location: JSON.stringify([newLatLng]),
-                    kmph: speed.toString(),
-                    speed: speed.toString(),
-                  };
-                  if (speed <= 10) {
-                    const response = await client.post(saveLocation, payload);
-                    const json = await response.json();
-                  }
-                }
-              }
-            },
-            (error) => {
-              // console.error("ssss", error);
-            },
-            {
-              enableHighAccuracy: true,
-              //  distanceFilter: distanceFilterValue,
-              //  timeout: 2000,
-              //  maximumAge: 0,
-              //  interval: 5000,
-              //  fastestInterval: 2000,
-              accuracy: {
-                android: "high",
-              },
-              // useSignificantChanges: true,
-            }
-          );
-          setSubscriptionId(watchID);
-          // }, 5000);
-        }
-    } catch (error) {}
-  };
-
-  const veryIntensiveTask = async (taskDataArguments) => {
-    // Example of an infinite loop task
-    const { delay } = taskDataArguments;
-    await new Promise(async (resolve) => {
-      for (let i = 0; BackgroundService.isRunning(); i++) {
-        var startDate = createDateTime("8:30");
-        var startBetween = createDateTime("9:30");
-        var endBetween = createDateTime("20:30");
-        var endDate = createDateTime("21:30");
-        var now = new Date();
-        if (startDate <= now && now <= startBetween) {
-          // sendLocalNotification();
-        }
-        if (endBetween <= now && now <= endDate) {
-          // sendLocalNotification();
-        }
-        try {
-          let todaysDate = await AsyncStore.getData(AsyncStore.Keys.TODAYSDATE);
-          if (todaysDate) {
-            getCoordinates();
-          } else {
-            initialData();
-          }
-        } catch (error) {}
-        await sleep(delay);
-      }
-    });
-  };
-
-  const startTracking = async () => {
-    if (Platform.OS === "ios") {
-      Geolocation.requestAuthorization("always");
-    }
-    await Geolocation.setRNConfiguration({
-      skipPermissionRequests: false,
-      authorizationLevel: "always" | "whenInUse" | "auto",
-      locationProvider: "playServices" | "android" | "auto",
-    });
-    await BackgroundService.start(veryIntensiveTask, options);
-  };
 
   const closeBottomView = () => {
     Animated.timing(fadeAnima, {
@@ -461,8 +242,8 @@ const LoginScreen = ({ navigation }) => {
             }}
           >
             <Image
-              style={{ width: 200, height: getHeight(40) }}
-              resizeMode={"center"}
+              style={{ width: getWidth(80), height: 70 }}
+              resizeMode={"contain"}
               source={require("../../assets/images/logo.png")}
             />
           </View>

@@ -163,8 +163,10 @@ export const DropAnalysisItem = ({
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY }}>
-      <View style={[styles.mainView]}>
-        <TouchableOpacity style={styles.section} disabled={leadStage === "BOOKING" ? false :true}
+      <View style={[styles.mainView, count < 7 ? styles.countBorder : ""]}>
+        <TouchableOpacity
+          style={styles.section}
+          disabled={leadStage === "BOOKING" ? false : true}
           onPress={onItemPressed}
         >
           <View
@@ -177,26 +179,41 @@ export const DropAnalysisItem = ({
           >
             <View style={{ width: "60%" }}>
               <View style={{ flexDirection: "row" }}>
-                {isManager && isCheckboxVisible && dropStatus == "DROPPED" && leadStage !== "DELIVERY" && leadStage !== "INVOICE" && (
-                  <Checkbox.Android
-                    onPress={() => {
-                      checkboxSelected();
-                    }}
-                    status={isItemSelected}
-                    color={Colors.YELLOW}
-                    uncheckedColor={Colors.YELLOW}
-                  />
-                )}
+                {isManager &&
+                  isCheckboxVisible &&
+                  dropStatus == "DROPPED" &&
+                  leadStage !== "DELIVERY" &&
+                  leadStage !== "INVOICE" && (
+                    <Checkbox.Android
+                      onPress={() => {
+                        checkboxSelected();
+                      }}
+                      status={isItemSelected}
+                      color={Colors.YELLOW}
+                      uncheckedColor={Colors.YELLOW}
+                    />
+                  )}
 
                 {showBubble && (
-                  <View style={styles.btn3}>
-                    <Image
-                      source={require("./../../../../assets/images/check-list.png")}
-                      resizeMode="contain"
-                      tintColor={Colors.GRAY}
-                      style={[styles.countCointaner]}
-                    />
-                    <Text style={styles.txt7}>{count}</Text>
+                  <View style={styles.countRow}>
+                    <View style={styles.btn3}>
+                      <Image
+                        source={require("./../../../../assets/images/check-list.png")}
+                        resizeMode="contain"
+                        tintColor={Colors.GRAY}
+                        style={[styles.countCointaner]}
+                      />
+                      <Text style={styles.txt7}>{count}</Text>
+                    </View>
+                    {leadStatus === "ENQUIRYCOMPLETED" && count < 7 && (
+                      <View style={styles.hourContainer}>
+                        <Text style={styles.hourText}>
+                          {`Followed up < `}
+                          <Text style={styles.hourExtraText}>7</Text>
+                          <Text style={styles.hourText}>{`Times`}</Text>
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 )}
               </View>
@@ -319,21 +336,21 @@ const styles = StyleSheet.create({
   text1: {
     color: Colors.BLACK,
     fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 5
+    fontWeight: "700",
+    marginBottom: 5,
   },
   text2: {
     color: Colors.BLACK,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 5,
-    marginLeft: 10
+    marginLeft: 10,
   },
   text3: {
     color: Colors.DARK_GRAY,
     fontSize: 12,
-    fontWeight: '600',
-    marginLeft: 10
+    fontWeight: "600",
+    marginLeft: 10,
   },
   text4: {
     color: Colors.WHITE,
@@ -352,8 +369,8 @@ const styles = StyleSheet.create({
     // elevation: 3,
     marginHorizontal: 5,
     marginVertical: 6,
-    width: '90%',
-    marginVertical: 10
+    width: "90%",
+    marginVertical: 10,
   },
   modal: {
     backgroundColor: Colors.RED,
@@ -362,30 +379,54 @@ const styles = StyleSheet.create({
     height: 22,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   catText: {
     color: "#7b79f6",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 5,
     marginLeft: 5,
-    textTransform: 'uppercase'
+    textTransform: "uppercase",
   },
-  txt7: { fontSize: 12,
-     fontWeight: "500",
-      color: Colors.WHITE,
-      position:"absolute",
-      left:28,
-      top:-3,
-      backgroundColor:Colors.PINK,
-     borderWidth: 1,
+  txt7: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: Colors.WHITE,
+    position: "absolute",
+    left: 28,
+    top: -3,
+    backgroundColor: Colors.PINK,
+    borderWidth: 1,
     borderColor: Colors.PINK,
     borderRadius: 5,
-    textAlign:"center",
-    width:15,
-    overflow:"hidden"
-   },
+    textAlign: "center",
+    width: 15,
+    overflow: "hidden",
+  },
+  countRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  hourContainer: {
+    borderRadius: 15,
+    backgroundColor: Colors.WHITE,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+    marginLeft: 17,
+    borderColor: Colors.PINK,
+    borderWidth: 1,
+  },
+  hourText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: Colors.BLACK,
+  },
+  hourExtraText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: Colors.BLACK,
+  },
   btn3: {
     // width: 35,
     // height: 30,
@@ -394,23 +435,22 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     // borderColor: "#d1d1d1",
     // borderRadius: 5,
-    // backgroundColor:Colors.PINK,  
+    // backgroundColor:Colors.PINK,
     alignSelf: "flex-end",
- 
-    padding:2,
-    marginEnd:5,
-    marginStart:6
+
+    padding: 2,
+    marginEnd: 5,
+    marginStart: 6,
     // marginHorizontal:10
-    
+
     // marginBottom: -5
     // marginEnd:10
-
   },
   dotContainer: {
     height: 45,
     width: 25,
   },
-   mainView: {
+  mainView: {
     flexDirection: "row",
     alignItems: "center",
     // width: '90%',
@@ -418,22 +458,25 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
     marginVertical: 10,
     justifyContent: "center",
-    marginHorizontal:10 ,
-    borderRadius:10,
-   elevation:8,
-     shadowColor: Colors.DARK_GRAY,
-     shadowOffset: {
-       width: 0,
-       height: 2
-     },
-     shadowRadius: 2,
-     shadowOpacity: 0.5,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    elevation: 8,
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
     // padding:10,
     // flex:1
   },
-  countCointaner:{
+  countBorder: {
+    borderLeftWidth: 1.5,
+    borderLeftColor: Colors.PINK,
+  },
+  countCointaner: {
     height: 30,
     width: 25,
-
-  }
-})
+  },
+});
