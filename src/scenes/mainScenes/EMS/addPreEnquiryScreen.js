@@ -173,10 +173,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [eventListdata, seteventListData] = useState([]);
   const [selectedEventData, setSelectedEventData] = useState([]);
   const [eventConfigRes, setEventConfigRes] = useState([]);
-  
+
   const [duplicateMobileErrorData, setDuplicateMobileErrorData] = useState("");
   const [duplicateMobileModelVisible, setDuplicateMobileModelVisible] =
     useState(false);
+  const [isLocationDisabled, setIsLocationDisabled] = useState(false);
 
   useEffect(() => {
     getAsyncstoreData();
@@ -846,7 +847,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           const msgArr4 = msgArr3[1].split(",");
           const createdDate = msgArr3[2].trim();
           const createdBy = msgArr4[0].trim();
-          
+
           const msgEnq = msgArr[2].split("]").join("");
           const msgEnq2 = msgEnq.split(":");
           const enqNumber = msgEnq2[1].trim();
@@ -855,7 +856,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             createdBy: createdBy,
             createdDate: createdDate,
             enqNumber: enqNumber,
-            mobileNumber: selector.mobile
+            mobileNumber: selector.mobile,
           };
           setDuplicateMobileErrorData(Object.assign({}, newObj));
           setDuplicateMobileModelVisible(true);
@@ -967,11 +968,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         orgId: sublevels[0].orgId,
         locationId: sublevels[0].id,
       };
+      setIsLocationDisabled(true);
       dispatch(setDropDownData({ key: "LOCATION", value: sublevels[0].name }));
       dispatch(getBranchList(payload));
     }
   }, [homeSelector.filter_drop_down_data]);
-  
+
   useEffect(() => {
     if (homeSelector.filter_drop_down_data?.Location?.sublevels.length > 0) {
       const { sublevels } = homeSelector.filter_drop_down_data.Location;
@@ -989,7 +991,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setSubSourceData([]);
     }
   }, [selector.selectedLocation]);
-  
+
   useEffect(() => {
     if (selector.branchList.length == 1) {
       const element = selector.branchList;
@@ -1000,7 +1002,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       );
     }
   }, [selector.branchList]);
-  
+
   useEffect(() => {
     if (selector.selectedBranch) {
       for (let i = 0; i < selector.branchList.length; i++) {
@@ -1166,14 +1168,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (
           homeSelector?.filter_drop_down_data?.Location?.sublevels.length > 0
         ) {
-          setDataForDropDown([...homeSelector.filter_drop_down_data.Location.sublevels]);
+          setDataForDropDown([
+            ...homeSelector.filter_drop_down_data.Location.sublevels,
+          ]);
         } else {
           showToast("No Locations found");
           return;
         }
         break;
       case "BRANCH":
-        if (selector.branchList.length == 0){
+        if (selector.branchList.length == 0) {
           showToast("No Branch found");
           return;
         }
@@ -1696,7 +1700,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <DropDownSelectionItem
               label={"Location*"}
               value={selector.selectedLocation}
-              disabled={fromEdit}
+              disabled={fromEdit || isLocationDisabled}
               onPress={() =>
                 showDropDownModelMethod("LOCATION", "Select Location")
               }

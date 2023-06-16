@@ -349,7 +349,7 @@ const GeolocationMapScreen = ({ route }) => {
               strokeWidth={4}
             />
             {coordinates.map((marker, index) =>
-              index === 0 || coordinates.length -1 === index ? (
+              index === 0 || coordinates.length - 1 === index ? (
                 <Marker.Animated
                   key={`marker-${index}`}
                   coordinate={marker}
@@ -362,7 +362,7 @@ const GeolocationMapScreen = ({ route }) => {
                     // flex:1
                   }}
                   // image={index === coordinates.length - 1 ? CYEPRO : HISTORY_LOC}
-                  image={Platform.OS === "ios" ? LOCATION_PIN : LOCATION_PIN2}
+                  image={Platform.OS === "ios" ? LOCATION_PIN2 : LOCATION_PIN2}
                   // title={marker}
                   // description={}
                 >
