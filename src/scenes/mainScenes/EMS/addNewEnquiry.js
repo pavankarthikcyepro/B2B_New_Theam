@@ -351,6 +351,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
   const [duplicateMobileModelVisible, setDuplicateMobileModelVisible] =
     useState(false);
   const [defaultDateTime, setDefaultDateTime] = useState(new Date(Date.now()));
+  const [isLocationDisabled, setIsLocationDisabled] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -492,6 +493,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
         orgId: sublevels[0].orgId,
         locationId: sublevels[0].id,
       };
+      setIsLocationDisabled(true);
       dispatch(setDropDownData({ key: "LOCATION", value: sublevels[0].name }));
       dispatch(getBranchList(payload));
     }
@@ -4086,6 +4088,7 @@ const AddNewEnquiryScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Location*"}
                   value={selector.selectedLocation}
+                  disabled={isLocationDisabled}
                   onPress={() =>
                     showDropDownModelMethod("LOCATION", "Select Location")
                   }
